@@ -1,0 +1,152 @@
+## code to prepare `DATASET` dataset goes here
+
+#save EPA ecoregions for use -----
+  ecoregions <- sf::st_read("data-raw/epa-ecoregions-lvl3/us_eco_l3_state_boundaries.shp")
+
+  ecoregions$NA_L2NAME <- gsub(" (?)", "",ecoregions$NA_L2NAME, fixed=TRUE)
+
+  #merge into each ecoregion
+  ecoregions <-  ecoregions %>% dplyr::group_by(across(-c(geometry, STATE_NAME, EPA_REGION, L3_KEY, L2_KEY, L1_KEY))) %>%
+    dplyr::summarise(do_union=TRUE)
+
+  usethis::use_data(ecoregions, overwrite = TRUE, compress="xz")
+
+
+#check parameter codes (don't need to rerun) -----
+  eco <- get_ecoregion(site)
+  eco <- sf::st_transform(eco, crs="EPSG:4326") #transform to corret crs
+
+  bbox <- terra::ext(eco)
+  bbox <- c(bbox[1], bbox[3], bbox[2], bbox[4])
+
+  #identify stations in ecoregion
+  stats <- dataRetrieval::read_waterdata_monitoring_location(
+    agency_code = "USGS",
+    site_type = "Stream",
+    bbox = bbox,
+    skipGeometry = TRUE,
+    properties = c("monitoring_location_id",
+                   "site_type", "state_name"))
+
+
+  #get stations with data
+  #split to not exceed limits on API
+  chunk_size <- 300
+  group_factor <- ceiling(seq_len(nrow(stats)) / chunk_size)
+  stats_split <- split(stats, group_factor)
+
+  params <- vector()
+  for(x in 1:length(stats_split)){
+    stats_useful <- dataRetrieval::read_waterdata_ts_meta(monitoring_location_id = stats_split[[x]]$monitoring_location_id,
+                                                          statistic_id = c("00001", "00002"),
+                                                          properties = c("monitoring_location_id",
+                                                                         "parameter_code",
+                                                                         "begin",
+                                                                         "end",
+                                                                         "time_series_id",
+                                                                         "statistic_id"),
+                                                          skipGeometry = TRUE)
+    params <- c(params, unique(stats_useful$parameter_code))
+
+  }
+
+  params <- unique(params)
+
+#get data for stations in ecoregion with data -------
+  ecos <- c("Cascades", "Klamath Mountains","North Cascades", "Blue Mountains", "Columbia Plateau")
+  parms <- c("00010","00095", "00300", "00301", "00400", "00480", "32295","32322","63680","72147","99409")
+
+for(x in ecos){
+  cat("working on ecoregion ", x , "\n")
+  for(y in parms){
+  cat("working on parameter ", y , "\n")
+  df <- get_eco_limits(x,y)
+
+  if(!any(is.na(df))){
+    write.csv(df,
+              file.path("data-raw/usgs-limits", paste0("usgs-limit-", y,
+                                            "-", gsub(" ", "-", x), ".csv")),
+              quote=FALSE, row.names=FALSE)
+  }}}
+
+#pull together
+  files <- list.files("data-raw/usgs-limits", pattern = "usgs-limit", full.names = TRUE)
+
+  #use 0.999 for max of max of min if higher
+    for(x in files){
+      df <- read.csv(x)
+
+      min <- df$min[df$statistic_id == 2]
+      max <- ifelse(df$max[df$statistic_id == 2] > df$q999[df$statistic_id ==1], df$max[df$statistic_id == 2],df$q999[df$statistic_id ==1])
+      par <- stringr::str_split_i(basename(x), "-",3)
+      eco <- gsub("-", " ", gsub(".csv$", "", gsub("usgs-limit-[0-9]{5}-", "", basename(x))))
+
+      #replace missing values with NA
+      min <- ifelse(length(min) ==0 , NA, min)
+      max <- ifelse(length(max) ==0 , NA, max)
+
+      lim <- data.frame(ecoregion = eco, parameter = par, max = max, min=min)
+
+      if(x == files[1]){
+        limits <- lim
+      }else{limits <- rbind(limits, lim)}
+    }
+
+  #input into physical limits
+  codes <- read.csv("data-raw/usgs-sonde-codes.csv")
+  codes$usgs_code <- stringr::str_pad(codes$usgs_code, 5, side="left", pad="0") #ensure codes are formatted correctly
+
+  #merge together
+  phys_limits <- merge(limits, codes, by.x="parameter", by.y="usgs_code")
+
+  usethis::use_data(phys_limits, overwrite = TRUE)
+
+
+#save copy of sonde data for use in examples without needing to load
+  file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "sonde-example.csv")
+  raw_sonde <- read_sonde(file, flags = FALSE, tz="Etc/GMT-8")
+
+
+  use_data(raw_sonde, overwrite = TRUE)
+
+# create example versioning
+  clear_log()
+  clear_data()
+
+  data <- raw_sonde
+  write_data(data, "raw")
+
+  #a change
+  row_change <- 1:4
+  data$Cond_S_cm[row_change] <- NA
+
+  #log change and save value
+  version <- digest::digest(data)
+  change <- write_log("Cond_S_cm", "test step", length(row_change), version, user="smith")
+  write_data(data, version)
+
+  #make another change
+  row_change <- 500:600
+  data$Cond_S_cm[row_change] <- NA
+
+  version <- digest::digest(data)
+  change <- write_log("Cond_S_cm", "test step", length(row_change), version, user="smith")
+  write_data(data, version)
+
+  #get vals
+  log <- get_log()
+  data_ver <- get_data()
+
+  #save
+  save_project(data_ver, log, "inst/extdata/example-sonde-project.qs")
+
+  #save as data objects
+  example_log <- log
+  example_data_ver <- data_ver
+  example_project <- append(list(log), data_ver)
+  names(example_project)[1] <- "log"
+
+
+  use_data(example_log, overwrite = TRUE)
+  use_data(example_data_ver, overwrite = TRUE)
+  use_data(example_project, overwrite= TRUE)

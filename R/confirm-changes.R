@@ -1,0 +1,90 @@
+#module to flag data and write a new version
+#default note: "NOTE: To prevent a point from being flagged, select the appropriate row in the table"
+#' Shiny module to added flags and save changes to  data
+#'
+#' The UI creates a button to allow user to save the changes made to the data. The server function will provide a message to the user to
+#' let them know the changes (or lack of changes made), add flags to the dataset, and save the dataset as a new version.
+#'
+#' @param id the shiny ID of the action button
+#' @param note an optional note to add to the action button to provide more directions
+#' @param df the sonde data.frame that will be flagged
+#' @param index the index values for the rows to be flagged
+#' @param prj_path the file path to save the sonde project to
+#' @param par the parameter to flag
+#' @param flag_name a character with the name of the flag
+#' @param index the index values of the rows to flag in df
+#'
+#' @rdname confirm-changes
+#' @export
+#'
+confirm_changes_UI <- function(id, note=NULL) {
+  ns <- NS(id)
+
+  tagList(
+    div(style="margin-bottom: 8px; font-size:14px",
+        "Points highlighted in the plot will be flagged"),
+
+    if(!is.null(note)){
+      div(style="margin-top: 8px; margin-bottom: 8px;font-size:10px",
+          note)
+    },
+    actionButton(NS(id, "rm_points"), "Flag Points")
+
+  )
+}
+
+#' @rdname confirm-changes
+#' @export
+confirm_changes_server <- function(id, df, index=NULL, par, flag_name, prj_path){
+
+  # df: reactiveVal of the dataframe to update
+  # df_plot: reactive that provides data with $outlier$Index
+  # y_var: reactive of the column to flag
+  # flag_name: name of flag column to add
+  # prj_path: project path for saving changes
+
+  moduleServer(id, function(input, output, session) {
+
+    updated_df <- reactiveVal(df)  # start with the original df
+
+    # When button is clicked, update df in place
+    observeEvent(input$rm_points,{
+      req(df(), par()) #ensure we have what we need
+
+      #check if there's a project path
+      if(length(prj_path()) == 0){
+        # only show alert if running in shiny
+        if (!is.null(getDefaultReactiveDomain())) {
+          shinyalert::shinyalert(
+            title = "No Project Path",
+            text = "Specify the project path in 1. Load Data",
+            type = "error"
+          )
+        }       #see if there are points selected
+      }else if(length(index()) == 0 | is.null(index())){
+          # only show alert if running in shiny
+          if (!is.null(getDefaultReactiveDomain())) {
+            shinyalert::shinyalert(
+              title = "Nothing selected",
+              text = "No points were selected to flag",
+              type = "warning"
+            )
+          }}else{
+          #add flags to df and save
+            updated <- flag_data(df(),
+                                 par = par(),
+                                 index = index(),
+                                 flag_name = flag_name,
+                                 prj_path = prj_path())
+
+
+            #update df
+            updated_df(updated)}
+            })
+
+    # Return the updated df reactive
+    return(updated_df)
+
+    })
+  }
+

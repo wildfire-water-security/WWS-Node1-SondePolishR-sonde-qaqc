@@ -1,0 +1,54 @@
+Package: SondePolishR
+Type: Package
+Title: Perform Quality Assurance and Data Corrections on Sonde Data
+Version: 0.1.0
+Authors@R: c(
+    person(
+      "Katie", "Wampler",
+      email = "katie.wampler@oregonstate.edu",
+      comment = c(ORCID = "0000-0002-5584-7554"),
+      role = c("aut", "cre")
+    )
+  )
+Description: More about what it does (maybe more than one line).
+    Continuation lines should be indented.
+License: AGPL (>= 3)
+Encoding: UTF-8
+LazyData: true
+LazyDataCompression: xz
+RoxygenNote: 7.3.2
+Imports: 
+    dplyr,
+    fs,
+    magrittr,
+    readr,
+    readxl,
+    tidyselect,
+    tools,
+    utils,
+    rlang,
+    stringi,
+    anytime,
+    DT,
+    shiny,
+    sf,
+    terra,
+    dataRetrieval (>= 2.7.21),
+    purrr,
+    stats,
+    tidyr,
+    plotly,
+    ggplot2,
+    lubridate,
+    qs,
+    shinyFiles,
+    shinyalert,
+    withr,
+    bslib,
+    digest,
+    htmltools
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+Depends: 
+    R (>= 3.5)

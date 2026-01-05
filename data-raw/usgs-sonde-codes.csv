@@ -1,0 +1,17 @@
+﻿metric,usgs_code
+Temp_C,10
+SpCond_µS_cm,95
+ODO_mg_L,300
+ODO_sat,301
+pH,400
+Sal_psu,480
+fDOM_QSU,32295
+fDOM_RFU,32322
+Turbidity_FNU,63680
+Depth_m,72178
+TSS_mg_L,99409
+Cond_µS_cm,
+nLF_Cond_µS_cm,
+ODO_CB,
+pH_mV,
+TDS_mg_L,
