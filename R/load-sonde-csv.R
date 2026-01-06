@@ -12,8 +12,10 @@
 #' @importFrom magrittr %>%
 
 #' @details
-#' Daylights saving time can cause issues for continous datasets, so data is often collected in standard time.
-#' If this is the case use Etc/GMT offsets. See \link[base]{OlsonNames} for all available timezones.
+#' Daylights saving time can cause issues for continuous datasets, so data is often collected in standard time.
+#' If this is the case use Etc/GMT offsets. See \link[base]{OlsonNames} for all available timezones. Note that
+#' Etc/GMT signs are **reverse** of UTC signs, so for example UTC-8 would be Etc/GMT+8,
+#' signifying Pacific Standard Time (PST).
 #'
 #' @md
 #'
@@ -27,7 +29,7 @@
 #'
 #' file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "sonde-usb-example.csv")
 #' df <- read_sonde(file)
-read_sonde <- function(file, encoding = NULL, flags=TRUE, skip=NULL, tz=NULL){
+read_sonde <- function(file, encoding = NULL, flags=TRUE, skip=NULL, tz="Etc/GMT+8"){
   stopifnot(tools::file_ext(file) == "csv", file.exists(file))
 
   #guess timezone

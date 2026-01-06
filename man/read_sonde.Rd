@@ -4,7 +4,7 @@
 \alias{read_sonde}
 \title{Upload raw sonde data}
 \usage{
-read_sonde(file, encoding = NULL, flags = TRUE, skip = NULL, tz = NULL)
+read_sonde(file, encoding = NULL, flags = TRUE, skip = NULL, tz = "Etc/GMT+8")
 }
 \arguments{
 \item{file}{file path to sonde data (.csv)}
@@ -25,8 +25,10 @@ Loads a \code{.csv} file with raw sonde data. Cleans column names, adds a \code{
 and optionally adds a \code{flag} column.
 }
 \details{
-Daylights saving time can cause issues for continous datasets, so data is often collected in standard time.
-If this is the case use Etc/GMT offsets. See \link[base]{OlsonNames} for all available timezones.
+Daylights saving time can cause issues for continuous datasets, so data is often collected in standard time.
+If this is the case use Etc/GMT offsets. See \link[base]{OlsonNames} for all available timezones. Note that
+Etc/GMT signs are \strong{reverse} of UTC signs, so for example UTC-8 would be Etc/GMT+8,
+signifying Pacific Standard Time (PST).
 }
 \examples{
 file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "sonde-example.csv")

@@ -15,9 +15,9 @@ test_that("data is loaded", {
 
   #check tz
   path <- file.path(testthat::test_path(), "testdata/sonde-example.csv")
-  expect_equal(attr(df$DateTime, "tzone")[1], Sys.timezone())
-  df <- read_sonde(path, tz="Etc/GMT-8")
-  expect_equal(attr(df$DateTime, "tzone")[1], "Etc/GMT-8")
+  expect_equal(attr(df$DateTime, "tzone")[1], "Etc/GMT+8")
+  df <- read_sonde(path, tz="America/Los_Angeles")
+  expect_equal(attr(df$DateTime, "tzone")[1], "America/Los_Angeles")
 
   #check flags
   df <- read_sonde(path, flags = FALSE)
