@@ -4,14 +4,14 @@
 \alias{read_sonde}
 \title{Upload raw sonde data}
 \usage{
-read_sonde(file, flags = TRUE, encoding = NULL, skip = NULL, tz = NULL)
+read_sonde(file, encoding = NULL, flags = TRUE, skip = NULL, tz = NULL)
 }
 \arguments{
 \item{file}{file path to sonde data (.csv)}
 
-\item{flags}{logical, if TRUE a flag column will be added for each parameter}
-
 \item{encoding}{the file encoding, will guess if NULL}
+
+\item{flags}{logical, if TRUE a flag column will be added for each parameter}
 
 \item{skip}{the number of rows to skip, assumes the first row is a header,  will guess if NULL}
 

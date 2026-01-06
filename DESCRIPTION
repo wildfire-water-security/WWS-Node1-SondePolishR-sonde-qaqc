@@ -1,7 +1,7 @@
 Package: SondePolishR
 Type: Package
 Title: Perform Quality Assurance and Data Corrections on Sonde Data
-Version: 0.1.0
+Version: 0.0.9000
 Authors@R: c(
     person(
       "Katie", "Wampler",
@@ -16,13 +16,12 @@ License: AGPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 LazyDataCompression: xz
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Imports: 
     dplyr,
     fs,
     magrittr,
     readr,
-    readxl,
     tidyselect,
     tools,
     utils,
@@ -46,7 +45,9 @@ Imports:
     withr,
     bslib,
     digest,
-    htmltools
+    htmltools,
+    utf8,
+    stringr
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3

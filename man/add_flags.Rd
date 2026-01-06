@@ -13,7 +13,7 @@ add_flags(df, par = NULL, flag_name = NULL, index = NULL)
 
 \item{flag_name}{a character with the name of the flag}
 
-\item{index}{the index values of the rows to flag in df}
+\item{index}{the index values for the rows to be flagged}
 }
 \value{
 a data.frame

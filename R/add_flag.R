@@ -87,8 +87,6 @@ add_flags <- function(df, par=NULL, flag_name=NULL, index=NULL){
   stopifnot(inherits(df, "data.frame"), is.character(flag_name)|is.null(flag_name), is.character(par)|is.null(par))
 
   #add flag columns if they don't exist
-  flag_check <- grepl("_flag", colnames(df))
-  if(any(!flag_check)){
    #guess pars
      pars <- paste(c("Cond", "fDOM", "ODO", "Sal", "TDS", "Turbidity","TSS","pH","Temp", "Depth"), collapse="|")
      par_names <- grep(pars, names(df), value = TRUE)
@@ -100,7 +98,6 @@ add_flags <- function(df, par=NULL, flag_name=NULL, index=NULL){
       for(x in missing){
         df <- df %>% dplyr::mutate(!!paste0(x, "_flag") := NA, .after=tidyselect::all_of(x))
       }
-    }
 
   #add flag if inputting specific flags
   if(!is.null(flag_name)){
@@ -116,7 +113,22 @@ add_flags <- function(df, par=NULL, flag_name=NULL, index=NULL){
         ext_flag <- df[[flag_col]][[i]]
 
         #check to see if it already exists
-        new <- !(!is.na(ext_flag) || flag_name %in% names(ext_flag))
+        # ##checking logic, keep for testing for now
+        #  #case 1: ext_flag is NA -> return TRUE
+        #     ext_flag <- NA
+        #     new <- !(!all(is.na(ext_flag)) && flag_name %in% names(ext_flag))
+        #
+        #   #case 2: ext_flag is "text_flag", flag_name = "test" -> return TRUE
+        #     ext_flag <-  c("test_flag" = TRUE)
+        #     flag_name <- "test"
+        #     new <- !(!all(is.na(ext_flag)) && flag_name %in% names(ext_flag))
+        #
+        #   #case 3: ext_flag is "text", flag_name = "text" -> return FALSE
+        #     ext_flag <- c("test" = TRUE)
+        #     flag_name <- "test"
+        #     new <- !(!all(is.na(ext_flag)) && flag_name %in% names(ext_flag))
+
+        new <- !(!all(is.na(ext_flag)) && flag_name %in% names(ext_flag))
 
         if(new){
           # create a named logical

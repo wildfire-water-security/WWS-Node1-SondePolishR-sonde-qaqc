@@ -12,15 +12,14 @@ test_that("flags are added", {
 
   #add new flags
     df <- add_flags(raw_sonde, "fDOM_QSU", "test_flag", c(1,2,3))
-
     expect_equal(df$fDOM_QSU_flag[[1]], c(test_flag = TRUE))
     expect_equal(df$fDOM_QSU_flag[[4]], c(test_flag = FALSE))
 
-  #add to existing flags
-    df <- add_flags(df, "fDOM_QSU", "test_flag2", c(1,2))
-    expect_equal(df$fDOM_QSU_flag[[1]], c(test_flag = TRUE, test_flag2 = TRUE))
-    expect_equal(df$fDOM_QSU_flag[[3]], c(test_flag = TRUE, test_flag2 = FALSE))
-    expect_equal(df$fDOM_QSU_flag[[4]], c(test_flag = FALSE, test_flag2 = FALSE))
+    #add to existing flags
+      df <- add_flags(df, "fDOM_QSU", "test_flag2", c(1,2))
+      expect_equal(df$fDOM_QSU_flag[[1]], c(test_flag = TRUE, test_flag2 = TRUE))
+      expect_equal(df$fDOM_QSU_flag[[3]], c(test_flag = TRUE, test_flag2 = FALSE))
+      expect_equal(df$fDOM_QSU_flag[[4]], c(test_flag = FALSE, test_flag2 = FALSE))
 
   #ensure flags rewrite
     df <- add_flags(df, "fDOM_QSU", "test_flag", c(4))

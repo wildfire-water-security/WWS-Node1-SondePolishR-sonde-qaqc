@@ -13,7 +13,7 @@ flag_data(df, par, flag_name, index, prj_path)
 
 \item{flag_name}{a character with the name of the flag}
 
-\item{index}{the index values of the rows to flag in df}
+\item{index}{the index values for the rows to be flagged}
 
 \item{prj_path}{the file path to save the sonde project to}
 }

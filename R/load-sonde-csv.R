@@ -4,6 +4,7 @@
 #' and optionally adds a `flag` column.
 #'
 #' @param file file path to sonde data (.csv)
+#' @param encoding the file encoding, will guess if NULL
 #' @param skip the number of rows to skip, assumes the first row is a header,  will guess if NULL
 #' @param flags logical, if TRUE a flag column will be added for each parameter
 #' @param tz the time zone for the dataset. If not specified will use user timezone. See details for more information
@@ -26,14 +27,19 @@
 #'
 #' file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "sonde-usb-example.csv")
 #' df <- read_sonde(file)
-read_sonde <- function(file, flags=TRUE, skip=NULL, tz=NULL){
+read_sonde <- function(file, encoding = NULL, flags=TRUE, skip=NULL, tz=NULL){
   stopifnot(tools::file_ext(file) == "csv", file.exists(file))
 
   #guess timezone
   if(is.null(tz)){tz <- Sys.timezone(location = TRUE)}
 
   #read file in
-    text <- utf8::as_utf8(readLines(file, skipNul = TRUE))
+    #guess encoding
+    if(is.null(encoding)){encoding <- get_encoding(file)}
+
+    #read file
+    text <- readLines(file, skipNul = TRUE, encoding = encoding)
+    text <- utf8::as_utf8(text)
 
     #remove empty lines
     text <- text[text != ""]
@@ -42,7 +48,7 @@ read_sonde <- function(file, flags=TRUE, skip=NULL, tz=NULL){
     usb_export <- any(grepl("Model, Submodel", text[2:6], fixed=TRUE))
 
     if(is.null(skip)){
-      skip <- ifelse(usb_export, grep("^Date", text) + 4, grep("^Date", text))
+      skip <- ifelse(usb_export, grep("^Date", text) + 3, grep("^Date", text))
     }
 
   #get column names
@@ -113,7 +119,7 @@ read_sonde <- function(file, flags=TRUE, skip=NULL, tz=NULL){
     df$DateTime <- lubridate::force_tz(df$DateTime, tzone=tz)
 
     #round to nearest minute
-    df$DateTime <- round.POSIXt(df$DateTime, units="mins")
+    df$DateTime <- as.POSIXct(round.POSIXt(df$DateTime, units="mins"))
 
   #make sure things that look numeric are
     numeric <- colnames(df)[!colnames(df) %in% c("Date_MM_DD_YYYY", "Time_HH_mm_ss", "DateTime", "Site_Name")]

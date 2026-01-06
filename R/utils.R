@@ -21,7 +21,7 @@ get_encoding <- function(file){
   }
 
   #find encoding
-  enc_guess <- readr::guess_encoding(file, threshold = 0.95)
+  enc_guess <- readr::guess_encoding(file, n_max=100, threshold = 0.95)
 
   #if encoding guess is good, use that
   if(nrow(enc_guess) > 0){
