@@ -1,7 +1,8 @@
 #initialize log (will need to clear when a new file is loaded)
 .SondePolishR <- new.env(parent = emptyenv())
 .SondePolishR$log <- data.frame(datetime=as.POSIXct(character()),
-                                parameter = character(), step = character(),
+                                parameter = character(),
+                                step = character(),
                                 n_changed = numeric(),
                                 user = character(),
                                 version = character())  # initialize log
@@ -128,9 +129,13 @@
 #' @export
 #'
 new_version <- function(df){
+  #get saved versions
   current <- get_data()
-  current <- current[[length(current)]]
 
+  #get most recent item
+  current <- tail(current, n = 1)
+
+  #see if the version of the data is new
   diff <- !identical(df, current)
   return(diff)
 }

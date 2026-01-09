@@ -43,10 +43,10 @@ preserve_zoom <- function(df, y_var, plot_id) {
   d <- reactiveVal()
   plot_lyout <- reactiveValues(xaxis = list(), yaxis = list())
 
-  observeEvent(event_data("plotly_relayout", source = "shift_plot"), {
+  observeEvent(plotly::event_data("plotly_relayout", source = "shift_plot"), {
 
     relayout <- tryCatch(
-      event_data("plotly_relayout", source = "shift_plot"),
+      plotly::event_data("plotly_relayout", source = "shift_plot"),
       error = function(e) NULL
     )
 

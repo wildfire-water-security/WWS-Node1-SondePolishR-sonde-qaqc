@@ -31,7 +31,7 @@ load_data_UI <- function(id){
                    inputId=NS(id, "tz"),
                    label = "Data Timezone:",
                    choices = nice_tz(),
-                   selected = "Etc/GMT-8",
+                   selected = "Etc/GMT+8",
                    selectize=TRUE))
         ),
 
@@ -107,9 +107,9 @@ load_data_server <- function(id){
     #select save path for sonde project or show it
       roots <- c(
         wd        = getwd(),
-        C_drive   = "C:/",
-        Z_drive   = "Z:/",
-        documents = file.path(fs::path_home(), "Documents"))
+        downloads   = file.path(fs::path_home(), "Downloads"),
+        documents = file.path(fs::path_home(), "Documents"),
+        'C drive'   = "C:/")
 
 
       #get file name and save path to save as project file
@@ -141,9 +141,9 @@ load_data_server <- function(id){
   })
 }
 
-# ui <- page_fillable(
+# ui <- bslib::page_fillable(
 #   #set theme
-#   theme = bs_theme(preset = "superhero",
+#   theme = bslib::bs_theme(preset = "superhero",
 #                    primary = "#E3795E"),
 #
 #   load_data_UI("data1")
@@ -155,4 +155,4 @@ load_data_server <- function(id){
 # }
 #
 # shinyApp(ui = ui, server = server)
-
+#

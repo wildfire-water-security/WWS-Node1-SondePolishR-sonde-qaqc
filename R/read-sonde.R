@@ -127,7 +127,7 @@ read_sonde <- function(file, encoding = NULL, flags=TRUE, skip=NULL, tz="Etc/GMT
     numeric <- colnames(df)[!colnames(df) %in% c("Date_MM_DD_YYYY", "Time_HH_mm_ss", "DateTime", "Site_Name")]
 
   #make numeric and remove time fract sec
-    df <- df %>% dplyr::mutate(across(all_of(numeric), as.numeric))
+    df <- df %>% dplyr::mutate(dplyr::across(all_of(numeric), as.numeric))
 
  #add flags
   if(flags){

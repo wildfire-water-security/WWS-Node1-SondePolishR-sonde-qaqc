@@ -104,7 +104,7 @@ for(x in ecos){
 
 #save copy of sonde data for use in examples without needing to load
   file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "sonde-example.csv")
-  raw_sonde <- read_sonde(file, flags = FALSE, tz="Etc/GMT-8")
+  raw_sonde <- read_sonde(file, flags = FALSE)
 
 
   use_data(raw_sonde, overwrite = TRUE)

@@ -6,17 +6,21 @@
 #' @note
 #' You are likely to run into API limits with this function unless you request an [API](https://api.waterdata.usgs.gov/signup/) from USGS
 #'
-#' If a ecoregion returns more than 300 sites for a particular parameter, it will randomly sample 500 of the sites to
-#' determine the limits, to conserve computing power and USGS resources.
+#' If a ecoregion returns more than `nsamp` sites for a particular parameter, it will randomly sample that number of the sites to
+#' determine the limits, to conserve computing power and USGS resources. Additionally, for temperature data statistics will be determined
+#' based on data collected within the last 13 years. For all other parameters, all data within the last 30 years will be used.
 #'
-#' @param ecoregion Name for Level III North America Ecoregion (NA_L3NAME)
-#' @param parameter USGS parameter code(s) for the parameters you'd like to get limits of
+#' @param ecoregion Name for Level III North America Ecoregion (NA_L3NAME). See [ecoregions()] for ecoregion names.
+#' @param parameter USGS parameter code(s) for the parameters you'd like to get limits of.
+#' @param nsamp The number of random sites within the ecoregion used to calculate limits.
 #' @md
 #'
 #' @export
 #' @returns
-#' A data.frame for each parameter code that has two rows and 10 columns:
-#' - statistic_id: 01 is max daily value, 02 is min daily value
+#' A data.frame for each parameter code that has two rows and 13 columns:
+#' - par: the USGS parameter code
+#' - statistic_id: 00001 is max daily value, 00002 is min daily value
+#' - statistic_name: the description of each statistic code
 #' - max: the maximum of the daily min or max values
 #' - q999: the 99.9th quantile of the daily min or max values
 #' - q99: the 99th quantile of the daily min or max values
@@ -26,10 +30,9 @@
 #' - q001: the 0.1th quantile of the daily min or max values
 #' - min: the minimum of the daily min or max values
 #' - n: the number of daily values used to calculate metrics
-#' - par: the USGS parameter code
-#' - stat_n: the number of USGS stations used to calculate metrics
+#' - n_stats: the number of USGS stations used to calculate metrics
 #'
-#' If multiple parameters are requested, it will return a list of data.frames
+#' If multiple parameters are requested, it will return a list of data.frames. If no data is available will return `NA`
 #'
 #' @details
 #' Potential parameter code common for USGS continuous water quality:
@@ -47,8 +50,10 @@
 #'
 #' @examples
 #' get_eco_limits("Blue Mountains", "32295")
-get_eco_limits <- function(ecoregion, parameter){
+#'
+#' get_eco_limits("Coast Range", "00010", nsamp=1)
 
+get_eco_limits <- function(ecoregion, parameter, nsamp = 100){
   stopifnot(ecoregion %in% SondePolishR::ecoregions$NA_L3NAME, all(is.character(parameter)))
 
   #get par codes
@@ -57,7 +62,7 @@ get_eco_limits <- function(ecoregion, parameter){
   #get stations in ecoregion
   ecoregions <- SondePolishR::ecoregions
   eco <- ecoregions[ecoregions$NA_L3NAME == ecoregion,]
-  eco <- sf::st_transform(eco, crs="EPSG:4326") #transform to corret crs
+  eco <- sf::st_transform(eco, crs="EPSG:4326") #transform to correct crs
 
   bbox <- terra::ext(eco)
   bbox <- c(bbox[1], bbox[3], bbox[2], bbox[4])
@@ -77,6 +82,7 @@ get_eco_limits <- function(ecoregion, parameter){
   group_factor <- ceiling(seq_len(nrow(stats)) / chunk_size)
   stats_split <- split(stats, group_factor)
 
+  #provides list with stations with the requested parameter
   stats_useful <- purrr::map(stats_split, ~ dataRetrieval::read_waterdata_ts_meta(
     monitoring_location_id = .x$monitoring_location_id,
     parameter_code = pars,
@@ -123,8 +129,8 @@ get_eco_limits <- function(ecoregion, parameter){
 
       # we don't need 1000's of records for a par, 300 random should give us a good idea of the limits
       set.seed(9)
-      if(nrow(stats_par) > 300){
-        stats_par <- stats_par[stats_par$monitoring_location_id %in% sample(stats_par$monitoring_location_id, 300, replace=FALSE),]
+      if(nrow(stats_par) > nsamp){
+        stats_par <- stats_par[stats_par$monitoring_location_id %in% sample(stats_par$monitoring_location_id, nsamp, replace=FALSE),]
       }
 
       #split to not exceed limits on API
@@ -132,28 +138,38 @@ get_eco_limits <- function(ecoregion, parameter){
           time <- "P13Y"
         }else{time <- "P30Y"}
 
+
+      #get daily min and max for each day at each site
       chunk_size <- 10
       if(chunk_size < nrow(stats_par)){
         group_factor <- ceiling(seq_len(nrow(stats_par)) / chunk_size)
         stats_split <- split(stats_useful, group_factor)
+
+        stats_data <- suppressWarnings(purrr::map(stats_split, ~ dataRetrieval::read_waterdata_daily(
+          monitoring_location_id = .x$monitoring_location_id,
+          statistic_id = c("00001", "00002"),
+          time = time,
+          parameter_code = par,
+
+          skipGeometry = TRUE
+        )))
+
+        stats_merge <- stats_data %>% dplyr::bind_rows() %>% dplyr::group_by(.data$statistic_id) %>%
+          dplyr::filter(.data$approval_status == "Approved")
+
       }else{
-        stats_split <- list(stats_par)
+        stats_data <- dataRetrieval::read_waterdata_daily(
+          monitoring_location_id = stats_par$monitoring_location_id,
+          statistic_id = c("00001", "00002"),
+          time = time,
+          parameter_code = par,
+          skipGeometry = TRUE)
+
+        stats_merge <- stats_data %>% dplyr::group_by(.data$statistic_id) %>%
+          dplyr::filter(.data$approval_status == "Approved")
       }
 
-
-      stats_data <- suppressWarnings(purrr::map(stats_split, ~ dataRetrieval::read_waterdata_daily(
-        monitoring_location_id = .x$monitoring_location_id,
-        statistic_id = c("00001", "00002"),
-        time = time,
-        parameter_code = par,
-
-        skipGeometry = TRUE
-      )))
-
-
-      stats_merge <- stats_data %>% dplyr::bind_rows() %>% dplyr::group_by(.data$statistic_id) %>%
-        dplyr::filter(.data$approval_status == "Approved")
-
+    #if we get data back, get descriptive statistics
       if(nrow(stats_merge) > 0){
         par_lim <- stats_merge %>%
           dplyr::summarise(max= max(.data$value),
@@ -165,7 +181,9 @@ get_eco_limits <- function(ecoregion, parameter){
                            q001 = stats::quantile(.data$value, 0.001),
                            min = min(.data$value),
                            n = dplyr::n()) %>% mutate(par = par,
-                                                      n_stats = length(unique(stats_par$monitoring_location_id)))
+                                                      n_stats = length(unique(stats_par$monitoring_location_id))) %>%
+          mutate(statistic_name = c("daily maximum", "daily minimum"), .after="statistic_id") %>%
+          select(.data$par, .data$statistic_id:.data$n, .data$n_stats) %>% as.data.frame()
 
       }else{
        par_lim <- NA

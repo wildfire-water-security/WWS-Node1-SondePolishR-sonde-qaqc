@@ -1,13 +1,13 @@
 test_that("flags are added", {
   #flag columns are added if missing
     df <- add_flags(raw_sonde)
-    expect_equal(sum(grepl("_flag", colnames(df))), 15)
+    expect_equal(sum(grepl("_flag", colnames(df))), 14)
 
   #try if some are added
     df <- raw_sonde
-    df$Cond_S_cm_flag <- NA
+    df$Cond_uS_cm_flag <- NA
     df <- add_flags(df)
-    expect_equal(sum(grepl("_flag", colnames(df))), 15)
+    expect_equal(sum(grepl("_flag", colnames(df))), 14)
 
 
   #add new flags
@@ -45,7 +45,7 @@ test_that("saving flags works",{
   expect_equal(get_log()$step, "test_flag")
 
   #ensure data ver is saved
-  expect_equal(names(get_data()), c("raw", "4942d3edbb11c827c0fc4da860dce891"))
+  expect_equal(names(get_data()), c("raw", "824f400c52499aa98d40f5efe0623169"))
 
   #ensure no new version is saved if same changes are made
     df <- flag_data(df, "fDOM_QSU", "test_flag", 1:4, prj_path)
@@ -55,7 +55,7 @@ test_that("saving flags works",{
     expect_equal(get_log()$step, "test_flag")
 
     #ensure data ver is saved
-    expect_equal(names(get_data()), c("raw", "4942d3edbb11c827c0fc4da860dce891"))
+    expect_equal(names(get_data()), c("raw", "824f400c52499aa98d40f5efe0623169"))
 
 
 })

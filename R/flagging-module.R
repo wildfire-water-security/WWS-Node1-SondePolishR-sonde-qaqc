@@ -45,13 +45,13 @@ confirm_changes_server <- function(id, df, index=NULL, par, flag_name, prj_path)
 
   moduleServer(id, function(input, output, session) {
 
-    updated_df <- reactiveVal(df)  # start with the original df
+    updated_df <- reactiveVal(df()) # start with the original df
 
     # When button is clicked, update df in place
     observeEvent(input$rm_points,{
       req(df(), par()) #ensure we have what we need
 
-      #check if there's a project path
+      #check if there's a project path, if no error
       if(length(prj_path()) == 0){
         # only show alert if running in shiny
         if (!is.null(getDefaultReactiveDomain())) {
@@ -60,8 +60,8 @@ confirm_changes_server <- function(id, df, index=NULL, par, flag_name, prj_path)
             text = "Specify the project path in 1. Load Data",
             type = "error"
           )
-        }       #see if there are points selected
-      }else if(length(index()) == 0 | is.null(index())){
+        }       #see if there are points selected, if not warn
+      }else if(is.null(index()) || length(index()) == 0){
           # only show alert if running in shiny
           if (!is.null(getDefaultReactiveDomain())) {
             shinyalert::shinyalert(

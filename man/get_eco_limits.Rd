@@ -4,17 +4,21 @@
 \alias{get_eco_limits}
 \title{Get USGS Sonde Parameter Limits}
 \usage{
-get_eco_limits(ecoregion, parameter)
+get_eco_limits(ecoregion, parameter, nsamp = 100)
 }
 \arguments{
-\item{ecoregion}{Name for Level III North America Ecoregion (NA_L3NAME)}
+\item{ecoregion}{Name for Level III North America Ecoregion (NA_L3NAME). See \code{\link[=ecoregions]{ecoregions()}} for ecoregion names.}
 
-\item{parameter}{USGS parameter code(s) for the parameters you'd like to get limits of}
+\item{parameter}{USGS parameter code(s) for the parameters you'd like to get limits of.}
+
+\item{nsamp}{The number of random sites within the ecoregion used to calculate limits.}
 }
 \value{
-A data.frame for each parameter code that has two rows and 10 columns:
+A data.frame for each parameter code that has two rows and 13 columns:
 \itemize{
-\item statistic_id: 01 is max daily value, 02 is min daily value
+\item par: the USGS parameter code
+\item statistic_id: 00001 is max daily value, 00002 is min daily value
+\item statistic_name: the description of each statistic code
 \item max: the maximum of the daily min or max values
 \item q999: the 99.9th quantile of the daily min or max values
 \item q99: the 99th quantile of the daily min or max values
@@ -24,11 +28,10 @@ A data.frame for each parameter code that has two rows and 10 columns:
 \item q001: the 0.1th quantile of the daily min or max values
 \item min: the minimum of the daily min or max values
 \item n: the number of daily values used to calculate metrics
-\item par: the USGS parameter code
-\item stat_n: the number of USGS stations used to calculate metrics
+\item n_stats: the number of USGS stations used to calculate metrics
 }
 
-If multiple parameters are requested, it will return a list of data.frames
+If multiple parameters are requested, it will return a list of data.frames. If no data is available will return \code{NA}
 }
 \description{
 Pulls daily water quality records from USGS for stations within the specified ecoregion and returns
@@ -53,9 +56,12 @@ Potential parameter code common for USGS continuous water quality:
 \note{
 You are likely to run into API limits with this function unless you request an \href{https://api.waterdata.usgs.gov/signup/}{API} from USGS
 
-If a ecoregion returns more than 300 sites for a particular parameter, it will randomly sample 500 of the sites to
-determine the limits, to conserve computing power and USGS resources.
+If a ecoregion returns more than \code{nsamp} sites for a particular parameter, it will randomly sample that number of the sites to
+determine the limits, to conserve computing power and USGS resources. Additionally, for temperature data statistics will be determined
+based on data collected within the last 13 years. For all other parameters, all data within the last 30 years will be used.
 }
 \examples{
 get_eco_limits("Blue Mountains", "32295")
+
+get_eco_limits("Coast Range", "00010", nsamp=1)
 }

@@ -111,14 +111,24 @@ usb_export <- function(file){
 #' Make nice timezones for selecting
 #'
 #' Uses \link[base]{OlsonNames} to extract potential timezones for the .csv file.
+#'
 #' @export
+#'
 #' @returns
 #' a vector of time zones with names that are human readable
+#'
+#' @examples
+#' head(nice_tz())
 
 nice_tz <- function(){
   #getting timezones and making nice
   tz <- OlsonNames()[grepl("America|GMT", OlsonNames())]
   tz_nice <- gsub("GMT", "UTC", gsub("Etc/", "", gsub("[_]", " ", tz)))
+  plus_flip <- grepl("\\+", tz_nice)
+  minus_flip <- grepl("\\-", tz_nice)
+  tz_nice[plus_flip] <- gsub("\\+", "\\-", tz_nice[plus_flip])
+  tz_nice[minus_flip] <- gsub("\\-", "\\+", tz_nice[minus_flip])
+
   names(tz) <- tz_nice
   tz <- tz[!(names(tz) %in% c("UTC-0", "UTC0", "UTC"))]
   tz <- tz[order(tz, decreasing=TRUE)]
@@ -153,15 +163,15 @@ nice_yvar <- function(df){
   y_var <- y_var[!(y_var %in% c("Index", "Time_Fract_Sec", "Wiper_Position_volt", "Cable_Pwr_V", "Battery_V"))]
 
   #give nice names
-  nice_names <- c("Cond_S_cm"= "Conductivity (\u03BCS/cm)",
+  nice_names <- c("Cond_uS_cm"= "Conductivity (\u03BCS/cm)",
                   "fDOM_QSU" = "fDOM (QSU)",
                   "fDOM_RFU" = "fDOM (RFU)",
-                  "nLF_Cond_S_cm" = "nLF Conductivity (\u03BCS/cm)",
+                  "nLF_Cond_uS_cm" = "nLF Conductivity (\u03BCS/cm)",
                   "ODO_sat"  = "Dissolved Oxygen (% Saturation)",
                   "ODO_CB" = "Dissolved Oxygen (% Calibrated Barometer)",
                   "ODO_mg_L" = "Dissolved Oyxgen (mg/L)",
                   "Sal_psu"= "Salinity (ppm)",
-                  "SpCond_S_cm" = "Specific Conductance (\u03BCS/cm)",
+                  "SpCond_uS_cm" = "Specific Conductance (\u03BCS/cm)",
                   "TDS_mg_L" = "Total Dissolved Solids (mg/L)",
                   "Turbidity_FNU" = "Turbidity (FNU)",
                   "TSS_mg_L" = "Total Suspended Solids (mg/L)",

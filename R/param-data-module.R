@@ -18,6 +18,7 @@ update_parms_server <- function(id, df, choices_fun = NULL) {
 
     # update parameter choices dynamically
     observeEvent(df(), {
+      browser()
       req(df())
       choices <- if (!is.null(choices_fun)) {
         choices_fun(df())
@@ -31,3 +32,4 @@ update_parms_server <- function(id, df, choices_fun = NULL) {
     return(reactive(input$y_var))
   })
 }
+
