@@ -17,16 +17,28 @@ update_parms_server <- function(id, df, choices_fun = NULL) {
   moduleServer(id, function(input, output, session) {
 
     # update parameter choices dynamically
-    observeEvent(df(), {
-      browser()
+    choices_r <- reactive({
       req(df())
-      choices <- if (!is.null(choices_fun)) {
+      if (!is.null(choices_fun)) {
         choices_fun(df())
       } else {
         names(df())
       }
-      updateSelectInput(session, "y_var", choices = choices)
     })
+
+    observeEvent(choices_r(), {
+      updateSelectInput(session, "y_var", choices = choices_r())
+    }, ignoreInit = TRUE)
+
+    # observeEvent(df(), {
+    #   req(df())
+    #   choices <- if (!is.null(choices_fun)) {
+    #     choices_fun(df())
+    #   } else {
+    #     names(df())
+    #   }
+    #   updateSelectInput(session, "y_var", choices = choices)
+    # })
 
     # return the reactive selected parameter
     return(reactive(input$y_var))

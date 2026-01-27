@@ -63,10 +63,12 @@ load_data_server <- function(id){
         type <- tools::file_ext(input$file$datapath)
       })
 
+
       df <- reactive({
-        req(input$file)
+        req(input$file, input$tz)
 
         if(type() == "csv"){
+          #req() # located here because if it's a project we don't need tz
           data <- read_sonde(input$file$datapath, tz=input$tz)  # read into R
 
           #clear the log and dataframe
@@ -137,7 +139,7 @@ load_data_server <- function(id){
       })
 
     # return the dataframe and file path as the module's "output"
-    return(list(data=df, prj_path = prj_path))
+    return(reactive({list(data=df(), prj_path = prj_path)}))
   })
 }
 

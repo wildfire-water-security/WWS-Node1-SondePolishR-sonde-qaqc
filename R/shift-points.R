@@ -12,18 +12,20 @@
 #' @export
 #'
 #' @examples
-#' guess_shift(raw_sonde, "Cond_S_cm", 1591:1630)
+#' guess_shift(raw_sonde, "Cond_uS_cm", 1591:1630)
 guess_shift <- function(df, par, index){
   start <- min(index, na.rm = TRUE)
   end <- max(index, na.rm = TRUE)
 
   #check difference between start and points before
-    before <- df[(start-5):(start-1),par]
-    start_dif <- mean(before, na.rm = TRUE) -  df[start, par]
+    vals <- df[[par]]
+
+    before <- vals[(start-5):(start-1)]
+    start_dif <- mean(before, na.rm = TRUE) -  vals[start]
 
   #check difference between start and points before
-    after <- df[(end+1):(end+5),par]
-    end_dif <- mean(after, na.rm = TRUE) -  df[end, par]
+    after <- vals[(end+1):(end+5)]
+    end_dif <- mean(after, na.rm = TRUE) -  vals[end]
 
  #guess shift
     shift <- mean(start_dif, end_dif, na.rm=TRUE)
@@ -45,9 +47,9 @@ guess_shift <- function(df, par, index){
 #' @export
 #'
 #' @examples
-#' raw_sonde$Cond_S_cm[1591:1600]
-#' df <- shift_points(raw_sonde, "Cond_S_cm", 1591:1630)
-#' df$Cond_S_cm[1591:1600]
+#' raw_sonde$Cond_uS_cm[1591:1600]
+#' df <- shift_points(raw_sonde, "Cond_uS_cm", 1591:1630)
+#' df$Cond_uS_cm[1591:1600]
 
 shift_points <- function(df, par, index, shift_val=NULL){
   stopifnot(inherits(df, "data.frame"), is.character(par))

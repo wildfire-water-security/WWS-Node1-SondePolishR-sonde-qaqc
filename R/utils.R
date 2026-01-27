@@ -199,20 +199,22 @@ nice_yvar <- function(df){
 #' @export
 #'
 remove_flagged <- function(df, flag_names){
-  flags <- grep("_flag$", colnames(df))
+  flags <- grep("_flag$", colnames(df), value = TRUE)
 
   #for one column
   for(f in flags){
-    flag_val <- df[,f]
+    flag_vals <- df[[f]]
 
     #determine values with flag
-    rm <- sapply(flag_val, function(x){
+    rm <- sapply(flag_vals, function(x){
       flag <- x[names(x) %in% flag_names]
       return(any(flag))
     })
 
     #make values NA
-    df[rm,f-1] <- NA
+    if(sum(rm) > 0){
+      df[rm,gsub("_flag$", "", f)] <- NA
+    }
   }
  return(df)
 }

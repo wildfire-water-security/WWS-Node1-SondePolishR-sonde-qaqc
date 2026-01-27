@@ -1,37 +1,31 @@
 library(shiny)
 
-test_that("when no function is provided, names the are the column names", {
+test_that("name update works", {
 
   testServer(update_parms_server, {
     #force the reactive system to re-execute observers and render functions
     session$flushReact()
 
-    #checking the data table doesn't change
-    print(y_var())
-    expect_equal(y_var(), c("x","y","z"))
+    #we haven't set up a y_var yet so expect null
+    expect_true(is.null(session$input$y_var))
+    #expect choices to the be the same as the df
+    expect_equal(choices_r(), c("x","y", "z"))
+
+    # Simulate user selecting a variable
+    session$setInputs(y_var = "y")
+    session$flushReact()
+
+    # Returned reactive should update
+    expect_equal(session$returned(), "y")
+
+    #test changing the df
+    df(data.frame(a=1,b=2,c=3))
+    session$flushReact()
+    expect_equal(choices_r(), c("a","b", "c"))
+
   },
   #these are passed to the module
   args = list(
     df = reactiveVal(data.frame(x=1,y=2,z=3))
-  ))
-})
-
-test_that("parameters get updated", {
-
-  testServer(update_parms_server, {
-    #simulates a click
-    session$setInputs(rm_points = 1)
-
-    #force the reactive system to re-execute observers and render functions immediately, may not be needed
-    #session$flushReact()
-
-    #checking the data table doesn't change
-    #updated_df() calls the data.frame
-    expect_equal(updated_df(),raw_sonde)
-  },
-  #these are passed to the module
-  args = list(
-    df = reactiveVal(raw_sonde),
-    choices_fun = nice_yvar
   ))
 })

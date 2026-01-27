@@ -183,7 +183,7 @@ get_eco_limits <- function(ecoregion, parameter, nsamp = 100){
                            n = dplyr::n()) %>% mutate(par = par,
                                                       n_stats = length(unique(stats_par$monitoring_location_id))) %>%
           mutate(statistic_name = c("daily maximum", "daily minimum"), .after="statistic_id") %>%
-          select(.data$par, .data$statistic_id:.data$n, .data$n_stats) %>% as.data.frame()
+          select("par", "statistic_id":"n", "n_stats") %>% as.data.frame()
 
       }else{
        par_lim <- NA
