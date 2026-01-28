@@ -14,7 +14,7 @@
 #' @export
 #'
 #' @examples
-#' prj_path <- file.path(withr::local_tempdir(), test_prj.RDS)
+#' prj_path <- file.path(withr::local_tempdir(), "test_prj.RDS")
 #'
 #' #do intial versioning things (automatic in app)
 #'   clear_data()

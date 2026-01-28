@@ -39,7 +39,6 @@ Imports:
     plotly,
     ggplot2,
     lubridate,
-    qs,
     shinyFiles,
     shinyalert,
     withr,

@@ -17,9 +17,9 @@ read_project(prj_path)
 \item{prj_path}{the path to save the project to including the file name}
 }
 \value{
-saves data_ver and log as a .qs file
+saves data_ver and log as a \code{.RDS} file
 }
 \description{
 Combines the change history with the version history of the sonde data and saves to a
-\code{.qs} file to prevent data loss and enable work over multiple days.
+\code{.RDS} file to prevent data loss and enable work over multiple days.
 }

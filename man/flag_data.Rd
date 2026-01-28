@@ -22,11 +22,11 @@ returns the flagged copy of the \code{data.frame}
 }
 \description{
 Adds flags to the dataset, saves the new version of the dataset, and saves the project to the
-project path specified by the user as a \code{.qs} object. Also provides messages about the
+project path specified by the user as a \code{.RDS} object. Also provides messages about the
 changes being made.
 }
 \examples{
-prj_path <- file.path(withr::local_tempdir(), "test_prj.qs")
+prj_path <- file.path(withr::local_tempdir(), "test_prj.RDS")
 
 #do intial versioning things (automatic in app)
   clear_data()
