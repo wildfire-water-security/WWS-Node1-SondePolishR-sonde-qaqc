@@ -44,8 +44,6 @@
 #' @importFrom plotly plotlyOutput
 #' @importFrom plotly renderPlotly
 #' @importFrom purrr map
-#' @importFrom qs qread
-#' @importFrom qs qsave
 #' @importFrom readr guess_encoding
 #' @importFrom rlang .data
 #' @importFrom rlang `:=` !!

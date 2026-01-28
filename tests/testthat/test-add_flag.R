@@ -28,7 +28,7 @@ test_that("flags are added", {
 })
 
 test_that("saving flags works",{
-  prj_path <- file.path(withr::local_tempdir(), "test_prj.qs")
+  prj_path <- file.path(withr::local_tempdir(), "test_prj.RDS")
 
   clear_data()
   clear_log()

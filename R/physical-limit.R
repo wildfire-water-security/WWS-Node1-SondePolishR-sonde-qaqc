@@ -16,10 +16,10 @@
 #' @export
 #'
 #' @examples
-#' results <- physical_limit(raw_sonde, min=0, max=98, par="ODO_sat")
+#' results <- physical_limit(raw_sonde, min=0, max=98, par="ODO_%_sat")
 #' rownames(results$outlier)
 #'
-#' results <- physical_limit(raw_sonde, min=0, max=98, par="ODO_sat", keep=1436)
+#' results <- physical_limit(raw_sonde, min=0, max=98, par="ODO_%_sat", keep=1436)
 #' rownames(results$outlier)
 #'
 physical_limit <- function(df, min, max, par, keep=NULL){

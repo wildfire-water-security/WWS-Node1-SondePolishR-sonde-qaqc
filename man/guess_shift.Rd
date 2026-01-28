@@ -21,5 +21,5 @@ Sometimes a continuous sonde signal will be shifted up or down by a consistent v
 data before and after the selected observations to guess the appropriate value to correct the data by
 }
 \examples{
-guess_shift(raw_sonde, "Cond_S_cm", 1591:1630)
+guess_shift(raw_sonde, "Cond_uS_cm", 1591:1630)
 }

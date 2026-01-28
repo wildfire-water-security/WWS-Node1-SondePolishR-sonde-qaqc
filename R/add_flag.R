@@ -1,7 +1,7 @@
 #' Flag dataset and save a copy
 #'
 #' Adds flags to the dataset, saves the new version of the dataset, and saves the project to the
-#' project path specified by the user as a `.qs` object. Also provides messages about the
+#' project path specified by the user as a `.RDS` object. Also provides messages about the
 #' changes being made.
 #'
 #' @param df a data.frame with sonde data
@@ -14,7 +14,7 @@
 #' @export
 #'
 #' @examples
-#' prj_path <- file.path(withr::local_tempdir(), "test_prj.qs")
+#' prj_path <- file.path(withr::local_tempdir(), test_prj.RDS)
 #'
 #' #do intial versioning things (automatic in app)
 #'   clear_data()

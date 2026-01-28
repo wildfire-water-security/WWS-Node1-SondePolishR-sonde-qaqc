@@ -103,7 +103,7 @@
 #' @rdname data-versions
   get_data <- function(){
     if (!exists("data_ver", envir = .SondePolishR)) {
-      return(NULL)
+      return(return(list()))
     }
     .SondePolishR$data_ver
   }
@@ -111,7 +111,9 @@
 #' @export
 #' @rdname data-versions
   clear_data <- function(){
-      .SondePolishR$data_ver <- list()
+    if (exists("data_ver", envir = .SondePolishR)) {
+      rm("data_ver", envir = .SondePolishR)
+    }
   }
 
 #' @export
@@ -134,10 +136,11 @@ new_version <- function(df){
   #get saved versions
   current <- get_data()
 
-  #get most recent item
-  current <- tail(current, n = 1)
+  if (length(current) == 0) {
+    return(TRUE)
+  }
 
-  #see if the version of the data is new
-  diff <- !identical(df, current)
-  return(diff)
+  last <- current[[length(current)]]
+
+  !isTRUE(all.equal(df, last))
 }

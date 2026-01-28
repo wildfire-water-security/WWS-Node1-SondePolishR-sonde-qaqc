@@ -28,10 +28,10 @@ a list with two data.frames:
 A good first QA/QC check for sonde data is to determine if there are any values that aren't physically possible.
 }
 \examples{
-results <- physical_limit(raw_sonde, min=0, max=98, par="ODO_sat")
+results <- physical_limit(raw_sonde, min=0, max=98, par="ODO_\%_sat")
 rownames(results$outlier)
 
-results <- physical_limit(raw_sonde, min=0, max=98, par="ODO_sat", keep=1436)
+results <- physical_limit(raw_sonde, min=0, max=98, par="ODO_\%_sat", keep=1436)
 rownames(results$outlier)
 
 }

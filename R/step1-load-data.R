@@ -23,7 +23,7 @@ load_data_UI <- function(id){
                    inputId = NS(id, "file"),
                    label = span(style = "font-size:20px; white-space: nowrap;",
                                 "Choose New or Existing Sonde Data File"),
-                   accept = c(".csv", ".qs")  # restrict to CSV
+                   accept = c(".csv", ".RDS")  # restrict to CSV
                  )),
           column(4,
                  #have user pick the timezone
@@ -81,7 +81,7 @@ load_data_server <- function(id){
           return(data)
         }
 
-        if(type() == "qs"){
+        if(type() == "RDS"){
           read_project(input$file$datapath)  # read into R
 
           #get data
@@ -96,7 +96,7 @@ load_data_server <- function(id){
         observeEvent(df(), {
           req(df(), type())
 
-          if(type() == "qs"){
+          if(type() == "RDS"){
             tz <- lubridate::tz(df()$DateTime)
             nice_tz <- nice_tz()
             tz <- nice_tz[nice_tz == tz]
@@ -126,7 +126,7 @@ load_data_server <- function(id){
       }
         path <- shinyFiles::parseDirPath(roots, input$save_file)
         file <- tools::file_path_sans_ext(input$file$name)
-        file.path(path, paste0(file, ".qs"))
+        file.path(path, paste0(file, ".RDS"))
     })
 
 

@@ -118,19 +118,19 @@ for(x in ecos){
 
   #a change
   row_change <- 1:4
-  data$Cond_S_cm[row_change] <- NA
+  data$Cond_uS_cm[row_change] <- NA
 
   #log change and save value
   version <- digest::digest(data)
-  change <- write_log("Cond_S_cm", "test step", length(row_change), version, user="smith")
+  change <- write_log("Cond_uS_cm", "test step", length(row_change), version, user="smith")
   write_data(data, version)
 
   #make another change
   row_change <- 500:600
-  data$Cond_S_cm[row_change] <- NA
+  data$Cond_uS_cm[row_change] <- NA
 
   version <- digest::digest(data)
-  change <- write_log("Cond_S_cm", "test step", length(row_change), version, user="smith")
+  change <- write_log("Cond_uS_cm", "test step", length(row_change), version, user="smith")
   write_data(data, version)
 
   #get vals
@@ -138,7 +138,7 @@ for(x in ecos){
   data_ver <- get_data()
 
   #save
-  save_project(data_ver, log, "inst/extdata/example-sonde-project.qs")
+  save_project(data_ver, log, "inst/extdata/example-sonde-project.RDS")
 
   #save as data objects
   example_log <- log

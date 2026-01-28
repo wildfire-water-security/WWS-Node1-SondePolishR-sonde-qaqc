@@ -21,13 +21,13 @@ test_that("module sever 1 works loading a csv", {
                                          path = character(0)))
 
       #now should be what we set it to
-      expect_equal(prj_path(), "C://sonde-example.qs")
+      expect_equal(prj_path(), "C://sonde-example.RDS")
 
 
     #expect output should be a list saved as a reactive
       output <- session$returned()
       expect_true(inherits(output$data,"data.frame"))
-      expect_equal(output$prj_path(), "C://sonde-example.qs")
+      expect_equal(output$prj_path(), "C://sonde-example.RDS")
 
   })
 })
@@ -37,15 +37,15 @@ test_that("module sever 1 works loading an existing project", {
 
   testServer(load_data_server, {
     #test loading a csv
-    session$setInputs(file = data.frame(name = "example-sonde-project.qs", size=1,type="qs",
+    session$setInputs(file = data.frame(name = "example-sonde-project.RDS", size=1,type="RDS",
                                         datapath=file.path(testthat::test_path(),
-                                                           "testdata/example-sonde-project.qs")),
+                                                           "testdata/example-sonde-project.RDS")),
                       tz = "Etc/GMT+8")
 
 
     #expect that df should be loaded
     expect_s3_class(df(), "data.frame")
-    expect_equal(type(), "qs")
+    expect_equal(type(), "RDS")
     expect_equal(prj_path(), NULL) #no save path set
 
     #test that tz is grabbed
@@ -56,13 +56,13 @@ test_that("module sever 1 works loading an existing project", {
                                     #   path = character(0)))
 
     #now should be what we set it to
-    #expect_equal(prj_path(), "C://sonde-example.qs")
+    #expect_equal(prj_path(), "C://sonde-example.RDS")
 
 
     #expect output should be a list saved as a reactive
     output <- session$returned()
     expect_true(inherits(output$data,"data.frame"))
-    #expect_equal(output$prj_path(), "C://sonde-example.qs")  ## need to update this in module
+    #expect_equal(output$prj_path(), "C://sonde-example.RDS")  ## need to update this in module
 
   })
 })
