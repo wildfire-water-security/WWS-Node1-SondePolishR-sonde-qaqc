@@ -1,5 +1,74 @@
 ## code to prepare `DATASET` dataset goes here
 
+#save EPA ecoregions for use -----
+  ecoregions <- sf::st_read("data-raw/epa-ecoregions-lvl3/us_eco_l3_state_boundaries.shp")
+
+  ecoregions$NA_L2NAME <- gsub(" (?)", "",ecoregions$NA_L2NAME, fixed=TRUE)
+
+  #merge into each ecoregion
+  ecoregions <-  ecoregions %>% dplyr::group_by(across(-c(geometry, STATE_NAME, EPA_REGION, L3_KEY, L2_KEY, L1_KEY))) %>%
+    dplyr::summarise(do_union=TRUE)
+
+  usethis::use_data(ecoregions, overwrite = TRUE, compress="xz")
+
+
+#check parameter codes (don't need to rerun) -----
+  eco <- get_ecoregion(site)
+  eco <- sf::st_transform(eco, crs="EPSG:4326") #transform to corret crs
+
+  bbox <- terra::ext(eco)
+  bbox <- c(bbox[1], bbox[3], bbox[2], bbox[4])
+
+  #identify stations in ecoregion
+  stats <- dataRetrieval::read_waterdata_monitoring_location(
+    agency_code = "USGS",
+    site_type = "Stream",
+    bbox = bbox,
+    skipGeometry = TRUE,
+    properties = c("monitoring_location_id",
+                   "site_type", "state_name"))
+
+
+  #get stations with data
+  #split to not exceed limits on API
+  chunk_size <- 300
+  group_factor <- ceiling(seq_len(nrow(stats)) / chunk_size)
+  stats_split <- split(stats, group_factor)
+
+  params <- vector()
+  for(x in 1:length(stats_split)){
+    stats_useful <- dataRetrieval::read_waterdata_ts_meta(monitoring_location_id = stats_split[[x]]$monitoring_location_id,
+                                                          statistic_id = c("00001", "00002"),
+                                                          properties = c("monitoring_location_id",
+                                                                         "parameter_code",
+                                                                         "begin",
+                                                                         "end",
+                                                                         "time_series_id",
+                                                                         "statistic_id"),
+                                                          skipGeometry = TRUE)
+    params <- c(params, unique(stats_useful$parameter_code))
+
+  }
+
+  params <- unique(params)
+
+#get data for stations in ecoregion with data -------
+  ecos <- c("Cascades", "Klamath Mountains","North Cascades", "Blue Mountains", "Columbia Plateau")
+  parms <- c("00010","00095", "00300", "00301", "00400", "00480", "32295","32322","63680","72147","99409")
+
+for(x in ecos){
+  cat("working on ecoregion ", x , "\n")
+  for(y in parms){
+  cat("working on parameter ", y , "\n")
+  df <- get_eco_limits(x,y)
+
+  if(!any(is.na(df))){
+    write.csv(df,
+              file.path("data-raw/usgs-limits", paste0("usgs-limit-", y,
+                                            "-", gsub(" ", "-", x), ".csv")),
+              quote=FALSE, row.names=FALSE)
+  }}}
+
 #pull together
   files <- list.files("data-raw/usgs-limits", pattern = "usgs-limit", full.names = TRUE)
 
