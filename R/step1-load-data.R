@@ -126,11 +126,19 @@ load_data_server <- function(id){
         if (type() == "RDS") prj_path_rv(.SondePolishR$prj_path)
       })
 
+      #when user selects a file update
+      observeEvent(input$save_file, {
+        prj_path_rv(
+          file.path(
+            shinyFiles::parseDirPath(roots, input$save_file),
+            paste0(tools::file_path_sans_ext(input$file$name), ".RDS")
+          )
+        )
+      })
+
 
       #keep environment updated with save location
-      # observeEvent(input$save_file, {
-      #   .SondePolishR$prj_path <- prj_path_rv()
-      # })
+      observeEvent(prj_path_rv(), {set_prjpath(prj_path_rv())})
 
 
       #get file name and save path to save as project file
@@ -176,12 +184,12 @@ load_data_server <- function(id){
       #                            defaultRoot = "Documents")
 
     #show file path in UI
-      # output$path_text_box <- renderUI({
-      #   tags$span(
-      #     prj_path_rv(),
-      #     style = "background-color: #fff;border: 1px solid #ddd;padding: 6px 12px;
-      #       border-radius: 6px; display: inline-block;min-width: 120px;color: #343a40")
-      # })
+      output$path_text_box <- renderUI({
+        tags$span(
+          prj_path_rv(),
+          style = "background-color: #fff;border: 1px solid #ddd;padding: 6px 12px;
+            border-radius: 6px; display: inline-block;min-width: 120px;color: #343a40")
+      })
 
     # return the dataframe and file path as the module's "output"
     return(reactive({df()}))

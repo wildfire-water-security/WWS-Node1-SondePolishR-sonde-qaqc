@@ -74,6 +74,19 @@
     .SondePolishR$log <- log
   }
 
+#' Get and set project path variable in package environment
+#'
+#' @noRd
+#' @name prj-path
+  get_prjpath <- function(){
+    .SondePolishR$prj_path
+  }
+
+#' @name prj-path
+  set_prjpath <- function(prj_path){
+    .SondePolishR$prj_path <- prj_path
+  }
+
 #' Sonde data versioning
 #'
 #' Stores edits to the raw sonde data as objects in a list so edits can be undone.

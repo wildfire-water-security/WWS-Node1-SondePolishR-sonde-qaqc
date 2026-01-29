@@ -46,7 +46,7 @@ read_project <- function(prj_path){
   data_ver <- sonde_prj[-(1:2)]
   set_data(data_ver)
 
-  .SondePolishR$prj_path <- sonde_prj$prj_path
+  set_prjpath(sonde_prj$prj_path)
 
   return(data_ver)
 }
