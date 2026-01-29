@@ -133,10 +133,9 @@ load_data_server <- function(id){
         )
       })
 
-      prj_path <- reactive(prj_path_rv())
 
       #keep environment updated with save location
-      .SondePolishR$prj_path <- prj_path()
+      observeEvent(prj_path_rv(), {set_prjpath(prj_path_rv())})
 
 
       #get file name and save path to save as project file
@@ -146,7 +145,7 @@ load_data_server <- function(id){
     #show file path in UI
       output$path_text_box <- renderUI({
         tags$span(
-          prj_path(),
+          prj_path_rv(),
           style = "background-color: #fff;border: 1px solid #ddd;padding: 6px 12px;
             border-radius: 6px; display: inline-block;min-width: 120px;color: #343a40")
       })
@@ -155,19 +154,3 @@ load_data_server <- function(id){
     return(reactive({df()}))
   })
 }
-
-# ui <- bslib::page_fillable(
-#   #set theme
-#   theme = bslib::bs_theme(preset = "superhero",
-#                    primary = "#E3795E"),
-#
-#   load_data_UI("data1")
-# )
-#
-# server <- function(input, output, session) {
-#   #step 1: load data
-#   mod1 <- load_data_server("data1")
-# }
-#
-# shinyApp(ui = ui, server = server)
-#

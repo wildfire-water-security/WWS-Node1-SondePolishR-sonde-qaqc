@@ -65,3 +65,15 @@ test_that("data saving and logging works", {
     expect_true(inherits(get_data(), "list"))
 
 })
+
+test_that("prj path setting and getting works", {
+  set_prjpath(character()) #reset
+
+  expect_equal(get_prjpath(), character())
+
+  set_prjpath("test/path")
+  expect_equal(get_prjpath(), "test/path")
+
+  set_prjpath("test/path2")
+  expect_equal(get_prjpath(), "test/path2")
+})

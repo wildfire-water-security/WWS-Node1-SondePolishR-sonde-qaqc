@@ -1,4 +1,9 @@
 test_that("project is read", {
+  #make sure we start with a clean slate
+  clear_data()
+  clear_log()
+  set_prjpath(character())
+
   path <- file.path(testthat::test_path(), "testdata/example-sonde-project.RDS")
 
   df <- read_project(path)
@@ -13,5 +18,5 @@ test_that("project is read", {
   expect_equal(nrow(get_log()), 2)
   expect_equal(get_log()$version, names(df)[-1])
 
-  expect_equal(.SondePolishR$prj_path, "inst/extdata/example-sonde-project.RDS")
+  expect_equal(get_prjpath(), "inst/extdata/example-sonde-project.RDS")
 })
