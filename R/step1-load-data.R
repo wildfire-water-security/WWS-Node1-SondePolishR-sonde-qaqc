@@ -21,9 +21,10 @@ load_data_UI <- function(id){
           column(8,
                  fileInput(
                    inputId = NS(id, "file"),
-                   label = span(style = "font-size:20px; white-space: nowrap;",
+                   label = span(style = "font-size:16px; white-space: nowrap;",
                                 "Choose New or Existing Sonde Data File"),
-                   accept = c(".csv", ".RDS")  # restrict to CSV
+                   accept = c(".csv", ".RDS"),  # restrict to CSV
+                   width = "100%"
                  )),
           column(4,
                  #have user pick the timezone
@@ -106,40 +107,52 @@ load_data_server <- function(id){
               selected = tz)}
             })
 
-    #select save path for sonde project or show it
+    #define preset roots for file path
       roots <- c(
-        wd        = getwd(),
-        downloads   = file.path(fs::path_home(), "Downloads"),
-        documents = file.path(fs::path_home(), "Documents"),
-        'C drive'   = "C:/")
+            wd        = getwd(),
+            Downloads = file.path(fs::path_home(), "Downloads"),
+            Documents = file.path(fs::path_home(), "Documents"),
+            "C Drive" = "C:/")
+
+
+    #specify prj_path so it exists
+      prj_path_rv <- reactiveVal() # set up
+
+      #when user loads file, update if RDS
+      observeEvent(input$file, {
+        if (type() == "RDS") prj_path_rv(.SondePolishR$prj_path)
+      })
+
+      #when user selects a file update
+      observeEvent(input$save_file, {
+        prj_path_rv(
+          file.path(
+            shinyFiles::parseDirPath(roots, input$save_file),
+            paste0(tools::file_path_sans_ext(input$file$name), ".RDS")
+          )
+        )
+      })
+
+      prj_path <- reactive(prj_path_rv())
+
+      #keep environment updated with save location
+      .SondePolishR$prj_path <- prj_path()
 
 
       #get file name and save path to save as project file
       shinyFiles::shinyDirChoose(input,"save_file", roots = roots, session = session,
-                     defaultRoot = "documents")
-
-    #specify prj_path so it exists
-    prj_path <- reactive({
-      # Return NULL if no directory or file is provided
-      if (is.null(input$save_file) || is.null(input$file)) {
-        return(NULL)
-      }
-        path <- shinyFiles::parseDirPath(roots, input$save_file)
-        file <- tools::file_path_sans_ext(input$file$name)
-        file.path(path, paste0(file, ".RDS"))
-    })
-
+                                 defaultRoot = "Documents")
 
     #show file path in UI
       output$path_text_box <- renderUI({
         tags$span(
-          paste(prj_path()),
+          prj_path(),
           style = "background-color: #fff;border: 1px solid #ddd;padding: 6px 12px;
             border-radius: 6px; display: inline-block;min-width: 120px;color: #343a40")
       })
 
     # return the dataframe and file path as the module's "output"
-    return(reactive({list(data=df(), prj_path = prj_path)}))
+    return(reactive({df()}))
   })
 }
 

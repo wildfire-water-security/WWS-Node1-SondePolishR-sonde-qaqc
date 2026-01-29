@@ -17,7 +17,16 @@ read_project(prj_path)
 \item{prj_path}{the path to save the project to including the file name}
 }
 \value{
-saves data_ver and log as a \code{.RDS} file
+\code{save_project} saves \code{prj_path}, \code{data_ver} and \code{log} as a \code{.RDS} file to the provided \code{prj_path}.
+The format of the \code{.RDS} object is a list with the following items:
+\itemize{
+\item \strong{prj_path:} a character vector specifying the save location, this is used to guess the save location when reading in a project.
+\item \strong{change_log:} a \code{data.frame} object detailing the changes made to the dataset.
+\item \strong{raw:} a \code{data.frame} with the initial dataset as it was loaded in.
+\item \strong{...:} other versions of the data specified by hash codes.
+}
+
+\code{read_project} loads the project, updates the package environment with the project data, and returns \code{data_ver} as a list of \code{data.frames}
 }
 \description{
 Combines the change history with the version history of the sonde data and saves to a

@@ -81,10 +81,7 @@ ui <-  page_fillable(
 #' @examples
 server <- function(input, output, session) {
   #step 1: load data
-   mod1 <- load_data_server("data1")
-
-   df <- reactive({mod1()$data})
-   prj_path <- reactive({mod1()$prj_path})
+   df <- load_data_server("data1")
 
   #step 2: plot data
    #explore_data_server("data2", df)

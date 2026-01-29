@@ -48,8 +48,9 @@ test_that("df is not updated when index is empty", {
   ))
 })
 
-test_that("flag_data is applied when inputs are valid", {
 
+test_that("flag_data is applied when inputs are valid", {
+  test_dir <- withr::local_tempfile()
       testServer(confirm_changes_server, {
         #simulates a click
         session$setInputs(rm_points = 1)
@@ -68,7 +69,7 @@ test_that("flag_data is applied when inputs are valid", {
         index = reactiveVal(1:2),
         par = reactiveVal("Cond_uS_cm"),
         flag_name = "flagged",
-        prj_path = reactiveVal("path")
+        prj_path = reactiveVal(test_dir)
       ))
 
 

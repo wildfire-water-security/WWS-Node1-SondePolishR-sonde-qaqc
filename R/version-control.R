@@ -6,7 +6,8 @@
                                 n_changed = numeric(),
                                 user = character(),
                                 version = character())  # initialize log
-.SondePolishR$data_ver <- list()
+.SondePolishR$data_ver <- list() #initialize list for data
+.SondePolishR$prj_path <- character() #initialize path for data
 
 #' Get and Write to Change Log
 #'
