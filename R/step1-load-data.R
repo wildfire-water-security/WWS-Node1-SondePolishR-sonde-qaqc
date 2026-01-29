@@ -46,8 +46,11 @@ load_data_UI <- function(id){
                                 title= "Select location to save processed data", multiple=FALSE),
                  uiOutput(NS(id, "path_text_box"))
 
+
                       )
-          ))
+          )),
+      fluidRow(verbatimTextOutput(NS(id, "sheets_dir")))
+
 
        )
 
@@ -108,11 +111,11 @@ load_data_server <- function(id){
             })
 
     #define preset roots for file path
-      roots <- c(
-            wd        = getwd(),
-            Downloads = file.path(fs::path_home(), "Downloads"),
-            Documents = file.path(fs::path_home(), "Documents"),
-            "C Drive" = "C:/")
+        baseroots <- c(
+          wd        = getwd(),
+          Downloads = file.path(fs::path_home(), "Downloads"),
+          Documents = file.path(fs::path_home(), "Documents"),
+          "C Drive" = "C:/")
 
 
     #specify prj_path so it exists
@@ -123,51 +126,64 @@ load_data_server <- function(id){
         if (type() == "RDS") prj_path_rv(.SondePolishR$prj_path)
       })
 
-      #when user selects a file update
-      observeEvent(input$save_file, {
-        prj_path_rv(
-          file.path(
-            shinyFiles::parseDirPath(roots, input$save_file),
-            paste0(tools::file_path_sans_ext(input$file$name), ".RDS")
-          )
-        )
-      })
-
-      prj_path <- reactive(prj_path_rv())
 
       #keep environment updated with save location
-      .SondePolishR$prj_path <- prj_path()
+      # observeEvent(input$save_file, {
+      #   .SondePolishR$prj_path <- prj_path_rv()
+      # })
 
 
       #get file name and save path to save as project file
-      shinyFiles::shinyDirChoose(input,"save_file", roots = roots, session = session,
-                                 defaultRoot = "Documents")
+      Theroots <- reactive({
+        base <- c(
+          wd        = getwd(),
+          Downloads = file.path(fs::path_home(), "Downloads"),
+          Documents = file.path(fs::path_home(), "Documents"),
+          "C Drive" = "C:/"
+        )
+
+        # If project path exists, prepend it
+        path <- prj_path_rv()
+        if (!is.null(path) && length(path) > 0) {
+          c(project_root = dirname(path), base)
+        } else {
+          base
+        }
+      })
+
+      shinyDirChoose(
+        input,
+        'sheets_dir',
+        roots = Theroots,   # reactive allowed
+        session = session
+      )
+
+      # Thesheets_dir <- reactive({
+      #   shinyDirChoose(input, 'sheets_dir', roots = Theroots(), session = session)
+      #   parseDirPath(roots = Theroots(), input$sheets_dir)
+      # })
+
+      Thesheets_dir <- reactive({
+        req(input$sheets_dir)
+        parseDirPath(roots = Theroots(), input$sheets_dir)
+      })
+
+      output$sheets_dir <- renderPrint({
+        Thesheets_dir()
+        #Theroots()
+      })
+      # shinyFiles::shinyDirChoose(input,"save_file", roots = roots, session = session,
+      #                            defaultRoot = "Documents")
 
     #show file path in UI
-      output$path_text_box <- renderUI({
-        tags$span(
-          prj_path(),
-          style = "background-color: #fff;border: 1px solid #ddd;padding: 6px 12px;
-            border-radius: 6px; display: inline-block;min-width: 120px;color: #343a40")
-      })
+      # output$path_text_box <- renderUI({
+      #   tags$span(
+      #     prj_path_rv(),
+      #     style = "background-color: #fff;border: 1px solid #ddd;padding: 6px 12px;
+      #       border-radius: 6px; display: inline-block;min-width: 120px;color: #343a40")
+      # })
 
     # return the dataframe and file path as the module's "output"
     return(reactive({df()}))
   })
 }
-
-# ui <- bslib::page_fillable(
-#   #set theme
-#   theme = bslib::bs_theme(preset = "superhero",
-#                    primary = "#E3795E"),
-#
-#   load_data_UI("data1")
-# )
-#
-# server <- function(input, output, session) {
-#   #step 1: load data
-#   mod1 <- load_data_server("data1")
-# }
-#
-# shinyApp(ui = ui, server = server)
-#

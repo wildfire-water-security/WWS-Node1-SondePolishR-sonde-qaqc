@@ -2,6 +2,8 @@ library(shiny)
 
 test_that("module sever 1 works loading a csv", {
 
+  .SondePolishR$prj_path <- character()
+
   testServer(load_data_server, {
     #test loading a csv
     session$setInputs(file = data.frame(name = "sonde-example.csv", size=1,type="csv",
@@ -12,7 +14,7 @@ test_that("module sever 1 works loading a csv", {
     #expect that df should be loaded
       expect_s3_class(df(), "data.frame")
       expect_equal(type(), "csv")
-      expect_equal(prj_path(), NULL) #no save path set
+      expect_equal(prj_path_rv(), NULL) #no save path set
 
 
     #set the save location
@@ -21,7 +23,10 @@ test_that("module sever 1 works loading a csv", {
                                          path = character(0)))
 
       #now should be what we set it to
-      expect_equal(prj_path(), "C://sonde-example.RDS")
+      expect_equal(prj_path_rv(), "C://sonde-example.RDS")
+
+
+      expect_equal(.SondePolishR$prj_path, "C://sonde-example.RDS")
 
 
     #expect output should be a list saved as a reactive
@@ -33,6 +38,7 @@ test_that("module sever 1 works loading a csv", {
 
 
 test_that("module sever 1 works loading an existing project", {
+  .SondePolishR$prj_path <- character()
 
   testServer(load_data_server, {
     #test loading a csv
@@ -45,7 +51,8 @@ test_that("module sever 1 works loading an existing project", {
     #expect that df should be loaded
     expect_s3_class(df(), "data.frame")
     expect_equal(type(), "RDS")
-    expect_equal(prj_path(), "inst/extdata/example-sonde-project.RDS") #should pull path from the project
+    expect_equal(prj_path_rv(), "inst/extdata/example-sonde-project.RDS") #should pull path from the project
+    expect_equal(.SondePolishR$prj_path, "inst/extdata/example-sonde-project.RDS")
 
 
     #expect output should be a list saved as a reactive
