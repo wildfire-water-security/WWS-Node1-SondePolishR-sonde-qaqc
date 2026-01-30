@@ -32,8 +32,6 @@ Imports:
     shiny,
     sf,
     terra,
-    dataRetrieval (>= 2.7.21),
-    purrr,
     stats,
     tidyr,
     plotly,

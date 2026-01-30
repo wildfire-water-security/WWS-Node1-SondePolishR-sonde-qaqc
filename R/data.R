@@ -5,6 +5,10 @@
 #' similarity in the mosaic of biotic, abiotic, terrestrial, and aquatic ecosystem
 #' components with humans being considered as part of the biota.
 #'
+#' @note
+#' Data has been simplified from the original dataset to reduce data size using the
+#' sf::st_simplify() function.
+#'
 #' @md
 #' @format An sf object with 87 rows and 9 columns:
 #'  - **US_L3CODE**: Code for Level III Ecoregion (US)
