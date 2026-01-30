@@ -63,8 +63,7 @@ ui <-  page_fillable(
       nav_panel("5. Manual Removal", "Remove points manually"),
       nav_panel("6. Interpolation", "Interpolate Missing Data"),
       nav_panel("7. fDOM Corrections", "fDOM Corrections"),
-      nav_panel("8. Download Data", "Download Processed Data"),
-      nav_panel("9. View versions", "View Sonde Data Corrections"),
+      nav_panel("8. Download Data", "Download Processed Data")
 
   ))
 
@@ -84,7 +83,7 @@ server <- function(input, output, session) {
    df <- load_data_server("data1")
 
   #step 2: plot data
-   #explore_data_server("data2", df)
+   explore_data_server("data2", df)
 
   #step 3: physical limits
    #df2 <- phys_limits_server("data3", df, prj_path)

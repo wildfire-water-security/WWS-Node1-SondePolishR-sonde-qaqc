@@ -13,6 +13,18 @@ update_parms_UI <- function(id) {
 }
 
 # Server
+#' Shiny module to update plotting parameters
+#'
+#' Used to dynamically update the choices for selecting a y variable based on the names in the data or
+#' a custom function.
+#'
+#' @param id An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.
+#' @param df Data as a reactive value storing a `data.frame`
+#' @param choices_fun Function used to determine the parameter choices, if `NULL` will use the column names of the data
+#'
+#' @returns the selected variable `y_var` as a reactive object
+#' @md
+#' @noRd
 update_parms_server <- function(id, df, choices_fun = NULL) {
   moduleServer(id, function(input, output, session) {
 
@@ -27,18 +39,22 @@ update_parms_server <- function(id, df, choices_fun = NULL) {
     })
 
     observeEvent(choices_r(), {
-      updateSelectInput(session, "y_var", choices = choices_r())
-    }, ignoreInit = TRUE)
+      choices <- choices_r()
+      updateSelectInput(
+        session,
+        "y_var",
+        choices = choices,
+        selected = choices[[1]]
+      )
+    })
 
-    # observeEvent(df(), {
-    #   req(df())
-    #   choices <- if (!is.null(choices_fun)) {
-    #     choices_fun(df())
-    #   } else {
-    #     names(df())
-    #   }
-    #   updateSelectInput(session, "y_var", choices = choices)
-    # })
+    #really just for tests, as in real life you can't select anything that's not in choices
+    observeEvent(input$y_var, {
+      req(input$y_var)
+      if(!(input$y_var %in% choices_r())){stop("selected y variable not in choices")}
+    })
+
+
 
     # return the reactive selected parameter
     return(reactive(input$y_var))

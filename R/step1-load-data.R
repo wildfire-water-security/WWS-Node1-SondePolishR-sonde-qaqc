@@ -54,6 +54,17 @@ load_data_UI <- function(id){
 }
 
 # Server Function
+#' Read in the dataset or project and set save path.
+#'
+#' Takes in a dataset as a `.csv` or a sonde project as an `.RDS` file via file selection.
+#' If the data is a sonde project the save path will default it it's existing path, otherwise
+#' the user will need to select a save path with the file name based on the name of the data file.
+#'
+#' @param id An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.
+#' @md
+#' @noRd
+#' @returns The loaded data as a reactive object.
+#'
 load_data_server <- function(id){
   moduleServer(id, function(input, output, session){
 
@@ -151,6 +162,6 @@ load_data_server <- function(id){
       })
 
     # return the dataframe and file path as the module's "output"
-    return(reactive({df()}))
+    return(df)
   })
 }
