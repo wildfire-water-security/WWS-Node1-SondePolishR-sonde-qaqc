@@ -1,13 +1,22 @@
 ## code to prepare `DATASET` dataset goes here
 
 #save EPA ecoregions for use -----
-  ecoregions <- sf::st_read("data-raw/epa-ecoregions-lvl3/us_eco_l3_state_boundaries.shp")
+  tmpfile <- tempfile(fileext=".zip")
+  download.file("https://dmap-prod-oms-edc.s3.us-east-1.amazonaws.com/ORD/Ecoregions/us/us_eco_l3_state_boundaries.zip", mode="wb",
+                destfile = tmpfile)
+
+  #load file
+  unzip(tempfile, exdir = tempdir())
+  ecoregions <- sf::read_sf(file.path(tempdir(), "us_eco_l3_state_boundaries.shp"))
 
   ecoregions$NA_L2NAME <- gsub(" (?)", "",ecoregions$NA_L2NAME, fixed=TRUE)
 
   #merge into each ecoregion
   ecoregions <-  ecoregions %>% dplyr::group_by(across(-c(geometry, STATE_NAME, EPA_REGION, L3_KEY, L2_KEY, L1_KEY))) %>%
     dplyr::summarise(do_union=TRUE)
+
+  #simplify geometry so it's not so big
+  ecoregions <- sf::st_simplify(ecoregions, preserveTopology = FALSE, dTolerance = 500)
 
   usethis::use_data(ecoregions, overwrite = TRUE, compress="xz")
 

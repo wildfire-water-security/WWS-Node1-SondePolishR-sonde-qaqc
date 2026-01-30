@@ -10,9 +10,6 @@
 #' @importFrom bslib accordion
 #' @importFrom bslib accordion_panel
 #' @importFrom bslib input_switch
-#' @importFrom dataRetrieval read_waterdata_daily
-#' @importFrom dataRetrieval read_waterdata_monitoring_location
-#' @importFrom dataRetrieval read_waterdata_ts_meta
 #' @importFrom digest digest
 #' @importFrom dplyr across
 #' @importFrom dplyr any_of
@@ -43,7 +40,6 @@
 #' @importFrom plotly ggplotly
 #' @importFrom plotly plotlyOutput
 #' @importFrom plotly renderPlotly
-#' @importFrom purrr map
 #' @importFrom readr guess_encoding
 #' @importFrom rlang .data
 #' @importFrom rlang `:=` !!

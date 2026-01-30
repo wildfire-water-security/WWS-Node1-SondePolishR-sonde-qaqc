@@ -83,6 +83,7 @@
   }
 
 #' @name prj-path
+#' @noRd
   set_prjpath <- function(prj_path){
     .SondePolishR$prj_path <- prj_path
   }
