@@ -75,20 +75,11 @@ load_data_server <- function(id){
         type <- tools::file_ext(input$file$datapath)
       })
 
-
       df <- reactive({
         req(input$file, input$tz)
 
         if(type() == "csv"){
-          #req() # located here because if it's a project we don't need tz
           data <- read_sonde(input$file$datapath, tz=input$tz)  # read into R
-
-          #clear the log and dataframe
-          clear_log()
-          clear_data()
-
-          #write raw data
-          write_data(data, "raw")
 
           return(data)
         }

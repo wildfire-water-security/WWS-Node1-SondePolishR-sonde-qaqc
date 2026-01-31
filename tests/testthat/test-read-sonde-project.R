@@ -15,8 +15,8 @@ test_that("project is read", {
 
   #ensure it loads the data and log
   expect_equal(names(df), names(get_data()))
-  expect_equal(nrow(get_log()), 2)
-  expect_equal(get_log()$version, names(df)[-1])
+  expect_equal(nrow(get_log()), 3)
+  expect_equal(get_log()$version, names(df))
 
   expect_equal(get_prjpath(), "inst/extdata/example-sonde-project.RDS")
 })

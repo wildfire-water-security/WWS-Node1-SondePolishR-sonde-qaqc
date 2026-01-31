@@ -1,6 +1,8 @@
 library(shiny)
 
 test_that("module sever 1 works loading a csv", {
+  clear_log()
+  clear_data()
 
   testServer(load_data_server, {
     #test loading a csv
@@ -14,6 +16,9 @@ test_that("module sever 1 works loading a csv", {
       expect_equal(type(), "csv")
       expect_equal(prj_path_rv(), NULL) #no save path set
 
+    #check that a log is written
+      #print(get_log())
+      #expect_equal(nrow(get_log()), 1)
 
     #set the save location
       #shinyFiles you pass root something that is in roots and it returns the path

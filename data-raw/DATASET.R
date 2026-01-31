@@ -112,6 +112,9 @@ for(x in ecos){
 
 
 #save copy of sonde data for use in examples without needing to load
+  clear_log()
+  clear_data()
+
   file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "sonde-example.csv")
   raw_sonde <- read_sonde(file, flags = FALSE)
 
@@ -119,9 +122,6 @@ for(x in ecos){
   use_data(raw_sonde, overwrite = TRUE)
 
 # create example versioning
-  clear_log()
-  clear_data()
-
   data <- raw_sonde
   write_data(data, "raw")
 
@@ -139,7 +139,7 @@ for(x in ecos){
   data$Cond_uS_cm[row_change] <- NA
 
   version <- digest::digest(data)
-  change <- write_log("Cond_uS_cm", "test step", length(row_change), version, user="smith")
+  change <- write_log("Cond_uS_cm", "test step2", length(row_change), version, user="smith")
   write_data(data, version)
 
   #get vals
@@ -147,15 +147,14 @@ for(x in ecos){
   data_ver <- get_data()
 
   #save
+  log$user <- "smith"
   save_project(data_ver, log, "inst/extdata/example-sonde-project.RDS")
 
   #save as data objects
   example_log <- log
   example_data_ver <- data_ver
-  example_project <- append(list(log), data_ver)
-  names(example_project)[1] <- "log"
 
-
+  example_project <- readRDS("inst/extdata/example-sonde-project.RDS")
   use_data(example_log, overwrite = TRUE)
   use_data(example_data_ver, overwrite = TRUE)
   use_data(example_project, overwrite= TRUE)
