@@ -3,6 +3,7 @@
 export(add_flags)
 export(clear_data)
 export(clear_log)
+export(clear_prjpath)
 export(confirm_changes_UI)
 export(confirm_changes_server)
 export(flag_data)

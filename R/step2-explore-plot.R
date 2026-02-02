@@ -27,11 +27,10 @@ explore_data_UI <- function(id){
         #select date range to view with week selectors
         dateRangeInput(NS(id, "date_range"), label="Select Data Date Range"),
 
-        fluidRow(
-          column(4,input_switch(NS(id, "week_view"), "View Data Weekly")),
-          column(4,actionButton(NS(id,"prev_week"), "Previous")),
-          column(4,actionButton(NS(id,"next_week"), "Next"))
-          )
+        #add switch for weekly mode
+        column(4,input_switch(NS(id, "week_view"), "View Data Weekly"))
+
+
 
       ),
 
@@ -39,6 +38,11 @@ explore_data_UI <- function(id){
         #add plot
         plotlyOutput(NS(id,"exp_plot")),
 
+        fluidRow(column(2,actionButton(NS(id,"prev_week"), "Previous Week", disabled = TRUE)),
+                 column(8, HTML("")),
+                 column(2,actionButton(NS(id,"next_week"), "Next Week", disabled = TRUE))),
+        #adding some space after buttons
+        HTML("<br><br>"),
         #visualize data log
         DT::DTOutput(NS(id, "log_table"))
       ))
@@ -87,10 +91,17 @@ explore_data_server <- function(id, df){
                    start <- min(plot_df()$Date_MM_DD_YYYY)
                    end <- start + lubridate::weeks(1)
                    updateDateRangeInput(inputId = "date_range", start = start, end=end)
+
+                   updateActionButton(inputId = "next_week", disabled = FALSE)
+                   updateActionButton(inputId = "prev_week", disabled = FALSE)
+
                  }else{
                    req(df())
 
                    updateDateRangeInput(inputId = "date_range", start = min(plot_df()$Date_MM_DD_YYYY), end=max(plot_df()$Date_MM_DD_YYYY))
+
+                   updateActionButton(inputId = "next_week", disabled = TRUE)
+                   updateActionButton(inputId = "prev_week", disabled = TRUE)
                  })
 
     #if prev week is hit, go to previous week
