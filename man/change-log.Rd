@@ -7,7 +7,7 @@
 \alias{set_log}
 \title{Get and Write to Change Log}
 \usage{
-get_log()
+get_log(env = .pkgenv)
 
 write_log(
   par,
@@ -15,14 +15,17 @@ write_log(
   n,
   version,
   datetime = Sys.time(),
-  user = Sys.info()[["user"]]
+  user = Sys.info()[["user"]],
+  env = .pkgenv
 )
 
-clear_log()
+clear_log(env = .pkgenv)
 
-set_log(log)
+set_log(log, env = .pkgenv)
 }
 \arguments{
+\item{env}{the environment in which configuration settings is stored. Defaults to the package environment.}
+
 \item{par}{the name of the parameter modified}
 
 \item{step}{a description of the type of change made}

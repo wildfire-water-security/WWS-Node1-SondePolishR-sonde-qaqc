@@ -8,7 +8,7 @@
 #' @param par the parameter to check
 #' @param flag_name a character with the name of the flag
 #' @param index the index values for the rows to be flagged
-#' @param prj_path the file path to save the sonde project to
+#' @param prj_path the file path to save the sonde project to, if `NULL` will try to use `prj_path` stored in package environment.
 #' @md
 #' @returns returns the flagged copy of the `data.frame`
 #' @export
@@ -24,9 +24,9 @@
 #' #flag data
 #'   df <- flag_data(raw_sonde, "fDOM_QSU", "test_flag", 1:4, prj_path)
 
-flag_data <- function(df, par, flag_name, index, prj_path){
+flag_data <- function(df, par, flag_name, index, prj_path=NULL){
   stopifnot(inherits(df, "data.frame"), is.character(par), is.character(flag_name),
-            is.character(prj_path), all(is.numeric(index)))
+            is.character(prj_path) | is.null(prj_path), all(is.numeric(index)))
 
   #add flags to df
   df <- add_flags(df, par, flag_name, index)
@@ -45,7 +45,8 @@ flag_data <- function(df, par, flag_name, index, prj_path){
     write_data(df, version)
 
     #write to save path
-    save_project(.SondePolishR$data_ver, .SondePolishR$log, prj_path)
+    if(is.null(prj_path)){prj_path <- get_prjpath()}
+    save_project(get_data(), get_log(), prj_path)
 
     if (!is.null(shiny::getDefaultReactiveDomain())) {
       shinyalert::shinyalert(

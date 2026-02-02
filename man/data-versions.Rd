@@ -7,18 +7,20 @@
 \alias{set_data}
 \title{Sonde data versioning}
 \usage{
-write_data(data, version)
+write_data(data, version, env = .pkgenv)
 
-get_data()
+get_data(env = .pkgenv)
 
-clear_data()
+clear_data(env = .pkgenv)
 
-set_data(data_ver)
+set_data(data_ver, env = .pkgenv)
 }
 \arguments{
 \item{data}{a data.frame to add to the version history}
 
 \item{version}{the name of the version}
+
+\item{env}{the environment in which configuration settings is stored. Defaults to the package environment.}
 
 \item{data_ver}{a existing data version history read in from read_project}
 }

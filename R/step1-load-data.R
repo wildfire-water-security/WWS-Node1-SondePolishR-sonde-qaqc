@@ -116,13 +116,14 @@ load_data_server <- function(id){
             Documents = file.path(fs::path_home(), "Documents"),
             "C Drive" = "C:/")
 
-
     #specify prj_path so it exists
       prj_path_rv <- reactiveVal() # set up
 
       #when user loads file, update if RDS
       observeEvent(input$file, {
-        if (type() == "RDS") prj_path_rv(.SondePolishR$prj_path)
+        if (type() == "RDS") prj_path_rv(get_prjpath())else{
+          prj_path_rv(character())
+        }
       })
 
       #when user selects a file update

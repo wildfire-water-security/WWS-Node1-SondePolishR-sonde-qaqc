@@ -3,6 +3,7 @@ library(shiny)
 test_that("module sever 1 works loading a csv", {
   clear_log()
   clear_data()
+  clear_prjpath()
 
   testServer(load_data_server, {
     #test loading a csv
@@ -14,11 +15,10 @@ test_that("module sever 1 works loading a csv", {
     #expect that df should be loaded
       expect_s3_class(df(), "data.frame")
       expect_equal(type(), "csv")
-      expect_equal(prj_path_rv(), NULL) #no save path set
+      expect_equal(prj_path_rv(), character()) #no save path set
 
     #check that a log is written
-      #print(get_log())
-      #expect_equal(nrow(get_log()), 1)
+      expect_equal(nrow(get_log()), 1)
 
     #set the save location
       #shinyFiles you pass root something that is in roots and it returns the path
@@ -41,7 +41,7 @@ test_that("module sever 1 works loading a csv", {
 test_that("module sever 1 works loading an existing project", {
   clear_data()
   clear_log()
-  set_prjpath(character())
+  clear_prjpath()
 
   testServer(load_data_server, {
     #test loading a csv
@@ -54,9 +54,10 @@ test_that("module sever 1 works loading an existing project", {
     #expect that df should be loaded
     expect_s3_class(df(), "data.frame")
     expect_equal(type(), "RDS")
+    expect_equal(get_prjpath(), "inst/extdata/example-sonde-project.RDS")
+
     expect_equal(prj_path_rv(), "inst/extdata/example-sonde-project.RDS") #should pull path from the project
 
-    expect_equal(get_prjpath(), "inst/extdata/example-sonde-project.RDS")
 
 
     #try to manually change the filepath

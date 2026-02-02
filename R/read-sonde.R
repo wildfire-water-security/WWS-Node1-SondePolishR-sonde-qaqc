@@ -141,12 +141,11 @@ read_sonde <- function(file, encoding = NULL, flags=TRUE, skip=NULL, tz="Etc/GMT
     }
   }
 
-
   #clear the log and dataframe
     clear_log()
     clear_data()
 
-    write_log("All", "Initial Load", n = 0, version = "raw")
+    write_log("All", "Initial Load", n = 0, version = "raw", env=.pkgenv)
     write_data(df, "raw")
 
   return(df)

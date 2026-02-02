@@ -43,6 +43,9 @@
 #' @importFrom readr guess_encoding
 #' @importFrom rlang .data
 #' @importFrom rlang `:=` !!
+#' @importFrom rlang empty_env
+#' @importFrom rlang env_bind
+#' @importFrom rlang new_environment
 #' @importFrom rlang sym
 #' @importFrom sf st_agr
 #' @importFrom sf st_as_sf

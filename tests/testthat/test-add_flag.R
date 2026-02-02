@@ -32,17 +32,20 @@ test_that("saving flags works",{
 
   clear_data()
   clear_log()
+  clear_prjpath()
 
   write_data(raw_sonde, "raw")
+  write_log("All", "Initial Load", n = 0, version = "raw")
+  set_prjpath(prj_path)
 
-  df <- flag_data(raw_sonde, "fDOM_QSU", "test_flag", 1:4, prj_path)
+  df <- flag_data(raw_sonde, "fDOM_QSU", "test_flag", 1:4)
 
   #ensure file is saved
   expect_true(file.exists(prj_path))
 
   #ensure log is written
-  expect_equal(nrow(get_log()), 1)
-  expect_equal(get_log()$step, "test_flag")
+  expect_equal(nrow(get_log()), 2)
+  expect_equal(get_log()$step, c("Initial Load", "test_flag"))
 
   #ensure data ver is saved
   expect_equal(names(get_data()), c("raw", "824f400c52499aa98d40f5efe0623169"))
@@ -51,8 +54,8 @@ test_that("saving flags works",{
     df <- flag_data(df, "fDOM_QSU", "test_flag", 1:4, prj_path)
 
     #ensure log is written
-    expect_equal(nrow(get_log()), 1)
-    expect_equal(get_log()$step, "test_flag")
+    expect_equal(nrow(get_log()), 2)
+    expect_equal(get_log()$step, c("Initial Load", "test_flag"))
 
     #ensure data ver is saved
     expect_equal(names(get_data()), c("raw", "824f400c52499aa98d40f5efe0623169"))
