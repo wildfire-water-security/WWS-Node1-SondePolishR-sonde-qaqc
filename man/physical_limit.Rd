@@ -4,10 +4,10 @@
 \alias{physical_limit}
 \title{Remove data outside of physical limits}
 \usage{
-physical_limit(df, min, max, par, keep = NULL)
+physical_limit(data, min, max, par, keep = NULL)
 }
 \arguments{
-\item{df}{a data.frame with sonde data}
+\item{data}{a data.frame with sonde data}
 
 \item{min}{the minimum physical value}
 
@@ -20,8 +20,8 @@ physical_limit(df, min, max, par, keep = NULL)
 \value{
 a list with two data.frames:
 \itemize{
-\item \strong{outlier:} the rows of df that have values outside the limits not excluded using keep
-\item \strong{within:} the rows of df that have values within the limits or have been kept using \code{keep}
+\item \strong{outlier:} the rows of data that have values outside the limits not excluded using keep
+\item \strong{within:} the rows of data that have values within the limits or have been kept using \code{keep}
 }
 }
 \description{

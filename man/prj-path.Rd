@@ -3,11 +3,14 @@
 \name{get_prjpath}
 \alias{get_prjpath}
 \alias{set_prjpath}
+\alias{clear_prjpath}
 \title{Get and set project path variable in package environment}
 \usage{
 get_prjpath(env = .pkgenv)
 
 set_prjpath(prj_path, env = .pkgenv)
+
+clear_prjpath(prj_path, env = .pkgenv)
 }
 \arguments{
 \item{env}{the environment in which configuration settings is stored. Defaults to the package environment.}

@@ -80,29 +80,29 @@ ui <-  page_fillable(
 #' @examples
 server <- function(input, output, session) {
   #step 1: load data
-   df <- load_data_server("data1")
+   data <- load_data_server("data1")
 
   #step 2: plot data
-   explore_data_server("data2", df)
+   explore_data_server("data2", data)
 
   #step 3: physical limits
-   #df2 <- phys_limits_server("data3", df, prj_path)
+   #data2 <- phys_limits_server("data3", data, prj_path)
 
   #step 4: shift points up
      #make a copy of file for this step
-  #      df_shift <- reactive({
-  #        df()})
+  #      data_shift <- reactive({
+  #        data()})
   #
   #    #make a version to plot
-  #      df_plot <- reactive({df_shift()})
+  #      data_plot <- reactive({data_shift()})
   #
   #    #get y_vars
-  #      y_var <- update_parms_server("update_parms", df, choices_fun = nice_yvar)
+  #      y_var <- update_parms_server("update_parms", data, choices_fun = nice_yvar)
   #
   #    #select values via hover
   #      hover_reactive <- reactiveVal()                 ## initialize
   #      observe({
-  #        req(df_shift(), y_var())
+  #        req(data_shift(), y_var())
   #
   #        hover_data <- tryCatch(
   #          event_data("plotly_selected", source = "shift_plot"),
@@ -120,12 +120,12 @@ server <- function(input, output, session) {
   #         return(NULL)   # no selection
   #       }
   #
-  #       x <- as.POSIXct(hover_reactive()$x, tz=tz(df_shift()$DateTime))
+  #       x <- as.POSIXct(hover_reactive()$x, tz=tz(data_shift()$DateTime))
   #       y <- hover_reactive()$y
   #
   #       rows <- numeric()
   #       for(i in 1:length(x)){
-  #         row <- df_shift()$Index[df_shift()$DateTime == x[i] & df_shift()[y_var()] == y[i]]
+  #         row <- data_shift()$Index[data_shift()$DateTime == x[i] & data_shift()[y_var()] == y[i]]
   #         rows <- c(rows, row)
   #       }
   #
@@ -138,7 +138,7 @@ server <- function(input, output, session) {
   #         updateNumericInput(
   #           session,
   #           "shift_val",
-  #           value = guess_shift(df_shift(), y_var(), rows())
+  #           value = guess_shift(data_shift(), y_var(), rows())
   #         )
   #       })
   #
@@ -154,27 +154,27 @@ server <- function(input, output, session) {
   #       })
   #
   #     #take selected points and move
-  #       df_plot <- reactive({
-  #         req(df_shift(), y_var())
+  #       data_plot <- reactive({
+  #         req(data_shift(), y_var())
   #
   #         if (is.null(rows())) {
-  #           df_shift()  # return unchanged data if no rows selected
+  #           data_shift()  # return unchanged data if no rows selected
   #         } else {
-  #           shift_points(df_shift(), y_var(), rows(), input$shift_val)
+  #           shift_points(data_shift(), y_var(), rows(), input$shift_val)
   #         }
   #       })
   #
   #     #preserve zoom
-  #       plot_lyout <- preserve_zoom(df_plot, y_var, "shift_plot")
+  #       plot_lyout <- preserve_zoom(data_plot, y_var, "shift_plot")
   #
   #     #make plot
   #       output$shift_plot <- renderPlotly({
-  #         req(df_plot(), y_var())
+  #         req(data_plot(), y_var())
   #         if(is.null(hover_reactive())){
-  #           p <- ggplot(df_plot(), aes(x=.data$DateTime, y=.data[[y_var()]])) + geom_point()
+  #           p <- ggplot(data_plot(), aes(x=.data$DateTime, y=.data[[y_var()]])) + geom_point()
   #         }else{
-  #           base <- df_plot()[!(df_plot()$Index %in% rows()),]
-  #           adj <- df_plot()[df_plot()$Index %in% rows(),]
+  #           base <- data_plot()[!(data_plot()$Index %in% rows()),]
+  #           adj <- data_plot()[data_plot()$Index %in% rows(),]
   #           p <- ggplot() + geom_point(data=base, aes(x=.data$DateTime, y=.data[[y_var()]])) +
   #            geom_point(data=adj, aes(x=.data$DateTime, y=.data[[y_var()]]), color="red")
   #         }
@@ -194,7 +194,7 @@ server <- function(input, output, session) {
   # #confirm changes
   #   confirm_changes_server(
   #         id = "flag2",
-  #         df = df_plot,
+  #         data = data_plot,
   #         index = rows,
   #         par = y_var,
   #         flag_name = "abs_shift",

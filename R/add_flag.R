@@ -4,7 +4,7 @@
 #' project path specified by the user as a `.RDS` object. Also provides messages about the
 #' changes being made.
 #'
-#' @param df a data.frame with sonde data
+#' @param data a data.frame with sonde data
 #' @param par the parameter to check
 #' @param flag_name a character with the name of the flag
 #' @param index the index values for the rows to be flagged
@@ -22,17 +22,17 @@
 #'   write_data(raw_sonde, "raw")
 #'
 #' #flag data
-#'   df <- flag_data(raw_sonde, "fDOM_QSU", "test_flag", 1:4, prj_path)
+#'   data <- flag_data(raw_sonde, "fDOM_QSU", "test_flag", 1:4, prj_path)
 
-flag_data <- function(df, par, flag_name, index, prj_path=NULL){
-  stopifnot(inherits(df, "data.frame"), is.character(par), is.character(flag_name),
+flag_data <- function(data, par, flag_name, index, prj_path=NULL){
+  stopifnot(inherits(data, "data.frame"), is.character(par), is.character(flag_name),
             is.character(prj_path) | is.null(prj_path), all(is.numeric(index)))
 
-  #add flags to df
-  df <- add_flags(df, par, flag_name, index)
+  #add flags to data
+  data <- add_flags(data, par, flag_name, index)
 
   #save version
-  if(!new_version(df)){
+  if(!new_version(data)){
     if (!is.null(shiny::getDefaultReactiveDomain())) {
       shinyalert::shinyalert(
         title = "No New Changes",
@@ -40,9 +40,9 @@ flag_data <- function(df, par, flag_name, index, prj_path=NULL){
         type = "info")}
 
   }else{
-    version <- digest::digest(df)
+    version <- digest::digest(data)
     write_log(par, step=flag_name, n=length(index), version)
-    write_data(df, version)
+    write_data(data, version)
 
     #write to save path
     if(is.null(prj_path)){prj_path <- get_prjpath()}
@@ -56,7 +56,7 @@ flag_data <- function(df, par, flag_name, index, prj_path=NULL){
 
   }
 
-  return(df)
+  return(data)
 }
 
 #' Add flags to sonde data
@@ -65,7 +65,7 @@ flag_data <- function(df, par, flag_name, index, prj_path=NULL){
 #' adds a flag to the specified data. Used to keep track of which datapoints were flagged in which QA/QC steps.
 #' If only some flags are added, it will try to add the missing flags.
 #'
-#' @param df a data.frame with sonde data
+#' @param data a data.frame with sonde data
 #' @param par the parameter to check
 #' @param flag_name a character with the name of the flag
 #' @param index the index values for the rows to be flagged
@@ -78,26 +78,26 @@ flag_data <- function(df, par, flag_name, index, prj_path=NULL){
 #'
 #' @examples
 #' #add flag columns
-#' df <- add_flags(raw_sonde)
-#' colnames(df)
+#' data <- add_flags(raw_sonde)
+#' colnames(data)
 #'
 #' #add a flag
-#' df <- add_flags(raw_sonde, "fDOM_QSU", "test_flag", c(1,2,3))
-#' head(df$fDOM_QSU_flag)
-add_flags <- function(df, par=NULL, flag_name=NULL, index=NULL){
-  stopifnot(inherits(df, "data.frame"), is.character(flag_name)|is.null(flag_name), is.character(par)|is.null(par))
+#' data <- add_flags(raw_sonde, "fDOM_QSU", "test_flag", c(1,2,3))
+#' head(data$fDOM_QSU_flag)
+add_flags <- function(data, par=NULL, flag_name=NULL, index=NULL){
+  stopifnot(inherits(data, "data.frame"), is.character(flag_name)|is.null(flag_name), is.character(par)|is.null(par))
 
   #add flag columns if they don't exist
    #guess pars
      pars <- paste(c("Cond", "fDOM", "ODO", "Sal", "TDS", "Turbidity","TSS","pH","Temp", "Depth"), collapse="|")
-     par_names <- grep(pars, names(df), value = TRUE)
+     par_names <- grep(pars, names(data), value = TRUE)
      par_names <- par_names[!grepl("_flag$", par_names)] #remove existing flag columns
 
-     missing <- par_names[!(paste0(par_names, "_flag") %in% colnames(df))]
+     missing <- par_names[!(paste0(par_names, "_flag") %in% colnames(data))]
 
     #add spot for flags for each parameter
       for(x in missing){
-        df <- df %>% dplyr::mutate(!!paste0(x, "_flag") := NA, .after=tidyselect::all_of(x))
+        data <- data %>% dplyr::mutate(!!paste0(x, "_flag") := NA, .after=tidyselect::all_of(x))
       }
 
   #add flag if inputting specific flags
@@ -109,9 +109,9 @@ add_flags <- function(df, par=NULL, flag_name=NULL, index=NULL){
 
     #add flags
     flag_list <- list()
-      for(i in df$Index){
+      for(i in data$Index){
         #get existing flags
-        ext_flag <- df[[flag_col]][[i]]
+        ext_flag <- data[[flag_col]][[i]]
 
         #check to see if it already exists
         # ##checking logic, keep for testing for now
@@ -158,9 +158,9 @@ add_flags <- function(df, par=NULL, flag_name=NULL, index=NULL){
         flag_list[[i]] <- flag
       }
 
-    df[[flag_col]] <- flag_list
+    data[[flag_col]] <- flag_list
   }
 
-  return(df)
+  return(data)
   }
 

@@ -32,8 +32,8 @@ signifying Pacific Standard Time (PST).
 }
 \examples{
 file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "sonde-example.csv")
-df <- read_sonde(file)
+data <- read_sonde(file)
 
 file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "sonde-usb-example.csv")
-df <- read_sonde(file)
+data <- read_sonde(file)
 }

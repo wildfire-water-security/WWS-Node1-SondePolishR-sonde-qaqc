@@ -4,10 +4,10 @@
 \alias{guess_shift}
 \title{Guess the amount to shift observations}
 \usage{
-guess_shift(df, par, index)
+guess_shift(data, par, index)
 }
 \arguments{
-\item{df}{a data.frame with sonde data}
+\item{data}{a data.frame with sonde data}
 
 \item{par}{the parameter being corrected}
 

@@ -4,10 +4,10 @@
 \alias{shift_points}
 \title{Correct points via an absolute shift}
 \usage{
-shift_points(df, par, index, shift_val = NULL)
+shift_points(data, par, index, shift_val = NULL)
 }
 \arguments{
-\item{df}{a data.frame with sonde data}
+\item{data}{a data.frame with sonde data}
 
 \item{par}{the parameter being corrected}
 
@@ -24,6 +24,6 @@ dataset for those values by that set amount.
 }
 \examples{
 raw_sonde$Cond_uS_cm[1591:1600]
-df <- shift_points(raw_sonde, "Cond_uS_cm", 1591:1630)
-df$Cond_uS_cm[1591:1600]
+data <- shift_points(raw_sonde, "Cond_uS_cm", 1591:1630)
+data$Cond_uS_cm[1591:1600]
 }

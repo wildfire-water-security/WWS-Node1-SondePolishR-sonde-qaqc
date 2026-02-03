@@ -12,7 +12,7 @@ selectableDT_UI <- function(id) {
   )
 }
 
-selectableDT_server <- function(id, df) {
+selectableDT_server <- function(id, data) {
   moduleServer(id, function(input, output, session) {
     # JS callback for drag-select + persistent selection
     callback <- c(
@@ -55,7 +55,7 @@ selectableDT_server <- function(id, df) {
     )
 
       output$table <- renderDT({
-        dat <- df()
+        dat <- data()
         if (nrow(dat) > 0) {
           dat$ROWID <- paste0("row-", seq_len(nrow(dat)))
         } else {
@@ -86,7 +86,7 @@ selectableDT_server <- function(id, df) {
 
       # Combine DT selections into a single reactive
       selectedRows <- reactive({
-        req(df())
+        req(data())
         unique(c(input[["table_rows_selected"]], input[["table_rows_selected2"]]))
       })
 

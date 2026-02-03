@@ -4,10 +4,10 @@
 \alias{add_flags}
 \title{Add flags to sonde data}
 \usage{
-add_flags(df, par = NULL, flag_name = NULL, index = NULL)
+add_flags(data, par = NULL, flag_name = NULL, index = NULL)
 }
 \arguments{
-\item{df}{a data.frame with sonde data}
+\item{data}{a data.frame with sonde data}
 
 \item{par}{the parameter to check}
 
@@ -29,10 +29,10 @@ If only some flags are added, it will try to add the missing flags.
 }
 \examples{
 #add flag columns
-df <- add_flags(raw_sonde)
-colnames(df)
+data <- add_flags(raw_sonde)
+colnames(data)
 
 #add a flag
-df <- add_flags(raw_sonde, "fDOM_QSU", "test_flag", c(1,2,3))
-head(df$fDOM_QSU_flag)
+data <- add_flags(raw_sonde, "fDOM_QSU", "test_flag", c(1,2,3))
+head(data$fDOM_QSU_flag)
 }

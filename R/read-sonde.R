@@ -25,10 +25,10 @@
 #'
 #' @examples
 #' file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "sonde-example.csv")
-#' df <- read_sonde(file)
+#' data <- read_sonde(file)
 #'
 #' file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "sonde-usb-example.csv")
-#' df <- read_sonde(file)
+#' data <- read_sonde(file)
 read_sonde <- function(file, encoding = NULL, flags=TRUE, skip=NULL, tz="Etc/GMT+8"){
   stopifnot(tools::file_ext(file) == "csv", file.exists(file))
 
@@ -61,16 +61,16 @@ read_sonde <- function(file, encoding = NULL, flags=TRUE, skip=NULL, tz="Etc/GMT
     cols <- gsub("_$", "", gsub("_{1,}", "_", cols))
     cols <- gsub("[?]S", "uS", cols)
 
-  #split into nice df
-    df <- text[-c(1:skip)] %>% as.data.frame() %>% tidyr::separate_wider_delim(cols='.', delim=",", names_sep="")
-    df[df == ""] <- NA     #replace "" with NA
-    colnames(df) <- cols
+  #split into nice data
+    data <- text[-c(1:skip)] %>% as.data.frame() %>% tidyr::separate_wider_delim(cols='.', delim=",", names_sep="")
+    data[data == ""] <- NA     #replace "" with NA
+    colnames(data) <- cols
 
   #drop any NA col names
-    df <- df[,!is.na(colnames(df))]
+    data <- data[,!is.na(colnames(data))]
 
   #save site name
-    if("Site_Name" %in% colnames(df)){site <- df$Site_Name[1]
+    if("Site_Name" %in% colnames(data)){site <- data$Site_Name[1]
     }else{
       site <- ifelse(usb_export, stringr::str_split_i(text[grep("Site:", text)], ",", 2), stop("site row not determined"))
     }
@@ -81,63 +81,63 @@ read_sonde <- function(file, encoding = NULL, flags=TRUE, skip=NULL, tz="Etc/GMT
                 ODO_sat = "DO_%", ODO_mg_L = "DO_mg_L",
                 SpCond_uS_cm = "SPC_uS_cm",
                 Turbidity_FNU = "NTU", Battery_V ="Batt_V")
-    df <- df %>% dplyr::rename(any_of(lookup))
+    data <- data %>% dplyr::rename(any_of(lookup))
 
   #some data cleaning
     #drop all NA columns
-    df <- df[, !apply(df, 2, function(x) all(is.na(x)))]
+    data <- data[, !apply(data, 2, function(x) all(is.na(x)))]
 
     #drop columns that don't change
-    if(nrow(df) > 1){
-      df <- df[, !apply(df, 2, function(x) length(unique(x)) == 1)]
+    if(nrow(data) > 1){
+      data <- data[, !apply(data, 2, function(x) length(unique(x)) == 1)]
     }
 
     #add site column
-      df <- df %>% dplyr::mutate(Site_Name = site, .after="Time_HH_mm_ss")
+      data <- data %>% dplyr::mutate(Site_Name = site, .after="Time_HH_mm_ss")
 
 
     #make date and time back to character to match csv
-    df$Time_HH_mm_ss <- as.character(df$Time_HH_mm_ss)
-    df$Time_HH_mm_ss <- sub("^([0-9]):", "0\\1:", df$Time_HH_mm_ss)
+    data$Time_HH_mm_ss <- as.character(data$Time_HH_mm_ss)
+    data$Time_HH_mm_ss <- sub("^([0-9]):", "0\\1:", data$Time_HH_mm_ss)
 
   #add obs index for tracking easier
-  df <- df %>% dplyr::mutate(Index = 1:dplyr::n(), .before="Date_MM_DD_YYYY") %>% dplyr::select(!any_of("Time_Fract_Sec"))
+  data <- data %>% dplyr::mutate(Index = 1:dplyr::n(), .before="Date_MM_DD_YYYY") %>% dplyr::select(!any_of("Time_Fract_Sec"))
 
   #remove any duplicated header rows
-  extra_header <- c(grep("^Date", as.character(df$Date_MM_DD_YYYY)), which(as.character(df$Date_MM_DD_YYYY) == ""))
+  extra_header <- c(grep("^Date", as.character(data$Date_MM_DD_YYYY)), which(as.character(data$Date_MM_DD_YYYY) == ""))
   if(length(extra_header) >0){
-    extra <- which(is.na(df$Date_MM_DD_YYYY[1:extra_header]))
-    df <- df[-c(extra, extra_header),]
+    extra <- which(is.na(data$Date_MM_DD_YYYY[1:extra_header]))
+    data <- data[-c(extra, extra_header),]
     }
 
   #make date time into a column set to correct tz
-  df <- df %>% dplyr::mutate(DateTime = anytime::anytime(paste(df$Date_MM_DD_YYYY, df$Time_HH_mm_ss),
+  data <- data %>% dplyr::mutate(DateTime = anytime::anytime(paste(data$Date_MM_DD_YYYY, data$Time_HH_mm_ss),
                                                   asUTC=TRUE, tz="UTC"),
                       .after="Time_HH_mm_ss") %>%
-    dplyr::mutate(Date_MM_DD_YYYY = anytime::anydate(df$Date_MM_DD_YYYY, asUTC = TRUE, tz="UTC"))
+    dplyr::mutate(Date_MM_DD_YYYY = anytime::anydate(data$Date_MM_DD_YYYY, asUTC = TRUE, tz="UTC"))
 
   #set time zone
-    df$Date_MM_DD_YYYY <- lubridate::force_tz(df$Date_MM_DD_YYYY, tzone=tz)
-    df$DateTime <- lubridate::force_tz(df$DateTime, tzone=tz)
+    data$Date_MM_DD_YYYY <- lubridate::force_tz(data$Date_MM_DD_YYYY, tzone=tz)
+    data$DateTime <- lubridate::force_tz(data$DateTime, tzone=tz)
 
     #round to nearest minute
-    df$DateTime <- as.POSIXct(round.POSIXt(df$DateTime, units="mins"))
+    data$DateTime <- as.POSIXct(round.POSIXt(data$DateTime, units="mins"))
 
   #make sure things that look numeric are
-    numeric <- colnames(df)[!colnames(df) %in% c("Date_MM_DD_YYYY", "Time_HH_mm_ss", "DateTime", "Site_Name")]
+    numeric <- colnames(data)[!colnames(data) %in% c("Date_MM_DD_YYYY", "Time_HH_mm_ss", "DateTime", "Site_Name")]
 
   #make numeric and remove time fract sec
-    df <- df %>% dplyr::mutate(dplyr::across(all_of(numeric), as.numeric))
+    data <- data %>% dplyr::mutate(dplyr::across(all_of(numeric), as.numeric))
 
  #add flags
   if(flags){
     #guess pars
     pars <- paste(c("Cond", "fDOM", "ODO", "Sal", "TDS", "Turbidity","TSS","pH","Temp", "Depth"), collapse="|")
-    par_names <- grep(pars, names(df), value = TRUE)
+    par_names <- grep(pars, names(data), value = TRUE)
 
     #add spot for flags for each parameter
     for(x in par_names){
-      df <- df %>% mutate(!!paste0(x, "_flag") := NA, .after=tidyselect::all_of(x))
+      data <- data %>% mutate(!!paste0(x, "_flag") := NA, .after=tidyselect::all_of(x))
     }
   }
 
@@ -146,8 +146,8 @@ read_sonde <- function(file, encoding = NULL, flags=TRUE, skip=NULL, tz="Etc/GMT
     clear_data()
 
     write_log("All", "Initial Load", n = 0, version = "raw", env=.pkgenv)
-    write_data(df, "raw")
+    write_data(data, "raw")
 
-  return(df)
+  return(data)
 
 }

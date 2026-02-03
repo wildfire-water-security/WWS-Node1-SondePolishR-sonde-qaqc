@@ -58,23 +58,23 @@ phys_limits_UI <- function(id){
   )}
 
 
-phys_limits_server <- function(id, df, prj_path){
+phys_limits_server <- function(id, data, prj_path){
   moduleServer(id, function(input, output, session){
 
     #make a copy of file for this step
-    df_phy_lim <- reactiveVal(NULL)
+    data_phy_lim <- reactiveVal(NULL)
 
     observe({
-      req(df())
-      df_phy_lim(df())   # initialize as soon as df() exists
+      req(data())
+      data_phy_lim(data())   # initialize as soon as data() exists
     })
 
   #update choices based on data table
-    y_var <- update_parms_server("update_parms", df, choices_fun = nice_yvar)
+    y_var <- update_parms_server("update_parms", data, choices_fun = nice_yvar)
 
     #update ecoregion choices based on y_Var
       observeEvent(y_var(), {
-        req(df(), y_var())
+        req(data(), y_var())
         eco_options <- SondePolishR::phys_limits %>% filter(.data$metric == y_var())
         #if no ecoregions available
         if(nrow(eco_options) == 0){choices <- "No Limits Available"}else{
@@ -89,7 +89,7 @@ phys_limits_server <- function(id, df, prj_path){
       })
 
   #update limits values from y_var
-    update_limits(df_phy_lim, y_var, session)
+    update_limits(data_phy_lim, y_var, session)
 
   #get ecoregion if points are supplied
     observeEvent(c(input$lat, input$long), {
@@ -120,24 +120,24 @@ phys_limits_server <- function(id, df, prj_path){
         }
     })
 
-  #get df for plotting
-    df_table <- reactive({
-      req(y_var(), df_phy_lim())
-      physical_limit(df_phy_lim(),limit()$min, limit()$max, par=y_var())})
+  #get data for plotting
+    data_table <- reactive({
+      req(y_var(), data_phy_lim())
+      physical_limit(data_phy_lim(),limit()$min, limit()$max, par=y_var())})
 
-    df_plot <- reactive({
-      req(y_var(),df_phy_lim())
+    data_plot <- reactive({
+      req(y_var(),data_phy_lim())
       if(any(!is.na(selected()))){
-        sep_df <- physical_limit(df_phy_lim(),limit()$min, limit()$max, par=y_var(), keep=selected())
+        sep_data <- physical_limit(data_phy_lim(),limit()$min, limit()$max, par=y_var(), keep=selected())
       }else{
-        sep_df <- physical_limit(df_phy_lim(),limit()$min, limit()$max, par=y_var())
+        sep_data <- physical_limit(data_phy_lim(),limit()$min, limit()$max, par=y_var())
       }
     })
 
   #make table
     dat <- reactive({
-      req(df_table()$outlier, y_var())
-       df_table()$outlier %>% dplyr::select(dplyr::any_of(c("Date_MM_DD_YYYY", "Time_HH_mm_ss", y_var()))) %>%
+      req(data_table()$outlier, y_var())
+       data_table()$outlier %>% dplyr::select(dplyr::any_of(c("Date_MM_DD_YYYY", "Time_HH_mm_ss", y_var()))) %>%
          dplyr::mutate(dplyr::across(dplyr::any_of("Date_MM_DD_YYYY"), ~ as.Date(.)))
       })
 
@@ -145,24 +145,24 @@ phys_limits_server <- function(id, df, prj_path){
 
   #get selected rows to exclude from flagging
     selected <- reactive({
-      req(df_table())
+      req(data_table())
       if(is.null(rows_selected())){
         return(NA)
       }else{
-        df_table()$outlier$Index[rows_selected()]
+        data_table()$outlier$Index[rows_selected()]
       }
     })
 
   #make plot
     output$limit_plot <- renderPlotly({
-      req(df_plot(), limit, y_var())
+      req(data_plot(), limit, y_var())
 
-      p <- ggplot(df_plot()$within, aes(x=.data$DateTime, y=.data[[y_var()]])) + geom_point() +
+      p <- ggplot(data_plot()$within, aes(x=.data$DateTime, y=.data[[y_var()]])) + geom_point() +
         ggplot2::geom_hline(yintercept = limit()$min, color="darkred") +
         ggplot2::geom_hline(yintercept = limit()$max, color="darkred")
 
-      if(nrow(df_plot()$outlier) > 0){
-        p <- p + geom_point(data=df_plot()$outlier, mapping=aes(x=.data$DateTime, y=.data[[y_var()]]), color="darkred")
+      if(nrow(data_plot()$outlier) > 0){
+        p <- p + geom_point(data=data_plot()$outlier, mapping=aes(x=.data$DateTime, y=.data[[y_var()]]), color="darkred")
       }
 
       return(p)
@@ -170,17 +170,17 @@ phys_limits_server <- function(id, df, prj_path){
 
 
   #confirm changes
-    index <- reactive({df_plot()$outlier$Index }) #get index of points to remove
+    index <- reactive({data_plot()$outlier$Index }) #get index of points to remove
     confirm_changes_server(
       id = "flag1",
-      df = df_phy_lim,
+      data = data_phy_lim,
       index = index,
       par = y_var,
       flag_name = "phy_limit",
       prj_path = prj_path
     )
 
-    return(df_phy_lim) #don't give (), it will break everything
+    return(data_phy_lim) #don't give (), it will break everything
 
 
   })}

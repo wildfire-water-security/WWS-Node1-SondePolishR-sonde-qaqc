@@ -4,10 +4,10 @@
 \alias{nice_yvar}
 \title{Reformats column names to be human readable}
 \usage{
-nice_yvar(df)
+nice_yvar(data)
 }
 \arguments{
-\item{df}{the dataframe you want to column names from}
+\item{data}{the dataframe you want to column names from}
 }
 \value{
 a named vector where the names are the human readable names and the values are the column names

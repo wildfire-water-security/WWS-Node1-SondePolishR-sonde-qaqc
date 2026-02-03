@@ -19,22 +19,22 @@ update_parms_UI <- function(id) {
 #' a custom function.
 #'
 #' @param id An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.
-#' @param df Data as a reactive value storing a `data.frame`
+#' @param data Data as a reactive value storing a `data.frame`
 #' @param choices_fun Function used to determine the parameter choices, if `NULL` will use the column names of the data
 #'
 #' @returns the selected variable `y_var` as a reactive object
 #' @md
 #' @noRd
-update_parms_server <- function(id, df, choices_fun = NULL) {
+update_parms_server <- function(id, data, choices_fun = NULL) {
   moduleServer(id, function(input, output, session) {
 
     # update parameter choices dynamically
     choices_r <- reactive({
-      req(df())
+      req(data())
       if (!is.null(choices_fun)) {
-        choices_fun(df())
+        choices_fun(data())
       } else {
-        names(df())
+        names(data())
       }
     })
 

@@ -1,6 +1,6 @@
 library(shiny)
 
-test_that("df is not updated when prj_path is empty", {
+test_that("data is not updated when prj_path is empty", {
 
   testServer(confirm_changes_server, {
     #simulates a click
@@ -10,12 +10,12 @@ test_that("df is not updated when prj_path is empty", {
     #session$flushReact()
 
     #checking the data table doesn't change
-      #updated_df() calls the data.frame
-    expect_equal(updated_df(),raw_sonde)
+      #updated_data() calls the data.frame
+    expect_equal(updated_data(),raw_sonde)
   },
   #these are passed to the module
   args = list(
-    df = reactiveVal(raw_sonde),
+    data = reactiveVal(raw_sonde),
     index = reactiveVal(1),
     par = reactiveVal("x"),
     flag_name = "flagged",
@@ -25,7 +25,7 @@ test_that("df is not updated when prj_path is empty", {
 
 
 
-test_that("df is not updated when index is empty", {
+test_that("data is not updated when index is empty", {
 
   testServer(confirm_changes_server, {
     #simulates a click
@@ -35,12 +35,12 @@ test_that("df is not updated when index is empty", {
     #session$flushReact()
 
     #checking the data table doesn't change
-    #updated_df() calls the data.frame
-    expect_equal(updated_df(),raw_sonde)
+    #updated_data() calls the data.frame
+    expect_equal(updated_data(),raw_sonde)
   },
   #these are passed to the module
   args = list(
-    df = reactiveVal(raw_sonde),
+    data = reactiveVal(raw_sonde),
     index = reactiveVal(integer()),
     par = reactiveVal("x"),
     flag_name = "flagged",
@@ -56,7 +56,7 @@ test_that("flag_data is applied when inputs are valid", {
         session$setInputs(rm_points = 1)
 
         #pull out new dataframe to make sure it looks right
-        result <- updated_df()
+        result <- updated_data()
 
         expect_true("Cond_uS_cm_flag" %in% colnames(result))
         expect_true(inherits(result$Cond_uS_cm_flag, "list"))
@@ -65,7 +65,7 @@ test_that("flag_data is applied when inputs are valid", {
 
       },
       args = list(
-        df = reactiveVal(raw_sonde),
+        data = reactiveVal(raw_sonde),
         index = reactiveVal(1:2),
         par = reactiveVal("Cond_uS_cm"),
         flag_name = "flagged",

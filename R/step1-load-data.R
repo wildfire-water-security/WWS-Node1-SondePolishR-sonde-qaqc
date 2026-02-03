@@ -54,7 +54,7 @@ load_data_UI <- function(id){
 }
 
 # Server Function
-#' Read in the dataset or project and set save path.
+#' Read in the dataset or project and set save path
 #'
 #' Takes in a dataset as a `.csv` or a sonde project as an `.RDS` file via file selection.
 #' If the data is a sonde project the save path will default it it's existing path, otherwise
@@ -75,7 +75,7 @@ load_data_server <- function(id){
         type <- tools::file_ext(input$file$datapath)
       })
 
-      df <- reactive({
+      data <- reactive({
         req(input$file, input$tz)
 
         if(type() == "csv"){
@@ -96,11 +96,11 @@ load_data_server <- function(id){
       })
 
       #update timezone if it's a project
-        observeEvent(df(), {
-          req(df(), type())
+        observeEvent(data(), {
+          req(data(), type())
 
           if(type() == "RDS"){
-            tz <- lubridate::tz(df()$DateTime)
+            tz <- lubridate::tz(data()$DateTime)
             nice_tz <- nice_tz()
             tz <- nice_tz[nice_tz == tz]
             updateSelectInput(
@@ -154,6 +154,6 @@ load_data_server <- function(id){
       })
 
     # return the dataframe and file path as the module's "output"
-    return(df)
+    return(data)
   })
 }

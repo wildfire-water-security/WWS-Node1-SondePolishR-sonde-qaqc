@@ -7,12 +7,12 @@
 #'
 #' @param id the shiny ID of the action button
 #' @param note an optional note to add to the action button to provide more directions
-#' @param df the sonde data.frame that will be flagged
+#' @param data the sonde data.frame that will be flagged
 #' @param index the index values for the rows to be flagged
 #' @param prj_path the file path to save the sonde project to
 #' @param par the parameter to flag
 #' @param flag_name a character with the name of the flag
-#' @param index the index values of the rows to flag in df
+#' @param index the index values of the rows to flag in data
 #'
 #' @rdname confirm-changes
 #' @export
@@ -35,21 +35,21 @@ confirm_changes_UI <- function(id, note=NULL) {
 
 #' @rdname confirm-changes
 #' @export
-confirm_changes_server <- function(id, df, index=NULL, par, flag_name, prj_path){
+confirm_changes_server <- function(id, data, index=NULL, par, flag_name, prj_path){
 
-  # df: reactiveVal of the dataframe to update
-  # df_plot: reactive that provides data with $outlier$Index
+  # data: reactiveVal of the dataframe to update
+  # data_plot: reactive that provides data with $outlier$Index
   # y_var: reactive of the column to flag
   # flag_name: name of flag column to add
   # prj_path: project path for saving changes
 
   moduleServer(id, function(input, output, session) {
 
-    updated_df <- reactiveVal(df()) # start with the original df
+    updated_data <- reactiveVal(data()) # start with the original data
 
-    # When button is clicked, update df in place
+    # When button is clicked, update data in place
     observeEvent(input$rm_points,{
-      req(df(), par()) #ensure we have what we need
+      req(data(), par()) #ensure we have what we need
 
       #check if there's a project path, if no error
       if(length(prj_path()) == 0){
@@ -70,20 +70,20 @@ confirm_changes_server <- function(id, df, index=NULL, par, flag_name, prj_path)
               type = "warning"
             )
           }}else{
-          #add flags to df and save
-            updated <- flag_data(df(),
+          #add flags to data and save
+            updated <- flag_data(data(),
                                  par = par(),
                                  index = index(),
                                  flag_name = flag_name,
                                  prj_path = prj_path())
 
 
-            #update df
-            updated_df(updated)}
+            #update data
+            updated_data(updated)}
             })
 
-    # Return the updated df reactive
-    return(updated_df)
+    # Return the updated data reactive
+    return(updated_data)
 
     })
   }

@@ -13,9 +13,9 @@
 #' file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "sonde-example.csv")
 #' get_encoding(file)
 get_encoding <- function(file){
-  #check if df looks right
-  file_check <- function(df){
-    if(ncol(df) > 2){
+  #check if data looks right
+  file_check <- function(data){
+    if(ncol(data) > 2){
       return(TRUE)
     }else{return(FALSE)}
   }
@@ -25,20 +25,20 @@ get_encoding <- function(file){
 
   #if encoding guess is good, use that
   if(nrow(enc_guess) > 0){
-    df <- read.csv(file, fileEncoding = enc_guess$encoding[1], header = FALSE, skip=9)
+    data <- read.csv(file, fileEncoding = enc_guess$encoding[1], header = FALSE, skip=9)
 
-    if(file_check(df)){
+    if(file_check(data)){
       return(enc_guess$encoding[1])
     }
   }
 
   #otherwise check Windows-1252
-  df <- read.csv(file, fileEncoding = "Windows-1252")
-  if(file_check(df)){return("Windows-1252")}
+  data <- read.csv(file, fileEncoding = "Windows-1252")
+  if(file_check(data)){return("Windows-1252")}
 
   #then check UTF-16LE
-  df <- read.csv(file, fileEncoding = "UTF-16LE")
-  if(file_check(df)){return("UTF-16LE")}
+  data <- read.csv(file, fileEncoding = "UTF-16LE")
+  if(file_check(data)){return("UTF-16LE")}
 
   #otherwise print message
   stop("Could not identify file encoding, please put in Notepad++ and look in bottom right corner to identify encoding")
@@ -63,15 +63,15 @@ get_encoding <- function(file){
 get_skip <- function(file, encoding=NULL){
   if(usb_export(file)){
     if(is.null(encoding)){encoding <- get_encoding(file)}
-    df <- suppressWarnings(readr::read_csv(file,
+    data <- suppressWarnings(readr::read_csv(file,
                                            locale = readr::locale(encoding = "UTF-16LE"),
                           col_names=FALSE,show_col_types = FALSE))
-    skip <- grep("^Date", df[[1]]) + 5
+    skip <- grep("^Date", data[[1]]) + 5
 
   }else{
     if(is.null(encoding)){encoding <- get_encoding(file)}
-    df <- read.csv(file, fileEncoding = encoding, header=FALSE)
-    skip <- grep("^Date", df[,1]) -1
+    data <- read.csv(file, fileEncoding = encoding, header=FALSE)
+    skip <- grep("^Date", data[,1]) -1
     if(encoding == "UTF-16LE"){skip <- skip + 3}
   }
 
@@ -97,9 +97,9 @@ get_skip <- function(file, encoding=NULL){
 #' usb_export(file)
 usb_export <- function(file){
   encoding <- get_encoding(file)
-  df <- readLines(file, encoding = encoding, skipNul = TRUE)
+  data <- readLines(file, encoding = encoding, skipNul = TRUE)
 
-  if(any(grepl("Model, Submodel", df[2:6], fixed=TRUE))){
+  if(any(grepl("Model, Submodel", data[2:6], fixed=TRUE))){
     return(TRUE)
   }else{
     return(FALSE)
@@ -138,13 +138,13 @@ nice_tz <- function(){
 
 #' Reformats column names to be human readable
 #'
-#' @param df the dataframe you want to column names from
+#' @param data the dataframe you want to column names from
 #'
 #' @returns a named vector where the names are the human readable names and the values are the column names
 #'
-nice_yvar <- function(df){
+nice_yvar <- function(data){
   #remove any variables that are totally 0 or NA
-  empty <- sapply(df, function(x){
+  empty <- sapply(data, function(x){
     if(is.list(x)){
       return(FALSE)
     }else{
@@ -153,11 +153,11 @@ nice_yvar <- function(df){
   })
 
   if(sum(empty) > 0){
-    df <- df[-empty]
+    data <- data[-empty]
   }
 
   #remove non numeric
-  y_var <- colnames(df)[sapply(df, is.numeric)]
+  y_var <- colnames(data)[sapply(data, is.numeric)]
 
   #remove variables that aren't needed
   y_var <- y_var[!(y_var %in% c("Index", "Time_Fract_Sec", "Wiper_Position_volt", "Cable_Pwr_V", "Battery_V"))]
@@ -192,18 +192,18 @@ nice_yvar <- function(df){
 
 #' Set flagged values to missing
 #'
-#' @param df the `data.frame` to remove flagged values from
+#' @param data the `data.frame` to remove flagged values from
 #' @param flag_names the flag names to set to `NA` if the flag is `TRUE`
 #'
 #' @returns a `data.frame` with the flagged values removed
 #' @export
 #'
-remove_flagged <- function(df, flag_names){
-  flags <- grep("_flag$", colnames(df), value = TRUE)
+remove_flagged <- function(data, flag_names){
+  flags <- grep("_flag$", colnames(data), value = TRUE)
 
   #for one column
   for(f in flags){
-    flag_vals <- df[[f]]
+    flag_vals <- data[[f]]
 
     #determine values with flag
     rm <- sapply(flag_vals, function(x){
@@ -213,8 +213,8 @@ remove_flagged <- function(df, flag_names){
 
     #make values NA
     if(sum(rm) > 0){
-      df[rm,gsub("_flag$", "", f)] <- NA
+      data[rm,gsub("_flag$", "", f)] <- NA
     }
   }
- return(df)
+ return(data)
 }

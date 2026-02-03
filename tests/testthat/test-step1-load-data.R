@@ -12,8 +12,8 @@ test_that("module sever 1 works loading a csv", {
                                                            "testdata/sonde-example.csv")),
                       tz = "Etc/GMT+8")
 
-    #expect that df should be loaded
-      expect_s3_class(df(), "data.frame")
+    #expect that data should be loaded
+      expect_s3_class(data(), "data.frame")
       expect_equal(type(), "csv")
       expect_equal(prj_path_rv(), character()) #no save path set
 
@@ -51,8 +51,8 @@ test_that("module sever 1 works loading an existing project", {
                       tz = "Etc/GMT+8")
 
 
-    #expect that df should be loaded
-    expect_s3_class(df(), "data.frame")
+    #expect that data should be loaded
+    expect_s3_class(data(), "data.frame")
     expect_equal(type(), "RDS")
     expect_equal(get_prjpath(), "inst/extdata/example-sonde-project.RDS")
 

@@ -4,10 +4,10 @@
 \alias{remove_flagged}
 \title{Set flagged values to missing}
 \usage{
-remove_flagged(df, flag_names)
+remove_flagged(data, flag_names)
 }
 \arguments{
-\item{df}{the `data.frame` to remove flagged values from}
+\item{data}{the `data.frame` to remove flagged values from}
 
 \item{flag_names}{the flag names to set to `NA` if the flag is `TRUE`}
 }

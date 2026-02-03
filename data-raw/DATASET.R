@@ -69,10 +69,10 @@ for(x in ecos){
   cat("working on ecoregion ", x , "\n")
   for(y in parms){
   cat("working on parameter ", y , "\n")
-  df <- get_eco_limits(x,y)
+  data <- get_eco_limits(x,y)
 
-  if(!any(is.na(df))){
-    write.csv(df,
+  if(!any(is.na(data))){
+    write.csv(data,
               file.path("data-raw/usgs-limits", paste0("usgs-limit-", y,
                                             "-", gsub(" ", "-", x), ".csv")),
               quote=FALSE, row.names=FALSE)
@@ -83,10 +83,10 @@ for(x in ecos){
 
   #use 0.999 for max of max of min if higher
     for(x in files){
-      df <- read.csv(x)
+      data <- read.csv(x)
 
-      min <- df$min[df$statistic_id == 2]
-      max <- ifelse(df$max[df$statistic_id == 2] > df$q999[df$statistic_id ==1], df$max[df$statistic_id == 2],df$q999[df$statistic_id ==1])
+      min <- data$min[data$statistic_id == 2]
+      max <- ifelse(data$max[data$statistic_id == 2] > data$q999[data$statistic_id ==1], data$max[data$statistic_id == 2],data$q999[data$statistic_id ==1])
       par <- stringr::str_split_i(basename(x), "-",3)
       eco <- gsub("-", " ", gsub(".csv$", "", gsub("usgs-limit-[0-9]{5}-", "", basename(x))))
 

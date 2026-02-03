@@ -4,7 +4,7 @@
 #' Sometimes a continuous sonde signal will be shifted up or down by a consistent value for a period of time. This function will use the
 #' data before and after the selected observations to guess the appropriate value to correct the data by
 #'
-#' @param df a data.frame with sonde data
+#' @param data a data.frame with sonde data
 #' @param par the parameter being corrected
 #' @param index the index values of the rows that need to be shifted
 
@@ -13,12 +13,12 @@
 #'
 #' @examples
 #' guess_shift(raw_sonde, "Cond_uS_cm", 1591:1630)
-guess_shift <- function(df, par, index){
+guess_shift <- function(data, par, index){
   start <- min(index, na.rm = TRUE)
   end <- max(index, na.rm = TRUE)
 
   #check difference between start and points before
-    vals <- df[[par]]
+    vals <- data[[par]]
 
     before <- vals[(start-5):(start-1)]
     start_dif <- mean(before, na.rm = TRUE) -  vals[start]
@@ -38,7 +38,7 @@ guess_shift <- function(df, par, index){
 #' Sometimes a continuous sonde signal will be shifted up or down by a consistent value for a period of time, this will adjust the
 #' dataset for those values by that set amount.
 #' @md
-#' @param df a data.frame with sonde data
+#' @param data a data.frame with sonde data
 #' @param par the parameter being corrected
 #' @param index the index values of the rows that need to be shifted
 #' @param shift_val the value to shift the selected data by, if `NULL`, it will be guessed using \link[SondePolishR]{guess_shift}
@@ -48,19 +48,19 @@ guess_shift <- function(df, par, index){
 #'
 #' @examples
 #' raw_sonde$Cond_uS_cm[1591:1600]
-#' df <- shift_points(raw_sonde, "Cond_uS_cm", 1591:1630)
-#' df$Cond_uS_cm[1591:1600]
+#' data <- shift_points(raw_sonde, "Cond_uS_cm", 1591:1630)
+#' data$Cond_uS_cm[1591:1600]
 
-shift_points <- function(df, par, index, shift_val=NULL){
-  stopifnot(inherits(df, "data.frame"), is.character(par))
+shift_points <- function(data, par, index, shift_val=NULL){
+  stopifnot(inherits(data, "data.frame"), is.character(par))
 
   #if not specified, guess
   if(is.null(shift_val)){
-    shift_val <- guess_shift(df, par, index)
+    shift_val <- guess_shift(data, par, index)
   }
 
   #get new points
-  df[index, par] <- df[index, par] + shift_val
+  data[index, par] <- data[index, par] + shift_val
 
-  return(df)
+  return(data)
 }

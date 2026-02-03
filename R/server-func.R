@@ -2,25 +2,25 @@
 
 #' Update numeric input with limits from sonde data
 #'
-#' @param df data.frame with sonde data
+#' @param data data.frame with sonde data
 #' @param y_var parameter to plot
 #' @param session the environment that can be used to access information and functionality relating to the session
 #' @export
-update_limits <- function(df, y_var, session){
+update_limits <- function(data, y_var, session){
   observeEvent(y_var(), {
-    req(df())               # make sure df is available
+    req(data())               # make sure data is available
     req(y_var())        # make sure the input exists
-    req(y_var() %in% names(df()))  # make sure column exists
+    req(y_var() %in% names(data()))  # make sure column exists
 
     updateNumericInput(
       session,
       "min",
-      value = min(df()[[y_var()]], na.rm=TRUE))
+      value = min(data()[[y_var()]], na.rm=TRUE))
 
     updateNumericInput(
       session,
       "max",
-      value = max(df()[[y_var()]], na.rm=TRUE))
+      value = max(data()[[y_var()]], na.rm=TRUE))
   })
 }
 
@@ -30,7 +30,7 @@ update_limits <- function(df, y_var, session){
 #' Natively, when plotly redraws, it will remove any user interactions like zooming. This function
 #' will capture the zoom level and apply it when redrawing.
 #'
-#' @param df the data.frame with the sonde data
+#' @param data the data.frame with the sonde data
 #' @param y_var the y_var
 #' @param plot_id the plot_id of the plot to keep zoom steady
 #'
@@ -39,7 +39,7 @@ update_limits <- function(df, y_var, session){
 #' -  yaxis$range with the start and end values for the y-axis range
 #' @export
 #' @md
-preserve_zoom <- function(df, y_var, plot_id) {
+preserve_zoom <- function(data, y_var, plot_id) {
   d <- reactiveVal()
   plot_lyout <- reactiveValues(xaxis = list(), yaxis = list())
 

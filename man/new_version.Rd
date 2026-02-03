@@ -4,14 +4,14 @@
 \alias{new_version}
 \title{Checks if the data is different than the current saved version}
 \usage{
-new_version(df)
+new_version(data)
 }
 \arguments{
-\item{df}{the data.frame to check to see if it's new}
+\item{data}{the data.frame to check to see if it's new}
 }
 \value{
-TRUE if df differs from the previous version,
-FALSE if df is the same as the previous version
+TRUE if data differs from the previous version,
+FALSE if data is the same as the previous version
 }
 \description{
 Checks if the data is different than the current saved version

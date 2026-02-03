@@ -141,13 +141,13 @@ prj_path <- character() #initialize path for data
 
 #' Checks if the data is different than the current saved version
 #'
-#' @param df the data.frame to check to see if it's new
+#' @param data the data.frame to check to see if it's new
 #'
-#' @returns TRUE if df differs from the previous version,
-#' FALSE if df is the same as the previous version
+#' @returns TRUE if data differs from the previous version,
+#' FALSE if data is the same as the previous version
 #' @export
 #'
-new_version <- function(df){
+new_version <- function(data){
 
   #browser()
   #get saved versions
@@ -159,5 +159,5 @@ new_version <- function(df){
 
   last <- current[[length(current)]]
 
-  !isTRUE(all.equal(df, last))
+  !isTRUE(all.equal(data, last))
 }

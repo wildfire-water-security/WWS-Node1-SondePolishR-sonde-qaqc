@@ -7,16 +7,16 @@
 \usage{
 confirm_changes_UI(id, note = NULL)
 
-confirm_changes_server(id, df, index = NULL, par, flag_name, prj_path)
+confirm_changes_server(id, data, index = NULL, par, flag_name, prj_path)
 }
 \arguments{
 \item{id}{the shiny ID of the action button}
 
 \item{note}{an optional note to add to the action button to provide more directions}
 
-\item{df}{the sonde data.frame that will be flagged}
+\item{data}{the sonde data.frame that will be flagged}
 
-\item{index}{the index values of the rows to flag in df}
+\item{index}{the index values of the rows to flag in data}
 
 \item{par}{the parameter to flag}
 
