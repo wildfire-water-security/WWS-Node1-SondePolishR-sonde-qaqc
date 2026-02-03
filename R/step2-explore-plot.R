@@ -50,97 +50,115 @@ explore_data_UI <- function(id){
 }
 
 # Server Function
-explore_data_server <- function(id, df){
+#' Visualize dataset by analyte
+#'
+#' Plots loaded dataset with options to explore full dataset or view the data in weekly sections.
+#' Plots are created using `plotly` so they are interactive. Module also allows the user to view
+#' the changes over the dataset versions via row selection in a table via the `log`.
+#'
+#' @param id An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.
+#' @param data A reactive holding the loaded dataset.
+#' @md
+#' @noRd
+#' @returns Invisible NULL
+#'
+explore_data_server <- function(id, data){
   moduleServer(id, function(input, output, session){
-    #get column names after file upload (dynamic)
-    y_var <- update_parms_server("update_parms", df, choices_fun = nice_yvar)
 
+  #get column names after file upload (dynamic)
+    y_var <- update_parms_server("update_parms", data, choices_fun = nice_yvar)
 
-  #set df to hold the thing that's being plotted
-    plot_df <- reactiveVal()
-
-    # initialize
-    observeEvent(df(), {plot_df(df())}, once = TRUE)
-
-    observeEvent(input$log_table_rows_selected, {
-      req(input$log_table_rows_selected)
-
-      new_data <- get_data()[[input$log_table_rows_selected]]
-      plot_df(new_data)
-    })
-
-  #dealing with dates
-    #update date range
-    observeEvent(plot_df(),{
-      req(df())
-      updateDateRangeInput(inputId = "date_range", start = min(plot_df()$Date_MM_DD_YYYY), end=max(plot_df()$Date_MM_DD_YYYY))
-
-      # updateSelectInput(
-      #   session,
-      #   "version",
-      #   choices = list(),
-      #   selected = choices[[1]]
-      # )
-    })
-
-    #switch to the first week if week view is flipped
-    observeEvent(input$week_view,
-                 if(input$week_view){
-                   req(df())
-
-                   start <- min(plot_df()$Date_MM_DD_YYYY)
-                   end <- start + lubridate::weeks(1)
-                   updateDateRangeInput(inputId = "date_range", start = start, end=end)
-
-                   updateActionButton(inputId = "next_week", disabled = FALSE)
-                   updateActionButton(inputId = "prev_week", disabled = FALSE)
-
-                 }else{
-                   req(df())
-
-                   updateDateRangeInput(inputId = "date_range", start = min(plot_df()$Date_MM_DD_YYYY), end=max(plot_df()$Date_MM_DD_YYYY))
-
-                   updateActionButton(inputId = "next_week", disabled = TRUE)
-                   updateActionButton(inputId = "prev_week", disabled = TRUE)
-                 })
-
-    #if prev week is hit, go to previous week
-      observeEvent(input$prev_week,{
-        req(df())
-
-        rng <- input$date_range
-        start <- if(rng[1] <= min(plot_df()$Date_MM_DD_YYYY)){as.Date(min(plot_df()$Date_MM_DD_YYYY))}else{rng[1] - 7} #don't change if already at start
-        end <- start + 7
-        updateDateRangeInput(inputId = "date_range", start = start, end=end)
-      })
-
-
-    #if next week is hit, go to next week
-      observeEvent(input$next_week,{
-        req(df())
-
-        rng <- input$date_range
-        start <- if(rng[2] >= max(plot_df()$Date_MM_DD_YYYY)){rng[1]}else{rng[1] + 7}        # don't change if already at end
-        end <- start + 7
-        updateDateRangeInput(inputId = "date_range", start = start, end=end)
-      })
-
-
-    #create plot
-    output$exp_plot <- renderPlotly({
-      req(df(), y_var())
-      ggplot2::ggplot(plot_df(), ggplot2::aes(x=.data$DateTime, y=.data[[y_var()]])) +
-        ggplot2::geom_point() + ggplot2::scale_x_datetime(limits = as.POSIXct(input$date_range))
-    })
-
-    #create log table
+  #create log table
     output$log_table <- DT::renderDT({
-      req(df())
+      req(data())
 
       DT::datatable(
         get_log(),
         selection = list(mode = "single")
       )})
+
+  #set data to hold the thing that's being plotted
+    plot_data <- reactiveVal()
+
+    # initialize
+    observeEvent(data(), {plot_data(data())})
+
+    #if user selects a row in log -> update the data plotted
+    observeEvent(input$log_table_rows_selected, {
+      req(input$log_table_rows_selected)
+
+      new_data <- get_data()[[input$log_table_rows_selected]]
+      plot_data(new_data)
+    })
+
+
+  #create plot
+    output$exp_plot <- renderPlotly({
+      req(data(), y_var())
+      ggplot2::ggplot(plot_data(), ggplot2::aes(x=.data$DateTime, y=.data[[y_var()]])) +
+        ggplot2::geom_point() + ggplot2::scale_x_datetime(limits = as.POSIXct(input$date_range))
+    })
+
+  #dealing with dates
+    #get absolute min and max of dates
+    date_bounds <- reactive({
+      req(plot_data())
+      rng <- as.Date(range(plot_data()$Date_MM_DD_YYYY, na.rm = TRUE))
+      list(min = rng[1], max = rng[2])
+    })
+
+    #set initial range
+    observeEvent(data(),{
+      req(date_bounds())
+      updateDateRangeInput(inputId = "date_range", start = date_bounds()$min, end = date_bounds()$max)
+    })
+
+    #change default dates when week_view flipped on or off
+    observeEvent(input$week_view, {
+      req(plot_data(), date_bounds())
+
+      if(input$week_view) {
+        start <- date_bounds()$min
+        end   <- start + 7
+
+        updateDateRangeInput(inputId = "date_range", start = start, end = end)
+
+        updateActionButton(inputId = "next_week", disabled = FALSE)
+        updateActionButton(inputId = "prev_week", disabled = FALSE)
+      }else{
+        updateDateRangeInput(inputId = "date_range", start = date_bounds()$min, end = date_bounds()$max)
+
+        updateActionButton(inputId = "next_week", disabled = TRUE)
+        updateActionButton(inputId = "prev_week", disabled = TRUE)
+      }
+    })
+
+    #update date range when buttons for next and previous clicked
+    shift_week <- function(direction = c("prev", "next")) {
+      req(input$date_range, date_bounds())
+
+      step <- if (direction == "prev") -7 else 7
+
+      start <- input$date_range[1] + step
+      start <- max(start, date_bounds()$min)
+      start <- min(start, date_bounds()$max - 7)
+
+      end <- start + 7
+      updateDateRangeInput(inputId = "date_range", start = start, end = end)
+
+    }
+
+    observeEvent(input$prev_week, {
+      req(data())
+      shift_week("prev")
+    })
+
+    observeEvent(input$next_week, {
+      req(data())
+      shift_week("next")
+    })
+
+
 
   })
 }
