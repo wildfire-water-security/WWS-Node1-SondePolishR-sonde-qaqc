@@ -16,6 +16,7 @@
 #'
 #' @rdname confirm-changes
 #' @export
+#' @keywords internal
 #'
 confirm_changes_UI <- function(id, note=NULL) {
   ns <- NS(id)

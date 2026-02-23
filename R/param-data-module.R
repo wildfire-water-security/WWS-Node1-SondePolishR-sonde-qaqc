@@ -1,6 +1,8 @@
 #general code used select parameter for plotting and update based on data
 
 # UI
+#' @rdname update-parameters
+#' @export
 update_parms_UI <- function(id) {
   ns <- NS(id)
   tagList(
@@ -24,7 +26,9 @@ update_parms_UI <- function(id) {
 #'
 #' @returns the selected variable `y_var` as a reactive object
 #' @md
-#' @noRd
+#' @export
+#' @keywords internal
+#' @rdname update-parameters
 update_parms_server <- function(id, data, choices_fun = NULL) {
   moduleServer(id, function(input, output, session) {
 

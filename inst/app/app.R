@@ -26,18 +26,18 @@ ui <-  page_fillable(
     navset_card_pill(
       #step 1: load data
       nav_panel("1. Load Data",
-                load_data_UI("data1"),
+                SondePolishR::load_data_UI("data1"),
                 ),
       nav_panel("2. Visualize",
-                explore_data_UI("data2")
+                SondePolishR::explore_data_UI("data2")
                 ),
       nav_panel("3. Physical Limits",
-                phys_limits_UI("data3")
+                SondePolishR::phys_limits_UI("data3")
                 ),
       nav_panel("4. Shift Correction",
                 sidebarLayout(
                   sidebarPanel(
-                    update_parms_UI("update_parms"), #get parameters to view
+                    SondePolishR::update_parms_UI("update_parms"), #get parameters to view
                     accordion(
                       accordion_panel(
                         title= "Shift Value",
@@ -50,7 +50,7 @@ ui <-  page_fillable(
                       ),
                       accordion_panel(
                         title="Flag Points",
-                        confirm_changes_UI("flag2")
+                        SondePolishR::confirm_changes_UI("flag2")
                       )
                     )
 
@@ -80,13 +80,13 @@ ui <-  page_fillable(
 #' @examples
 server <- function(input, output, session) {
   #step 1: load data
-   data <- load_data_server("data1")
+   data <- SondePolishR::load_data_server("data1")
 
   #step 2: plot data
-   explore_data_server("data2", data)
+   SondePolishR::explore_data_server("data2", data)
 
   #step 3: physical limits
-   #data2 <- phys_limits_server("data3", data, prj_path)
+   #data2 <- SondePolishR::phys_limits_server("data3", data, prj_path)
 
   #step 4: shift points up
      #make a copy of file for this step

@@ -1,4 +1,5 @@
-
+#' @export
+#' @rdname physical-limits
 phys_limits_UI <- function(id){
   ns <- NS(id) #line to make module work
 
@@ -6,7 +7,7 @@ phys_limits_UI <- function(id){
 
     sidebarLayout(
       sidebarPanel(
-        update_parms_UI(ns("update_parms")),
+        SondePolishR::update_parms_UI(ns("update_parms")),
 
         #manually specify
         accordion(
@@ -58,6 +59,19 @@ phys_limits_UI <- function(id){
   )}
 
 
+#' Flagging data the is outside physical limits
+#'
+#' There are certain thresholds for some of the sonde parameters that aren't physical possible (i.e, water temperature above 100 deg C).
+#' This module visualizes those limits and flags data outside the limits.
+#'
+#' @keywords interal
+#'
+#' @param id An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.
+#' @param data A reactive holding the loaded dataset.
+#' @param prj_path remove in function
+#'
+#' @export
+#' @rdname physical-limits
 phys_limits_server <- function(id, data, prj_path){
   moduleServer(id, function(input, output, session){
 
@@ -70,7 +84,7 @@ phys_limits_server <- function(id, data, prj_path){
     })
 
   #update choices based on data table
-    y_var <- update_parms_server("update_parms", data, choices_fun = nice_yvar)
+    y_var <- SondePolishR::update_parms_server("update_parms", data, choices_fun = nice_yvar)
 
     #update ecoregion choices based on y_Var
       observeEvent(y_var(), {

@@ -1,6 +1,8 @@
 ##step 1 of the app: load data into the app
 
 # UI Function
+#' @rdname load-data
+#' @export
 load_data_UI <- function(id){
 
   ns <- NS(id) #line to make module work
@@ -62,9 +64,10 @@ load_data_UI <- function(id){
 #'
 #' @param id An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.
 #' @md
-#' @noRd
+#' @export
+#' @keywords internal
 #' @returns The loaded data as a reactive object.
-#'
+#' @rdname load-data
 load_data_server <- function(id){
   moduleServer(id, function(input, output, session){
 

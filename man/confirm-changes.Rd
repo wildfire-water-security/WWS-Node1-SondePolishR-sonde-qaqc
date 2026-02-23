@@ -28,3 +28,4 @@ confirm_changes_server(id, data, index = NULL, par, flag_name, prj_path)
 The UI creates a button to allow user to save the changes made to the data. The server function will provide a message to the user to
 let them know the changes (or lack of changes made), add flags to the dataset, and save the dataset as a new version.
 }
+\keyword{internal}

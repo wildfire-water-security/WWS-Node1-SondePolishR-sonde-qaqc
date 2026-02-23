@@ -1,6 +1,8 @@
 ##step 2 of the app: exploratory plotting with plotly
 
 # UI Function
+#' @export
+#' @rdname explore-data
 explore_data_UI <- function(id){
   ns <- NS(id) #line to make module work
 
@@ -22,7 +24,7 @@ explore_data_UI <- function(id){
         tags$h4("Adjust Plotting"),
 
         #select parameter to plot
-        update_parms_UI(ns("update_parms")),
+        SondePolishR::update_parms_UI(ns("update_parms")),
 
         #select date range to view with week selectors
         dateRangeInput(NS(id, "date_range"), label="Select Data Date Range"),
@@ -59,14 +61,16 @@ explore_data_UI <- function(id){
 #' @param id An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.
 #' @param data A reactive holding the loaded dataset.
 #' @md
-#' @noRd
+#' @keywords internal
+#' @export
+#' @rdname explore-data
 #' @returns Invisible NULL
 #'
 explore_data_server <- function(id, data){
   moduleServer(id, function(input, output, session){
 
   #get column names after file upload (dynamic)
-    y_var <- update_parms_server("update_parms", data, choices_fun = nice_yvar)
+    y_var <- SondePolishR::update_parms_server("update_parms", data, choices_fun = nice_yvar)
 
   #create log table
     output$log_table <- DT::renderDT({
@@ -93,10 +97,15 @@ explore_data_server <- function(id, data){
 
 
   #create plot
+    # plot_obj <- reactive({
+    #   req(data(), y_var())
+    #   ggplot2::ggplot(plot_data(), ggplot2::aes(x=.data$DateTime, y=.data[[y_var()]])) +
+    #     ggplot2::geom_point() + ggplot2::scale_x_datetime(limits = as.POSIXct(input$date_range))
+    # })
     output$exp_plot <- renderPlotly({
       req(data(), y_var())
-      ggplot2::ggplot(plot_data(), ggplot2::aes(x=.data$DateTime, y=.data[[y_var()]])) +
-        ggplot2::geom_point() + ggplot2::scale_x_datetime(limits = as.POSIXct(input$date_range))
+         ggplot2::ggplot(plot_data(), ggplot2::aes(x=.data$DateTime, y=.data[[y_var()]])) +
+         ggplot2::geom_point() + ggplot2::scale_x_datetime(limits = as.POSIXct(input$date_range))
     })
 
   #dealing with dates
@@ -159,6 +168,13 @@ explore_data_server <- function(id, data){
     })
 
 
+    # exportTestValues(
+    #   plot_obj = plot_obj()
+    # )
+
+    exportTestValues(
+      y_var = y_var(),
+      date_range = input$date_range)
 
   })
 }
