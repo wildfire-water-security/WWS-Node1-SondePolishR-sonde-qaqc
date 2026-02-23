@@ -1,0 +1,85 @@
+{
+  "input": {
+    "data1-file": {
+      "name": [
+        "example-sonde-project.RDS"
+      ],
+      "size": [
+        145126
+      ],
+      "type": [
+        ""
+      ],
+      "datapath": [
+        "0.RDS"
+      ]
+    },
+    "data1-save_file": 0,
+    "data1-tz": "Etc/GMT+8",
+    "data2-date_range": [
+      "2024-04-22",
+      "2024-04-29"
+    ],
+    "data2-next_week": 0,
+    "data2-prev_week": 0,
+    "data2-update_parms-y_var": "Cond_uS_cm",
+    "data2-version": "",
+    "data2-week_view": true,
+    "data3-ecoregion": "Coast Range",
+    "data3-flag1-rm_points": 0,
+    "data3-lat": "",
+    "data3-long": "",
+    "data3-max": null,
+    "data3-min": null,
+    "data3-update_parms-y_var": "",
+    "data3-usgs_limit": false,
+    "flag2-rm_points": 0,
+    "shift_val": 0,
+    "update_parms-y_var": ""
+  },
+  "output": {
+    "data1-path_text_box": {
+      "html": "<span style=\"background-color: #fff;border: 1px solid #ddd;padding: 6px 12px;&#10;            border-radius: 6px; display: inline-block;min-width: 120px;color: #343a40\">inst/extdata/example-sonde-project.RDS<\/span>",
+      "deps": [
+
+      ]
+    }
+  },
+  "export": {
+    "data2-log_table": {
+      "datetime": [
+        "2026-01-30T23:31:14Z",
+        "2026-01-30T23:31:14Z",
+        "2026-01-30T23:31:14Z"
+      ],
+      "parameter": [
+        "All",
+        "Cond_uS_cm",
+        "Cond_uS_cm"
+      ],
+      "step": [
+        "Initial Load",
+        "test step",
+        "test step2"
+      ],
+      "n_changed": [
+        0,
+        4,
+        101
+      ],
+      "user": [
+        "smith",
+        "smith",
+        "smith"
+      ],
+      "version": [
+        "raw",
+        "ae82b5a3c51f73d907c92729ec5a19c6",
+        "fae3dc14bd21f5b2f8b92a253548e8ad"
+      ]
+    },
+    "data2-plot_obj": {
+
+    }
+  }
+}

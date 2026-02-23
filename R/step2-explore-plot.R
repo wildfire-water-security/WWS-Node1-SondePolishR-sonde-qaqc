@@ -97,22 +97,21 @@ explore_data_server <- function(id, data){
 
 
   #create plot
-    # plot_obj <- reactive({
-    #   req(data(), y_var())
-    #   ggplot2::ggplot(plot_data(), ggplot2::aes(x=.data$DateTime, y=.data[[y_var()]])) +
-    #     ggplot2::geom_point() + ggplot2::scale_x_datetime(limits = as.POSIXct(input$date_range))
-    # })
-    output$exp_plot <- renderPlotly({
+    plot_obj <- reactive({
       req(data(), y_var())
-         ggplot2::ggplot(plot_data(), ggplot2::aes(x=.data$DateTime, y=.data[[y_var()]])) +
-         ggplot2::geom_point() + ggplot2::scale_x_datetime(limits = as.POSIXct(input$date_range))
+      ggplot2::ggplot(plot_data() %>% dplyr::filter(.data$Date_MM_DD_YYYY >= input$date_range[1] & .data$Date_MM_DD_YYYY <= input$date_range[2]),
+                      ggplot2::aes(x=.data$DateTime, y=.data[[y_var()]])) +
+        ggplot2::geom_point(na.rm = TRUE)
+    })
+    output$exp_plot <- renderPlotly({
+      plot_obj()
     })
 
   #dealing with dates
     #get absolute min and max of dates
     date_bounds <- reactive({
       req(plot_data())
-      rng <- as.Date(range(plot_data()$Date_MM_DD_YYYY, na.rm = TRUE))
+      rng <- as.Date(range(plot_data()$Date_MM_DD_YYYY, na.rm = TRUE), tz=attr(plot_data()$Date_MM_DD_YYYY, "tz"))
       list(min = rng[1], max = rng[2])
     })
 
@@ -167,14 +166,11 @@ explore_data_server <- function(id, data){
       shift_week("next")
     })
 
-
-    # exportTestValues(
-    #   plot_obj = plot_obj()
-    # )
-
+  #export plot so we can check it
     exportTestValues(
-      y_var = y_var(),
-      date_range = input$date_range)
+      plot_obj = plot_obj(),
+      log_table = get_log()
+    )
 
   })
 }
