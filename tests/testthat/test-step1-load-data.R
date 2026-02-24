@@ -16,6 +16,7 @@ test_that("module sever 1 works loading a csv", {
       expect_s3_class(data(), "data.frame")
       expect_equal(type(), "csv")
       expect_equal(prj_path_rv(), character()) #no save path set
+      expect_equal(get_prjpath(), character()) #no save path set
 
     #check that a log is written
       expect_equal(nrow(get_log()), 1)

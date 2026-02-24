@@ -32,7 +32,7 @@ ui <-  page_fillable(
                 SondePolishR::explore_data_UI("data2")
                 ),
       nav_panel("3. Physical Limits",
-                SondePolishR::phys_limits_UI("data3")
+                SondePolishR::limits_UI("data3")
                 ),
       nav_panel("4. Shift Correction",
                 sidebarLayout(
@@ -86,7 +86,7 @@ server <- function(input, output, session) {
    SondePolishR::explore_data_server("data2", data)
 
   #step 3: physical limits
-   #data2 <- SondePolishR::phys_limits_server("data3", data, prj_path)
+   SondePolishR::limits_server("data3", data)
 
   #step 4: shift points up
      #make a copy of file for this step

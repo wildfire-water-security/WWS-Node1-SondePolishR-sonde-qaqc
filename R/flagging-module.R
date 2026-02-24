@@ -46,14 +46,14 @@ confirm_changes_server <- function(id, data, index=NULL, par, flag_name, prj_pat
 
   moduleServer(id, function(input, output, session) {
 
-    updated_data <- reactiveVal(data()) # start with the original data
+    updated_data <- data # start with the original data
 
     # When button is clicked, update data in place
     observeEvent(input$rm_points,{
       req(data(), par()) #ensure we have what we need
 
       #check if there's a project path, if no error
-      if(length(prj_path()) == 0){
+      if(length(prj_path) == 0){
         # only show alert if running in shiny
         if (!is.null(getDefaultReactiveDomain())) {
           shinyalert::shinyalert(
@@ -76,7 +76,7 @@ confirm_changes_server <- function(id, data, index=NULL, par, flag_name, prj_pat
                                  par = par(),
                                  index = index(),
                                  flag_name = flag_name,
-                                 prj_path = prj_path())
+                                 prj_path = prj_path)
 
 
             #update data
@@ -84,7 +84,12 @@ confirm_changes_server <- function(id, data, index=NULL, par, flag_name, prj_pat
             })
 
     # Return the updated data reactive
-    return(updated_data)
+    #export plot and table so we can check it
+    exportTestValues(
+      flagged_data = updated_data()
+    )
+
+    #return(updated_data)
 
     })
   }

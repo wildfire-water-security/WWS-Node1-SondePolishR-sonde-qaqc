@@ -1,6 +1,6 @@
 #' @export
-#' @rdname physical-limits
-phys_limits_UI <- function(id){
+#' @rdname limits
+limits_UI <- function(id){
   ns <- NS(id) #line to make module work
 
   tagList(
@@ -59,34 +59,29 @@ phys_limits_UI <- function(id){
   )}
 
 
-#' Flagging data the is outside physical limits
+#' Flagging data the is outside specified limits
 #'
 #' There are certain thresholds for some of the sonde parameters that aren't physical possible (i.e, water temperature above 100 deg C).
-#' This module visualizes those limits and flags data outside the limits.
+#' This module visualizes those limits and flags data outside specified limits.
 #'
-#' @keywords interal
+#' @keywords internal
 #'
 #' @param id An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.
 #' @param data A reactive holding the loaded dataset.
-#' @param prj_path remove in function
 #'
 #' @export
-#' @rdname physical-limits
-phys_limits_server <- function(id, data, prj_path){
+#' @rdname limits
+limits_server <- function(id, data){
   moduleServer(id, function(input, output, session){
 
-    #make a copy of file for this step
-    data_phy_lim <- reactiveVal(NULL)
-
-    observe({
-      req(data())
-      data_phy_lim(data())   # initialize as soon as data() exists
-    })
+    # initialize copy of file for this step
+    data_lim <- reactiveVal()
+    observeEvent(data(), {data_lim(data())})
 
   #update choices based on data table
     y_var <- SondePolishR::update_parms_server("update_parms", data, choices_fun = nice_yvar)
 
-    #update ecoregion choices based on y_Var
+  #update ecoregion choices based on y_var
       observeEvent(y_var(), {
         req(data(), y_var())
         eco_options <- SondePolishR::phys_limits %>% filter(.data$metric == y_var())
@@ -103,7 +98,7 @@ phys_limits_server <- function(id, data, prj_path){
       })
 
   #update limits values from y_var
-    update_limits(data_phy_lim, y_var, session)
+      SondePolishR::update_limits(data_lim, y_var, session)
 
   #get ecoregion if points are supplied
     observeEvent(c(input$lat, input$long), {
@@ -111,40 +106,41 @@ phys_limits_server <- function(id, data, prj_path){
       updateSelectInput(
         session,
         "ecoregion",
-        selected = get_ecoregion(c(input$lat, input$long))
+        selected = SondePolishR::get_ecoregion(c(input$lat, input$long))
       )})
 
   #get limits for plotting
-    limit <- reactive({
-      req(input$min, input$max, y_var())
-      if(input$usgs_limit){
-        limit <- SondePolishR::phys_limits %>% filter(.data$ecoregion == input$ecoregion & .data$metric == y_var())
+    usgs_limit <- reactiveVal() #initialize
+    observeEvent(list(input$usgs_limit, input$ecoregion, y_var()), {
+      req(y_var(), input$ecoregion, input$usgs_limit == TRUE)
 
-        if(nrow(limit) == 0){
-          shinyalert::shinyalert(
-            title = "No USGS Limits Found",
-            text = "No USGS limits available for this parameter and ecoregion, please use manual limits",
-            type = "error")
-          return(list(min = input$min, max = input$max))
-        }else{
-          return(list(min = limit$min, max = limit$max))
+      lim <- SondePolishR::phys_limits %>% filter(.data$ecoregion == input$ecoregion & .data$metric == y_var())
 
-        }}else{
-          return(list(min = input$min, max = input$max))
+      if(nrow(lim) > 0){
+        usgs_limit(lim)
+        updateNumericInput(session, "min", value=lim$min)
+        updateNumericInput(session, "max", value=lim$max)
+      }else{
+        shinyalert::shinyalert(
+          title = "No USGS Limits Found",
+          text = "No USGS limits available for this parameter and ecoregion, please use manual limits",
+          type = "error")
+          shinyWidgets::updateSwitchInput(session, "usgs_limit", value=FALSE)
         }
+
     })
 
   #get data for plotting
     data_table <- reactive({
-      req(y_var(), data_phy_lim())
-      physical_limit(data_phy_lim(),limit()$min, limit()$max, par=y_var())})
+      req(y_var(), data_lim(), input$min, input$max)
+      SondePolishR::physical_limit(data_lim(), input$min, input$max, par=y_var())})
 
     data_plot <- reactive({
-      req(y_var(),data_phy_lim())
+      req(y_var(),data_lim(),input$min, input$max)
       if(any(!is.na(selected()))){
-        sep_data <- physical_limit(data_phy_lim(),limit()$min, limit()$max, par=y_var(), keep=selected())
+        sep_data <- SondePolishR::physical_limit(data_lim(),input$min, input$max, par=y_var(), keep=selected())
       }else{
-        sep_data <- physical_limit(data_phy_lim(),limit()$min, limit()$max, par=y_var())
+        sep_data <- SondePolishR::physical_limit(data_lim(),input$min, input$max, par=y_var())
       }
     })
 
@@ -168,12 +164,12 @@ phys_limits_server <- function(id, data, prj_path){
     })
 
   #make plot
-    output$limit_plot <- renderPlotly({
-      req(data_plot(), limit, y_var())
+    plot_obj <- reactive({
+      req(data_plot(), input$min, input$max, y_var())
 
-      p <- ggplot(data_plot()$within, aes(x=.data$DateTime, y=.data[[y_var()]])) + geom_point() +
-        ggplot2::geom_hline(yintercept = limit()$min, color="darkred") +
-        ggplot2::geom_hline(yintercept = limit()$max, color="darkred")
+      p <- ggplot(data_plot()$within, aes(x=.data$DateTime, y=.data[[y_var()]])) + geom_point(na.rm=TRUE) +
+        ggplot2::geom_hline(yintercept = input$min, color="darkred") +
+        ggplot2::geom_hline(yintercept = input$max, color="darkred")
 
       if(nrow(data_plot()$outlier) > 0){
         p <- p + geom_point(data=data_plot()$outlier, mapping=aes(x=.data$DateTime, y=.data[[y_var()]]), color="darkred")
@@ -182,19 +178,25 @@ phys_limits_server <- function(id, data, prj_path){
       return(p)
     })
 
+    #return plot
+    output$limit_plot <- renderPlotly({plot_obj()})
+
+    #export plot and table so we can check it
+    exportTestValues(
+      plot_obj = plot_obj(),
+      outlier_tab = dat()
+    )
 
   #confirm changes
     index <- reactive({data_plot()$outlier$Index }) #get index of points to remove
-    confirm_changes_server(
+
+    SondePolishR::confirm_changes_server(
       id = "flag1",
-      data = data_phy_lim,
+      data = data_lim,
       index = index,
       par = y_var,
-      flag_name = "phy_limit",
-      prj_path = prj_path
+      flag_name = "limits",
+      prj_path = get_prjpath()
     )
-
-    return(data_phy_lim) #don't give (), it will break everything
-
 
   })}
