@@ -13,8 +13,8 @@ test_that("skip guessing works", {
 
 test_that("flags are omitted", {
  #add flags
-  data <- add_flags(raw_sonde, "fDOM_QSU", "test_flag", c(1,2,3))
-  data <- add_flags(data, "fDOM_QSU", "test_flag2", c(1,3))
+  data <- add_flags(raw_sonde, "fDOM_QSU", "test_flag", c(1,2,3), makeNA=FALSE)
+  data <- add_flags(data, "fDOM_QSU", "test_flag2", c(1,3), makeNA=FALSE)
 
   expect_equal(data$fDOM_QSU[1], 6.23)
   expect_equal(data$fDOM_QSU[2], 6.18)

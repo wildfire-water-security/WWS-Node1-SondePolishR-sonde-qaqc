@@ -62,6 +62,7 @@
 #' @importFrom stringr str_split_i
 #' @importFrom terra crs
 #' @importFrom terra ext
+#' @importFrom thematic thematic_shiny
 #' @importFrom tidyr drop_na
 #' @importFrom tidyselect all_of
 #' @importFrom tools file_ext

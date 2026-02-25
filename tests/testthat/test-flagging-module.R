@@ -69,7 +69,9 @@ test_that("flag_data is applied when inputs are valid", {
         index = reactiveVal(1:2),
         par = reactiveVal("Cond_uS_cm"),
         flag_name = "flagged",
-        prj_path = reactiveVal(test_dir)
+        prj_path = reactiveVal(test_dir),
+        log = reactiveVal(get_log())
+
       ))
 
 

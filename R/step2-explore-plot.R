@@ -71,11 +71,11 @@ explore_data_server <- function(id, sdata, log){
   moduleServer(id, function(input, output, session){
 
   #get column names after file upload (dynamic)
-    y_var <- SondePolishR::update_parms_server("update_parms", data, choices_fun = nice_yvar)
+    y_var <- SondePolishR::update_parms_server("update_parms", sdata, choices_fun = nice_yvar)
 
   #create log table
     output$log_table <- DT::renderDT({
-      req(data())
+      req(sdata())
 
       DT::datatable(
         log(),
@@ -86,7 +86,7 @@ explore_data_server <- function(id, sdata, log){
     plot_data <- reactiveVal()
 
     # initialize
-    observeEvent(data(), {plot_data(data())})
+    observeEvent(sdata(), {plot_data(sdata())})
 
     #if user selects a row in log -> update the data plotted
     observeEvent(input$log_table_rows_selected, {
@@ -99,7 +99,7 @@ explore_data_server <- function(id, sdata, log){
 
   #create plot
     plot_obj <- reactive({
-      req(data(), y_var())
+      req(sdata(), y_var())
       ggplot2::ggplot(plot_data() %>% dplyr::filter(.data$Date_MM_DD_YYYY >= input$date_range[1] & .data$Date_MM_DD_YYYY <= input$date_range[2]),
                       ggplot2::aes(x=.data$DateTime, y=.data[[y_var()]])) +
         ggplot2::geom_point(na.rm = TRUE)
@@ -117,7 +117,7 @@ explore_data_server <- function(id, sdata, log){
     })
 
     #set initial range
-    observeEvent(data(),{
+    observeEvent(sdata(),{
       req(date_bounds())
       updateDateRangeInput(inputId = "date_range", start = date_bounds()$min, end = date_bounds()$max)
     })
@@ -158,12 +158,12 @@ explore_data_server <- function(id, sdata, log){
     }
 
     observeEvent(input$prev_week, {
-      req(data())
+      req(sdata())
       shift_week("prev")
     })
 
     observeEvent(input$next_week, {
-      req(data())
+      req(sdata())
       shift_week("next")
     })
 

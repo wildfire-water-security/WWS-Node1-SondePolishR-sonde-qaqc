@@ -84,7 +84,7 @@ load_data_server <- function(id, sdata, prj_path, log){
       type(tools::file_ext(input$file$datapath))
 
       if(type() == "csv"){
-        data(read_sonde(input$file$datapath, tz=input$tz))  # read into R
+        sdata(read_sonde(input$file$datapath, tz=input$tz))  # read into R
         prj_path(character()) #set prj_path var
 
         log(get_log())

@@ -1,12 +1,12 @@
 library(shinytest2)
+library(shiny)
+library(SondePolishR)
 
 test_that("{shinytest2} recording: checking-module3", {
-  # Don't run these tests on the CRAN build servers
-  skip_on_cran()
-
   #initial app set up
-  local_app_support(test_path("../../inst/app"))
-  app <- AppDriver$new(test_path("../../inst/app"), variant = platform_variant(),
+  app_dir <- system.file("app", package = "SondePolishR")
+  local_app_support(app_dir)
+  app <- AppDriver$new(app_dir, variant = platform_variant(),
                        name = "checking-module3", height = 911, width = 1619)
   app$upload_file(`data1-file` = file.path(test_path(), "testdata/example-sonde-project.RDS"))
 

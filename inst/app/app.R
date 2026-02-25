@@ -84,7 +84,7 @@ ui <-  page_fillable(
 server <- function(input, output, session) {
   #define things that get passed around
     prj_path <- reactiveVal(NULL) #the project path to save data to
-    data <- reactiveVal(NULL) #the current dataset
+    sdata <- reactiveVal(NULL) #the current dataset
     log <- reactiveVal(NULL) #the data log
 
   #step 1: load data
@@ -99,7 +99,7 @@ server <- function(input, output, session) {
   #export values for tests
    exportTestValues(
      prj_path = prj_path(),
-     sdata = {
+     data = {
        req(sdata())
        head(sdata())
      },
