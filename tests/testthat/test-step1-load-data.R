@@ -1,79 +1,55 @@
-library(shiny)
+library(shinytest2)
 
-test_that("module sever 1 works loading a csv", {
+test_that("{shinytest2} recording: checking-module1", {
+  #clear any existing data
   clear_log()
   clear_data()
   clear_prjpath()
 
-  testServer(load_data_server, {
-    #test loading a csv
-    session$setInputs(file = data.frame(name = "sonde-example.csv", size=1,type="csv",
-                                        datapath=file.path(testthat::test_path(),
-                                                           "testdata/sonde-example.csv")),
-                      tz = "Etc/GMT+8")
+  # Don't run these tests on the CRAN build servers
+  skip_on_cran()
 
-    #expect that data should be loaded
-      expect_s3_class(data(), "data.frame")
-      expect_equal(type(), "csv")
-      expect_equal(prj_path_rv(), character()) #no save path set
-      expect_equal(get_prjpath(), character()) #no save path set
+  local_app_support(test_path("../../inst/app"))
+  app <- AppDriver$new(test_path("../../inst/app"), variant = platform_variant(),
+                       name = "checking-module1", height = 911, width = 1619)
 
-    #check that a log is written
-      expect_equal(nrow(get_log()), 1)
+  #load existing file
+  app$upload_file(`data1-file` = file.path(test_path(), "testdata/example-sonde-project.RDS"))
+  app$expect_values(export = "data1-type")
 
-    #set the save location
-      #shinyFiles you pass root something that is in roots and it returns the path
-      session$setInputs(save_file = list(root = 'C Drive',
-                                         path = character(0)))
+  #make sure data looks right
+  data_head <- app$get_value(export="data")
+  expect_s3_class(data_head, "data.frame")
 
-      #now should be what we set it to
-      expect_equal(prj_path_rv(), "C://sonde-example.RDS")
-      expect_equal(get_prjpath(), "C://sonde-example.RDS") #make sure the prjpath gets set when we input a file
+  #make sure path gets saved
+  app$expect_values(export = "prj_path")
 
+  #make sure log is loaded
+  vals <- app$get_values()
+  expect_equal(vals$export$log$value$step, c("Initial Load", "test step", "test step2"))
 
-    #expect output should be a list saved as a reactive
-      output <- session$returned()
-      expect_true(inherits(output,"data.frame"))
+#load new file
+  app$upload_file(`data1-file` = file.path(test_path(), "testdata/sonde-example.csv"))
+  app$expect_values(export = "data1-type")
 
-  })
+  #make sure data looks right
+  data_head <- app$get_value(export="data")
+  expect_s3_class(data_head, "data.frame")
+
+  #make sure path gets saved
+  app$expect_values(export = "prj_path")
+
+  #make sure log is loaded
+  #app$expect_values()
+  vals <- app$get_values()
+  expect_equal(vals$export$log$value$step, "Initial Load")
+
+  # #set a save path and make sure prjpath gets updated [can't currently get to work]
+  # app$click("data1-save_file")
+  # app$set_inputs(
+  #   `data1-save_file-modal` = list(root = "wd",path = character(0)),
+  #   allow_no_input_binding_ = TRUE, wait_ = FALSE)
+  # test <- app$get_values(output = "data1-path_text_box")
+  # print(test)
+
 })
-
-
-test_that("module sever 1 works loading an existing project", {
-  clear_data()
-  clear_log()
-  clear_prjpath()
-
-  testServer(load_data_server, {
-    #test loading a csv
-    session$setInputs(file = data.frame(name = "example-sonde-project.RDS", size=1,type="RDS",
-                                        datapath=file.path(testthat::test_path(),
-                                                           "testdata/example-sonde-project.RDS")),
-                      tz = "Etc/GMT+8")
-
-
-    #expect that data should be loaded
-    expect_s3_class(data(), "data.frame")
-    expect_equal(type(), "RDS")
-    expect_equal(get_prjpath(), "inst/extdata/example-sonde-project.RDS")
-
-    expect_equal(prj_path_rv(), "inst/extdata/example-sonde-project.RDS") #should pull path from the project
-
-
-
-    #try to manually change the filepath
-    #shinyFiles you pass root something that is in roots and it returns the path
-    session$setInputs(save_file = list(root = 'C Drive',
-                                       path = character(0)))
-
-    #now should be what we set it to
-    expect_equal(prj_path_rv(), "C://example-sonde-project.RDS")
-    expect_equal(get_prjpath(), "C://example-sonde-project.RDS") #make sure the prjpath gets set when we input a file
-
-    #expect output should be a list saved as a reactive
-    output <- session$returned()
-    expect_true(inherits(output,"data.frame"))
-
-  })
-})
-

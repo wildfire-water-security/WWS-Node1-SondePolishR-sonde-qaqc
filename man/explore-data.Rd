@@ -7,12 +7,14 @@
 \usage{
 explore_data_UI(id)
 
-explore_data_server(id, data)
+explore_data_server(id, sdata, log)
 }
 \arguments{
 \item{id}{An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.}
 
-\item{data}{A reactive holding the loaded dataset.}
+\item{sdata}{A \code{reactiveVal} holding the current dataset.}
+
+\item{log}{A \code{reactiveVal} holding the change log.}
 }
 \value{
 Invisible NULL

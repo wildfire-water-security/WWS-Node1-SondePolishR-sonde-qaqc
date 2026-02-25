@@ -68,24 +68,24 @@ limits_UI <- function(id){
 #'
 #' @param id An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.
 #' @param prj_path A `reactiveVal` holding the path to save the project to.
-#' @param data A `reactiveVal` holding the current dataset.
+#' @param sdata A `reactiveVal` holding the current dataset.
 #' @param log A `reactiveVal` holding the change log.
 #'
 #' @export
 #' @rdname limits
-limits_server <- function(id, data, prj_path, log){
+limits_server <- function(id, sdata, prj_path, log){
   moduleServer(id, function(input, output, session){
 
     # initialize copy of file for this step
     data_lim <- reactiveVal()
-    observeEvent(data(), {data_lim(data())})
+    observeEvent(sdata(), {data_lim(sdata())})
 
   #update choices based on data table
-    y_var <- SondePolishR::update_parms_server("update_parms", data, choices_fun = nice_yvar)
+    y_var <- SondePolishR::update_parms_server("update_parms", sdata, choices_fun = nice_yvar)
 
   #update ecoregion choices based on y_var
       observeEvent(y_var(), {
-        req(data(), y_var())
+        req(sdata(), y_var())
         eco_options <- SondePolishR::phys_limits %>% filter(.data$metric == y_var())
         #if no ecoregions available
         if(nrow(eco_options) == 0){choices <- "No Limits Available"}else{

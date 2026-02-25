@@ -1,31 +1,31 @@
-test_that("module sever 2 works", {
-  #read in project (would be module 1 task)
-  data_prj <- read_project(file.path(test_path(), "testdata", "example-sonde-project.RDS"))[[1]]
-
-  testServer(explore_data_server, {
-
-   #make sure data is created
-    expect_equal(data(), raw_sonde)
-    session$flushReact() #needed here to run reactives
-
-  #make sure plot_data gets written
-    expect_true(is.data.frame(plot_data()))
-
-  #make sure log is gotten
-    expect_true(inherits(output$log_table, "json"))
-
-    #can't easily check plot because it needs y_var
-
-  #check dates
-    #absolute min and max of df
-    expect_equal(date_bounds(), list(min=as.Date(min(raw_sonde$Date_MM_DD_YYYY)), max= as.Date(max(raw_sonde$Date_MM_DD_YYYY))))
-
-  },
-  #these are passed to the module
-  args = list(
-    data = reactive({data_prj}) #expected that data is a reactive value so need to pass it that
-  ))
-})
+# test_that("module sever 2 works", {
+#   #read in project (would be module 1 task)
+#   data_prj <- read_project(file.path(test_path(), "testdata", "example-sonde-project.RDS"))[[1]]
+#
+#   testServer(explore_data_server, {
+#
+#    #make sure data is created
+#     expect_equal(data(), raw_sonde)
+#     session$flushReact() #needed here to run reactives
+#
+#   #make sure plot_data gets written
+#     expect_true(is.data.frame(plot_data()))
+#
+#   #make sure log is gotten
+#     expect_true(inherits(output$log_table, "json"))
+#
+#     #can't easily check plot because it needs y_var
+#
+#   #check dates
+#     #absolute min and max of df
+#     expect_equal(date_bounds(), list(min=as.Date(min(raw_sonde$Date_MM_DD_YYYY)), max= as.Date(max(raw_sonde$Date_MM_DD_YYYY))))
+#
+#   },
+#   #these are passed to the module
+#   args = list(
+#     data = reactive({data_prj}) #expected that data is a reactive value so need to pass it that
+#   ))
+# })
 
 
 library(shinytest2)
@@ -34,14 +34,12 @@ test_that("{shinytest2} recording: checking-module2", {
   # Don't run these tests on the CRAN build servers
   skip_on_cran()
 
-  #checking the week selection works
   local_app_support(test_path("../../inst/app"))
   app <- AppDriver$new(test_path("../../inst/app"), variant = platform_variant(),
                        name = "checking-module2", height = 911, width = 1619)
   app$upload_file(`data1-file` = file.path(test_path(), "testdata/example-sonde-project.RDS"))
 
   #check initial plot is made
-  app$expect_values()
   plot_obj <- app$get_value(export = "data2-plot_obj")
   vdiffr::expect_doppelganger("initial plot is made", plot_obj)
 

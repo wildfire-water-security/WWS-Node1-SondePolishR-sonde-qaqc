@@ -30,9 +30,9 @@ test_that("flags are added", {
 test_that("saving flags works",{
   prj_path <- file.path(withr::local_tempdir(), "test_prj.RDS")
 
-  clear_data()
-  clear_log()
-  clear_prjpath()
+  SondePolishR::clear_data()
+  SondePolishR::clear_log()
+  SondePolishR::clear_prjpath()
 
   write_data(raw_sonde, "raw")
   write_log("All", "Initial Load", n = 0, version = "raw")

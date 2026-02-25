@@ -27,7 +27,7 @@ explore_data_UI <- function(id){
         SondePolishR::update_parms_UI(ns("update_parms")),
 
         #select date range to view with week selectors
-        dateRangeInput(NS(id, "date_range"), label="Select Data Date Range"),
+        dateRangeInput(NS(id, "date_range"), label="Select Data Date Range", start = "9999-12-31", end= "9999-12-31"),
 
         #add switch for weekly mode
         column(4,input_switch(NS(id, "week_view"), "View Data Weekly"))
@@ -59,7 +59,7 @@ explore_data_UI <- function(id){
 #' the changes over the dataset versions via row selection in a table via the `log`.
 #'
 #' @param id An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.
-#' @param data A `reactiveVal` holding the current dataset.
+#' @param sdata A `reactiveVal` holding the current dataset.
 #' @param log A `reactiveVal` holding the change log.
 #' @md
 #' @keywords internal
@@ -67,7 +67,7 @@ explore_data_UI <- function(id){
 #' @rdname explore-data
 #' @returns Invisible NULL
 #'
-explore_data_server <- function(id, data, log){
+explore_data_server <- function(id, sdata, log){
   moduleServer(id, function(input, output, session){
 
   #get column names after file upload (dynamic)

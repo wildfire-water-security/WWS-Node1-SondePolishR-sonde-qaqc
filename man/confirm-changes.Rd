@@ -7,14 +7,14 @@
 \usage{
 confirm_changes_UI(id, note = NULL)
 
-confirm_changes_server(id, data, index = NULL, par, flag_name, prj_path)
+confirm_changes_server(id, data, index = NULL, par, flag_name, prj_path, log)
 }
 \arguments{
 \item{id}{the shiny ID of the action button}
 
 \item{note}{an optional note to add to the action button to provide more directions}
 
-\item{data}{the sonde data.frame that will be flagged}
+\item{data}{the sonde data.frame that will be flagged (reactive)}
 
 \item{index}{the index values of the rows to flag in data}
 
@@ -22,7 +22,9 @@ confirm_changes_server(id, data, index = NULL, par, flag_name, prj_path)
 
 \item{flag_name}{a character with the name of the flag}
 
-\item{prj_path}{the file path to save the sonde project to}
+\item{prj_path}{the file path to save the sonde project to (reactive)}
+
+\item{log}{A `reactiveVal` holding the change log.}
 }
 \description{
 The UI creates a button to allow user to save the changes made to the data. The server function will provide a message to the user to

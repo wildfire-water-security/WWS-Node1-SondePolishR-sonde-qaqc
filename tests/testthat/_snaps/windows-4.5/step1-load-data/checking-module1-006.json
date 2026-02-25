@@ -1,0 +1,355 @@
+{
+  "input": {
+    "data1-file": {
+      "name": [
+        "sonde-example.csv"
+      ],
+      "size": [
+        555774
+      ],
+      "type": [
+        "text/csv"
+      ],
+      "datapath": [
+        "0.csv"
+      ]
+    },
+    "data1-save_file": 0,
+    "data1-tz": "Etc/GMT+8",
+    "data2-date_range": [
+      "9999-12-31",
+      "9999-12-31"
+    ],
+    "data2-next_week": 0,
+    "data2-prev_week": 0,
+    "data2-update_parms-y_var": "",
+    "data2-week_view": false,
+    "data3-ecoregion": "Coast Range",
+    "data3-flag1-rm_points": 0,
+    "data3-lat": "",
+    "data3-long": "",
+    "data3-max": null,
+    "data3-min": null,
+    "data3-update_parms-y_var": "",
+    "data3-usgs_limit": false,
+    "flag2-rm_points": 0,
+    "shift_val": 0,
+    "update_parms-y_var": ""
+  },
+  "output": {
+    "data1-path_text_box": {
+      "html": "<span style=\"background-color: #fff;border: 1px solid #ddd;padding: 6px 12px;&#10;            border-radius: 6px; display: inline-block;min-width: 120px;color: #343a40\"><\/span>",
+      "deps": [
+
+      ]
+    }
+  },
+  "export": {
+    "data": {
+      "Index": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "Date_MM_DD_YYYY": [
+        "2024-04-22T08:00:00Z",
+        "2024-04-22T08:00:00Z",
+        "2024-04-22T08:00:00Z",
+        "2024-04-22T08:00:00Z",
+        "2024-04-22T08:00:00Z",
+        "2024-04-22T08:00:00Z"
+      ],
+      "Time_HH_mm_ss": [
+        "13:00:00",
+        "13:15:00",
+        "13:30:00",
+        "13:45:00",
+        "14:00:00",
+        "14:15:00"
+      ],
+      "DateTime": [
+        "2024-04-22T21:00:00Z",
+        "2024-04-22T21:15:00Z",
+        "2024-04-22T21:30:00Z",
+        "2024-04-22T21:45:00Z",
+        "2024-04-22T22:00:00Z",
+        "2024-04-22T22:15:00Z"
+      ],
+      "Site_Name": [
+        "FallCkAbvRes",
+        "FallCkAbvRes",
+        "FallCkAbvRes",
+        "FallCkAbvRes",
+        "FallCkAbvRes",
+        "FallCkAbvRes"
+      ],
+      "Cond_uS_cm": [
+        32.6,
+        32.7,
+        32.9,
+        33,
+        33.2,
+        33.3
+      ],
+      "Cond_uS_cm_flag": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "fDOM_QSU": [
+        6.23,
+        6.18,
+        6.1,
+        6.09,
+        5.97,
+        5.97
+      ],
+      "fDOM_QSU_flag": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "fDOM_RFU": [
+        2.08,
+        2.06,
+        2.03,
+        2.03,
+        1.99,
+        1.99
+      ],
+      "fDOM_RFU_flag": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "nLF_Cond_uS_cm": [
+        46.7,
+        46.7,
+        46.7,
+        46.7,
+        46.7,
+        46.7
+      ],
+      "nLF_Cond_uS_cm_flag": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "ODO_%_sat": [
+        95.5,
+        95.40000000000001,
+        95.40000000000001,
+        95.40000000000001,
+        95.3,
+        95.2
+      ],
+      "ODO_%_sat_flag": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "ODO_%_CB": [
+        98.3,
+        98.2,
+        98.2,
+        98.09999999999999,
+        98.09999999999999,
+        98
+      ],
+      "ODO_%_CB_flag": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "ODO_mg_L": [
+        10.83,
+        10.78,
+        10.73,
+        10.68,
+        10.64,
+        10.59
+      ],
+      "ODO_mg_L_flag": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "Sal_psu": [
+        0.02,
+        0.02,
+        0.02,
+        0.02,
+        0.02,
+        0.02
+      ],
+      "Sal_psu_flag": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "SpCond_uS_cm": [
+        45.9,
+        45.9,
+        45.9,
+        45.9,
+        45.9,
+        45.9
+      ],
+      "SpCond_uS_cm_flag": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "TDS_mg_L": [
+        30,
+        30,
+        30,
+        30,
+        30,
+        30
+      ],
+      "TDS_mg_L_flag": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "Turbidity_FNU": [
+        0.86,
+        0.91,
+        0.82,
+        0.89,
+        0.84,
+        0.91
+      ],
+      "Turbidity_FNU_flag": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "Wiper_Position_volt": [
+        1.194,
+        1.192,
+        1.197,
+        1.191,
+        1.186,
+        1.182
+      ],
+      "pH": [
+        7.93,
+        7.91,
+        7.92,
+        7.9,
+        7.92,
+        7.92
+      ],
+      "pH_flag": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "pH_mV": [
+        -58.5,
+        -57.1,
+        -57.8,
+        -57,
+        -57.9,
+        -57.8
+      ],
+      "pH_mV_flag": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "Temp_C": [
+        9.818,
+        9.99,
+        10.156,
+        10.321,
+        10.489,
+        10.638
+      ],
+      "Temp_C_flag": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "Battery_V": [
+        6.15,
+        6.14,
+        6.14,
+        6.14,
+        6.13,
+        6.14
+      ]
+    },
+    "data1-type": "csv",
+    "log": {
+      "datetime": [
+        "2026-02-25T17:11:05Z"
+      ],
+      "parameter": [
+        "All"
+      ],
+      "step": [
+        "Initial Load"
+      ],
+      "n_changed": [
+        0
+      ],
+      "user": [
+        "wampleka"
+      ],
+      "version": [
+        "raw"
+      ]
+    },
+    "prj_path": [
+
+    ]
+  }
+}

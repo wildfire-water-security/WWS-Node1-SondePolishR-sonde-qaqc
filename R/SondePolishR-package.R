@@ -55,6 +55,7 @@
 #' @importFrom shinyFiles parseDirPath
 #' @importFrom shinyFiles shinyDirButton
 #' @importFrom shinyFiles shinyDirChoose
+#' @importFrom shinyWidgets updateSwitchInput
 #' @importFrom stats quantile
 #' @importFrom stats setNames
 #' @importFrom stringi stri_enc_detect

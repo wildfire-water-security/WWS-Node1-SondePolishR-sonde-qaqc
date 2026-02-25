@@ -4,7 +4,7 @@
 \alias{flag_data}
 \title{Flag dataset and save a copy}
 \usage{
-flag_data(data, par, flag_name, index, prj_path = NULL)
+flag_data(data, par, flag_name, index, prj_path = NULL, makeNA = TRUE)
 }
 \arguments{
 \item{data}{a data.frame with sonde data}
@@ -16,6 +16,8 @@ flag_data(data, par, flag_name, index, prj_path = NULL)
 \item{index}{the index values for the rows to be flagged}
 
 \item{prj_path}{the file path to save the sonde project to, if \code{NULL} will try to use \code{prj_path} stored in package environment.}
+
+\item{makeNA}{if \code{TRUE} the flagged data will be converted to NA values}
 }
 \value{
 returns the flagged copy of the \code{data.frame}

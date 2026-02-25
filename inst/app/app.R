@@ -17,6 +17,8 @@ library(DT)
   tz <- SondePolishR:::nice_tz()
 
 #front end
+#' @export
+#' @rdname SondePolishR-app
 ui <-  page_fillable(
   #set theme
   theme = bs_theme(preset = "superhero",
@@ -68,7 +70,7 @@ ui <-  page_fillable(
   ))
 
 #backend
-#' Title
+#' Main SondePolishR app
 #'
 #' @param input
 #' @param output
@@ -76,7 +78,8 @@ ui <-  page_fillable(
 #'
 #' @returns
 #' @export
-#'
+#' @rdname SondePolishR-app
+#' @keywords internal
 #' @examples
 server <- function(input, output, session) {
   #define things that get passed around
@@ -85,14 +88,26 @@ server <- function(input, output, session) {
     log <- reactiveVal(NULL) #the data log
 
   #step 1: load data
-   SondePolishR::load_data_server("data1", data, prj_path, log)
+   SondePolishR::load_data_server("data1", sdata, prj_path, log)
 
   #step 2: plot data
-   SondePolishR::explore_data_server("data2", data, log)
+   SondePolishR::explore_data_server("data2", sdata, log)
 
   #step 3: physical limits
-   SondePolishR::limits_server("data3", data, prj_path, log)
+   SondePolishR::limits_server("data3", sdata, prj_path, log)
 
+  #export values for tests
+   exportTestValues(
+     prj_path = prj_path(),
+     sdata = {
+       req(sdata())
+       head(sdata())
+     },
+     log = list(
+       value = log(),
+       stamp = Sys.time()
+     )
+   )
   #step 4: shift points up
      #make a copy of file for this step
   #      data_shift <- reactive({

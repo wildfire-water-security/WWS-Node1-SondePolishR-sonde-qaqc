@@ -7,12 +7,16 @@
 \usage{
 limits_UI(id)
 
-limits_server(id, data)
+limits_server(id, sdata, prj_path, log)
 }
 \arguments{
 \item{id}{An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.}
 
-\item{data}{A reactive holding the loaded dataset.}
+\item{sdata}{A `reactiveVal` holding the current dataset.}
+
+\item{prj_path}{A `reactiveVal` holding the path to save the project to.}
+
+\item{log}{A `reactiveVal` holding the change log.}
 }
 \description{
 There are certain thresholds for some of the sonde parameters that aren't physical possible (i.e, water temperature above 100 deg C).

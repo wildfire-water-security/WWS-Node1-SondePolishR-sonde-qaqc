@@ -64,45 +64,52 @@ load_data_UI <- function(id){
 #'
 #' @param id An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.
 #' @param prj_path A `reactiveVal` holding the path to save the project to.
-#' @param data A `reactiveVal` holding the current dataset.
+#' @param sdata A `reactiveVal` holding the current dataset.
 #' @param log A `reactiveVal` holding the change log.
 #' @md
 #' @export
 #' @keywords internal
 #' @returns The loaded data as a reactive object.
 #' @rdname load-data
-load_data_server <- function(id, data, prj_path, log){
+load_data_server <- function(id, sdata, prj_path, log){
   moduleServer(id, function(input, output, session){
 
   #NEW PROJECT
     #load data
-      type <- reactive({
-        req(input$file)
-        type <- tools::file_ext(input$file$datapath)
-      })
+      type <- reactiveVal()
 
     observeEvent(input$file,{
       req(input$file, input$tz)
 
+      type(tools::file_ext(input$file$datapath))
+
       if(type() == "csv"){
         data(read_sonde(input$file$datapath, tz=input$tz))  # read into R
+        prj_path(character()) #set prj_path var
+
+        log(get_log())
+
       }
 
       if(type() == "RDS"){
         read_project(input$file$datapath)  # read into R
+        prj_path(get_prjpath()) #set prj_path var
 
         #get data
         prj <- get_data()
-        data(prj[[length(prj)]])
+        sdata(prj[[length(prj)]])
+
+        log(get_log())
+
       }
     })
 
       #update timezone if it's a project
-        observeEvent(data(), {
-          req(data(), type())
+        observeEvent(sdata(), {
+          req(sdata(), type())
 
           if(type() == "RDS"){
-            tz <- lubridate::tz(data()$DateTime)
+            tz <- lubridate::tz(sdata()$DateTime)
             nice_tz <- nice_tz()
             tz <- nice_tz[nice_tz == tz]
             updateSelectInput(
@@ -118,19 +125,7 @@ load_data_server <- function(id, data, prj_path, log){
             Documents = file.path(fs::path_home(), "Documents"),
             "C Drive" = "C:/")
 
-    #specify prj_path so it exists
-      #when user loads file, update if RDS
-      observeEvent(input$file, {
-        if (type() == "RDS"){
-          prj_path(get_prjpath())
-        }else{
-          prj_path(character())
-        }
-
-        log(get_log())
-      })
-
-      #when user selects a file update
+      #when user selects a file update path
       observeEvent(input$save_file, {
         prj_path(
           file.path(
@@ -138,12 +133,9 @@ load_data_server <- function(id, data, prj_path, log){
             paste0(tools::file_path_sans_ext(input$file$name), ".RDS")
           )
         )
+        #keep environment updated with save location
+        set_prjpath(prj_path())
       })
-
-
-      #keep environment updated with save location
-      observeEvent(prj_path(), {set_prjpath(prj_path())})
-
 
       #get file name and save path to save as project file
       shinyFiles::shinyDirChoose(input,"save_file", roots = roots, session = session,
@@ -156,6 +148,11 @@ load_data_server <- function(id, data, prj_path, log){
           style = "background-color: #fff;border: 1px solid #ddd;padding: 6px 12px;
             border-radius: 6px; display: inline-block;min-width: 120px;color: #343a40")
       })
+
+      #export plot so we can check it
+      exportTestValues(
+        type = type()
+      )
 
   })
 }

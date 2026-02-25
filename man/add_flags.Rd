@@ -4,7 +4,7 @@
 \alias{add_flags}
 \title{Add flags to sonde data}
 \usage{
-add_flags(data, par = NULL, flag_name = NULL, index = NULL)
+add_flags(data, par = NULL, flag_name = NULL, index = NULL, makeNA = TRUE)
 }
 \arguments{
 \item{data}{a data.frame with sonde data}
@@ -14,6 +14,8 @@ add_flags(data, par = NULL, flag_name = NULL, index = NULL)
 \item{flag_name}{a character with the name of the flag}
 
 \item{index}{the index values for the rows to be flagged}
+
+\item{makeNA}{if \code{TRUE} the flagged data will be converted to NA values}
 }
 \value{
 a data.frame
@@ -34,5 +36,5 @@ colnames(data)
 
 #add a flag
 data <- add_flags(raw_sonde, "fDOM_QSU", "test_flag", c(1,2,3))
-head(data$fDOM_QSU_flag)
+head(data)
 }
