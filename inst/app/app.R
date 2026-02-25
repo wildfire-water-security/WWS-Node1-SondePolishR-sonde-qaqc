@@ -79,14 +79,19 @@ ui <-  page_fillable(
 #'
 #' @examples
 server <- function(input, output, session) {
+  #define things that get passed around
+    prj_path <- reactiveVal(NULL) #the project path to save data to
+    data <- reactiveVal(NULL) #the current dataset
+    log <- reactiveVal(NULL) #the data log
+
   #step 1: load data
-   data <- SondePolishR::load_data_server("data1")
+   SondePolishR::load_data_server("data1", data, prj_path, log)
 
   #step 2: plot data
-   SondePolishR::explore_data_server("data2", data)
+   SondePolishR::explore_data_server("data2", data, log)
 
   #step 3: physical limits
-   SondePolishR::limits_server("data3", data)
+   SondePolishR::limits_server("data3", data, prj_path, log)
 
   #step 4: shift points up
      #make a copy of file for this step

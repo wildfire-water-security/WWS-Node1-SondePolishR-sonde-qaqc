@@ -67,11 +67,13 @@ limits_UI <- function(id){
 #' @keywords internal
 #'
 #' @param id An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.
-#' @param data A reactive holding the loaded dataset.
+#' @param prj_path A `reactiveVal` holding the path to save the project to.
+#' @param data A `reactiveVal` holding the current dataset.
+#' @param log A `reactiveVal` holding the change log.
 #'
 #' @export
 #' @rdname limits
-limits_server <- function(id, data){
+limits_server <- function(id, data, prj_path, log){
   moduleServer(id, function(input, output, session){
 
     # initialize copy of file for this step
@@ -188,7 +190,7 @@ limits_server <- function(id, data){
     )
 
   #confirm changes
-    index <- reactive({data_plot()$outlier$Index }) #get index of points to remove
+    index <- reactive({data_plot()$outlier$Index}) #get index of points to remove
 
     SondePolishR::confirm_changes_server(
       id = "flag1",
@@ -196,7 +198,8 @@ limits_server <- function(id, data){
       index = index,
       par = y_var,
       flag_name = "limits",
-      prj_path = get_prjpath()
+      prj_path = prj_path,
+      log = log
     )
 
   })}

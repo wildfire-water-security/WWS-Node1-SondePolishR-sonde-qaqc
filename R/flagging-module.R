@@ -7,13 +7,14 @@
 #'
 #' @param id the shiny ID of the action button
 #' @param note an optional note to add to the action button to provide more directions
-#' @param data the sonde data.frame that will be flagged
+#' @param data the sonde data.frame that will be flagged (reactive)
 #' @param index the index values for the rows to be flagged
-#' @param prj_path the file path to save the sonde project to
+#' @param prj_path the file path to save the sonde project to (reactive)
 #' @param par the parameter to flag
 #' @param flag_name a character with the name of the flag
 #' @param index the index values of the rows to flag in data
-#'
+#' @param log A `reactiveVal` holding the change log.
+
 #' @rdname confirm-changes
 #' @export
 #' @keywords internal
@@ -36,13 +37,13 @@ confirm_changes_UI <- function(id, note=NULL) {
 
 #' @rdname confirm-changes
 #' @export
-confirm_changes_server <- function(id, data, index=NULL, par, flag_name, prj_path){
+confirm_changes_server <- function(id, data, index=NULL, par, flag_name, prj_path, log){
 
   # data: reactiveVal of the dataframe to update
   # data_plot: reactive that provides data with $outlier$Index
   # y_var: reactive of the column to flag
   # flag_name: name of flag column to add
-  # prj_path: project path for saving changes
+  # prj_path: reactiveval project path for saving changes
 
   moduleServer(id, function(input, output, session) {
 
@@ -53,43 +54,42 @@ confirm_changes_server <- function(id, data, index=NULL, par, flag_name, prj_pat
       req(data(), par()) #ensure we have what we need
 
       #check if there's a project path, if no error
-      if(length(prj_path) == 0){
+      if(is.null(index()) || length(index()) == 0){
         # only show alert if running in shiny
-        if (!is.null(getDefaultReactiveDomain())) {
+        if (interactive()) {
           shinyalert::shinyalert(
-            title = "No Project Path",
-            text = "Specify the project path in 1. Load Data",
-            type = "error"
+            title = "Nothing selected",
+            text = "No points were selected to flag",
+            type = "warning"
           )
-        }       #see if there are points selected, if not warn
-      }else if(is.null(index()) || length(index()) == 0){
+        }}else if(length(prj_path()) == 0){
           # only show alert if running in shiny
-          if (!is.null(getDefaultReactiveDomain())) {
+          if (interactive()) {
             shinyalert::shinyalert(
-              title = "Nothing selected",
-              text = "No points were selected to flag",
-              type = "warning"
+              title = "No Project Path",
+              text = "Specify the project path in 1. Load Data",
+              type = "error"
             )
-          }}else{
+          }       #see if there are points selected, if not warn
+        }else{
           #add flags to data and save
             updated <- flag_data(data(),
                                  par = par(),
                                  index = index(),
                                  flag_name = flag_name,
-                                 prj_path = prj_path)
+                                 prj_path = prj_path())
 
 
             #update data
-            updated_data(updated)}
+            updated_data(updated)
+
+            #update log
+            log(get_log())
+
+            }
             })
 
-    # Return the updated data reactive
-    #export plot and table so we can check it
-    exportTestValues(
-      flagged_data = updated_data()
-    )
-
-    #return(updated_data)
+    return(updated_data)
 
     })
   }

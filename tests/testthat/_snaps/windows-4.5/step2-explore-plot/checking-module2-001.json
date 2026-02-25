@@ -25,13 +25,13 @@
     "data2-update_parms-y_var": "Cond_uS_cm",
     "data2-version": "",
     "data2-week_view": false,
-    "data3-ecoregion": "Coast Range",
+    "data3-ecoregion": "No Limits Available",
     "data3-flag1-rm_points": 0,
     "data3-lat": "",
     "data3-long": "",
-    "data3-max": null,
-    "data3-min": null,
-    "data3-update_parms-y_var": "",
+    "data3-max": 36.2,
+    "data3-min": 0.6,
+    "data3-update_parms-y_var": "Cond_uS_cm",
     "data3-usgs_limit": false,
     "flag2-rm_points": 0,
     "shift_val": 0,
@@ -79,6 +79,12 @@
       ]
     },
     "data2-plot_obj": {
+
+    },
+    "data3-outlier_tab": {
+
+    },
+    "data3-plot_obj": {
 
     }
   }

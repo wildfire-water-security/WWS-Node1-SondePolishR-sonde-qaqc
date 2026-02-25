@@ -16,9 +16,9 @@ explore_data_UI <- function(id){
                    3. Hover to see values<br><hr>"),
 
         #allow moving between data versions
-        tags$h4("Select Data Version"),
-        selectInput(NS(id, "version"), "Select Data Version",
-                       choices = NULL),
+        # tags$h4("Select Data Version"),
+        # selectInput(NS(id, "version"), "Select Data Version",
+        #                choices = NULL),
 
         #adjust plotting to explore data
         tags$h4("Adjust Plotting"),
@@ -59,14 +59,15 @@ explore_data_UI <- function(id){
 #' the changes over the dataset versions via row selection in a table via the `log`.
 #'
 #' @param id An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.
-#' @param data A reactive holding the loaded dataset.
+#' @param data A `reactiveVal` holding the current dataset.
+#' @param log A `reactiveVal` holding the change log.
 #' @md
 #' @keywords internal
 #' @export
 #' @rdname explore-data
 #' @returns Invisible NULL
 #'
-explore_data_server <- function(id, data){
+explore_data_server <- function(id, data, log){
   moduleServer(id, function(input, output, session){
 
   #get column names after file upload (dynamic)
@@ -77,7 +78,7 @@ explore_data_server <- function(id, data){
       req(data())
 
       DT::datatable(
-        get_log(),
+        log(),
         selection = list(mode = "single")
       )})
 

@@ -9,6 +9,7 @@
 #' @param flag_name a character with the name of the flag
 #' @param index the index values for the rows to be flagged
 #' @param prj_path the file path to save the sonde project to, if `NULL` will try to use `prj_path` stored in package environment.
+#' @param makeNA if `TRUE` the flagged data will be converted to NA values
 #' @md
 #' @returns returns the flagged copy of the `data.frame`
 #' @export
@@ -24,12 +25,12 @@
 #' #flag data
 #'   data <- flag_data(raw_sonde, "fDOM_QSU", "test_flag", 1:4, prj_path)
 
-flag_data <- function(data, par, flag_name, index, prj_path=NULL){
+flag_data <- function(data, par, flag_name, index, prj_path=NULL, makeNA = TRUE){
   stopifnot(inherits(data, "data.frame"), is.character(par), is.character(flag_name),
-            is.character(prj_path) | is.null(prj_path), all(is.numeric(index)))
+            is.character(prj_path) | is.null(prj_path), all(is.numeric(index)), is.logical(makeNA))
 
   #add flags to data
-  data <- add_flags(data, par, flag_name, index)
+  data <- add_flags(data, par, flag_name, index, makeNA)
 
   #save version
   if(!new_version(data)){
@@ -69,7 +70,7 @@ flag_data <- function(data, par, flag_name, index, prj_path=NULL){
 #' @param par the parameter to check
 #' @param flag_name a character with the name of the flag
 #' @param index the index values for the rows to be flagged
-#'
+#' @param makeNA if `TRUE` the flagged data will be converted to NA values
 #' @md
 #' @returns a data.frame
 #' - if `par` and `flag_name` are `NULL` it will return a new column for each parameter in the data.frame with the form <*_flag>
@@ -83,9 +84,10 @@ flag_data <- function(data, par, flag_name, index, prj_path=NULL){
 #'
 #' #add a flag
 #' data <- add_flags(raw_sonde, "fDOM_QSU", "test_flag", c(1,2,3))
-#' head(data$fDOM_QSU_flag)
-add_flags <- function(data, par=NULL, flag_name=NULL, index=NULL){
-  stopifnot(inherits(data, "data.frame"), is.character(flag_name)|is.null(flag_name), is.character(par)|is.null(par))
+#' head(data)
+add_flags <- function(data, par=NULL, flag_name=NULL, index=NULL, makeNA=TRUE){
+  stopifnot(inherits(data, "data.frame"), is.character(flag_name)|is.null(flag_name), is.character(par)|is.null(par),
+            is.logical(makeNA))
 
   #add flag columns if they don't exist
    #guess pars
@@ -159,6 +161,12 @@ add_flags <- function(data, par=NULL, flag_name=NULL, index=NULL){
       }
 
     data[[flag_col]] <- flag_list
+
+    #make NA
+    if(makeNA){
+      colnum <- which(colnames(data) == par)
+      data[index,colnum] <- NA
+    }
   }
 
   return(data)
