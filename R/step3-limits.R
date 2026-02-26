@@ -24,7 +24,10 @@ limits_UI <- function(id){
               NS(id, "max"),
               HTML("<b>Maximum</b> Physical Limit"),
               value = NULL
-            )),
+            ),
+
+            input_switch(NS(id, "rm_flags"), "Hide Flagged Data")
+          ),
           accordion_panel(
             #select physical limits
             title = "USGS Derived Limits",
@@ -45,7 +48,7 @@ limits_UI <- function(id){
           ),
           accordion_panel(
             title="Flag Points",
-            confirm_changes_UI(ns("flag1"), note="NOTE: To prevent a point from being flagged, select the appropriate row in the table")
+            confirm_changes_UI(ns("flag1"), note="NOTE: To prevent a point from being flagged, select the appropriate row in the table"),
 
           ))
       ),
@@ -76,8 +79,12 @@ limits_UI <- function(id){
 limits_server <- function(id, sdata, prj_path, log){
   moduleServer(id, function(input, output, session){
 
-    # initialize copy of file for this step
+    #initialize
+    usgs_limit <- reactiveVal()
+    data_plot <- reactiveVal()
     data_lim <- reactiveVal()
+
+    # initialize copy of file for this step
     observeEvent(sdata(), {data_lim(sdata())})
 
   #update choices based on data table
@@ -112,7 +119,6 @@ limits_server <- function(id, sdata, prj_path, log){
       )})
 
   #get limits for plotting
-    usgs_limit <- reactiveVal() #initialize
     observeEvent(list(input$usgs_limit, input$ecoregion, y_var()), {
       req(y_var(), input$ecoregion, input$usgs_limit == TRUE)
 
@@ -137,13 +143,22 @@ limits_server <- function(id, sdata, prj_path, log){
       req(y_var(), data_lim(), input$min, input$max)
       SondePolishR::physical_limit(data_lim(), input$min, input$max, par=y_var())})
 
-    data_plot <- reactive({
+    observe({
       req(y_var(),data_lim(),input$min, input$max)
       if(any(!is.na(selected()))){
         sep_data <- SondePolishR::physical_limit(data_lim(),input$min, input$max, par=y_var(), keep=selected())
       }else{
         sep_data <- SondePolishR::physical_limit(data_lim(),input$min, input$max, par=y_var())
       }
+        data_plot(sep_data)
+
+    })
+
+    observeEvent(input$rm_flags,{
+      req(data_plot())
+      init_dat <- data_plot()
+      rm_dat <- remove_flagged(init_dat, "limits")
+      data_plot(rm_dat)
     })
 
   #make table
@@ -173,7 +188,7 @@ limits_server <- function(id, sdata, prj_path, log){
         ggplot2::geom_hline(yintercept = input$min, color="darkred") +
         ggplot2::geom_hline(yintercept = input$max, color="darkred")
 
-      if(nrow(data_plot()$outlier) > 0){
+      if(nrow(data_plot()$outlier) > 0 & !input$rm_flags){
         p <- p + geom_point(data=data_plot()$outlier, mapping=aes(x=.data$DateTime, y=.data[[y_var()]]), color="darkred")
       }
 
@@ -201,5 +216,6 @@ limits_server <- function(id, sdata, prj_path, log){
       prj_path = prj_path,
       log = log
     )
+
 
   })}

@@ -45,6 +45,11 @@ test_that("{shinytest2} recording: checking-module3", {
   tab <- app$get_value(export = "data3-outlier_tab")
   expect_true(nrow(tab) > 0)
 
+  #set to remove flagged values
+  app$set_inputs(`data3-rm_flags` = TRUE)
+  plot_obj <- app$get_value(export = "data3-plot_obj")
+  vdiffr::expect_doppelganger("hiding flagged points", plot_obj)
+
   #save project (can't  get to work right now, but does work and arguably the tests for the module should catch issues)
     # path <- file.path(fs::path_home(), "Downloads/test-check.rds")
     # set_prjpath(path)

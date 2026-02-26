@@ -30,7 +30,10 @@ explore_data_UI <- function(id){
         dateRangeInput(NS(id, "date_range"), label="Select Data Date Range", start = "9999-12-31", end= "9999-12-31"),
 
         #add switch for weekly mode
-        column(4,input_switch(NS(id, "week_view"), "View Data Weekly"))
+        column(4,input_switch(NS(id, "week_view"), "View Data Weekly")),
+
+        #add checkboxes to remove flagged data by flag name
+        checkboxGroupInput(NS(id, "rm_flags"), "Remove the Following Flagged Data:")
 
 
 
@@ -86,7 +89,21 @@ explore_data_server <- function(id, sdata, log){
     plot_data <- reactiveVal()
 
     # initialize
-    observeEvent(sdata(), {plot_data(sdata())})
+    observeEvent(sdata(), {
+      plot_data(sdata())
+
+      #update flags to remove
+      flags <- unique(log()$step[log()$n_changed > 0])
+      updateCheckboxGroupInput(session, "rm_flags", choices = flags)
+      print("updating flags")
+      })
+
+  #remove flagged data when checked
+    observeEvent(input$rm_flags, {
+      req(length(input$rm_flags) > 0)
+      plot_data(remove_flagged(sdata(), input$rm_flags))
+
+    })
 
     #if user selects a row in log -> update the data plotted
     observeEvent(input$log_table_rows_selected, {
@@ -95,7 +112,6 @@ explore_data_server <- function(id, sdata, log){
       new_data <- get_data()[[input$log_table_rows_selected]]
       plot_data(new_data)
     })
-
 
   #create plot
     plot_obj <- reactive({

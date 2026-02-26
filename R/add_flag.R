@@ -25,7 +25,7 @@
 #' #flag data
 #'   data <- flag_data(raw_sonde, "fDOM_QSU", "test_flag", 1:4, prj_path)
 
-flag_data <- function(data, par, flag_name, index, prj_path=NULL, makeNA = TRUE){
+flag_data <- function(data, par, flag_name, index, prj_path=NULL, makeNA = FALSE){
   stopifnot(inherits(data, "data.frame"), is.character(par), is.character(flag_name),
             is.character(prj_path) | is.null(prj_path), all(is.numeric(index)), is.logical(makeNA))
 
@@ -85,7 +85,7 @@ flag_data <- function(data, par, flag_name, index, prj_path=NULL, makeNA = TRUE)
 #' #add a flag
 #' data <- add_flags(raw_sonde, "fDOM_QSU", "test_flag", c(1,2,3))
 #' head(data)
-add_flags <- function(data, par=NULL, flag_name=NULL, index=NULL, makeNA=TRUE){
+add_flags <- function(data, par=NULL, flag_name=NULL, index=NULL, makeNA=FALSE){
   stopifnot(inherits(data, "data.frame"), is.character(flag_name)|is.null(flag_name), is.character(par)|is.null(par),
             is.logical(makeNA))
 
