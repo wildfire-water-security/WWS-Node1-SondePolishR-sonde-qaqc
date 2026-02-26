@@ -43,6 +43,13 @@ test_that("{shinytest2} recording: checking-module2", {
   plot_obj <- app$get_value(export = "data2-plot_obj")
   vdiffr::expect_doppelganger("initial plot is made", plot_obj)
 
+  #hide flagged data
+  app$set_inputs(`data2-rm_flags` = c("test step", "test step2"))
+  plot_obj <- app$get_value(export = "data2-plot_obj")
+  vdiffr::expect_doppelganger("flagged data is hidden", plot_obj)
+
+  app$set_inputs(`data2-rm_flags` = "") #uncheck
+
   #check putting in week view
   app$set_inputs(`data2-week_view` = TRUE)
   plot_obj <- app$get_value(export = "data2-plot_obj")

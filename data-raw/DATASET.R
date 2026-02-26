@@ -122,25 +122,15 @@ for(x in ecos){
   use_data(raw_sonde, overwrite = TRUE)
 
 # create example versioning
+  path <- "inst/extdata/example-sonde-project.RDS"
   data <- raw_sonde
   write_data(data, "raw")
 
   #a change
-  row_change <- 1:4
-  data$Cond_uS_cm[row_change] <- NA
-
-  #log change and save value
-  version <- digest::digest(data)
-  change <- write_log("Cond_uS_cm", "test step", length(row_change), version, user="smith")
-  write_data(data, version)
+  data <- flag_data(data, par = "Cond_uS_cm", index = 1:4, flag_name = "test step", prj_path = path)
 
   #make another change
-  row_change <- 500:600
-  data$Cond_uS_cm[row_change] <- NA
-
-  version <- digest::digest(data)
-  change <- write_log("Cond_uS_cm", "test step2", length(row_change), version, user="smith")
-  write_data(data, version)
+  data <- flag_data(data, par = "Cond_uS_cm", index = 500:600, flag_name = "test step2", prj_path = path)
 
   #get vals
   log <- get_log()
@@ -148,13 +138,16 @@ for(x in ecos){
 
   #save
   log$user <- "smith"
-  save_project(data_ver, log, "inst/extdata/example-sonde-project.RDS")
 
   #save as data objects
   example_log <- log
   example_data_ver <- data_ver
 
-  example_project <- readRDS("inst/extdata/example-sonde-project.RDS")
+  #rewrite username
+  example_project <- readRDS(path)
+  example_project$change_log$user <- "smith"
+  saveRDS(example_project, path)
+
   use_data(example_log, overwrite = TRUE)
   use_data(example_data_ver, overwrite = TRUE)
   use_data(example_project, overwrite= TRUE)

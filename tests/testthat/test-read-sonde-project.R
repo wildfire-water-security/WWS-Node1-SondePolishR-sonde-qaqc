@@ -10,8 +10,8 @@ test_that("project is read", {
 
   #ensure it reads in
   expect_length(data, 3)
-  expect_equal(names(data), c("raw", "ae82b5a3c51f73d907c92729ec5a19c6",
-                            "fae3dc14bd21f5b2f8b92a253548e8ad"))
+  expect_equal(names(data), c("raw", "89c22249e8164cf1ad454d2f1e0e8abe",
+                            "c6b5a0644acac829d66f6729ae9009db"))
 
   #ensure it loads the data and log
   expect_equal(names(data), names(get_data()))

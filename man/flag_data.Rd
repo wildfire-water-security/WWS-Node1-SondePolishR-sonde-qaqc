@@ -4,7 +4,7 @@
 \alias{flag_data}
 \title{Flag dataset and save a copy}
 \usage{
-flag_data(data, par, flag_name, index, prj_path = NULL, makeNA = TRUE)
+flag_data(data, par, flag_name, index, prj_path = NULL, makeNA = FALSE)
 }
 \arguments{
 \item{data}{a data.frame with sonde data}

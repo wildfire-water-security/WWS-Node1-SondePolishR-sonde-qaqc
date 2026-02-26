@@ -4,7 +4,7 @@
 \alias{add_flags}
 \title{Add flags to sonde data}
 \usage{
-add_flags(data, par = NULL, flag_name = NULL, index = NULL, makeNA = TRUE)
+add_flags(data, par = NULL, flag_name = NULL, index = NULL, makeNA = FALSE)
 }
 \arguments{
 \item{data}{a data.frame with sonde data}

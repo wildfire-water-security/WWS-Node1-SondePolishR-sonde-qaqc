@@ -48,7 +48,7 @@ test_that("saving flags works",{
   expect_equal(get_log()$step, c("Initial Load", "test_flag"))
 
   #ensure data ver is saved
-  expect_equal(names(get_data()), c("raw", "0ba6c8cf7d0fc4bc4d13c06aedd9c1bc"))
+  expect_equal(names(get_data()), c("raw", "824f400c52499aa98d40f5efe0623169"))
 
   #ensure no new version is saved if same changes are made
     data <- flag_data(data, "fDOM_QSU", "test_flag", 1:4, prj_path)
@@ -58,7 +58,7 @@ test_that("saving flags works",{
     expect_equal(get_log()$step, c("Initial Load", "test_flag"))
 
     #ensure data ver is saved
-    expect_equal(names(get_data()), c("raw", "0ba6c8cf7d0fc4bc4d13c06aedd9c1bc"))
+    expect_equal(names(get_data()), c("raw", "824f400c52499aa98d40f5efe0623169"))
 
 
 })

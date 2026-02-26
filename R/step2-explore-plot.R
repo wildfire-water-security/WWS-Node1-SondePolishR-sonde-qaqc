@@ -33,9 +33,7 @@ explore_data_UI <- function(id){
         column(4,input_switch(NS(id, "week_view"), "View Data Weekly")),
 
         #add checkboxes to remove flagged data by flag name
-        checkboxGroupInput(NS(id, "rm_flags"), "Remove the Following Flagged Data:")
-
-
+        checkboxGroupInput(NS(id, "rm_flags"), tags$h6("Remove the Following Flagged Data:"))
 
       ),
 
@@ -85,37 +83,41 @@ explore_data_server <- function(id, sdata, log){
         selection = list(mode = "single")
       )})
 
-  #set data to hold the thing that's being plotted
-    plot_data <- reactiveVal()
+  #get initial data for plotting
+    base_data <- reactive({
+      req(sdata())
 
-    # initialize
-    observeEvent(sdata(), {
-      plot_data(sdata())
+      if (!is.null(input$log_table_rows_selected) &&
+          length(input$log_table_rows_selected) == 1) {
 
+        get_data()[[input$log_table_rows_selected]]
+
+      } else {
+        sdata()
+      }
+    })
+
+  #adjust for hidden flags
+    plot_data <- reactive({
+      dat <- base_data()
+
+      if (!is.null(input$rm_flags) && length(input$rm_flags) > 0) {
+        dat <- remove_flagged(dat, input$rm_flags)
+      }
+
+      dat
+    })
+
+  #update flags to potentially remove
+    observeEvent(list(sdata(), log()), {
       #update flags to remove
       flags <- unique(log()$step[log()$n_changed > 0])
       updateCheckboxGroupInput(session, "rm_flags", choices = flags)
-      print("updating flags")
-      })
-
-  #remove flagged data when checked
-    observeEvent(input$rm_flags, {
-      req(length(input$rm_flags) > 0)
-      plot_data(remove_flagged(sdata(), input$rm_flags))
-
-    })
-
-    #if user selects a row in log -> update the data plotted
-    observeEvent(input$log_table_rows_selected, {
-      req(input$log_table_rows_selected)
-
-      new_data <- get_data()[[input$log_table_rows_selected]]
-      plot_data(new_data)
     })
 
   #create plot
     plot_obj <- reactive({
-      req(sdata(), y_var())
+      req(plot_data(), y_var())
       ggplot2::ggplot(plot_data() %>% dplyr::filter(.data$Date_MM_DD_YYYY >= input$date_range[1] & .data$Date_MM_DD_YYYY <= input$date_range[2]),
                       ggplot2::aes(x=.data$DateTime, y=.data[[y_var()]])) +
         ggplot2::geom_point(na.rm = TRUE)

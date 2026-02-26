@@ -190,31 +190,3 @@ nice_yvar <- function(data){
   return(y_var)
 }
 
-#' Set flagged values to missing
-#'
-#' @param data the `data.frame` to remove flagged values from
-#' @param flag_names the flag names to set to `NA` if the flag is `TRUE`
-#'
-#' @returns a `data.frame` with the flagged values removed
-#' @export
-#'
-remove_flagged <- function(data, flag_names){
-  flags <- grep("_flag$", colnames(data), value = TRUE)
-
-  #for one column
-  for(f in flags){
-    flag_vals <- data[[f]]
-
-    #determine values with flag
-    rm <- sapply(flag_vals, function(x){
-      flag <- x[names(x) %in% flag_names]
-      return(any(flag))
-    })
-
-    #make values NA
-    if(sum(rm) > 0){
-      data[rm,gsub("_flag$", "", f)] <- NA
-    }
-  }
- return(data)
-}
