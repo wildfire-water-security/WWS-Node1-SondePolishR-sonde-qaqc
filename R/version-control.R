@@ -4,6 +4,7 @@ log <- data.frame(datetime=as.POSIXct(character()),
                   parameter = character(),
                   step = character(),
                   n_changed = numeric(),
+                  note = character(),
                   user = character(),
                   version = character())  # initialize log
 
@@ -21,6 +22,7 @@ prj_path <- character() #initialize path for data
 #' @param par the name of the parameter modified
 #' @param step a description of the type of change made
 #' @param n the number of points modified
+#' @param note a note from the analyst about the change made
 #' @param version the associated file version name
 #' @param datetime the date and time the change was made
 #' @param user the username of the person who made the change
@@ -35,17 +37,17 @@ prj_path <- character() #initialize path for data
 #' @examples
 #' get_log()
 #'
-#' write_log("Cond_S_cm", "physical limits", 5, "V1")
+#' write_log("Cond_S_cm", "physical limits", 5, "making an example", "V1")
   get_log <- function(env = .pkgenv) {
     rlang::env_get(env, "log")
   }
 
 #' @export
 #' @rdname change-log
-  write_log <- function(par, step, n, version, datetime = Sys.time(), user=Sys.info()[["user"]], env = .pkgenv){
+  write_log <- function(par, step, n, note="", version, datetime = Sys.time(), user=Sys.info()[["user"]], env = .pkgenv){
 
     log_row <- data.frame(datetime=datetime, parameter=par,
-                          step = step, n_changed = n,
+                          step = step, n_changed = n, note=note,
                           user = user,
                           version=version)
 
@@ -59,7 +61,7 @@ prj_path <- character() #initialize path for data
   clear_log <- function(env = .pkgenv){
     clear_log <- data.frame(datetime=as.POSIXct(character()),
                                     parameter = character(), step = character(),
-                                    n_changed = numeric(),
+                                    n_changed = numeric(), note = character(),
                                     user = character(),
                                     version = character())  # initialize log
 

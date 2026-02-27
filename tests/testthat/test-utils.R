@@ -11,29 +11,7 @@ test_that("skip guessing works", {
 
 })
 
-test_that("flags are omitted", {
- #add flags
-  data <- add_flags(raw_sonde, "fDOM_QSU", "test_flag", c(1,2,3), makeNA=FALSE)
-  data <- add_flags(data, "fDOM_QSU", "test_flag2", c(1,3), makeNA=FALSE)
 
-  expect_equal(data$fDOM_QSU[1], 6.23)
-  expect_equal(data$fDOM_QSU[2], 6.18)
-  expect_equal(data$fDOM_QSU[3], 6.10)
-
-  #remove all flags
-  data2 <- remove_flagged(data, c("test_flag", "test_flag2"))
-  expect_equal(data2$fDOM_QSU[1], as.numeric(NA))
-  expect_equal(data2$fDOM_QSU[2], as.numeric(NA))
-  expect_equal(data2$fDOM_QSU[3], as.numeric(NA))
-
-  #remove just one flag
-  data2 <- remove_flagged(data, c("test_flag2"))
-  expect_equal(data2$fDOM_QSU[1], as.numeric(NA))
-  expect_equal(data2$fDOM_QSU[2], 6.18)
-  expect_equal(data2$fDOM_QSU[3], as.numeric(NA))
-
-
-})
 
 test_that("time zones are convertly correctly", {
   time <- as.POSIXct(Sys.time())

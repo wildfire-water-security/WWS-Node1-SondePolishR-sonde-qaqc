@@ -7,21 +7,23 @@ test_that("log can be read, written, and cleared", {
                                     parameter = character(),
                                     step = character(),
                                     n_changed = numeric(),
+                                    note = character(),
                                     user = character(),
                                     version = character()))
 
   #write to the log
-  write_log("Cond_S_cm", "physical limits", 5, "V1")
+  write_log("Cond_S_cm", "physical limits", 5, "test",  "V1")
   log <- get_log()
   expect_equal(nrow(log), 1)
   expect_equal(log$parameter, "Cond_S_cm")
   expect_equal(log$step,  "physical limits")
   expect_equal(log$n_changed, 5)
   expect_equal(log$version, "V1")
+  expect_equal(log$note, "test")
 
 
   #write another line
-  write_log("Cond_S_cm", "physical limits", 2, "V2")
+  write_log("Cond_S_cm", "physical limits", 2, "test", "V2")
   log <- get_log()
   expect_equal(nrow(log), 2)
 
@@ -31,6 +33,7 @@ test_that("log can be read, written, and cleared", {
                                      parameter = character(),
                                      step = character(),
                                      n_changed = numeric(),
+                                     note = character(),
                                      user = character(),
                                      version = character()))
 

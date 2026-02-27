@@ -7,14 +7,23 @@
 \usage{
 confirm_changes_UI(id, note = NULL)
 
-confirm_changes_server(id, data, index = NULL, par, flag_name, prj_path, log)
+confirm_changes_server(
+  id,
+  sdata,
+  index = NULL,
+  par,
+  flag_name,
+  note,
+  prj_path,
+  log
+)
 }
 \arguments{
 \item{id}{the shiny ID of the action button}
 
-\item{note}{an optional note to add to the action button to provide more directions}
+\item{note}{a note from the analyst about the change made}
 
-\item{data}{the sonde data.frame that will be flagged (reactive)}
+\item{sdata}{the sonde data.frame that will be flagged (reactive)}
 
 \item{index}{the index values of the rows to flag in data}
 

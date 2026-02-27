@@ -8,6 +8,7 @@
 #' @param par the parameter to check
 #' @param flag_name a character with the name of the flag
 #' @param index the index values for the rows to be flagged
+#' @param note a note from the analyst about the change made
 #' @param prj_path the file path to save the sonde project to, if `NULL` will try to use `prj_path` stored in package environment.
 #' @param makeNA if `TRUE` the flagged data will be converted to NA values
 #' @md
@@ -23,9 +24,9 @@
 #'   write_data(raw_sonde, "raw")
 #'
 #' #flag data
-#'   data <- flag_data(raw_sonde, "fDOM_QSU", "test_flag", 1:4, prj_path)
+#'   data <- flag_data(raw_sonde, "fDOM_QSU", "test_flag", 1:4, "testing flags", prj_path)
 
-flag_data <- function(data, par, flag_name, index, prj_path=NULL, makeNA = FALSE){
+flag_data <- function(data, par, flag_name, index, note="", prj_path=NULL, makeNA = FALSE){
   stopifnot(inherits(data, "data.frame"), is.character(par), is.character(flag_name),
             is.character(prj_path) | is.null(prj_path), all(is.numeric(index)), is.logical(makeNA))
 
@@ -42,12 +43,12 @@ flag_data <- function(data, par, flag_name, index, prj_path=NULL, makeNA = FALSE
 
   }else{
     version <- digest::digest(data)
-    write_log(par, step=flag_name, n=length(index), version)
+    write_log(par, step=flag_name, n=length(index), note=note, version)
     write_data(data, version)
 
     #write to save path
     if(is.null(prj_path)){prj_path <- get_prjpath()}
-    save_project(get_data(), get_log(), prj_path)
+    save_project(get_data(), get_log(), here::here(prj_path))
 
     if (!is.null(shiny::getDefaultReactiveDomain())) {
       shinyalert::shinyalert(

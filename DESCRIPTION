@@ -46,7 +46,8 @@ Imports:
     utf8,
     stringr,
     shinyWidgets,
-    thematic
+    thematic,
+    here
 Suggests: 
     shinytest2,
     testthat (>= 3.0.0), 

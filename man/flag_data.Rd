@@ -4,7 +4,15 @@
 \alias{flag_data}
 \title{Flag dataset and save a copy}
 \usage{
-flag_data(data, par, flag_name, index, prj_path = NULL, makeNA = FALSE)
+flag_data(
+  data,
+  par,
+  flag_name,
+  index,
+  note = "",
+  prj_path = NULL,
+  makeNA = FALSE
+)
 }
 \arguments{
 \item{data}{a data.frame with sonde data}
@@ -14,6 +22,8 @@ flag_data(data, par, flag_name, index, prj_path = NULL, makeNA = FALSE)
 \item{flag_name}{a character with the name of the flag}
 
 \item{index}{the index values for the rows to be flagged}
+
+\item{note}{a note from the analyst about the change made}
 
 \item{prj_path}{the file path to save the sonde project to, if \code{NULL} will try to use \code{prj_path} stored in package environment.}
 
@@ -36,5 +46,5 @@ prj_path <- file.path(withr::local_tempdir(), "test_prj.RDS")
   write_data(raw_sonde, "raw")
 
 #flag data
-  data <- flag_data(raw_sonde, "fDOM_QSU", "test_flag", 1:4, prj_path)
+  data <- flag_data(raw_sonde, "fDOM_QSU", "test_flag", 1:4, "testing flags", prj_path)
 }

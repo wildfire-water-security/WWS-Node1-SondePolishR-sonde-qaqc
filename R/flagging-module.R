@@ -7,8 +7,9 @@
 #'
 #' @param id the shiny ID of the action button
 #' @param note an optional note to add to the action button to provide more directions
-#' @param data the sonde data.frame that will be flagged (reactive)
+#' @param sdata the sonde data.frame that will be flagged (reactive)
 #' @param index the index values for the rows to be flagged
+#' @param note a note from the analyst about the change made
 #' @param prj_path the file path to save the sonde project to (reactive)
 #' @param par the parameter to flag
 #' @param flag_name a character with the name of the flag
@@ -30,14 +31,18 @@ confirm_changes_UI <- function(id, note=NULL) {
       div(style="margin-top: 8px; margin-bottom: 8px;font-size:10px",
           note)
     },
+    div(style="margin-bottom: 8px",
+        textInput(NS(id, "flag_notes"), "Analyst Notes (optional):",
+                  placeholder = "Enter text...")),
     actionButton(NS(id, "rm_points"), "Flag Points")
+
 
   )
 }
 
 #' @rdname confirm-changes
 #' @export
-confirm_changes_server <- function(id, data, index=NULL, par, flag_name, prj_path, log){
+confirm_changes_server <- function(id, sdata, index=NULL, par, flag_name, note, prj_path, log){
 
   # data: reactiveVal of the dataframe to update
   # data_plot: reactive that provides data with $outlier$Index
@@ -47,11 +52,11 @@ confirm_changes_server <- function(id, data, index=NULL, par, flag_name, prj_pat
 
   moduleServer(id, function(input, output, session) {
 
-    updated_data <- data # start with the original data
+    updated_data <- sdata # start with the original data
 
     # When button is clicked, update data in place
     observeEvent(input$rm_points,{
-      req(data(), par()) #ensure we have what we need
+      req(sdata(), par()) #ensure we have what we need
 
       #check if there's a project path, if no error
       if(is.null(index()) || length(index()) == 0){
@@ -73,23 +78,22 @@ confirm_changes_server <- function(id, data, index=NULL, par, flag_name, prj_pat
           }       #see if there are points selected, if not warn
         }else{
           #add flags to data and save
-            updated <- flag_data(data(),
+            updated <- flag_data(sdata(),
                                  par = par(),
                                  index = index(),
+                                 note = paste0(note, "; ", input$flag_notes),
                                  flag_name = flag_name,
                                  prj_path = prj_path())
 
 
             #update data
-            updated_data(updated)
+            sdata(updated)
 
             #update log
             log(get_log())
 
             }
             })
-
-    return(updated_data)
 
     })
   }

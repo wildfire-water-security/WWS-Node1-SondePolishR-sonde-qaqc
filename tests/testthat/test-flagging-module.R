@@ -15,10 +15,11 @@ test_that("data is not updated when prj_path is empty", {
   },
   #these are passed to the module
   args = list(
-    data = reactiveVal(raw_sonde),
+    sdata = reactiveVal(raw_sonde),
     index = reactiveVal(1),
     par = reactiveVal("x"),
     flag_name = "flagged",
+    note = "test",
     prj_path = reactiveVal(character(0))
   ))
 })
@@ -40,10 +41,11 @@ test_that("data is not updated when index is empty", {
   },
   #these are passed to the module
   args = list(
-    data = reactiveVal(raw_sonde),
+    sdata = reactiveVal(raw_sonde),
     index = reactiveVal(integer()),
     par = reactiveVal("x"),
     flag_name = "flagged",
+    note = "test",
     prj_path = reactiveVal("path")
   ))
 })
@@ -65,10 +67,11 @@ test_that("flag_data is applied when inputs are valid", {
 
       },
       args = list(
-        data = reactiveVal(raw_sonde),
+        sdata = reactiveVal(raw_sonde),
         index = reactiveVal(1:2),
         par = reactiveVal("Cond_uS_cm"),
         flag_name = "flagged",
+        note = "test",
         prj_path = reactiveVal(test_dir),
         log = reactiveVal(get_log())
 

@@ -82,10 +82,7 @@ limits_server <- function(id, sdata, prj_path, log){
     #initialize
     usgs_limit <- reactiveVal()
     data_plot <- reactiveVal()
-    data_lim <- reactiveVal()
-
-    # initialize copy of file for this step
-    observeEvent(sdata(), {data_lim(sdata())})
+    #data_lim <- reactiveVal()
 
   #update choices based on data table
     y_var <- SondePolishR::update_parms_server("update_parms", sdata, choices_fun = nice_yvar)
@@ -107,7 +104,7 @@ limits_server <- function(id, sdata, prj_path, log){
       })
 
   #update limits values from y_var
-      SondePolishR::update_limits(data_lim, y_var, session)
+      SondePolishR::update_limits(sdata, y_var, session)
 
   #get ecoregion if points are supplied
     observeEvent(c(input$lat, input$long), {
@@ -140,15 +137,15 @@ limits_server <- function(id, sdata, prj_path, log){
 
   #get data for plotting
     data_table <- reactive({
-      req(y_var(), data_lim(), input$min, input$max)
-      SondePolishR::physical_limit(data_lim(), input$min, input$max, par=y_var())})
+      req(y_var(), sdata(), input$min, input$max)
+      SondePolishR::physical_limit(sdata(), input$min, input$max, par=y_var())})
 
     observe({
-      req(y_var(),data_lim(),input$min, input$max)
+      req(y_var(),sdata(),input$min, input$max)
       if(any(!is.na(selected()))){
-        sep_data <- SondePolishR::physical_limit(data_lim(),input$min, input$max, par=y_var(), keep=selected())
+        sep_data <- SondePolishR::physical_limit(sdata(),input$min, input$max, par=y_var(), keep=selected())
       }else{
-        sep_data <- SondePolishR::physical_limit(data_lim(),input$min, input$max, par=y_var())
+        sep_data <- SondePolishR::physical_limit(sdata(),input$min, input$max, par=y_var())
       }
         data_plot(sep_data)
 
@@ -207,12 +204,13 @@ limits_server <- function(id, sdata, prj_path, log){
   #confirm changes
     index <- reactive({data_plot()$outlier$Index}) #get index of points to remove
 
-    SondePolishR::confirm_changes_server(
+   SondePolishR::confirm_changes_server(
       id = "flag1",
-      data = data_lim,
+      sdata = sdata,
       index = index,
       par = y_var,
       flag_name = "limits",
+      note = paste0("limits (",input$min, "-", input$max ,")"),
       prj_path = prj_path,
       log = log
     )

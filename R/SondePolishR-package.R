@@ -32,6 +32,7 @@
 #' @importFrom ggplot2 geom_hline
 #' @importFrom ggplot2 geom_point
 #' @importFrom ggplot2 ggplot
+#' @importFrom here here
 #' @importFrom htmltools htmlDependency
 #' @importFrom lubridate force_tz
 #' @importFrom lubridate tz

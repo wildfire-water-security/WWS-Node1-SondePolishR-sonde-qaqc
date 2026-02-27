@@ -13,6 +13,7 @@ write_log(
   par,
   step,
   n,
+  note = "",
   version,
   datetime = Sys.time(),
   user = Sys.info()[["user"]],
@@ -32,6 +33,8 @@ set_log(log, env = .pkgenv)
 
 \item{n}{the number of points modified}
 
+\item{note}{a note from the analyst about the change made}
+
 \item{version}{the associated file version name}
 
 \item{datetime}{the date and time the change was made}
@@ -50,5 +53,5 @@ made to the initial raw sonde data.
 \examples{
 get_log()
 
-write_log("Cond_S_cm", "physical limits", 5, "V1")
+write_log("Cond_S_cm", "physical limits", 5, "making an example", "V1")
 }
