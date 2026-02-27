@@ -100,7 +100,6 @@ explore_data_server <- function(id, sdata, log){
   #adjust for hidden flags
     plot_data <- reactive({
       dat <- base_data()
-  print(input$rm_flags)
       if (!is.null(input$rm_flags) && length(input$rm_flags) > 0) {
         dat <- remove_flagged(dat, input$rm_flags)
       }

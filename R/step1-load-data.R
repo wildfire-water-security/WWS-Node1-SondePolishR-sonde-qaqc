@@ -46,10 +46,10 @@ load_data_UI <- function(id){
                                 label = "Processed Data Save Location",
                                 style="font-size:16px",
                                 title= "Select location to save processed data", multiple=FALSE),
-                 uiOutput(NS(id, "path_text_box"))
+                 uiOutput(NS(id, "path_text_box")))
+          )),
+          checkboxInput(NS(id, "overwrite"), "Overwrite Existing Project?")
 
-                      )
-          ))
 
        )
 
@@ -78,7 +78,7 @@ load_data_server <- function(id, sdata, prj_path, log){
     #load data
       type <- reactiveVal()
 
-    observeEvent(input$file,{
+    observeEvent(list(input$file, input$overwrite),{
       req(input$file, input$tz)
 
       type(tools::file_ext(input$file$datapath))
@@ -93,7 +93,12 @@ load_data_server <- function(id, sdata, prj_path, log){
 
       if(type() == "RDS"){
         read_project(input$file$datapath)  # read into R
-        prj_path(get_prjpath()) #set prj_path var
+
+        start_path <- get_prjpath()
+        if(!input$overwrite){
+          start_path <- paste0(tools::file_path_sans_ext(start_path), " (1).RDS")
+        }
+        prj_path(start_path) #set prj_path var
 
         #get data
         prj <- get_data()
@@ -126,13 +131,23 @@ load_data_server <- function(id, sdata, prj_path, log){
             "C Drive" = "C:/")
 
       #when user selects a file update path
-      observeEvent(input$save_file, {
-        prj_path(
-          file.path(
+      observeEvent(list(input$save_file, input$overwrite), {
+        req(input$file)
+
+        #turn dir path to nice path
+        nice_path <- file.path(
+          shinyFiles::parseDirPath(roots, input$save_file),
+          paste0(tools::file_path_sans_ext(input$file$name), ".RDS"))
+
+        #account for overwriting
+        if(length(nice_path) > 0 && file.exists(nice_path) & !input$overwrite){
+          nice_path <- file.path(
             shinyFiles::parseDirPath(roots, input$save_file),
-            paste0(tools::file_path_sans_ext(input$file$name), ".RDS")
-          )
-        )
+            paste0(tools::file_path_sans_ext(input$file$name), " (1).RDS"))
+        }
+
+        prj_path(nice_path)
+
         #keep environment updated with save location
         set_prjpath(prj_path())
       })
