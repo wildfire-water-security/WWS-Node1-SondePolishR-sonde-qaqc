@@ -1,5 +1,7 @@
 {
   "export": {
-    "prj_path": "inst/extdata/example-sonde-project.RDS"
+    "prj_path": [
+
+    ]
   }
 }

@@ -28,7 +28,7 @@
 
 flag_data <- function(data, par, flag_name, index, note="", prj_path=NULL, makeNA = FALSE){
   stopifnot(inherits(data, "data.frame"), is.character(par), is.character(flag_name),
-            is.character(prj_path) | is.null(prj_path), all(is.numeric(index)), is.logical(makeNA))
+            is.null(prj_path) || dir.exists(dirname(resolve_path(prj_path))), all(is.numeric(index)), is.logical(makeNA))
 
   #add flags to data
   data <- add_flags(data, par, flag_name, index, makeNA)
@@ -48,7 +48,7 @@ flag_data <- function(data, par, flag_name, index, note="", prj_path=NULL, makeN
 
     #write to save path
     if(is.null(prj_path)){prj_path <- get_prjpath()}
-    save_project(get_data(), get_log(), here::here(prj_path))
+    save_project(get_data(), get_log(), prj_path)
 
     if (!is.null(shiny::getDefaultReactiveDomain())) {
       shinyalert::shinyalert(

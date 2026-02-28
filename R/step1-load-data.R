@@ -77,37 +77,46 @@ load_data_server <- function(id, sdata, prj_path, log){
   #NEW PROJECT
     #load data
       type <- reactiveVal()
+      base_path <- reactiveVal()
 
-    observeEvent(list(input$file, input$overwrite),{
-      req(input$file, input$tz)
+    # observeEvent(list(input$file, input$save_file){
+    #   req(type())
+    #   if(type() == "RDS" & is.null(input$save_file)){
+    #     versions <- list.files(here::here(input))
+    #   }
+    #
+    # })
 
-      type(tools::file_ext(input$file$datapath))
+      observeEvent(input$file, {
+        req(input$file, input$tz)
 
-      if(type() == "csv"){
-        sdata(read_sonde(input$file$datapath, tz=input$tz))  # read into R
-        prj_path(character()) #set prj_path var
+        type(tools::file_ext(input$file$datapath))
 
-        log(get_log())
-
-      }
-
-      if(type() == "RDS"){
-        read_project(input$file$datapath)  # read into R
-
-        start_path <- get_prjpath()
-        if(!input$overwrite){
-          start_path <- paste0(tools::file_path_sans_ext(start_path), " (1).RDS")
+        if (type() == "csv") {
+          sdata(read_sonde(input$file$datapath, tz = input$tz))
+          base_path(NULL)
+          prj_path(NULL)
+          log(get_log())
         }
-        prj_path(start_path) #set prj_path var
 
-        #get data
-        prj <- get_data()
-        sdata(prj[[length(prj)]])
+        if (type() == "RDS") {
+          read_project(input$file$datapath)
 
-        log(get_log())
+          base_path(get_prjpath())
+          prj_path(
+            if (isTRUE(input$overwrite))
+              base_path()
+            else
+              version_path(base_path())
+          )
 
-      }
-    })
+          prj <- get_data()
+          sdata(prj[[length(prj)]])
+          log(get_log())
+        }
+      })
+
+
 
       #update timezone if it's a project
         observeEvent(sdata(), {
@@ -131,24 +140,42 @@ load_data_server <- function(id, sdata, prj_path, log){
             "C Drive" = "C:/")
 
       #when user selects a file update path
-      observeEvent(list(input$save_file, input$overwrite), {
+      observeEvent(input$save_file, {
         req(input$file)
 
-        #turn dir path to nice path
-        nice_path <- file.path(
-          shinyFiles::parseDirPath(roots, input$save_file),
-          paste0(tools::file_path_sans_ext(input$file$name), ".RDS"))
+        dir <- shinyFiles::parseDirPath(roots, input$save_file)
+        req(length(dir) > 0)
 
-        #account for overwriting
-        if(length(nice_path) > 0 && file.exists(nice_path) & !input$overwrite){
-          nice_path <- file.path(
-            shinyFiles::parseDirPath(roots, input$save_file),
-            paste0(tools::file_path_sans_ext(input$file$name), " (1).RDS"))
-        }
+        name <- paste0(
+          tools::file_path_sans_ext(input$file$name),
+          ".RDS"
+        )
 
-        prj_path(nice_path)
+        base_path(file.path(dir, name))
 
-        #keep environment updated with save location
+        prj_path(
+          if (isTRUE(input$overwrite))
+            base_path()
+          else
+            version_path(base_path())
+        )
+      })
+
+    #dealing with overwrite toggle
+      observeEvent(input$overwrite, {
+        req(base_path())
+
+        prj_path(
+          if (isTRUE(input$overwrite))
+            base_path()
+          else
+            version_path(base_path())
+        )
+      })
+
+    #sync path with prj enviornment
+      observeEvent(prj_path(), {
+        req(prj_path())
         set_prjpath(prj_path())
       })
 

@@ -28,20 +28,20 @@ test_that("flags are added", {
 })
 
 test_that("saving flags works",{
-  prj_path <- file.path(withr::local_tempdir(), "test_prj.RDS")
-
   SondePolishR::clear_data()
   SondePolishR::clear_log()
   SondePolishR::clear_prjpath()
 
+  prj_path <- list(type="absolute", path =file.path(withr::local_tempdir(), "test_prj.RDS"))
+
   write_data(raw_sonde, "raw")
-  write_log("All", "Initial Load", n = 0, version = "raw")
+  write_log("All", "Initial Load", n = 0, note= "", version = "raw")
   set_prjpath(prj_path)
 
-  data <- flag_data(raw_sonde, "fDOM_QSU", "test_flag", 1:4)
+  data <- flag_data(raw_sonde, "fDOM_QSU", "test_flag", 1:4, prj_path=prj_path)
 
   #ensure file is saved
-  expect_true(file.exists(prj_path))
+  expect_true(file.exists(resolve_path(prj_path)))
 
   #ensure log is written
   expect_equal(nrow(get_log()), 2)

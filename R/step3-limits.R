@@ -82,7 +82,10 @@ limits_server <- function(id, sdata, prj_path, log){
     #initialize
     usgs_limit <- reactiveVal()
     data_plot <- reactiveVal()
+    newdata <- reactiveVal()
     #data_lim <- reactiveVal()
+
+    observeEvent(sdata(), {newdata(sdata())}, ignoreInit = TRUE)
 
   #update choices based on data table
     y_var <- SondePolishR::update_parms_server("update_parms", sdata, choices_fun = nice_yvar)
@@ -204,8 +207,18 @@ limits_server <- function(id, sdata, prj_path, log){
   #confirm changes
     index <- reactive({data_plot()$outlier$Index}) #get index of points to remove
 
+  #make new dataset
+    observeEvent(data_plot()$outlier$Index, {
+      req(index(), y_var(), is.data.frame(newdata()))
+      colnum <- which(colnames(newdata()) == y_var())
+      updated <- newdata()
+      updated[index(),colnum] <- NA
+      newdata(updated)
+    })
+
    SondePolishR::confirm_changes_server(
       id = "flag1",
+      newdata = newdata,
       sdata = sdata,
       index = index,
       par = y_var,

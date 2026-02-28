@@ -50,6 +50,8 @@ additive_server <- function(id, sdata, prj_path, log){
 
     #initialize
       hover_reactive <- reactiveVal()
+      newdata <- reactiveVal()
+      observeEvent(sdata(), {newdata(sdata())}, ignoreInit = TRUE)
 
     #update choices based on data table
       y_var <- SondePolishR::update_parms_server("update_parms", sdata, choices_fun = nice_yvar)
@@ -65,20 +67,20 @@ additive_server <- function(id, sdata, prj_path, log){
           hover_reactive(hover_data)
       })
 
-    #select data (gets the rows selected by user)
-      rows <- reactive({
+    #select data (gets the index selected by user)
+      index <- reactive({
         if (is.null(hover_reactive()) || nrow(hover_reactive()) == 0) {
           return(NULL)}   # no selection
 
         x <- as.POSIXct(hover_reactive()$x, tz = tz(sdata()$DateTime))
         y <- hover_reactive()$y
 
-        rows <- numeric()
+        index <- numeric()
         for (i in 1:length(x)) {
           row <- sdata()$Index[sdata()$DateTime == x[i] &
                                       sdata()[y_var()] == y[i]]
-          rows <- c(rows, row)}
-        rows
+          index <- c(index, row)}
+        index
       })
 
     #update shift val
@@ -87,7 +89,7 @@ additive_server <- function(id, sdata, prj_path, log){
         updateNumericInput(
           session,
           "shift_val",
-          value = guess_shift(sdata(), y_var(), rows())
+          value = guess_shift(sdata(), y_var(), index())
         )
       })
 
@@ -100,10 +102,10 @@ additive_server <- function(id, sdata, prj_path, log){
           data_plot <- reactive({
             req(sdata(), y_var())
 
-            if (is.null(rows())) {
+            if (is.null(index())) {
               sdata()  # return unchanged data if no rows selected
             } else {
-              shift_points(sdata(), y_var(), rows(), input$shift_val)}
+              shift_points(sdata(), y_var(), index(), input$shift_val)}
           })
 
         #preserve zoom
@@ -115,8 +117,8 @@ additive_server <- function(id, sdata, prj_path, log){
             if(is.null(hover_reactive())){
               p <- ggplot(data_plot(), aes(x=.data$DateTime, y=.data[[y_var()]])) + geom_point()
             }else{
-              base <- data_plot()[!(data_plot()$Index %in% rows()),]
-              adj <- data_plot()[data_plot()$Index %in% rows(),]
+              base <- data_plot()[!(data_plot()$Index %in% index()),]
+              adj <- data_plot()[data_plot()$Index %in% index(),]
               p <- ggplot() + geom_point(data=base, aes(x=.data$DateTime, y=.data[[y_var()]])) +
                geom_point(data=adj, aes(x=.data$DateTime, y=.data[[y_var()]]), color="red")
             }
@@ -130,11 +132,22 @@ additive_server <- function(id, sdata, prj_path, log){
             p
             })
 
+
+    #make new dataset
+       observeEvent(index(), {
+            req(index(), y_var(), is.data.frame(newdata()))
+            colnum <- which(colnames(newdata()) == y_var())
+            updated <- newdata()
+            updated[index(),colnum] <- updated[index(),colnum] + input$shift_val
+            newdata(updated)
+          })
+
     #confirm changes
     SondePolishR::confirm_changes_server(
           id = "flag2",
+          newdata = newdata,
           sdata = sdata,
-          index = rows,
+          index = index,
           par = y_var,
           flag_name = "abs_shift",
           note = paste0("absolute shift of ", input$shift_val),

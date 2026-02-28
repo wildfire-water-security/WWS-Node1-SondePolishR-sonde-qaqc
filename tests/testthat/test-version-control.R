@@ -70,13 +70,13 @@ test_that("data saving and logging works", {
 })
 
 test_that("prj path setting and getting works", {
-  set_prjpath(character()) #reset
+  clear_prjpath() #reset
 
-  expect_equal(get_prjpath(), character())
+  expect_equal(get_prjpath(), list(x=character(), path=character()))
 
-  set_prjpath("test/path")
-  expect_equal(get_prjpath(), "test/path")
+  set_prjpath(list(x="package", path="test/path2"))
+  expect_equal(get_prjpath(), list(x="package", path="test/path2"))
 
-  set_prjpath("test/path2")
-  expect_equal(get_prjpath(), "test/path2")
+  set_prjpath(list(x="package", path="test/path2"))
+  expect_equal(get_prjpath(), list(x="package", path="test/path2"))
 })

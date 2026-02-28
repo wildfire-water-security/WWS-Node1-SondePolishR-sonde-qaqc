@@ -17,7 +17,7 @@
 #'
 #' `read_project` loads the project, updates the package environment with the project data, and returns `data_ver` as a list of `data.frames`
 save_project <- function(data_ver, log, prj_path){
-  stopifnot(inherits(data_ver, "list"), inherits(log, "data.frame"), is.character(prj_path))
+  stopifnot(inherits(data_ver, "list"), inherits(log, "data.frame"), is.null(resolve_path(prj_path)) || dir.exists(dirname(resolve_path(prj_path))))
 
   #add log to data_ver
   sonde_prj <- append(list(log), data_ver)
@@ -28,7 +28,7 @@ save_project <- function(data_ver, log, prj_path){
   names(sonde_prj)[1] <- "prj_path"
 
   #save as .RDS
-  saveRDS(sonde_prj, prj_path)
+  saveRDS(sonde_prj, resolve_path(prj_path))
 
 }
 

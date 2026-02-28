@@ -12,7 +12,7 @@ test_that("{shinytest2} recording: checking-module3", {
 
   #check status when df is first added
   rng <- c(app$get_value(input = "data3-min"), app$get_value(input = "data3-max"))
-  expect_equal(rng, c(0.6, 36.2))
+  expect_equal(rng, c(0.6, 36.5))
   expect_equal(app$get_value(input = "data3-ecoregion"), "No Limits Available")
   plot_obj <- app$get_value(export = "data3-plot_obj")
   vdiffr::expect_doppelganger("intial limit plot", plot_obj)

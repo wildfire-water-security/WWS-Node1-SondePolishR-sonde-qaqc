@@ -11,16 +11,17 @@ test_that("data is not updated when prj_path is empty", {
 
     #checking the data table doesn't change
       #updated_data() calls the data.frame
-    expect_equal(updated_data(),raw_sonde)
+    expect_equal(sdata(),raw_sonde)
   },
   #these are passed to the module
   args = list(
+    newdata = reactiveVal(raw_sonde),
     sdata = reactiveVal(raw_sonde),
     index = reactiveVal(1),
     par = reactiveVal("x"),
     flag_name = "flagged",
     note = "test",
-    prj_path = reactiveVal(character(0))
+    prj_path = reactiveVal(list(type=character(), path=character()))
   ))
 })
 
@@ -37,10 +38,11 @@ test_that("data is not updated when index is empty", {
 
     #checking the data table doesn't change
     #updated_data() calls the data.frame
-    expect_equal(updated_data(),raw_sonde)
+    expect_equal(sdata(),raw_sonde)
   },
   #these are passed to the module
   args = list(
+    newdata = reactiveVal(raw_sonde),
     sdata = reactiveVal(raw_sonde),
     index = reactiveVal(integer()),
     par = reactiveVal("x"),
@@ -58,7 +60,7 @@ test_that("flag_data is applied when inputs are valid", {
         session$setInputs(rm_points = 1)
 
         #pull out new dataframe to make sure it looks right
-        result <- updated_data()
+        result <- sdata()
 
         expect_true("Cond_uS_cm_flag" %in% colnames(result))
         expect_true(inherits(result$Cond_uS_cm_flag, "list"))
@@ -67,6 +69,7 @@ test_that("flag_data is applied when inputs are valid", {
 
       },
       args = list(
+        newdata = reactiveVal(raw_sonde),
         sdata = reactiveVal(raw_sonde),
         index = reactiveVal(1:2),
         par = reactiveVal("Cond_uS_cm"),
@@ -79,3 +82,33 @@ test_that("flag_data is applied when inputs are valid", {
 
 
 })
+
+
+test_that("new data replaces sdata", {
+  newdat <- raw_sonde
+  newdat$Cond_uS_cm[1:4] <- NA
+
+  test_dir <- withr::local_tempfile()
+  testServer(confirm_changes_server, {
+    #simulates a click
+    session$setInputs(rm_points = 1)
+
+    #pull out new dataframe to make sure it looks right
+    expect_equal(sdata()$Cond_uS_cm,newdat$Cond_uS_cm)
+
+  },
+  args = list(
+    newdata = reactiveVal(newdat),
+    sdata = reactiveVal(raw_sonde),
+    index = reactiveVal(1:4),
+    par = reactiveVal("Cond_uS_cm"),
+    flag_name = "flagged",
+    note = "test",
+    prj_path = reactiveVal(test_dir),
+    log = reactiveVal(get_log())
+
+  ))
+
+
+})
+

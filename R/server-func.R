@@ -7,7 +7,7 @@
 #' @param session the environment that can be used to access information and functionality relating to the session
 #' @export
 update_limits <- function(data, y_var, session){
-  observeEvent(y_var(), {
+  observeEvent(list(y_var(), data()), {
     req(data())               # make sure data is available
     req(y_var())        # make sure the input exists
     req(y_var() %in% names(data()))  # make sure column exists

@@ -21,7 +21,7 @@ test_that("{shinytest2} recording: checking-module1", {
   data_head <- app$get_value(export="data")
   expect_s3_class(data_head, "data.frame")
 
-  #make sure path gets saved
+  #!!make sure path gets saved
   app$expect_values(export = "prj_path")
 
   #make sure overwriting works
@@ -33,7 +33,7 @@ test_that("{shinytest2} recording: checking-module1", {
   expect_equal(vals$export$log$value$step, c("Initial Load", "test step", "test step2"))
 
 #load new file
-  app$upload_file(`data1-file` = file.path(test_path(), "testdata/sonde-example.csv"), timeout_ = 6)
+  app$upload_file(`data1-file` = file.path(test_path(), "testdata/sonde-example.csv"))
   app$expect_values(export = "data1-type")
 
   #make sure data looks right

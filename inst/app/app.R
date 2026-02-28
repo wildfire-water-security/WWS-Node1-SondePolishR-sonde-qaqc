@@ -76,7 +76,6 @@ server <- function(input, output, session) {
 
   #step 4: additive shift
    SondePolishR::additive_server("data4", sdata, prj_path, log)
-
   #export values for tests
    exportTestValues(
      prj_path = prj_path(),

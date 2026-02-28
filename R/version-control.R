@@ -9,7 +9,7 @@ log <- data.frame(datetime=as.POSIXct(character()),
                   version = character())  # initialize log
 
 data_ver <- list() #initialize list for data
-prj_path <- character() #initialize path for data
+prj_path <- list(type=character(), path=character()) #initialize path for data
 
 #initialize environment
 .pkgenv <- rlang::new_environment(data = list(log = log, data_ver =data_ver, prj_path = prj_path), parent = rlang::empty_env())
@@ -96,7 +96,7 @@ prj_path <- character() #initialize path for data
 #' @rdname prj-path
 #' @export
   clear_prjpath <- function(prj_path, env = .pkgenv){
-    rlang::env_bind(env, prj_path = character())
+    rlang::env_bind(env, prj_path = list(type=character(), path=character()))
   }
 
 #' Sonde data versioning

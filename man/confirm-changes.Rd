@@ -9,6 +9,7 @@ confirm_changes_UI(id, note = NULL)
 
 confirm_changes_server(
   id,
+  newdata,
   sdata,
   index = NULL,
   par,
@@ -22,6 +23,8 @@ confirm_changes_server(
 \item{id}{the shiny ID of the action button}
 
 \item{note}{a note from the analyst about the change made}
+
+\item{newdata}{the sonde data with the appropriate transformation performed relative to the flags being added}
 
 \item{sdata}{the sonde data.frame that will be flagged (reactive)}
 

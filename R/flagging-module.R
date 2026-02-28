@@ -7,6 +7,7 @@
 #'
 #' @param id the shiny ID of the action button
 #' @param note an optional note to add to the action button to provide more directions
+#' @param newdata the sonde data with the appropriate transformation performed relative to the flags being added
 #' @param sdata the sonde data.frame that will be flagged (reactive)
 #' @param index the index values for the rows to be flagged
 #' @param note a note from the analyst about the change made
@@ -42,7 +43,7 @@ confirm_changes_UI <- function(id, note=NULL) {
 
 #' @rdname confirm-changes
 #' @export
-confirm_changes_server <- function(id, sdata, index=NULL, par, flag_name, note, prj_path, log){
+confirm_changes_server <- function(id, newdata, sdata, index=NULL, par, flag_name, note, prj_path, log){
 
   # data: reactiveVal of the dataframe to update
   # data_plot: reactive that provides data with $outlier$Index
@@ -52,11 +53,9 @@ confirm_changes_server <- function(id, sdata, index=NULL, par, flag_name, note, 
 
   moduleServer(id, function(input, output, session) {
 
-    updated_data <- sdata # start with the original data
-
     # When button is clicked, update data in place
     observeEvent(input$rm_points,{
-      req(sdata(), par()) #ensure we have what we need
+      req(sdata(), par(), newdata()) #ensure we have what we need
 
       #check if there's a project path, if no error
       if(is.null(index()) || length(index()) == 0){
@@ -78,7 +77,7 @@ confirm_changes_server <- function(id, sdata, index=NULL, par, flag_name, note, 
           }       #see if there are points selected, if not warn
         }else{
           #add flags to data and save
-            updated <- flag_data(sdata(),
+            updated <- flag_data(newdata(),
                                  par = par(),
                                  index = index(),
                                  note = paste0(note, "; ", input$flag_notes),

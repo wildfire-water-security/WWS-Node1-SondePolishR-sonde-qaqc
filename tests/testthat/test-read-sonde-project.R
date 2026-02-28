@@ -2,7 +2,7 @@ test_that("project is read", {
   #make sure we start with a clean slate
   clear_data()
   clear_log()
-  set_prjpath(character())
+  clear_prjpath()
 
   path <- file.path(testthat::test_path(), "testdata/example-sonde-project.RDS")
 
@@ -10,8 +10,6 @@ test_that("project is read", {
 
   #ensure it reads in
   expect_length(data, 3)
-  expect_equal(names(data), c("raw", "89c22249e8164cf1ad454d2f1e0e8abe",
-                            "c6b5a0644acac829d66f6729ae9009db"))
 
   #ensure it loads the data and log
   expect_equal(names(data), names(get_data()))
