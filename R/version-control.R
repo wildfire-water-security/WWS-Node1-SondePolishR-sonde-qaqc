@@ -150,8 +150,6 @@ prj_path <- list(type=character(), path=character()) #initialize path for data
 #' @export
 #'
 new_version <- function(data){
-
-  #browser()
   #get saved versions
   current <- get_data()
 

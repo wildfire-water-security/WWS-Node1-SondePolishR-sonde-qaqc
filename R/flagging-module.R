@@ -66,7 +66,7 @@ confirm_changes_server <- function(id, newdata, sdata, index=NULL, par, flag_nam
             text = "No points were selected to flag",
             type = "warning"
           )
-        }}else if(length(prj_path()) == 0){
+        }}else if(is.null(resolve_path(prj_path()))){
           # only show alert if running in shiny
           if (interactive()) {
             shinyalert::shinyalert(

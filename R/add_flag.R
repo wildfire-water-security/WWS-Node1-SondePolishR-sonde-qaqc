@@ -28,7 +28,7 @@
 
 flag_data <- function(data, par, flag_name, index, note="", prj_path=NULL, makeNA = FALSE){
   stopifnot(inherits(data, "data.frame"), is.character(par), is.character(flag_name),
-            is.null(prj_path) || dir.exists(dirname(resolve_path(prj_path))), all(is.numeric(index)), is.logical(makeNA))
+            is.null(resolve_path(prj_path)) || dir.exists(dirname(resolve_path(prj_path))), all(is.numeric(index)), is.logical(makeNA))
 
   #add flags to data
   data <- add_flags(data, par, flag_name, index, makeNA)

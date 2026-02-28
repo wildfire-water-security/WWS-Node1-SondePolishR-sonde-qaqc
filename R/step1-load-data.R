@@ -94,8 +94,8 @@ load_data_server <- function(id, sdata, prj_path, log){
 
         if (type() == "csv") {
           sdata(read_sonde(input$file$datapath, tz = input$tz))
-          base_path(NULL)
-          prj_path(NULL)
+          base_path(get_prjpath())
+          prj_path(get_prjpath())
           log(get_log())
         }
 
@@ -104,7 +104,7 @@ load_data_server <- function(id, sdata, prj_path, log){
 
           base_path(get_prjpath())
           prj_path(
-            if (isTRUE(input$overwrite))
+            if (input$overwrite)
               base_path()
             else
               version_path(base_path())
@@ -132,61 +132,61 @@ load_data_server <- function(id, sdata, prj_path, log){
               selected = tz)}
             })
 
-    #define preset roots for file path
-      roots <- c(
-            wd        = getwd(),
-            Downloads = file.path(fs::path_home(), "Downloads"),
-            Documents = file.path(fs::path_home(), "Documents"),
-            "C Drive" = "C:/")
-
-      #when user selects a file update path
-      observeEvent(input$save_file, {
-        req(input$file)
-
-        dir <- shinyFiles::parseDirPath(roots, input$save_file)
-        req(length(dir) > 0)
-
-        name <- paste0(
-          tools::file_path_sans_ext(input$file$name),
-          ".RDS"
-        )
-
-        base_path(file.path(dir, name))
-
-        prj_path(
-          if (isTRUE(input$overwrite))
-            base_path()
-          else
-            version_path(base_path())
-        )
-      })
-
-    #dealing with overwrite toggle
-      observeEvent(input$overwrite, {
-        req(base_path())
-
-        prj_path(
-          if (isTRUE(input$overwrite))
-            base_path()
-          else
-            version_path(base_path())
-        )
-      })
-
-    #sync path with prj enviornment
-      observeEvent(prj_path(), {
-        req(prj_path())
-        set_prjpath(prj_path())
-      })
-
-      #get file name and save path to save as project file
-      shinyFiles::shinyDirChoose(input,"save_file", roots = roots, session = session,
-                                 defaultRoot = "Documents")
+    # #define preset roots for file path
+    #   roots <- c(
+    #         wd        = getwd(),
+    #         Downloads = file.path(fs::path_home(), "Downloads"),
+    #         Documents = file.path(fs::path_home(), "Documents"),
+    #         "C Drive" = "C:/")
+    #
+    #   #when user selects a file update path
+    #   observeEvent(input$save_file, {
+    #     req(input$file)
+    #
+    #     dir <- shinyFiles::parseDirPath(roots, input$save_file)
+    #     req(length(dir) > 0)
+    #
+    #     name <- paste0(
+    #       tools::file_path_sans_ext(input$file$name),
+    #       ".RDS"
+    #     )
+    #
+    #     base_path(list(type="absolute", path = file.path(dir, name)))
+    #
+    #     prj_path(
+    #       if (input$overwrite)
+    #         base_path()
+    #       else
+    #         version_path(base_path())
+    #     )
+    #   })
+    #
+    # #dealing with overwrite toggle
+    #   observeEvent(input$overwrite, {
+    #     req(base_path())
+    #
+    #     prj_path(
+    #       if (isTRUE(input$overwrite))
+    #         base_path()
+    #       else
+    #         version_path(base_path())
+    #     )
+    #   })
+    #
+    # #sync path with prj enviornment
+    #   observeEvent(prj_path(), {
+    #     req(prj_path())
+    #     set_prjpath(prj_path())
+    #   })
+    #
+    #   #get file name and save path to save as project file
+    #   shinyFiles::shinyDirChoose(input,"save_file", roots = roots, session = session,
+    #                              defaultRoot = "Documents")
 
     #show file path in UI
       output$path_text_box <- renderUI({
         tags$span(
-          prj_path(),
+          prj_path()$path,
           style = "background-color: #fff;border: 1px solid #ddd;padding: 6px 12px;
             border-radius: 6px; display: inline-block;min-width: 120px;color: #343a40")
       })

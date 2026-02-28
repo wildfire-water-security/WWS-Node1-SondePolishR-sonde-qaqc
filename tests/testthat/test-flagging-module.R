@@ -48,7 +48,7 @@ test_that("data is not updated when index is empty", {
     par = reactiveVal("x"),
     flag_name = "flagged",
     note = "test",
-    prj_path = reactiveVal("path")
+    prj_path = reactiveVal(list(type="absolute", path="test"))
   ))
 })
 
@@ -75,7 +75,7 @@ test_that("flag_data is applied when inputs are valid", {
         par = reactiveVal("Cond_uS_cm"),
         flag_name = "flagged",
         note = "test",
-        prj_path = reactiveVal(test_dir),
+        prj_path = reactiveVal(list(type="absolute", path=test_dir )),
         log = reactiveVal(get_log())
 
       ))
@@ -104,7 +104,7 @@ test_that("new data replaces sdata", {
     par = reactiveVal("Cond_uS_cm"),
     flag_name = "flagged",
     note = "test",
-    prj_path = reactiveVal(test_dir),
+    prj_path = reactiveVal(list(type="absolute", path=test_dir )),
     log = reactiveVal(get_log())
 
   ))

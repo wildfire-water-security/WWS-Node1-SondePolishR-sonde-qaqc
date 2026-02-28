@@ -39,24 +39,24 @@ resolve_path <- function(x, project_root = NULL) {
 version_path <- function(path) {
   if(is.null(resolve_path(path))){return(NULL)}
 
+  fullpath <- resolve_path(path) #get full path if relative
 
-  path <- resolve_path(path) #get full path if relative
   #if file doesn't exist, return path
-  if (!file.exists(path)){return(path)}
+  if (!file.exists(fullpath)){return(path)}
 
   #get parts of the path
-  base <- tools::file_path_sans_ext(path)
-  dir  <- dirname(path)
-  ext  <- tools::file_ext(path)
+  base <- tools::file_path_sans_ext(fullpath)
+  dir  <- dirname(fullpath)
+  ext  <- tools::file_ext(fullpath)
 
   #determine how many of the files exist
   existing <- list.files(dir, pattern = paste0("^", basename(base), "( \\([0-9]+\\))?\\.", ext, "$"))
 
   #if 0, return path
-  if(length(existing) == 0){return(fs::path_rel(path))}
+  if(length(existing) == 0){return(path)}
 
   #if more than 1, return appended path
-  path <- file.path(dir,paste0(basename(base), " (", length(existing), ").", ext))
-  path <- gsub(fs::path_home(), "", path)
+
+  path$path <- paste0(tools::file_path_sans_ext(path$path), " (", length(existing), ").", ext)
   return(path)
 }

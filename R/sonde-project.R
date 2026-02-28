@@ -24,7 +24,7 @@ save_project <- function(data_ver, log, prj_path){
   names(sonde_prj)[1] <- "change_log"
 
   #add path to data_ver
-  sonde_prj <- append(prj_path, sonde_prj)
+  sonde_prj <- append(list(prj_path), sonde_prj)
   names(sonde_prj)[1] <- "prj_path"
 
   #save as .RDS
@@ -35,10 +35,10 @@ save_project <- function(data_ver, log, prj_path){
 #' @rdname read-sonde-project
 #' @export
 read_project <- function(prj_path){
-  stopifnot(tools::file_ext(prj_path) == "RDS")
+  stopifnot(tools::file_ext(resolve_path(prj_path)) == "RDS")
 
   #read into R
-  sonde_prj <- readRDS(prj_path)
+  sonde_prj <- readRDS(resolve_path(prj_path))
 
   #assign to package envir
   set_log(sonde_prj$change_log)

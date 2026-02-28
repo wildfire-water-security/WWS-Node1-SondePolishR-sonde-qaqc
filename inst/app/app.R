@@ -68,14 +68,14 @@ server <- function(input, output, session) {
   #step 1: load data
    SondePolishR::load_data_server("data1", sdata, prj_path, log)
 
-  #step 2: plot data
-   SondePolishR::explore_data_server("data2", sdata, log)
-
-  #step 3: physical limits
-   SondePolishR::limits_server("data3", sdata, prj_path, log)
-
-  #step 4: additive shift
-   SondePolishR::additive_server("data4", sdata, prj_path, log)
+  # #step 2: plot data
+  #  SondePolishR::explore_data_server("data2", sdata, log)
+  #
+  # #step 3: physical limits
+  #  SondePolishR::limits_server("data3", sdata, prj_path, log)
+  #
+  # #step 4: additive shift
+  #  SondePolishR::additive_server("data4", sdata, prj_path, log)
   #export values for tests
    exportTestValues(
      prj_path = prj_path(),
