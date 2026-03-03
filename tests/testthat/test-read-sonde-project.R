@@ -16,5 +16,5 @@ test_that("project is read", {
   expect_equal(nrow(get_log()), 3)
   expect_equal(get_log()$version, names(data))
 
-  expect_equal(get_prjpath(), list(type="package", path="inst/extdata/example-sonde-project.RDS"))
+  expect_equal(get_prjpath(), list(type="package", path="extdata/example-sonde-project.RDS"))
 })

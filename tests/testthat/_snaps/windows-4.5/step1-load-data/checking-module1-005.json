@@ -1,7 +1,12 @@
 {
   "export": {
-    "prj_path": [
+    "prj_path": {
+      "type": [
 
-    ]
+      ],
+      "path": [
+
+      ]
+    }
   }
 }

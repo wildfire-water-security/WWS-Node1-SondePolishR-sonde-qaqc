@@ -15,9 +15,9 @@ resolve_path <- function(x, project_root = getwd()) {
   if(length(x$type) == 0 & length(x$path) ==0){return(NULL)}
   switch(
     x$type,
-    package = fs::path_package(x$path, package ="SondePolishR"),
+    package = file.path(fs::path_package(package = "SondePolishR"), x$path),
     project = {
-      file.path(project_root, x$path)
+      file.path(rprojroot::find_rstudio_root_file(), x$path)
     },
     absolute = x$path,
     stop("Unknown path type")
@@ -37,7 +37,6 @@ resolve_path <- function(x, project_root = getwd()) {
 version_path <- function(path) {
   if(is.null(resolve_path(path))){return(NULL)}
 
-  browser()
   fullpath <- resolve_path(path) #get full path if relative
 
   #if file doesn't exist, return path

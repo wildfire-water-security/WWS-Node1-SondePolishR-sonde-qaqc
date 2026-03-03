@@ -41,7 +41,7 @@ test_that("saving flags works",{
   data <- flag_data(raw_sonde, "fDOM_QSU", "test_flag", 1:4, prj_path=prj_path)
 
   #ensure file is saved
-  expect_true(file.exists(resolve_path(prj_path)))
+  expect_true(file.exists(SondePolishR:::resolve_path(prj_path)))
 
   #ensure log is written
   expect_equal(nrow(get_log()), 2)
@@ -51,7 +51,7 @@ test_that("saving flags works",{
   expect_equal(names(get_data()), c("raw", "824f400c52499aa98d40f5efe0623169"))
 
   #ensure no new version is saved if same changes are made
-    data <- flag_data(data, "fDOM_QSU", "test_flag", 1:4, prj_path)
+    data <- flag_data(data, "fDOM_QSU", "test_flag", 1:4, prj_path=prj_path)
 
     #ensure log is written
     expect_equal(nrow(get_log()), 2)
