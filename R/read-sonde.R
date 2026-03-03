@@ -106,9 +106,10 @@ read_sonde <- function(file, encoding = NULL, flags=TRUE, skip=NULL, tz="Etc/GMT
   #remove any duplicated header rows
   extra_header <- c(grep("^Date", as.character(data$Date_MM_DD_YYYY)), which(as.character(data$Date_MM_DD_YYYY) == ""))
   if(length(extra_header) >0){
-    extra <- which(is.na(data$Date_MM_DD_YYYY[1:extra_header]))
-    data <- data[-c(extra, extra_header),]
-    }
+    for(x in extra_header){
+      extra <- which(is.na(data$Date_MM_DD_YYYY[1:x]))
+      data <- data[-c(extra, extra_header),]
+    }}
 
   #make date time into a column set to correct tz
   data <- data %>% dplyr::mutate(DateTime = anytime::anytime(paste(data$Date_MM_DD_YYYY, data$Time_HH_mm_ss),
