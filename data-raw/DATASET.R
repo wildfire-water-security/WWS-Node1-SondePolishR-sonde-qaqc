@@ -122,7 +122,7 @@ for(x in ecos){
   use_data(raw_sonde, overwrite = TRUE)
 
 # create example versioning
-  path <- list(type="package", path="inst/extdata/example-sonde-project.RDS")
+  path <- list(type="project", path="inst/extdata/example-sonde-project.RDS")
 
   data <- raw_sonde
   write_data(data, "raw")

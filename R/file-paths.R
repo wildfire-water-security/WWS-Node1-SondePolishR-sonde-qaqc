@@ -5,10 +5,9 @@
 #' @param x the type of path (package, project, absolute)
 #' @param project_root the project path, potentially relative
 #'
-#' @returns
 #' @noRd
 #'
-resolve_path <- function(x, project_root = NULL) {
+resolve_path <- function(x, project_root = getwd()) {
   if(!is.list(x) && is.character(x)){return(x)}
 
   stopifnot(is.list(x), !is.null(x$type), !is.null(x$path))
@@ -18,7 +17,6 @@ resolve_path <- function(x, project_root = NULL) {
     x$type,
     package = fs::path_package(x$path, package ="SondePolishR"),
     project = {
-      stopifnot(!is.null(project_root))
       file.path(project_root, x$path)
     },
     absolute = x$path,
@@ -39,6 +37,7 @@ resolve_path <- function(x, project_root = NULL) {
 version_path <- function(path) {
   if(is.null(resolve_path(path))){return(NULL)}
 
+  browser()
   fullpath <- resolve_path(path) #get full path if relative
 
   #if file doesn't exist, return path

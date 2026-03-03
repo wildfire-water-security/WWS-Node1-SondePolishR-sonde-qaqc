@@ -144,6 +144,7 @@ read_sonde <- function(file, encoding = NULL, flags=TRUE, skip=NULL, tz="Etc/GMT
   #clear the log and dataframe
     clear_log()
     clear_data()
+    clear_prjpath()
 
     write_log("All", "Initial Load", n = 0, version = "raw", env=.pkgenv)
     write_data(data, "raw")
