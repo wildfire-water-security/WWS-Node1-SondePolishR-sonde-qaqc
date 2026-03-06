@@ -29,13 +29,23 @@ guess_shift <- function(data, par, index){
     t1 <- vals[start - 1]
     t2 <- vals[end + 1]
 
-  #calculate slope and intercept
-    b <- (t2 - t1) / (y2 - y1)
-    a <- t1 - b * y1
+  #calculate slope and intercept (these are used calculate amount to add to val)
+  if(length(t1) == 0 || is.na(t1)){
+    #when start of data
+    b <- 0
+    a <- t2-y2
+  }else if(length(t2) == 0 || is.na(t2)){
+    #end of data
+    b <- 0
+    a <- t1 - y1
+  }else{
+    #otherwise calc slope
+    b <- ((t2-y2) - (t1-y1)) / length(index)
+    a <- t1- y1
+    }
 
-  #TODO: account for issues at start and end of data -> use a absolute shift
   #return
-    return(list(slope = b, int=a))
+    return(list(slope = round(b, 3), int=round(a, 3)))
 
   #
   # #don't get values before start
@@ -92,7 +102,9 @@ shift_points <- function(data, par, index, shift_val=NULL){
   }
 
   #get new points
-  data[index, par] <- (data[index, par] * shift_val$slope) + shift_val$int
+  add <- (shift_val$slope * (seq_along(index)-1)) + shift_val$int
+
+  data[index, par] <- data[index, par] + add
 
   return(data)
 }

@@ -19,12 +19,12 @@ additive_UI <- function(id){
               NS(id, "slope_val"),
               "Slope",
               value = 0,
-              step=0.1),
+              step=0.001),
               numericInput(
                 NS(id, "int_val"),
                 "Intercept",
                 value = 0,
-                step=0.1)
+                step=0.01)
 
           )),
           accordion_panel(
