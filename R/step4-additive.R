@@ -10,17 +10,19 @@ additive_UI <- function(id){
         SondePolishR::update_parms_UI(ns("update_parms")), #get parameters to view
         accordion(
           accordion_panel(
-            title= "Shift Value",
+            title= "Shift Values",
             #get value to shift points
             fluidRow(
+              div(style="margin-bottom: 8px; font-size:14px",
+                  "Adjust the slope and intercept to shift the selected data:"),
               numericInput(
               NS(id, "slope_val"),
-              "Enter the slope value to shift selected data",
+              "Slope",
               value = 0,
               step=0.1),
               numericInput(
                 NS(id, "int_val"),
-                "Enter the intercept value to shift selected data",
+                "Intercept",
                 value = 0,
                 step=0.1)
 
