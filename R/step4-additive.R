@@ -12,12 +12,19 @@ additive_UI <- function(id){
           accordion_panel(
             title= "Shift Value",
             #get value to shift points
-            numericInput(
-              NS(id, "shift_val"),
-              "Enter the value to shift selected data",
+            fluidRow(
+              numericInput(
+              NS(id, "slope_val"),
+              "Enter the slope value to shift selected data",
               value = 0,
-              step=0.1)
-          ),
+              step=0.1),
+              numericInput(
+                NS(id, "int_val"),
+                "Enter the intercept value to shift selected data",
+                value = 0,
+                step=0.1)
+
+          )),
           accordion_panel(
             title="Flag Points",
             SondePolishR::confirm_changes_UI(ns("flag2"))
@@ -49,53 +56,50 @@ additive_server <- function(id, sdata, prj_path, log){
   moduleServer(id, function(input, output, session){
 
     #initialize
-      hover_reactive <- reactiveVal()
-      newdata <- reactiveVal()
-      observeEvent(sdata(), {newdata(sdata())}, ignoreInit = TRUE)
+      newdata <- reactiveVal() #stores updated dataset when shift is made
+      index <- reactiveVal() #stores index of selected points
+      observeEvent(sdata(), {newdata(sdata())}, ignoreInit = TRUE) #make newdata look like sdata when sdata changes
 
     #update choices based on data table
       y_var <- SondePolishR::update_parms_server("update_parms", sdata, choices_fun = nice_yvar)
 
-    #select values via hover
+    #select values via hover (gets the index selected by user)
       observe({
         req(sdata(), y_var())
-        hover_data <- tryCatch(
-          event_data("plotly_selected", source = "shift_plot"),
-          error = function(e)
-            NULL)
-        if (!is.null(hover_data))
-          hover_reactive(hover_data)
-      })
+        hover_data <- event_data("plotly_selected", source = "shift_plot")
 
-    #select data (gets the index selected by user)
-      index <- reactive({
-        if (is.null(hover_reactive()) || nrow(hover_reactive()) == 0) {
-          return(NULL)}   # no selection
+        if(!is.null(hover_data) && length(hover_data) > 0  && nrow(hover_data) > 0){
+          x <- as.POSIXct(hover_data$x, tz = tz(sdata()$DateTime))
+          y <- hover_data$y
 
-        x <- as.POSIXct(hover_reactive()$x, tz = tz(sdata()$DateTime))
-        y <- hover_reactive()$y
+          ind <- numeric()
+          for (i in 1:length(x)) {
+            row <- sdata()$Index[sdata()$DateTime == x[i] &
+                                   sdata()[y_var()] == y[i]]
+            ind <- c(ind, row)}
 
-        index <- numeric()
-        for (i in 1:length(x)) {
-          row <- sdata()$Index[sdata()$DateTime == x[i] &
-                                      sdata()[y_var()] == y[i]]
-          index <- c(index, row)}
-        index
+          index(ind)
+        }
       })
 
     #update shift val
-      observeEvent(hover_reactive(),{
-        #req(length(hover_reactive()) > 0)
+      observeEvent(index(),{
         updateNumericInput(
           session,
-          "shift_val",
-          value = guess_shift(sdata(), y_var(), index())
-        )
+          "slope_val",
+          value = guess_shift(sdata(), y_var(), index())$slope)
+
+        updateNumericInput(
+          session,
+          "int_val",
+          value = guess_shift(sdata(), y_var(), index())$int)
       })
 
-        #update shift_val to 0
+        #update vals to 0
           observeEvent(y_var(),{
-            updateNumericInput(session,"shift_val",value = 0)
+            updateNumericInput(session,"slope_val",value = 0)
+            updateNumericInput(session,"int_val",value = 0)
+
             plot_lyout <- reactiveValues(xaxis = list(), yaxis = list())})
 
         #take selected points and move
@@ -105,7 +109,7 @@ additive_server <- function(id, sdata, prj_path, log){
             if (is.null(index())) {
               sdata()  # return unchanged data if no rows selected
             } else {
-              shift_points(sdata(), y_var(), index(), input$shift_val)}
+              shift_points(sdata(), y_var(), index(), list(slope=input$slope_val, int=input$int_val))}
           })
 
         #preserve zoom
@@ -114,7 +118,7 @@ additive_server <- function(id, sdata, prj_path, log){
         #make plot
           output$shift_plot <- renderPlotly({
             req(data_plot(), y_var())
-            if(is.null(hover_reactive())){
+            if(is.null(index())){
               p <- ggplot(data_plot(), aes(x=.data$DateTime, y=.data[[y_var()]])) + geom_point()
             }else{
               base <- data_plot()[!(data_plot()$Index %in% index()),]
@@ -138,7 +142,7 @@ additive_server <- function(id, sdata, prj_path, log){
             req(index(), y_var(), is.data.frame(newdata()))
             colnum <- which(colnames(newdata()) == y_var())
             updated <- newdata()
-            updated[index(),colnum] <- updated[index(),colnum] + input$shift_val
+            updated[index(),colnum] <- (updated[index(),colnum] * input$slope_val) + input$int_val
             newdata(updated)
           })
 
@@ -150,7 +154,7 @@ additive_server <- function(id, sdata, prj_path, log){
           index = index,
           par = y_var,
           flag_name = "abs_shift",
-          note = paste0("absolute shift of ", input$shift_val),
+          note = paste0("shift with slope of ", input$slope_val, "and intercept of ",input$int_val),
           prj_path = prj_path,
           log = log)
   })
