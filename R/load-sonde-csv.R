@@ -78,7 +78,9 @@ read_sonde <- function(file, encoding = NULL, flags=TRUE, skip=NULL, tz=NULL){
                 Temp_C = "Temp_?C",
                 ODO_sat = "DO_%", ODO_mg_L = "DO_mg_L",
                 SpCond_uS_cm = "SPC_uS_cm",
-                Turbidity_FNU = "NTU", Battery_V ="Batt_V")
+                Turbidity_FNU = "NTU", Battery_V ="Batt_V",
+                Depth_m = "Vertical_Position_m",
+                Depth_m = "DEP_m")
     df <- df %>% dplyr::rename(any_of(lookup))
 
   #some data cleaning
