@@ -88,9 +88,10 @@ read_sonde <- function(file, encoding = NULL, flags=TRUE, skip=NULL, tz="Etc/GMT
       }}
 
     #save site name
-    if(length(unique(data$Site_Name)) > 1){
-      stop(paste0("multiple sites detected in file: ", basename(file)))}
-    if("Site_Name" %in% colnames(data)){site <- data$Site_Name[1]
+    if("Site_Name" %in% colnames(data)){
+      if(length(unique(data$Site_Name)) > 1){
+        stop(paste0("multiple sites detected in file: ", basename(file)))}
+      site <- data$Site_Name[1]
     }else{
       site <- ifelse(usb_export, stringr::str_split_i(text[grep("Site:", text)], ",", 2), stop("site row not determined"))
     }
