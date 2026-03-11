@@ -79,6 +79,23 @@ read_sonde <- function(file, encoding = NULL, flags=TRUE, skip=NULL, tz="Etc/GMT
     data <- data %>% dplyr::rename(any_of(lookup))
 
   #some data cleaning
+    #remove any duplicated header rows
+    extra_header <- c(grep("^Date", as.character(data$Date_MM_DD_YYYY)), which(as.character(data$Date_MM_DD_YYYY) == ""))
+    if(length(extra_header) >0){
+      for(x in extra_header){
+        extra <- which(is.na(data$Date_MM_DD_YYYY[1:x]))
+        data <- data[-c(extra, extra_header),]
+      }}
+
+    #save site name
+    if(length(unique(data$Site_Name)) > 1){
+      stop(paste0("multiple sites detected in file: ", basename(file)))}
+    if("Site_Name" %in% colnames(data)){site <- data$Site_Name[1]
+    }else{
+      site <- ifelse(usb_export, stringr::str_split_i(text[grep("Site:", text)], ",", 2), stop("site row not determined"))
+    }
+
+
     #drop all NA columns
     data <- data[, !apply(data, 2, function(x) all(is.na(x)))]
 
@@ -87,33 +104,15 @@ read_sonde <- function(file, encoding = NULL, flags=TRUE, skip=NULL, tz="Etc/GMT
       data <- data[, !apply(data, 2, function(x) length(unique(x)) == 1)]
     }
 
-
-
     #make date and time back to character to match csv
     data$Time_HH_mm_ss <- as.character(data$Time_HH_mm_ss)
     data$Time_HH_mm_ss <- sub("^([0-9]):", "0\\1:", data$Time_HH_mm_ss)
 
-  #add obs index for tracking easier
-  data <- data %>% dplyr::mutate(Index = 1:dplyr::n(), .before="Date_MM_DD_YYYY") %>% dplyr::select(!any_of("Time_Fract_Sec"))
+    #add obs index for tracking easier
+    data <- data %>% dplyr::mutate(Index = 1:dplyr::n(), .before="Date_MM_DD_YYYY") %>% dplyr::select(!any_of("Time_Fract_Sec"))
 
-  #remove any duplicated header rows
-  extra_header <- c(grep("^Date", as.character(data$Date_MM_DD_YYYY)), which(as.character(data$Date_MM_DD_YYYY) == ""))
-  if(length(extra_header) >0){
-    for(x in extra_header){
-      extra <- which(is.na(data$Date_MM_DD_YYYY[1:x]))
-      data <- data[-c(extra, extra_header),]
-    }}
-
-  #add site column
-  if(length(unique(data$Site_Name)) > 1){
-    stop(paste0("multiple sites detected in file: ", basename(file)))
-  }
-  #save site name
-  if("Site_Name" %in% colnames(data)){site <- data$Site_Name[1]
-  }else{
-    site <- ifelse(usb_export, stringr::str_split_i(text[grep("Site:", text)], ",", 2), stop("site row not determined"))
-  }
-  data <- data %>% dplyr::mutate(Site_Name = site, .after="Time_HH_mm_ss")
+    #add site column
+    data <- data %>% dplyr::mutate(Site_Name = site, .after="Time_HH_mm_ss")
 
   #make date time into a column set to correct tz
   data <- data %>% dplyr::mutate(DateTime = anytime::anytime(paste(data$Date_MM_DD_YYYY, data$Time_HH_mm_ss),
