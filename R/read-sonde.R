@@ -69,12 +69,6 @@ read_sonde <- function(file, encoding = NULL, flags=TRUE, skip=NULL, tz="Etc/GMT
   #drop any NA col names
     data <- data[,!is.na(colnames(data))]
 
-  #save site name
-    if("Site_Name" %in% colnames(data)){site <- data$Site_Name[1]
-    }else{
-      site <- ifelse(usb_export, stringr::str_split_i(text[grep("Site:", text)], ",", 2), stop("site row not determined"))
-    }
-
   #rename col names
     lookup <- c(Date_MM_DD_YYYY = "Date", Time_HH_mm_ss = "Time", Temp_C="?C",
                 Temp_C = "Temp_?C",
@@ -93,8 +87,6 @@ read_sonde <- function(file, encoding = NULL, flags=TRUE, skip=NULL, tz="Etc/GMT
       data <- data[, !apply(data, 2, function(x) length(unique(x)) == 1)]
     }
 
-    #add site column
-      data <- data %>% dplyr::mutate(Site_Name = site, .after="Time_HH_mm_ss")
 
 
     #make date and time back to character to match csv
@@ -111,6 +103,17 @@ read_sonde <- function(file, encoding = NULL, flags=TRUE, skip=NULL, tz="Etc/GMT
       extra <- which(is.na(data$Date_MM_DD_YYYY[1:x]))
       data <- data[-c(extra, extra_header),]
     }}
+
+  #add site column
+  if(length(unique(data$Site_Name)) > 1){
+    stop(paste0("multiple sites detected in file: ", basename(file)))
+  }
+  #save site name
+  if("Site_Name" %in% colnames(data)){site <- data$Site_Name[1]
+  }else{
+    site <- ifelse(usb_export, stringr::str_split_i(text[grep("Site:", text)], ",", 2), stop("site row not determined"))
+  }
+  data <- data %>% dplyr::mutate(Site_Name = site, .after="Time_HH_mm_ss")
 
   #make date time into a column set to correct tz
   data <- data %>% dplyr::mutate(DateTime = anytime::anytime(paste(data$Date_MM_DD_YYYY, data$Time_HH_mm_ss),
