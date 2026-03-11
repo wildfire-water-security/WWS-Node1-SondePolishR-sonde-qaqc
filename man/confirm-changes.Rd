@@ -22,7 +22,7 @@ confirm_changes_server(
 \arguments{
 \item{id}{the shiny ID of the action button}
 
-\item{note}{a note from the analyst about the change made}
+\item{note}{a note from the analyst about the change made (reactive)}
 
 \item{newdata}{the sonde data with the appropriate transformation performed relative to the flags being added}
 

@@ -13,7 +13,7 @@ shift_points(data, par, index, shift_val = NULL)
 
 \item{index}{the index values of the rows that need to be shifted}
 
-\item{shift_val}{the value to shift the selected data by, if \code{NULL}, it will be guessed using \link[SondePolishR]{guess_shift}}
+\item{shift_val}{a list of the slope and int (intercept) to use to shift the data by, if \code{NULL}, it will be guessed using \link[SondePolishR]{guess_shift}}
 }
 \value{
 a data.frame with the values adjusted

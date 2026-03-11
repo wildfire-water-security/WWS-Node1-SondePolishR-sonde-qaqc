@@ -10,7 +10,7 @@
 #' @param newdata the sonde data with the appropriate transformation performed relative to the flags being added
 #' @param sdata the sonde data.frame that will be flagged (reactive)
 #' @param index the index values for the rows to be flagged
-#' @param note a note from the analyst about the change made
+#' @param note a note from the analyst about the change made (reactive)
 #' @param prj_path the file path to save the sonde project to (reactive)
 #' @param par the parameter to flag
 #' @param flag_name a character with the name of the flag
@@ -80,7 +80,7 @@ confirm_changes_server <- function(id, newdata, sdata, index=NULL, par, flag_nam
             updated <- flag_data(newdata(),
                                  par = par(),
                                  index = index(),
-                                 note = paste0(note, "; ", input$flag_notes),
+                                 note = paste0(note(), "; ", input$flag_notes),
                                  flag_name = flag_name,
                                  prj_path = prj_path())
 
@@ -90,6 +90,9 @@ confirm_changes_server <- function(id, newdata, sdata, index=NULL, par, flag_nam
 
             #update log
             log(get_log())
+
+            #clear note
+            updateTextInput(session,"flag_notes",value = NULL)
 
             }
             })

@@ -47,31 +47,6 @@ guess_shift <- function(data, par, index){
   #return
     return(list(slope = round(b, 3), int=round(a, 3)))
 
-  #
-  # #don't get values before start
-  #   before <- dplyr::lag(vals, n=3)[start:(start+2)]
-  #
-  #   if(all(is.na(before))){start_dif <- NA}else{
-  #     start_dif <- stats::weighted.mean(before -  vals[start], w = (1:3/3), na.rm=TRUE)
-  #   }
-  #
-  # #check difference between start and points before
-  #   after <- dplyr::lead(vals, n=3)[end:(end+2)]
-  #   if(all(is.na(after))){end_dif <- NA}else{
-  #     end_dif <- stats::weighted.mean(after -  vals[end], w = (3:1/3), na.rm=TRUE)
-  #     }
-  #
-  # #guess shift
-  #   slope <- (mean(after) - mean(before)) / (vals[end] - vals[start])
-  #   int <- start_dif
-  #
-  #   shift <- mean(c(start_dif, end_dif), na.rm=TRUE)
-  #
-  # #protect from errors
-  #   if(!is.numeric(shift) | is.nan(shift)){
-  #    return(0)}else{
-  #      return(round(shift, digits=2))
-  #    }
 
 }
 
@@ -83,7 +58,7 @@ guess_shift <- function(data, par, index){
 #' @param data a data.frame with sonde data
 #' @param par the parameter being corrected
 #' @param index the index values of the rows that need to be shifted
-#' @param shift a list of the slope and int (intercept) to use to shift the data by, if `NULL`, it will be guessed using \link[SondePolishR]{guess_shift}
+#' @param shift_val a list of the slope and int (intercept) to use to shift the data by, if `NULL`, it will be guessed using \link[SondePolishR]{guess_shift}
 #'
 #' @returns a data.frame with the values adjusted
 #' @export

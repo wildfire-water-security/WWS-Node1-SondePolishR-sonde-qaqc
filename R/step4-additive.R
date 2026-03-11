@@ -58,107 +58,117 @@ additive_server <- function(id, sdata, prj_path, log){
   moduleServer(id, function(input, output, session){
 
     #initialize
-      newdata <- reactiveVal() #stores updated dataset when shift is made
       index <- reactiveVal() #stores index of selected points
-      observeEvent(sdata(), {newdata(sdata())}, ignoreInit = TRUE) #make newdata look like sdata when sdata changes
 
     #update choices based on data table
       y_var <- SondePolishR::update_parms_server("update_parms", sdata, choices_fun = nice_yvar)
 
-    #select values via hover (gets the index selected by user)
-      observe({
-        req(sdata(), y_var())
-        hover_data <- event_data("plotly_selected", source = "shift_plot")
+    #reset when dataset or yvar changes
+      observeEvent(list(sdata(), y_var()), {
+        index(NULL)
 
-        if(!is.null(hover_data) && length(hover_data) > 0  && nrow(hover_data) > 0){
-          x <- as.POSIXct(hover_data$x, tz = tz(sdata()$DateTime))
-          y <- hover_data$y
-
-          ind <- numeric()
-          for (i in 1:length(x)) {
-            row <- sdata()$Index[sdata()$DateTime == x[i] &
-                                   sdata()[y_var()] == y[i]]
-            ind <- c(ind, row)}
-
-          index(ind)
-        }
+        updateNumericInput(session,"slope_val", value = 0)
+        updateNumericInput(session,"int_val", value = 0)
       })
 
-    #update shift val
-      observeEvent(index(),{
-        updateNumericInput(
-          session,
-          "slope_val",
-          value = guess_shift(sdata(), y_var(), index())$slope)
+    #observe selection from plot and get indices of selected
+      observeEvent(
+        event_data("plotly_selected", source = "shift_plot"),{
+          req(sdata(), y_var())
 
-        updateNumericInput(
-          session,
-          "int_val",
-          value = guess_shift(sdata(), y_var(), index())$int)
-      })
+          sel <- event_data("plotly_selected", source = "shift_plot")
 
-        #update vals to 0
-          observeEvent(y_var(),{
-            updateNumericInput(session,"slope_val",value = 0)
-            updateNumericInput(session,"int_val",value = 0)
+          if(!is.null(sel) && length(sel) && nrow(sel) > 0) {
+            index(sel$pointNumber + 1)
+          }else {index(NULL)}
+        })
 
-            plot_lyout <- reactiveValues(xaxis = list(), yaxis = list())})
+    #guess slope/intercept when points selected
+      observeEvent(index(), {
+          if(is.null(index())){
+            new_slope <- 0
+            new_int <- 0
+          }else {
+            shift <- guess_shift(sdata(), y_var(), index())
 
-        #take selected points and move
-          data_plot <- reactive({
+            new_slope <- shift$slope
+            new_int <- shift$int
+          }
+
+          updateNumericInput(session,"slope_val", value = new_slope)
+          updateNumericInput(session,"int_val", value = new_int)
+        })
+
+
+    #preview data with shift
+      data_plot <- reactive({
             req(sdata(), y_var())
 
-            if (is.null(index())) {
-              sdata()  # return unchanged data if no rows selected
-            } else {
-              shift_points(sdata(), y_var(), index(), list(slope=input$slope_val, int=input$int_val))}
-          })
+            dat <- sdata()
+            dat$sel <- FALSE
 
-        #preserve zoom
-          plot_lyout <- preserve_zoom(data_plot, y_var, "shift_plot")
+            if(!is.null(index())){
+              colnum <- which(names(dat) == y_var())
 
-        #make plot
-          output$shift_plot <- renderPlotly({
-            req(data_plot(), y_var())
-            if(is.null(index())){
-              p <- ggplot(data_plot(), aes(x=.data$DateTime, y=.data[[y_var()]])) + geom_point()
-            }else{
-              base <- data_plot()[!(data_plot()$Index %in% index()),]
-              adj <- data_plot()[data_plot()$Index %in% index(),]
-              p <- ggplot() + geom_point(data=base, aes(x=.data$DateTime, y=.data[[y_var()]])) +
-               geom_point(data=adj, aes(x=.data$DateTime, y=.data[[y_var()]]), color="red")
+              add <- (input$slope_val * (seq_along(index())-1)) + input$int_val
+
+              dat[index(), colnum] <- dat[index(), colnum] + add
+              dat$sel <- dat$Index %in% index()
             }
-            p <- p  %>% ggplotly(source = "shift_plot") %>% layout(dragmode = "select") %>%
-              event_register("plotly_selected") %>% event_register("plotly_relayout")
 
-            #adjust axis if needed
-            if (length(plot_lyout$xaxis) > 0 || length(plot_lyout$yaxis) > 0) {
-              p <- layout(p,xaxis = plot_lyout$xaxis,yaxis = plot_lyout$yaxis)}
-
-            p
-            })
-
-
-    #make new dataset
-       observeEvent(index(), {
-            req(index(), y_var(), is.data.frame(newdata()))
-            colnum <- which(colnames(newdata()) == y_var())
-            updated <- newdata()
-            updated[index(),colnum] <- (updated[index(),colnum] * input$slope_val) + input$int_val
-            newdata(updated)
+            dat
           })
+
+    # preserve zoom
+      plot_lyout <- preserve_zoom(data_plot, y_var, "shift_plot")
+
+   #plot
+    output$shift_plot <- renderPlotly({
+        req(data_plot(), y_var())
+
+        dat <- data_plot()
+
+        #if no points selected just plot normally
+        if(is.null(index())){
+          p <- ggplot2::ggplot(dat, ggplot2::aes(x = .data$DateTime, y = .data[[y_var()]])) + ggplot2::geom_point()
+        }else {
+
+          p <- ggplot2::ggplot(dat, ggplot2::aes(.data$DateTime, .data[[y_var()]], color = sel)) +
+            ggplot2::geom_point() +
+            ggplot2::scale_color_manual(values = c("white","red"), guide = "none")
+        }
+
+        p <- p %>%
+          plotly::ggplotly(source = "shift_plot") %>%
+          plotly::layout(dragmode = "select") %>%
+          plotly::event_register("plotly_selected") %>%
+          plotly::event_register("plotly_relayout")
+
+        if(length(plot_lyout$xaxis) > 0 || length(plot_lyout$yaxis) > 0){
+
+          p <- layout(
+            p,
+            xaxis = plot_lyout$xaxis,
+            yaxis = plot_lyout$yaxis
+          )
+        }
+
+        p
+
+      })
 
     #confirm changes
     SondePolishR::confirm_changes_server(
-          id = "flag2",
-          newdata = newdata,
-          sdata = sdata,
-          index = index,
-          par = y_var,
-          flag_name = "abs_shift",
-          note = paste0("shift with slope of ", input$slope_val, "and intercept of ",input$int_val),
-          prj_path = prj_path,
-          log = log)
-  })
+      id = "flag2",
+      newdata = data_plot,
+      sdata = sdata,
+      index = index,
+      par = y_var,
+      flag_name = "Additive Shift",
+      note = reactive(paste0("shift with slope ", input$slope_val," and intercept ", input$int_val)),
+      prj_path = prj_path,
+      log = log)
+
+   })
 }
 

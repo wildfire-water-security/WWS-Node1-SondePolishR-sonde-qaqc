@@ -222,8 +222,8 @@ limits_server <- function(id, sdata, prj_path, log){
       sdata = sdata,
       index = index,
       par = y_var,
-      flag_name = "limits",
-      note = paste0("limits (",input$min, "-", input$max ,")"),
+      flag_name = "Absolute Limits",
+      note = reactive(paste0("limits (",input$min, "-", input$max ,")")),
       prj_path = prj_path,
       log = log
     )
