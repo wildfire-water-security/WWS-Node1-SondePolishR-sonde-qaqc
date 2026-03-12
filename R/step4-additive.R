@@ -120,42 +120,44 @@ additive_server <- function(id, sdata, prj_path, log){
           })
 
     # preserve zoom
-      plot_lyout <- preserve_zoom(data_plot, y_var, "shift_plot")
+     plot_lyout <- preserve_zoom(data_plot, y_var, "shift_plot")
 
    #plot
-    output$shift_plot <- renderPlotly({
+    #make plot
+      plot_obj <- reactive({
         req(data_plot(), y_var())
 
         dat <- data_plot()
 
         #if no points selected just plot normally
         if(is.null(index())){
-          p <- ggplot2::ggplot(dat, ggplot2::aes(x = .data$DateTime, y = .data[[y_var()]])) + ggplot2::geom_point()
+          p <- ggplot2::ggplot(dat, ggplot2::aes(x = .data$DateTime, y = .data[[y_var()]])) + ggplot2::geom_point(na.rm=TRUE)
         }else {
 
           p <- ggplot2::ggplot(dat, ggplot2::aes(.data$DateTime, .data[[y_var()]], color = sel)) +
-            ggplot2::geom_point() +
+            ggplot2::geom_point(na.rm=TRUE) +
             ggplot2::scale_color_manual(values = c("white","red"), guide = "none")
         }
 
-        p <- p %>%
+        return(p)
+
+      })
+
+      #return plot
+      output$shift_plot <- renderPlotly({
+        p <- plot_obj() %>%
           plotly::ggplotly(source = "shift_plot") %>%
           plotly::layout(dragmode = "select") %>%
           plotly::event_register("plotly_selected") %>%
           plotly::event_register("plotly_relayout")
 
         if(length(plot_lyout$xaxis) > 0 || length(plot_lyout$yaxis) > 0){
-
-          p <- layout(
-            p,
-            xaxis = plot_lyout$xaxis,
-            yaxis = plot_lyout$yaxis
-          )
+          p <- layout(p, xaxis = plot_lyout$xaxis, yaxis = plot_lyout$yaxis)
         }
 
         p
 
-      })
+        })
 
     #confirm changes
     SondePolishR::confirm_changes_server(
@@ -169,6 +171,12 @@ additive_server <- function(id, sdata, prj_path, log){
       prj_path = prj_path,
       log = log)
 
+
+    #export plot and table so we can check it
+    exportTestValues(
+      plot_obj = plot_obj())
+
    })
+
 }
 
