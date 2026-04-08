@@ -71,7 +71,7 @@ read_sonde <- function(file, encoding = NULL, flags=TRUE, skip=NULL, tz="Etc/GMT
 
   #rename col names
     lookup <- c(Date_MM_DD_YYYY = "Date", Time_HH_mm_ss = "Time", Temp_C="?C",
-                Temp_C = "Temp_?C",
+                Temp_C = "Temp_?C", Turbidity_FNU = "FNU",
                 ODO_sat = "DO_%", ODO_mg_L = "DO_mg_L",
                 SpCond_uS_cm = "SPC_uS_cm",
                 Turbidity_FNU = "NTU", Battery_V ="Batt_V",
