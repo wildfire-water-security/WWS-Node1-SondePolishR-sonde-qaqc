@@ -1,163 +1,69 @@
-#initialize log (will need to clear when a new file is loaded)
-
-log <- data.frame(datetime=as.POSIXct(character()),
-                  parameter = character(),
-                  step = character(),
-                  n_changed = numeric(),
-                  note = character(),
-                  user = character(),
-                  version = character())  # initialize log
-
-data_ver <- list() #initialize list for data
-prj_path <- list(type=character(), path=character()) #initialize path for data
-
-#initialize environment
-.pkgenv <- rlang::new_environment(data = list(log = log, data_ver =data_ver, prj_path = prj_path), parent = rlang::empty_env())
-
-#' Get and Write to Change Log
+#' Get and apply changes to data
 #'
-#' Log is a `data.frame` stored in the package environment used to keep track of the changes
-#' made to the initial raw sonde data.
+#' Wrappers for `daff::diff_data()` and `daff::apply_patch()`. Natively `daff` functions don't play
+#' nicely with dates and datetimes. So the wrapper confirms they're the same between data and
+#' then temporarily removes them to get the diff without those columns. Used to succinctly track changes to
+#' the raw data and revert changes when needed.
 #'
-#' @param par the name of the parameter modified
-#' @param step a description of the type of change made
-#' @param n the number of points modified
-#' @param note a note from the analyst about the change made
-#' @param version the associated file version name
-#' @param datetime the date and time the change was made
-#' @param user the username of the person who made the change
-#' @param log a existing change log read in from read_project
-#' @param env the environment in which configuration settings is stored. Defaults to the package environment.
+#' @param olddata The original `data.frame` to compare to.
+#' @param newdata The new `data.frame` you want to get the changes for.
+#' @param diff  A `data_diff` object storing the difference between `olddata` and `newdata`.
 #'
-#' @returns a `data.frame` with the log from the package environment
+#' @returns
+#' `commit_diff` returns a `data_diff` object storing the differences between `data.frames`. See `daff` package for more details.
+#' `apply_diff` returns a `data.frame` with the `diff` applied.
+#'
 #' @export
-#' @rdname change-log
 #' @md
+#' @rdname version-control
 #'
 #' @examples
-#' get_log()
+#' data_edit <- raw_sonde
 #'
-#' write_log("Cond_S_cm", "physical limits", 5, "making an example", "V1")
-  get_log <- function(env = .pkgenv) {
-    rlang::env_get(env, "log")
-  }
-
-#' @export
-#' @rdname change-log
-  write_log <- function(par, step, n, note="", version, datetime = Sys.time(), user=Sys.info()[["user"]], env = .pkgenv){
-
-    log_row <- data.frame(datetime=datetime, parameter=par,
-                          step = step, n_changed = n, note=note,
-                          user = user,
-                          version=version)
-
-    new_log <- rbind(get_log(), log_row)
-    rlang::env_bind(env, log = new_log)
-
-  }
-
-#' @export
-#' @rdname change-log
-  clear_log <- function(env = .pkgenv){
-    clear_log <- data.frame(datetime=as.POSIXct(character()),
-                                    parameter = character(), step = character(),
-                                    n_changed = numeric(), note = character(),
-                                    user = character(),
-                                    version = character())  # initialize log
-
-    rlang::env_bind(env, log = clear_log)
-
-  }
-
-#' @export
-#' @rdname change-log
-  set_log <- function(log, env = .pkgenv){
-    rlang::env_bind(env, log = log)
-  }
-
-#' Get and set project path variable in package environment
+#' #make a change in newdata
+#' data_edit$fDOM_QSU[1:4] <- NA
+#' head(data_edit)
 #'
-#' Used to store the save path to a sonde project so the user doesn't
-#' need to specify each time.
-#' @param env the environment in which configuration settings is stored. Defaults to the package environment.
-#' @param prj_path the file path including the file name to the save location of the Sonde project.
-#' @export
-#' @rdname prj-path
-  get_prjpath <- function(env = .pkgenv){
-    rlang::env_get(env, "prj_path")
-  }
-
-#' @rdname prj-path
-#' @export
-  set_prjpath <- function(prj_path, env = .pkgenv){
-    rlang::env_bind(env, prj_path = prj_path)
-  }
-
-#' @rdname prj-path
-#' @export
-  clear_prjpath <- function(prj_path, env = .pkgenv){
-    rlang::env_bind(env, prj_path = list(type=character(), path=character()))
-  }
-
-#' Sonde data versioning
+#' #save difference
+#' dd <- commit_diff(raw_sonde, data_edit)
 #'
-#' Stores edits to the raw sonde data as objects in a list so edits can be undone.
-#'
-#' @param data a data.frame to add to the version history
-#' @param version the name of the version
-#' @param data_ver a existing data version history read in from read_project
-#' @param env the environment in which configuration settings is stored. Defaults to the package environment.
-
-#' @rdname data-versions
-#' @md
-#' @returns a list of `data.frames`
-#' @export
-#'
-#' @examples
-#' get_data()
-#'
-#' write_data(raw_sonde, "V1")
-  write_data <- function(data, version, env = .pkgenv){
-    new_vers <- get_data()
-    new_vers[[version]] <- data
-    rlang::env_bind(env, data_ver = new_vers)
+#' #apply difference
+#' data_edit2 <- apply_diff(raw_sonde, dd)
+#' head(data_edit2)
+commit_diff <- function(olddata, newdata){
+  #check that dates/datetime are exactly the same because we can't check these
+  if(any(olddata$Date != newdata$Date)){
+    stop("Dates are different between the two datasets, can't determine differences.")
   }
 
-#' @export
-#' @rdname data-versions
-  get_data <- function(env = .pkgenv){
-    rlang::env_get(env, "data_ver")
+  if(any(olddata$DateTime != newdata$DateTime)){
+    stop("Datetimes are different between the two datasets, can't determine differences.")
   }
 
-#' @export
-#' @rdname data-versions
-  clear_data <- function(env = .pkgenv){
-    rlang::env_bind(env, data_ver = list())
-  }
+  #rm date and datetime so we don't get warning
+  dates <- olddata %>% dplyr::select(Date, DateTime)
+  olddata <- olddata %>% dplyr::select(-c(Date, DateTime))
+  newdata <- newdata %>% dplyr::select(-c(Date, DateTime))
+
+  #get diff
+  dd <- daff::diff_data(olddata, newdata)
+
+  return(dd)
+}
 
 #' @export
-#' @rdname data-versions
-  set_data <- function(data_ver, env = .pkgenv){
-    rlang::env_bind(env, data_ver = data_ver)
-  }
+#' @rdname version-control
+apply_diff <- function(olddata, diff){
+  #pull out dates
+  dates <- olddata %>% dplyr::select(Date, DateTime)
+  olddata <- olddata %>% dplyr::select(-c(Date, DateTime))
 
-#' Checks if the data is different than the current saved version
-#'
-#' @param data the data.frame to check to see if it's new
-#'
-#' @returns TRUE if data differs from the previous version,
-#' FALSE if data is the same as the previous version
-#' @export
-#'
-new_version <- function(data){
-  #get saved versions
-  current <- get_data()
+  #apply patch
+  suppressWarnings(newdata <- daff::patch_data(olddata, diff))
 
-  if (length(current) == 0) {
-    return(TRUE)
-  }
+  #put back in datetimes
+  newdata <- newdata %>% dplyr::mutate(Date = dates$Date, .before=Time_HH_mm_ss) %>%
+    dplyr::mutate(DateTime = dates$DateTime, .after=Time_HH_mm_ss)
 
-  last <- current[[length(current)]]
-
-  !isTRUE(all.equal(data, last))
+  return(newdata)
 }

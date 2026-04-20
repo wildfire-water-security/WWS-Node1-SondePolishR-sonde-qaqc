@@ -47,7 +47,8 @@ Imports:
     stringr,
     shinyWidgets,
     thematic,
-    rprojroot
+    rprojroot,
+    daff
 Suggests: 
     shinytest2,
     testthat (>= 3.0.0), 
