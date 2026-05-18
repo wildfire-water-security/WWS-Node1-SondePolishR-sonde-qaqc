@@ -82,7 +82,7 @@
     data2$ODO_mg_L[5:7] <- data2$ODO_mg_L[5:7] * 0.8
     dd2 <- list(commit_diff(sonde_obj$data, data2)) #commit difference
     names(dd2) <- "dd2"
-    sonde_obj$flags$flag_chg$ODO_mg_L[5:7] <- "AD01" #add flag
+    sonde_obj$flags$flag_chg$ODO_mg_L_flag[5:7] <- "AD01" #add flag
     sonde_obj <- write_log(sonde_obj, "ODO_mg_L", "applying shift correction", n = 3, diff_name = "dd2", return = "sondeproj") #write log
     sonde_obj$diffs <- append(sonde_obj$diffs, dd2)
     sonde_obj$data <- data2
@@ -92,6 +92,13 @@
 
   #save as an example
     saveRDS(sonde_obj, "inst/extdata/example-sonde-project.RDS")
+
+    #also copy over the example csv's for testing
+    file.copy(raw_files, c(file.path("inst/extdata/example-csv-data1.csv"), file.path("inst/extdata/example-csv-data2.csv")))
+
+    #and ff and cal file
+    write.csv(fieldform, "inst/extdata/example-fieldform.csv", row.names = FALSE)
+    write.csv(calcheck, "inst/extdata/example-calcheck.csv", row.names = FALSE)
 
 #write objects for example data
   example_sondeproj <- sonde_obj

@@ -1,0 +1,4 @@
+"Date","Site_Code","Time_PST","Start_Sonde_Serial","Start_Sonde_Name","End_Sonde_Serial","End_Sonde_Name","Removal_Time_PST","Return_Time_PST","Next_Timepoint_PST","Data_Download","Download_Device","Remove_Period","Crew","Weather","Notes"
+2024-07-31,"FAL",NA,"23K139551","Kermit Da Frog",NA,NA,NA,"11:50",NA,NA,NA,TRUE,"JS","Cloudy with a chance of meatballs","Replacing previously removed sonde."
+2024-08-20,"FAL",NA,"23K139551","Kermit Da Frog",NA,NA,"10:57","11:12",NA,NA,NA,TRUE,"JS","Cloudy with a chance of meatballs",NA
+2024-10-23,"FAL",NA,"23K139551","Kermit Da Frog","23K597634","Oscar the Grouch","13:48","14:35",NA,NA,NA,TRUE,"JS","Cloudy with a chance of meatballs",NA
