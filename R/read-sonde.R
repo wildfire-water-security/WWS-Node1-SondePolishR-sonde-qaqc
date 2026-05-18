@@ -44,7 +44,7 @@
 #'
 #' file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "sonde-usb-example.csv")
 #' data <- read_sonde(file, return = "sonde")
-read_sonde <- function(file, return="df", encoding = NULL, flags=TRUE, skip=NULL, tz="Etc/GMT+8"){
+read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NULL, tz="Etc/GMT+8"){
   stopifnot(tools::file_ext(file) == "csv", file.exists(file), return %in% c("df", "sonde"))
 
   #guess timezone
@@ -188,7 +188,8 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=TRUE, skip=NULL
 
   #organize order and make a regular df to be consistent
     data <- data %>% dplyr::select(dplyr::any_of(c("Index", "Date", "Time_HH_mm_ss", "DateTime", "DateTime_rd", "Site_Name", "Battery_V",
-                                   "fDOM_QSU", "ODO_mg_L", "pH", "SpCond_uS_cm", "Temp_C", "Turbidity_FNU"))) %>% as.data.frame()
+                                   "fDOM_QSU", "ODO_mg_L", "pH", "SpCond_uS_cm", "Temp_C", "Turbidity_FNU"))) %>% as.data.frame() %>%
+      arrange(DateTime)
 
  #add flags
   if(flags){
@@ -205,14 +206,6 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=TRUE, skip=NULL
   #turn in sonde object
     obj <- list(file = file, serials = serials, data = data)
     class(obj) <- "sonde"
-
-  #clear the log and dataframe
-    clear_log()
-    clear_data()
-    clear_prjpath()
-
-    write_log("All", "Initial Load", n = 0, version = "raw", env=.pkgenv)
-    write_data(data, "raw")
 
   #return what is requested
   if(return == "df"){

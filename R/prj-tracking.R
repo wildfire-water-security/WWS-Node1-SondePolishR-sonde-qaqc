@@ -1,78 +1,68 @@
-#initialize log (will need to clear when a new file is loaded)
-
-log <- data.frame(datetime=as.POSIXct(character()),
-                  parameter = character(),
-                  step = character(),
-                  n_changed = numeric(),
-                  note = character(),
-                  user = character(),
-                  version = character())  # initialize log
-
-data_ver <- list() #initialize list for data
-prj_path <- list(type=character(), path=character()) #initialize path for data
-
-#initialize environment
-.pkgenv <- rlang::new_environment(data = list(log = log, data_ver =data_ver, prj_path = prj_path), parent = rlang::empty_env())
 
 #' Get and Write to Change Log
 #'
-#' Log is a `data.frame` stored in the package environment used to keep track of the changes
+#' The change log is a component of a `sondeproj` object used to keep track of the changes
 #' made to the initial raw sonde data.
 #'
+#' @param sondeproj the sonde project to get the change log from. If `NULL` will return a blank change log structure.
 #' @param par the name of the parameter modified
 #' @param step a description of the type of change made
 #' @param n the number of points modified
 #' @param note a note from the analyst about the change made
-#' @param version the associated file version name
+#' @param diff_name the associated diff object
 #' @param datetime the date and time the change was made
 #' @param user the username of the person who made the change
 #' @param log a existing change log read in from read_project
-#' @param env the environment in which configuration settings is stored. Defaults to the package environment.
+#' @param return either `df` or `sondeproj` to specify if the changelog only should be returned or the `sondeproj` with
+#' the change log updated.
 #'
-#' @returns a `data.frame` with the log from the package environment
+#' @returns a `data.frame` with the log from `sondeproj`
 #' @export
 #' @rdname change-log
 #' @md
 #'
 #' @examples
-#' get_log()
-#'
 #' write_log("Cond_S_cm", "physical limits", 5, "making an example", "V1")
-  get_log <- function(env = .pkgenv) {
-    rlang::env_get(env, "log")
+#' get_log()
+
+  get_log <- function(sondeproj) {
+     sondeproj$changelog
   }
 
 #' @export
 #' @rdname change-log
-  write_log <- function(par, step, n, note="", version, datetime = Sys.time(), user=Sys.info()[["user"]], env = .pkgenv){
+  write_log <- function(sondeproj, par, step, n, note="", diff_name=NULL, datetime = Sys.time(), user=Sys.info()[["user"]],
+                        return="df"){
+    stopifnot(is.null(sondeproj) || inherits(sondeproj, "sondeproj"))
+
+    if(is.null(sondeproj)){
+      # initialize log
+      old_log <- data.frame(datetime=as.POSIXct(character()),
+                            parameter = character(),
+                            step = character(),
+                            n_changed = numeric(),
+                            note = character(),
+                            user = character(),
+                            diff_name = character())
+    }else{
+     old_log <- get_log(sondeproj)
+    }
 
     log_row <- data.frame(datetime=datetime, parameter=par,
                           step = step, n_changed = n, note=note,
                           user = user,
-                          version=version)
+                          diff_name=diff_name)
 
-    new_log <- rbind(get_log(), log_row)
-    rlang::env_bind(env, log = new_log)
+    new_log <- rbind(old_log, log_row)
 
-  }
+    if(return == "df" | is.null(sondeproj)){
+      return(new_log)
+    }
 
-#' @export
-#' @rdname change-log
-  clear_log <- function(env = .pkgenv){
-    clear_log <- data.frame(datetime=as.POSIXct(character()),
-                                    parameter = character(), step = character(),
-                                    n_changed = numeric(), note = character(),
-                                    user = character(),
-                                    version = character())  # initialize log
-
-    rlang::env_bind(env, log = clear_log)
-
-  }
-
-#' @export
-#' @rdname change-log
-  set_log <- function(log, env = .pkgenv){
-    rlang::env_bind(env, log = log)
+    if(return == "sondeproj"){
+      sondeproj$changelog <- new_log
+      return(sondeproj)
+    }
   }
 
 #' Get and set project path variable in package environment

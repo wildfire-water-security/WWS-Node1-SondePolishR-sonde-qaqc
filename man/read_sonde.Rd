@@ -8,7 +8,7 @@ read_sonde(
   file,
   return = "df",
   encoding = NULL,
-  flags = TRUE,
+  flags = FALSE,
   skip = NULL,
   tz = "Etc/GMT+8"
 )

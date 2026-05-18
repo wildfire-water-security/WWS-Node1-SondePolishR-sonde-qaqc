@@ -74,7 +74,8 @@ flag_data <- function(data, par, flag_name, index, note="", prj_path=NULL, makeN
 #' @param makeNA if `TRUE` the flagged data will be converted to NA values
 #' @md
 #' @returns a data.frame
-#' - if `par` and `flag_name` are `NULL` it will return a new column for each parameter in the data.frame with the form <*_flag>
+#' - if `par` and `flag_name` are `NULL` it will return a `data.frame` with the same number of rows as `data` but
+#'    with a blank column for each parameter in the `data.frame` with the form <*_flag> and only the index, datetime and datetime_rd columns.
 #' - if `par` and `flag_name` are specified it will add a named vector to the <par_flag> column specifying `TRUE` for flagged and `FALSE` for not flagged
 #' @export
 #'
@@ -103,7 +104,7 @@ add_flags <- function(data, par=NULL, flag_name=NULL, index=NULL, makeNA=FALSE){
         data <- data %>% dplyr::mutate(!!paste0(x, "_flag") := NA, .after=tidyselect::all_of(x))
       }
 
-  #add flag if inputting specific flags
+  #add flag if inputting specific flags #TODO will need to update with new workflow for storing flags
   if(!is.null(flag_name)){
 
     stopifnot(is.character(par), length(index) > 0)
@@ -168,6 +169,11 @@ add_flags <- function(data, par=NULL, flag_name=NULL, index=NULL, makeNA=FALSE){
       colnum <- which(colnames(data) == par)
       data[index,colnum] <- NA
     }
+  }
+
+  #return empty flag dataframe
+  if(is.null(flag_name) & is.null(par)){
+    data <- data %>% dplyr::select(-any_of(c(par_names, "Battery_V", "Date", "Time_HH_mm_ss","Site_Name")))
   }
 
   return(data)

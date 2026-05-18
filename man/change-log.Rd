@@ -3,13 +3,12 @@
 \name{get_log}
 \alias{get_log}
 \alias{write_log}
-\alias{clear_log}
-\alias{set_log}
 \title{Get and Write to Change Log}
 \usage{
-get_log(env = .pkgenv)
+get_log(sondeproj)
 
 write_log(
+  sondeproj,
   par,
   step,
   n,
@@ -17,15 +16,11 @@ write_log(
   version,
   datetime = Sys.time(),
   user = Sys.info()[["user"]],
-  env = .pkgenv
+  return = "df"
 )
-
-clear_log(env = .pkgenv)
-
-set_log(log, env = .pkgenv)
 }
 \arguments{
-\item{env}{the environment in which configuration settings is stored. Defaults to the package environment.}
+\item{sondeproj}{the sonde project to get the change log from. If \code{NULL} will return a blank change log structure.}
 
 \item{par}{the name of the parameter modified}
 
@@ -41,17 +36,19 @@ set_log(log, env = .pkgenv)
 
 \item{user}{the username of the person who made the change}
 
+\item{return}{either \code{df} or \code{sondeproj} to specify if the changelog only should be returned or the \code{sondeproj} with
+the change log updated.}
+
 \item{log}{a existing change log read in from read_project}
 }
 \value{
-a \code{data.frame} with the log from the package environment
+a \code{data.frame} with the log from \code{sondeproj}
 }
 \description{
-Log is a \code{data.frame} stored in the package environment used to keep track of the changes
+The change log is a component of a \code{sondeproj} object used to keep track of the changes
 made to the initial raw sonde data.
 }
 \examples{
-get_log()
-
 write_log("Cond_S_cm", "physical limits", 5, "making an example", "V1")
+get_log()
 }
