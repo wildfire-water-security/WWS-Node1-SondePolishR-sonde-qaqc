@@ -41,6 +41,7 @@
 #' @importFrom ggplot2 scale_color_manual
 #' @importFrom htmltools htmlDependency
 #' @importFrom lubridate force_tz
+#' @importFrom lubridate round_date
 #' @importFrom lubridate tz
 #' @importFrom magrittr %>%
 #' @importFrom plotly event_data

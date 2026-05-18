@@ -175,8 +175,19 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=TRUE, skip=NULL
   #make numeric and remove time fract sec
     data <- data %>% dplyr::mutate(dplyr::across(all_of(numeric), as.numeric))
 
+  #create rounded datetime column for checking dups, gaps
+    get_mode <- function(x) {
+      ux <- unique(x)
+      ux[which.max(tabulate(match(x, ux)))]
+    }
+    interval <- get_mode(as.numeric(difftime(data$DateTime, lag(data$DateTime), units="mins")))
+
+    data <- data %>%
+      dplyr::mutate(DateTime_rd = lubridate::round_date(DateTime, paste0(interval, " mins")), .after = DateTime)
+
+
   #organize order and make a regular df to be consistent
-    data <- data %>% dplyr::select(dplyr::any_of(c("Index", "Date", "Time_HH_mm_ss", "DateTime", "Site_Name", "Battery_V",
+    data <- data %>% dplyr::select(dplyr::any_of(c("Index", "Date", "Time_HH_mm_ss", "DateTime", "DateTime_rd", "Site_Name", "Battery_V",
                                    "fDOM_QSU", "ODO_mg_L", "pH", "SpCond_uS_cm", "Temp_C", "Turbidity_FNU"))) %>% as.data.frame()
 
  #add flags

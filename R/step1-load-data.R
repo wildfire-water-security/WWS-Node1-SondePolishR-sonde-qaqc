@@ -14,44 +14,72 @@ load_data_UI <- function(id){
            .btn-default {
            background-color: #E3795E !important;
            border-color: #E3795E !important;
-           color: white !important;
-          }")),
+           color: white;
+          }"),
+      HTML(".selectize-input {color: white;}")),
+  page_fillable(
+    accordion(
+      accordion_panel("Load Data",
+                      #load csv files
+                      fluidRow(
+                        column(8,fileInput(
+                          inputId = NS(id, "csv_files"),
+                          label = span(style = "font-size:16px; white-space: nowrap;",
+                                       "Raw Sonde Data File(s) (.csv)"),
+                          accept = c(".csv"),  # restrict to CSV
+                          multiple = TRUE,
+                          width = "60%")),
+                        column(4,
+                               #have user pick the timezone
+                               selectInput(
+                                 inputId=NS(id, "tz"),
+                                 label = "Data Timezone:",
+                                 choices = nice_tz(),
+                                 selected = "Etc/GMT+8",
+                                 selectize=TRUE))
+                      ),
+                      #load project
+                      fileInput(
+                        inputId = NS(id, "pj_file"),
+                        label = span(style = "font-size:16px; white-space: nowrap;",
+                                     "Sonde Project File (.RDS)"),
+                        accept = c(".RDS"),
+                        width = "40%")
+                      ),
+      accordion_panel("Load Metadata",
+                      #load ff file
+                      fileInput(
+                        inputId = NS(id, "ff_file"),
+                        label = span(style = "font-size:16px; white-space: nowrap;",
+                                     "Field Form File"),
+                        accept = c(".csv"),
+                        width = "40%"),
 
-    #select either new data or load data
-        fluidRow(
-          #load csv
-          column(8,
-                 fileInput(
-                   inputId = NS(id, "file"),
-                   label = span(style = "font-size:16px; white-space: nowrap;",
-                                "Choose New or Existing Sonde Data File"),
-                   accept = c(".csv", ".RDS"),  # restrict to CSV
-                   width = "100%"
-                 )),
-          column(4,
-                 #have user pick the timezone
-                 selectInput(
-                   inputId=NS(id, "tz"),
-                   label = "Data Timezone:",
-                   choices = nice_tz(),
-                   selected = "Etc/GMT+8",
-                   selectize=TRUE))
-        ),
+                      #load cal check
+                      fileInput(
+                        inputId = NS(id, "cc_file"),
+                        label = span(style = "font-size:16px; white-space: nowrap;",
+                                     "Calibration Check File"),
+                        accept = c(".csv"),
+                        width = "40%")),
 
-        fluidRow(
-          column(12,
-                 div(
-                 class = "d-flex align-items-center gap-2",  # Bootstrap flex classes
-                 shinyFiles::shinyDirButton(NS(id, "save_file"),
-                                label = "Processed Data Save Location",
-                                style="font-size:16px",
-                                title= "Select location to save processed data", multiple=FALSE),
-                 uiOutput(NS(id, "path_text_box")))
-          )),
-          checkboxInput(NS(id, "overwrite"), "Overwrite Existing Project?")
+    accordion_panel("Save Project",
+           fluidRow(
+             column(12,
+                    div(
+                      class = "d-flex align-items-center gap-2",  # Bootstrap flex classes
+                      shinyFiles::shinyDirButton(NS(id, "save_file"),
+                                                 label = "Processed Data Save Location",
+                                                 style="font-size:16px",
+                                                 title= "Select location to save processed data", multiple=FALSE),
+                      uiOutput(NS(id, "path_text_box")))
+             )),
+           checkboxInput(NS(id, "overwrite"), "Overwrite Existing Project?"),
+           actionButton(NS(id, "save_prj"), "Save Sonde Project", width ="30%")
+           ))
 
+  ))
 
-       )
 
 }
 

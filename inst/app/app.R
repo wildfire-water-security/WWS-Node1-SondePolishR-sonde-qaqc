@@ -31,13 +31,13 @@ ui <-  page_fillable(
                 SondePolishR::load_data_UI("data1"),
                 ),
       nav_panel("2. Visualize",
-                SondePolishR::explore_data_UI("data2")
+                #SondePolishR::explore_data_UI("data2")
                 ),
       nav_panel("3. Physical Limits",
-                SondePolishR::limits_UI("data3")
+                #SondePolishR::limits_UI("data3")
                 ),
       nav_panel("4. Shift Correction",
-                SondePolishR::additive_UI("data4")
+                #SondePolishR::additive_UI("data4")
 
                 ),
       nav_panel("5. Manual Removal", "Remove points manually"),
@@ -60,6 +60,9 @@ ui <-  page_fillable(
 #' @keywords internal
 #' @examples
 server <- function(input, output, session) {
+  #allow upload of larger files
+  options(shiny.maxRequestSize=50*1024^2)
+
   #define things that get passed around
     prj_path <- reactiveVal(NULL) #the project path to save data to
     sdata <- reactiveVal(NULL) #the current dataset
@@ -69,13 +72,13 @@ server <- function(input, output, session) {
    SondePolishR::load_data_server("data1", sdata, prj_path, log)
 
   #step 2: plot data
-   SondePolishR::explore_data_server("data2", sdata, log)
+   #SondePolishR::explore_data_server("data2", sdata, log)
 
   #step 3: physical limits
-   SondePolishR::limits_server("data3", sdata, prj_path, log)
+   #SondePolishR::limits_server("data3", sdata, prj_path, log)
 
   #step 4: additive shift
-   SondePolishR::additive_server("data4", sdata, prj_path, log)
+  # SondePolishR::additive_server("data4", sdata, prj_path, log)
   #export values for tests
    exportTestValues(
      prj_path = prj_path(),
