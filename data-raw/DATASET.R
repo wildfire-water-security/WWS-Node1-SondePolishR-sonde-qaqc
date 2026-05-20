@@ -26,7 +26,8 @@
 
   #what we want for the server code
     #read in csv files, merge as needed
-      data_merge <- lapply(csv_files$datapath, read_sonde, tz = tz) %>% dplyr::bind_rows()
+      data_merge <- lapply(csv_files$datapath, read_sonde, tz = tz) %>% dplyr::bind_rows() %>%
+        dplyr::mutate(Index = 1:n())
 
   #if project and csv loaded, merge together (everything: data, flags, diffs, replace ff and cal)
       data <- data_merge

@@ -125,3 +125,66 @@ read_cal <- function(file){
 
 
 }
+
+
+#' Convert field form data to out of water periods
+#'
+#' Use the information contained in the project field form and use the removal and return times to determine
+#' the times the sonde was out of the water (OOW) for plotting and data QA/QC. Determines the start and end times
+#' of when the sonde was out of the water. If a time is missing it will try to guess using the visit time, next timepoint,
+#' or when no other options will remove the full day. If `Remove_Period` is FALSE it will ignore that period as an OOW period.
+#'
+#'
+#' @param ff Field form `data.frame`.
+#'
+#' @returns
+#' A `data.frame`with three columns:
+#' - **site_code**: The site code associated with the OOW period.
+#' - **start**: The start of the OOW period stored as a `POSIXct`.
+#' - **end**: The end of the OOW period, stored as a `POSIXct`
+#' @export
+#'
+#' @examples
+#' get_oow(example_sondeproj$fieldform)
+get_oow <- function(ff){
+  stopifnot(all(c("Site_Code", "Date", "Time_PST", "Removal_Time_PST", "Return_Time_PST", "Next_Timepoint_PST", "Remove_Period") %in% colnames(ff)))
+
+  #make some new columns to manipulate
+  ff_adj <- ff %>% dplyr::select("Site_Code", "Date", "Time_PST", "Removal_Time_PST", "Return_Time_PST", "Next_Timepoint_PST",
+                                 "Data_Download", "Remove_Period") %>%
+    dplyr::mutate(Remove_Period = ifelse(is.na(.data$Removal_Time_PST) & is.na(.data$Return_Time_PST) &
+                                           is.na(.data$Next_Timepoint_PST) & (is.na(.data$Data_Download) |
+                                                                                !.data$Data_Download), FALSE, .data$Remove_Period)) %>%
+    dplyr::filter(.data$Remove_Period) %>%
+    dplyr::mutate(Date = as.Date(.data$Date, format = "%m/%d/%Y", tz="Etc/GMT+8"),
+           remove_date = .data$Date,
+           remove_time = ifelse(is.na(.data$Removal_Time_PST),
+                                ifelse(is.na(.data$Time_PST), "00:00", .data$Time_PST), .data$Removal_Time_PST),
+           return_date = .data$Date,
+           return_time = ifelse(is.na(.data$Return_Time_PST),
+                                ifelse(is.na(.data$Next_Timepoint_PST), "23:59", .data$Next_Timepoint_PST), .data$Return_Time_PST))
+
+
+  #update dates/times if sonde removed and not returned till later
+  long_oow <- which(!is.na(ff_adj$Removal_Time_PST) & is.na(ff_adj$Return_Time_PST) &
+                      is.na(lead(ff_adj$Removal_Time_PST)) & !is.na(lead(ff_adj$Return_Time_PST)))
+
+  if(length(long_oow) >0){
+    ff_adj$return_date[long_oow] <- ff_adj$return_date[long_oow + 1]
+    ff_adj$return_time[long_oow] <- ff_adj$return_time[long_oow + 1]
+    ff_adj <- ff_adj[-(long_oow + 1),]
+  }
+
+  #convert to date times, give 15 minute buffer on either side to ensure we've cut enough
+  #sometimes the next_timepoint is used to check the wiper and is bad, so we ideally want to use the return_time for the next good point
+  ff_adj <- ff_adj %>%  dplyr::mutate(start = lubridate::floor_date(as.POSIXct(paste(.data$remove_date, .data$remove_time),
+                                                                               tz="Etc/GMT+8"), "15 mins") - lubridate::minutes("15"),
+                               end = lubridate::ceiling_date(as.POSIXct(paste(.data$return_date, .data$return_time),
+                                                                        tz="Etc/GMT+8"), "15 mins") + lubridate::minutes("15"))
+
+  #return the site code and data/time of OOW
+  oow <- ff_adj %>% dplyr::select("Site_Code", "start", "end") %>% dplyr::rename("site_code" = "Site_Code")
+
+  return(oow)
+
+}

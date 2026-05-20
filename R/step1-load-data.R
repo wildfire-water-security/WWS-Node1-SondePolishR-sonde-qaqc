@@ -168,7 +168,8 @@ load_data_server <- function(id, sondeproj){
     #read csv files if added
       if(!is.null(csv_path())){
         csv_merge <- lapply(csv_path(),read_sonde, tz = input$tz) %>%
-          dplyr::bind_rows()
+          dplyr::bind_rows()  %>%
+          dplyr::mutate(Index = 1:n())
       }
 
     #load existing project
@@ -220,7 +221,8 @@ load_data_server <- function(id, sondeproj){
         dplyr::arrange(dplyr::desc(source == "sondeproj")) %>%
         dplyr::group_by(.data$Date, .data$DateTime, .data$DateTime_rd) %>%
         dplyr::slice(1) %>%
-        dplyr::ungroup() %>% dplyr::select(-"source")
+        dplyr::ungroup() %>% dplyr::select(-"source") %>%
+        dplyr::mutate(Index = 1:n())
 
       obj$data <- data_merge
 
