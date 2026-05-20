@@ -13,7 +13,7 @@ write_log(
   step,
   n,
   note = "",
-  version,
+  diff_name = NULL,
   datetime = Sys.time(),
   user = Sys.info()[["user"]],
   return = "df"
@@ -30,7 +30,7 @@ write_log(
 
 \item{note}{a note from the analyst about the change made}
 
-\item{version}{the associated file version name}
+\item{diff_name}{the associated diff object}
 
 \item{datetime}{the date and time the change was made}
 
@@ -38,8 +38,6 @@ write_log(
 
 \item{return}{either \code{df} or \code{sondeproj} to specify if the changelog only should be returned or the \code{sondeproj} with
 the change log updated.}
-
-\item{log}{a existing change log read in from read_project}
 }
 \value{
 a \code{data.frame} with the log from \code{sondeproj}
@@ -49,6 +47,5 @@ The change log is a component of a \code{sondeproj} object used to keep track of
 made to the initial raw sonde data.
 }
 \examples{
-write_log("Cond_S_cm", "physical limits", 5, "making an example", "V1")
-get_log()
+write_log(NULL, "Cond_S_cm", "physical limits", 5, "making an example", "diff1")
 }

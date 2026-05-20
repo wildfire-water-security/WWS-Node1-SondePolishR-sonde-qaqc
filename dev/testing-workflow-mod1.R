@@ -39,6 +39,7 @@ prj <- list.files("inst/extdata/", pattern="example-sonde-project", full.names=T
     }else{
       #create new project if one isn't loaded
       changelog <- write_log(NULL, "all", "initial load", n = 0, diff_name = "raw")
+      empty_flags <- add_flags(csv_merge)
 
       #create sonde object
       sonde_obj <- list(prj_path = save_file,
@@ -73,7 +74,7 @@ prj <- list.files("inst/extdata/", pattern="example-sonde-project", full.names=T
 
       #merge data and flags
       sonde_obj$data <- sonde_obj$data %>% dplyr::bind_rows(csv_merge) %>% distinct(across(-Index)) %>%
-        arrange(DateTime) %>% mutate(Index = 1:n(), .before=Date)
+        arrange(DateTime) %>% mutate(Index = 1:n(), .before="Date")
 
       #create flag tables for new data
         empty_flags <- add_flags(sonde_obj$data)
@@ -84,7 +85,7 @@ prj <- list.files("inst/extdata/", pattern="example-sonde-project", full.names=T
 
         sonde_obj$flags <- lapply(sonde_obj$flags, function(x){
           x %>% dplyr::bind_rows(new_flags) %>%
-            arrange(DateTime) %>% mutate(Index = 1:n(), .before=DateTime)
+            arrange(DateTime) %>% mutate(Index = 1:n(), .before="DateTime")
         })
 
         #check that flags match data

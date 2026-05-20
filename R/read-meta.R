@@ -29,21 +29,32 @@
 #'
 #' @export
 #' @md
-#'
+#' @examples
+#' file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "example-fieldform.csv")
+#' fieldform <- read_ff(file)
+
 read_ff <- function(file){
   stopifnot(tools::file_ext(file) == "csv")
+
   #read in csv
   df <- read.csv(file, colClasses = c(Start_Sonde_Serial = "character",
                                     End_Sonde_Serial = "character"))
 
-  #detect correct date format
-  dateform <- ifelse(median(nchar(df$Date), na.rm=TRUE) == 7, "%m/%d/%y", "%m/%d/%Y")
+  #check that file looks correct
+  if(!(all(c("Date", "Time_PST", "Removal_Time_PST", "Return_Time_PST", "Next_Timepoint_PST", "Remove_Period") %in% colnames(df)))){
+    stop("Unexpected column names. Please see help(example_fieldform) for details on structure.")
+  }
+
+  #get correct date format
+    #add option for two digit year (only for function)
+    anytime::addFormats("%m/%d/%y")
+    dateform <- anytime::anydate(df$Date)
+    anytime::removeFormats("%m/%d/%y")
 
   #ensure things have the right class
-  df <- df %>% dplyr::mutate(Date = as.Date(Date, tz = "Etc/GMT+8", format= dateform),
-                      dplyr::across(Site_Code:Next_Timepoint_PST, ~as.character(.x)),
-                      dplyr::across(Crew:Notes, ~as.character(.x)),
-                      dplyr::across(c(Data_Download, Remove_Period), ~as.logical(.x)))
+  df <- df %>% dplyr::mutate(Date = dateform,
+                      dplyr::across(c("Site_Code":"Next_Timepoint_PST", "Download_Device", "Crew":"Notes"), ~as.character(.x)),
+                      dplyr::across(c("Data_Download", "Remove_Period"), ~as.logical(.x)))
 
   #rename extra notes
   extra_notes <- grep("Notes.+|.+Notes", colnames(df), ignore.case = TRUE)
@@ -58,7 +69,7 @@ read_ff <- function(file){
   #remove any full NA rows
   df <- df[rowSums(is.na(df)) < ncol(df), ]
 
-  df <- df %>% arrange(Date)
+  df <- df %>% arrange(.data$Date)
   return(df)
 }
 
@@ -81,11 +92,20 @@ read_ff <- function(file){
 #'
 #' @export
 #' @md
+#' @examples
+#' file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "example-calcheck.csv")
+#' calcheck <- read_cal(file)
+
 read_cal <- function(file){
   stopifnot(tools::file_ext(file) == "csv")
 
   #read in csv
   df <- read.csv(file)
+
+  #check that file looks correct
+  if(!(all(c("Date", "Parameter", "Resident_Value", "Check_Value") %in% colnames(df)))){
+    stop("Unexpected column names. Please see help(example_calcheck) for details on structure.")
+  }
 
   #replace blanks and "N/A" with NA
   df[df == ""] <- NA
@@ -94,15 +114,20 @@ read_cal <- function(file){
   #remove any full NA rows
   df <- df[rowSums(is.na(df)) < ncol(df), ]
 
-  #detect correct date format
-  dateform <- ifelse(median(nchar(df$Date), na.rm=TRUE) == 7, "%m/%d/%y", "%m/%d/%Y")
+  #get correct date format
+    #add option for two digit year (only for function)
+    anytime::addFormats("%m/%d/%y")
+    dateform <- anytime::anydate(df$Date)
+    anytime::removeFormats("%m/%d/%y")
+
+  dateform <- anytime::anydate(df$Date)
 
   #ensure things have the right class
-  df <- df %>% dplyr::mutate(Date = as.Date(Date, tz = "Etc/GMT+8", format= dateform),
-                             dplyr::across(Site_Code:Resident_Probe_Serial, ~as.character(.x)),
-                             dplyr::across(c(Check_Probe_Serial, Notes), ~as.character(.x)),
-                             dplyr::across(c(Resident_Value, Check_Value), ~as.numeric(.x))) %>%
-    arrange(Date)
+  df <- df %>% dplyr::mutate(Date = dateform,
+                             dplyr::across("Site_Code":"Resident_Probe_Serial", ~as.character(.x)),
+                             dplyr::across(c("Check_Probe_Serial", "Notes"), ~as.character(.x)),
+                             dplyr::across(c("Resident_Value", "Check_Value"), ~as.numeric(.x))) %>%
+    arrange(.data$Date)
 
   return(df)
 

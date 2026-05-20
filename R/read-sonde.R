@@ -22,7 +22,7 @@
 #' @returns
 #' If `return` is `df`:
 #' **A `data.frame` containing the date, time, site name, and the "core" measurements (when available):**
-#' - Specific conductivity measured in $\mu$S/cm.
+#' - Specific conductivity measured in µS/cm.
 #' - Fluorescent dissolved organic matter (fDOM) measured in Quinine Sulfate Units (QSU).
 #' - Dissolved oxygen measured in mg/L.
 #' - Turbidity measured in Formazin Nephelometric Units (FNU).
@@ -39,7 +39,7 @@
 #' @export
 #'
 #' @examples
-#' file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "sonde-example.csv")
+#' file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "example-csv-data1.csv")
 #' data <- read_sonde(file)
 #'
 #' file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "sonde-usb-example.csv")
@@ -97,20 +97,20 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NUL
     if(!usb_export){
       serial <- unlist(strsplit(text[skip-1], ","))
       serials <- data.frame(measure = colnames(data)[-(1:4)], serial = serial[-(1:4)]) %>%
-        filter(measure %in% c("SpCond_uS_cm","fDOM_QSU","ODO_mg_L", "Turbidity_FNU","pH","Temp_C","Battery_V"))
+        filter(.data$measure %in% c("SpCond_uS_cm","fDOM_QSU","ODO_mg_L", "Turbidity_FNU","pH","Temp_C","Battery_V"))
     }else{
       serial <- text[4:(skip-4)] %>% as.data.frame() %>% tidyr::separate_wider_delim(cols='.', delim=",", names_sep="") %>% as.data.frame()
       colnames(serial) <- unlist(strsplit(text[3], ","))
       serial$Model <- gsub("[0-9]P Sonde", "Battery_V", serial$Model)
       add_c <- serial[which(serial$Model == "CT"),]
       add_c$Model <- "Temp_C"
-      serial <- rbind(serial, add_c) %>% dplyr::mutate(Model = Model |>
+      serial <- rbind(serial, add_c) %>% dplyr::mutate(Model = .data$Model %>%
                                                          dplyr::recode_values("Turbidity" ~ "Turbidity_FNU",
                                                              "CT" ~ "SpCond_uS_cm",
                                                              "ODO" ~ "ODO_mg_L",
                                                              "fDOM" ~ "fDOM_QSU",
-                                                             default = Model))
-      serials <- serial %>% dplyr::rename(measure = "Model", serial = " S/N") %>% select(measure, serial) %>%
+                                                             default = .data$Model))
+      serials <- serial %>% dplyr::rename(measure = "Model", serial = " S/N") %>% select("measure", "serial") %>%
         mutate(serial = trimws(serial))
     }
 
@@ -158,7 +158,7 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NUL
     data <- data %>% dplyr::mutate(Site_Name = site, .after="Time_HH_mm_ss")
 
   #make date time into a column set to correct tz
-  data <- data %>% dplyr::mutate(DateTime = anytime::anytime(paste(data$Date, data$Time_HH_mm_ss),
+  data <- data %>% dplyr::mutate(DateTime = anytime::anytime(paste(.data$Date, .data$Time_HH_mm_ss),
                                                   asUTC=TRUE, tz="UTC"),
                       .after="Time_HH_mm_ss") %>%
     dplyr::mutate(Date = as.Date(anytime::anydate(data$Date, asUTC = TRUE, tz="UTC")))
@@ -183,13 +183,13 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NUL
     interval <- get_mode(as.numeric(difftime(data$DateTime, lag(data$DateTime), units="mins")))
 
     data <- data %>%
-      dplyr::mutate(DateTime_rd = lubridate::round_date(DateTime, paste0(interval, " mins")), .after = DateTime)
+      dplyr::mutate(DateTime_rd = lubridate::round_date(.data$DateTime, paste0(interval, " mins")), .after = "DateTime")
 
 
   #organize order and make a regular df to be consistent
     data <- data %>% dplyr::select(dplyr::any_of(c("Index", "Date", "Time_HH_mm_ss", "DateTime", "DateTime_rd", "Site_Name", "Battery_V",
                                    "fDOM_QSU", "ODO_mg_L", "pH", "SpCond_uS_cm", "Temp_C", "Turbidity_FNU"))) %>% as.data.frame() %>%
-      arrange(DateTime)
+      arrange(.data$DateTime)
 
  #add flags
   if(flags){

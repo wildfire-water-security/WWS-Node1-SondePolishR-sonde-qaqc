@@ -7,16 +7,12 @@
 \usage{
 load_data_UI(id)
 
-load_data_server(id, sdata, prj_path, log)
+load_data_server(id, sondeproj)
 }
 \arguments{
 \item{id}{An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.}
 
-\item{sdata}{A \code{reactiveVal} holding the current dataset.}
-
-\item{prj_path}{A \code{reactiveVal} holding the path to save the project to.}
-
-\item{log}{A \code{reactiveVal} holding the change log.}
+\item{sondeproj}{A \code{reactiveVal} holding the current dataset.}
 }
 \value{
 The loaded data as a reactive object.

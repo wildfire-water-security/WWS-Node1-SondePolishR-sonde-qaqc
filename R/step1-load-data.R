@@ -17,9 +17,10 @@ load_data_UI <- function(id){
            color: white;
           }"),
       HTML(".selectize-input {color: white;}")),
-  page_fillable(
-    accordion(
-      accordion_panel("Load Data",
+    bslib::page_fluid(
+      bslib::layout_columns(
+      col_widths = c(6, 6, 6, 6),
+      bslib::card(bslib::card_header("1.1: Load Data"),
                       #load csv files
                       fluidRow(
                         column(8,fileInput(
@@ -28,7 +29,7 @@ load_data_UI <- function(id){
                                        "Raw Sonde Data File(s) (.csv)"),
                           accept = c(".csv"),  # restrict to CSV
                           multiple = TRUE,
-                          width = "60%")),
+                          width = "80%")),
                         column(4,
                                #have user pick the timezone
                                selectInput(
@@ -44,39 +45,40 @@ load_data_UI <- function(id){
                         label = span(style = "font-size:16px; white-space: nowrap;",
                                      "Sonde Project File (.RDS)"),
                         accept = c(".RDS"),
-                        width = "40%")
+                        width = "80%")
                       ),
-      accordion_panel("Load Metadata",
+      bslib::card(bslib::card_header("1.2: Load Metadata"),
                       #load ff file
                       fileInput(
                         inputId = NS(id, "ff_file"),
                         label = span(style = "font-size:16px; white-space: nowrap;",
-                                     "Field Form File"),
+                                     "Field Form File (.csv)"),
                         accept = c(".csv"),
-                        width = "40%"),
+                        width = "80%"),
 
                       #load cal check
                       fileInput(
                         inputId = NS(id, "cc_file"),
                         label = span(style = "font-size:16px; white-space: nowrap;",
-                                     "Calibration Check File"),
+                                     "Calibration Check File (.csv)"),
                         accept = c(".csv"),
-                        width = "40%")),
+                        width = "80%")),
 
-    accordion_panel("Save Project",
+      bslib::card(bslib::card_header("1.3: Save Path"),
            fluidRow(
              column(12,
                     div(
                       class = "d-flex align-items-center gap-2",  # Bootstrap flex classes
-                      shinyFiles::shinyDirButton(NS(id, "save_file"),
+                      shinyFiles::shinySaveButton(NS(id, "save_file"),
                                                  label = "Processed Data Save Location",
                                                  style="font-size:16px",
-                                                 title= "Select location to save processed data", multiple=FALSE),
-                      uiOutput(NS(id, "path_text_box")))
+                                                 title= "Select location to save processed data", multiple=FALSE,
+                                                 filetype = ".RDS"),
+                      uiOutput(NS(id, "path_text_box"))))
              )),
-           checkboxInput(NS(id, "overwrite"), "Overwrite Existing Project?"),
-           actionButton(NS(id, "save_prj"), "Save Sonde Project", width ="30%")
-           ))
+      bslib::card(bslib::card_header("1.4: Load Data"),
+         actionButton(NS(id, "load_prj"), "Load Sonde Project", width ="30%")
+    ))
 
   ))
 
@@ -91,138 +93,130 @@ load_data_UI <- function(id){
 #' the user will need to select a save path with the file name based on the name of the data file.
 #'
 #' @param id An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.
-#' @param prj_path A `reactiveVal` holding the path to save the project to.
-#' @param sdata A `reactiveVal` holding the current dataset.
-#' @param log A `reactiveVal` holding the change log.
+#' @param sondeproj A `reactiveVal` holding the current dataset.
 #' @md
 #' @export
 #' @keywords internal
 #' @returns The loaded data as a reactive object.
 #' @rdname load-data
-load_data_server <- function(id, sdata, prj_path, log){
+load_data_server <- function(id, sondeproj){
   moduleServer(id, function(input, output, session){
-
-  #NEW PROJECT
-    #load data
-      type <- reactiveVal()
-      base_path <- reactiveVal()
-
-    # observeEvent(list(input$file, input$save_file){
-    #   req(type())
-    #   if(type() == "RDS" & is.null(input$save_file)){
-    #     versions <- list.files(here::here(input))
-    #   }
-    #
-    # })
-
-      observeEvent(input$file, {
-        req(input$tz)
-
-        type(tools::file_ext(input$file$datapath))
-
-        if (type() == "csv") {
-          sdata(read_sonde(input$file$datapath, tz = input$tz))
-          base_path(get_prjpath())
-          prj_path(get_prjpath())
-          log(get_log())
-        }
-
-        if (type() == "RDS") {
-          read_project(input$file$datapath)
-
-          base_path(get_prjpath())
-          prj_path(
-            if (input$overwrite)
-              base_path()
-            else
-              version_path(base_path())
-          )
-
-          prj <- get_data()
-          sdata(prj[[length(prj)]])
-          log(get_log())
-        }
-      })
-
-
-
-      #update timezone if it's a project
-        observeEvent(sdata(), {
-          req(sdata(), type())
-
-          if(type() == "RDS"){
-            tz <- lubridate::tz(sdata()$DateTime)
-            nice_tz <- nice_tz()
-            tz <- nice_tz[nice_tz == tz]
-            updateSelectInput(
-              session,
-              "tz",
-              selected = tz)}
-            })
-
+  #code for setting up the directory button
     #define preset roots for file path
-      roots <- c(
-            wd        = getwd(),
-            Downloads = file.path(fs::path_home(), "Downloads"),
-            Documents = file.path(fs::path_home(), "Documents"),
-            "C Drive" = "C:/")
+    roots <- c(
+      "Working Directory" = getwd(),
+      Downloads = file.path(fs::path_home(), "Downloads"),
+      Documents = file.path(fs::path_home(), "Documents"),
+      "C Drive" = "C:/")
 
-      #when user selects a file update path
-      observeEvent(input$save_file, {
-        req(input$file)
+    observe({
+      shinyFiles::shinyFileSave(input, "save_file", roots = roots, session = session)
+    })
 
-        dir <- shinyFiles::parseDirPath(roots, input$save_file)
-        req(length(dir) > 0)
+    output$path_text_box <- renderUI({
+      fileinfo <- parseSavePath(roots, input$save_file)
+      if(length(fileinfo) > 0){
+        tags$span(fileinfo$datapath,
+                  style = "background-color: #fff;border: 1px solid #ddd;padding: 6px 12px;
+                  border-radius: 6px; display: inline-block;min-width: 120px;color: #343a40")
+      }
 
-        name <- paste0(
-          tools::file_path_sans_ext(input$file$name),
-          ".RDS"
-        )
+    })
 
-        base_path(list(type="absolute", path = file.path(dir, name)))
+  #when button to load project is clicked, read in everything and merge together
+    observeEvent(input$load_prj, {
+    #parse save location
 
-        prj_path(
-          if (input$overwrite)
-            base_path()
-          else
-            version_path(base_path())
-        )
+
+    #set csv merge as NULL if not loaded to prevent errors
+      csv_merge <- NULL
+
+    #read csv files if added
+      if(!is.null(input$csv_files)){
+        csv_merge <- lapply(input$csv_files$datapath,read_sonde, tz = input$tz) %>%
+          dplyr::bind_rows()
+      }
+
+    #load existing project
+      if(!is.null(input$pj_file)){
+         obj <- readRDS(input$pj_file$datapath)
+      }else{
+        #create new project if one isn't loaded
+        changelog <- write_log(NULL, "all", "initial load", n = 0, diff_name = "raw")
+        empty_flags <- add_flags(csv_merge)
+
+        #create sonde object
+        obj <- list(data = csv_merge,
+                    flags = list(
+                            flag_rm = empty_flags,
+                            flag_chg = empty_flags,
+                            flag_add = empty_flags),
+                     fieldform = NULL,
+                     calcheck = NULL,
+                     diffs = list(),
+                     changelog = changelog)
+
+        class(obj) <- "sondeproj"
+      }
+
+
+    #read in ff and cal file (these cover the entire period and we don't need to merge, just update)
+      if(!is.null(input$ff_file)){
+        fieldform <- read_ff(input$ff_file$datapath)
+        obj$fieldform <- fieldform
+      }
+
+      if(!is.null(input$cc_file)){
+        calcheck <- read_cal(input$cc_file$datapath)
+        obj$calcheck <- calcheck
+      }
+
+   #if project and csv loaded, merge together (everything: data, flags, diffs, replace ff and cal)
+    merge_flag <- !is.null(input$pj_file) && !is.null(input$csv_files)
+
+    if(merge_flag){
+      #document data addition (can't currently do diff because lines are different)
+      obj <- write_log(obj, "all", "adding new data", n = nrow(csv_merge), diff_name = "data_upload", return="sondeproj")
+
+      #merge data and flags
+      obj$data <- obj$data %>% dplyr::bind_rows(csv_merge) %>% distinct(across(-.data$Index)) %>%
+        arrange(.data$DateTime) %>% mutate(Index = 1:n(), .before="Date")
+
+      #create flag tables for new data
+      empty_flags <- add_flags(obj$data)
+
+      #keep existing flags
+      ext_flags <- obj$flags
+      new_flags <- empty_flags %>% filter(!(.data$DateTime %in% ext_flags$flag_rm$DateTime))
+
+      obj$flags <- lapply(obj$flags, function(x){
+        x %>% dplyr::bind_rows(new_flags) %>%
+          arrange(.data$DateTime) %>% mutate(Index = 1:n(), .before="DateTime")
       })
 
-    #dealing with overwrite toggle
-      observeEvent(input$overwrite, {
-        req(base_path())
+      #check that flags match data
+      stopifnot(all(sapply(obj$flags, nrow) == nrow(obj$data)))
+    }
 
-        prj_path(
-          if (isTRUE(input$overwrite))
-            base_path()
-          else
-            version_path(base_path())
-        )
-      })
 
-    #sync path with prj enviornment
-      observeEvent(prj_path(), {
-        req(prj_path())
-        set_prjpath(prj_path())
-      })
+  #save object as reactive
+      sondeproj(obj)
 
-      #get file name and save path to save as project file
-      shinyFiles::shinyDirChoose(input,"save_file", roots = roots, session = session,
-                                 defaultRoot = "Documents")
-
-    #show file path in UI
-      output$path_text_box <- renderUI({
-        tags$span(
-          prj_path()$path,
-          style = "background-color: #fff;border: 1px solid #ddd;padding: 6px 12px;
-            border-radius: 6px; display: inline-block;min-width: 120px;color: #343a40")
-      })
-
-      #export plot so we can check it
-      exportTestValues(
-        type = type()
+  #print a message so you know data loaded
+    shinyalert::shinyalert(
+        title = "Data Loaded",
+        text = "Selected data has been loaded and any new data has been merge into existing project.",
+        type = "success"
       )
+
+  #export values so we can check them
+
+    exportTestValues(
+         changelog = obj$changelog
+        )
+    })
 
   })
 }
+
+

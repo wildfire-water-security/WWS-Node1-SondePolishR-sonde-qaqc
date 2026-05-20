@@ -1,82 +1,60 @@
-test_that("log can be read, written, and cleared", {
-  #make sure log is empty
-  clear_log()
+test_that("version control works as expected", {
+  data <- example_data
 
-  #empty log
-  expect_equal(get_log(), data.frame(datetime=as.POSIXct(character()),
-                                    parameter = character(),
-                                    step = character(),
-                                    n_changed = numeric(),
-                                    note = character(),
-                                    user = character(),
-                                    version = character()))
+  #make some changes and save
+    data1 <- data
+    data1$fDOM_QSU[1:4] <- NA
+    dd1 <- commit_diff(data, data1)
 
-  #write to the log
-  write_log("Cond_S_cm", "physical limits", 5, "test",  "V1")
-  log <- get_log()
-  expect_equal(nrow(log), 1)
-  expect_equal(log$parameter, "Cond_S_cm")
-  expect_equal(log$step,  "physical limits")
-  expect_equal(log$n_changed, 5)
-  expect_equal(log$version, "V1")
-  expect_equal(log$note, "test")
+    expect_s3_class(dd1,"data_diff")
 
+  #check that we can get from data to data 1 using the dd1
+    data_redo <- apply_diff(data, dd1)
+    expect_equal(data1, data_redo)
 
-  #write another line
-  write_log("Cond_S_cm", "physical limits", 2, "test", "V2")
-  log <- get_log()
-  expect_equal(nrow(log), 2)
+  #check if we make multiple sets
+    #make more changes
+    data2 <- data1
+    data2$ODO_mg_L[5:7] <- data2$ODO_mg_L[5:7] * 0.8
+    dd2 <- commit_diff(data1, data2)
 
-  #clear log
-  clear_log()
-  expect_equal(get_log(), data.frame(datetime=as.POSIXct(character()),
-                                     parameter = character(),
-                                     step = character(),
-                                     n_changed = numeric(),
-                                     note = character(),
-                                     user = character(),
-                                     version = character()))
+    #more changes
+    data3 <- data2
+    data3$Temp_C[1:100] <- NA
+    dd3 <- commit_diff(data2, data3)
 
+  #get to whatever level we want from raw
+    diffs <- list(dd1,dd2,dd3)
 
+    newdata1 <- apply_diff(data, diffs[[1]])
+    expect_equal(data1, newdata1)
 
-})
+    newdata2 <- apply_diff(data, diffs[1:2])
+    expect_equal(data2, newdata2)
 
+    newdata3 <- apply_diff(data, diffs)
+    expect_equal(data3, newdata3)
 
-test_that("data saving and logging works", {
-  #make sure no data
-  clear_data()
+  #make sure it errors if the dates aren't the same
+    expect_warning(expect_error(commit_diff(data, data[-1,]),
+                                "Dates are different between the two datasets"))
 
-  #at the start we have no data
-    expect_equal(length(get_data()), 0)
-    expect_true(inherits(get_data(), "list"))
+  #check that it works if we apply the changes to a dataset with rows added
+    split1 <- data[1:500,]
+    split2 <- data[500:nrow(data),]
 
-  #write some data
-    write_data(raw_sonde, "V1")
-    expect_equal(length(get_data()), 1)
-    expect_equal(get_data()[[1]], raw_sonde)
+    #make change
+    data1 <- split1
+    data1$fDOM_QSU[1:4] <- NA
+    dd1 <- commit_diff(split1, data1)
 
-  #check to see if there's a new version
-    expect_true(!new_version(raw_sonde))
-    new_sonde <- raw_sonde
-    new_sonde$fDOM_QSU[1] <- 2.0234 #change a value so it's new
-    expect_true(new_version(new_sonde))
+    #add extra data
+    data <- rbind(split1, split2)
 
+    #apply changes
+    data_chg <- apply_diff(data, dd1)
 
-  #clear data
-    clear_data()
-    expect_equal(length(get_data()), 0)
-    expect_true(inherits(get_data(), "list"))
-
-})
-
-test_that("prj path setting and getting works", {
-  clear_prjpath() #reset
-
-  expect_equal(get_prjpath(), list(type=character(), path=character()))
-
-  set_prjpath(list(type="package", path="test/path2"))
-  expect_equal(get_prjpath(), list(type="package", path="test/path2"))
-
-  set_prjpath(list(type="package", path="test/path2"))
-  expect_equal(get_prjpath(), list(type="package", path="test/path2"))
+    #check that changes remained
+    expect_equal(data_chg$fDOM_QSU[1:500], data1$fDOM_QSU[1:500])
+    expect_true(nrow(data_chg) > nrow(split1))
 })

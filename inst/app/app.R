@@ -64,12 +64,10 @@ server <- function(input, output, session) {
   options(shiny.maxRequestSize=50*1024^2)
 
   #define things that get passed around
-    prj_path <- reactiveVal(NULL) #the project path to save data to
-    sdata <- reactiveVal(NULL) #the current dataset
-    log <- reactiveVal(NULL) #the data log
+    sondeproj <- reactiveVal(NULL) #the sonde project
 
   #step 1: load data
-   SondePolishR::load_data_server("data1", sdata, prj_path, log)
+   SondePolishR::load_data_server("data1", sondeproj)
 
   #step 2: plot data
    #SondePolishR::explore_data_server("data2", sdata, log)

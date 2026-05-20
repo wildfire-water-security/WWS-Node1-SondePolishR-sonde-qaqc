@@ -82,8 +82,8 @@ apply_diff <- function(olddata, diff){
   suppressWarnings(newdata <- patch_data(olddata, diff))
 
   #put back in datetimes
-  newdata <- newdata %>% mutate(Date = dates$Date, .before=Time_HH_mm_ss) %>%
-                         mutate(DateTime = dates$DateTime, .after=Time_HH_mm_ss)
+  newdata <- newdata %>% mutate(Date = dates$Date, .before="Time_HH_mm_ss") %>%
+                         mutate(DateTime = dates$DateTime, .after="Time_HH_mm_ss")
 
   return(newdata)
 }

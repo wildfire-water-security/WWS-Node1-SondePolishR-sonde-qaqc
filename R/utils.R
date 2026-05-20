@@ -10,7 +10,7 @@
 #' @export
 #'
 #' @examples
-#' file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "sonde-example.csv")
+#' file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "example-csv-data1.csv")
 #' get_encoding(file)
 get_encoding <- function(file){
   #check if data looks right
@@ -55,7 +55,7 @@ get_encoding <- function(file){
 #' @export
 #'
 #' @examples
-#' file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "sonde-example.csv")
+#' file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "example-csv-data1.csv")
 #' get_skip(file)
 #'
 #' file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "sonde-usb-example.csv")
@@ -90,7 +90,7 @@ get_skip <- function(file, encoding=NULL){
 #' @export
 #'
 #' @examples
-#' file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "sonde-example.csv")
+#' file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "example-csv-data1.csv")
 #' usb_export(file)
 #'
 #' file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "sonde-usb-example.csv")

@@ -8,58 +8,48 @@
 #' @param par the parameter to check
 #' @param flag_name a character with the name of the flag
 #' @param index the index values for the rows to be flagged
-#' @param note a note from the analyst about the change made
-#' @param prj_path the file path to save the sonde project to, if `NULL` will try to use `prj_path` stored in package environment.
 #' @param makeNA if `TRUE` the flagged data will be converted to NA values
 #' @md
-#' @returns returns the flagged copy of the `data.frame`
 #' @export
-#'
-#' @examples
-#' prj_path <- file.path(withr::local_tempdir(), "test_prj.RDS")
-#'
-#' #do intial versioning things (automatic in app)
-#'   clear_data()
-#'   clear_log()
-#'   write_data(raw_sonde, "raw")
-#'
-#' #flag data
-#'   data <- flag_data(raw_sonde, "fDOM_QSU", "test_flag", 1:4, "testing flags", prj_path)
+#' @returns returns the flagged copy of the `data.frame`
 
-flag_data <- function(data, par, flag_name, index, note="", prj_path=NULL, makeNA = FALSE){
-  stopifnot(inherits(data, "data.frame"), is.character(par), is.character(flag_name),
-            is.null(resolve_path(prj_path)) || dir.exists(dirname(resolve_path(prj_path))), all(is.numeric(index)), is.logical(makeNA))
+# @param note a note from the analyst about the change made
+# @param prj_path the file path to save the sonde project to, if `NULL` will try to use `prj_path` stored in package environment.
 
-  #add flags to data
-  data <- add_flags(data, par, flag_name, index, makeNA)
-
-  #save version
-  if(!new_version(data)){
-    if (!is.null(shiny::getDefaultReactiveDomain())) {
-      shinyalert::shinyalert(
-        title = "No New Changes",
-        text = "Changes have already been saved",
-        type = "info")}
-
-  }else{
-    version <- digest::digest(data)
-    write_log(par, step=flag_name, n=length(index), note=note, version)
-    write_data(data, version)
-
-    #write to save path
-    if(is.null(prj_path)){prj_path <- get_prjpath()}
-    save_project(get_data(), get_log(), prj_path)
-
-    if (!is.null(shiny::getDefaultReactiveDomain())) {
-      shinyalert::shinyalert(
-        title = "Processing Complete",
-        text = "Flags were added and a copy of the project was written successfully!",
-        type = "success")}
-
-  }
-
-  return(data)
-}
+# flag_data <- function(data, par, flag_name, index, note="", prj_path=NULL, makeNA = FALSE){
+#   stopifnot(inherits(data, "data.frame"), is.character(par), is.character(flag_name),
+#             is.null(resolve_path(prj_path)) || dir.exists(dirname(resolve_path(prj_path))), all(is.numeric(index)), is.logical(makeNA))
+#
+#   #add flags to data
+#   data <- add_flags(data, par, flag_name, index, makeNA)
+#
+#   #save version
+#   if(!new_version(data)){
+#     if (!is.null(shiny::getDefaultReactiveDomain())) {
+#       shinyalert::shinyalert(
+#         title = "No New Changes",
+#         text = "Changes have already been saved",
+#         type = "info")}
+#
+#   }else{
+#     version <- digest::digest(data)
+#     write_log(par, step=flag_name, n=length(index), note=note, version)
+#     write_data(data, version)
+#
+#     #write to save path
+#     if(is.null(prj_path)){prj_path <- get_prjpath()}
+#     save_project(get_data(), get_log(), prj_path)
+#
+#     if (!is.null(shiny::getDefaultReactiveDomain())) {
+#       shinyalert::shinyalert(
+#         title = "Processing Complete",
+#         text = "Flags were added and a copy of the project was written successfully!",
+#         type = "success")}
+#
+#   }
+#
+#   return(data)
+# }
 
 #' Add flags to sonde data
 #'
@@ -81,11 +71,11 @@ flag_data <- function(data, par, flag_name, index, note="", prj_path=NULL, makeN
 #'
 #' @examples
 #' #add flag columns
-#' data <- add_flags(raw_sonde)
+#' data <- add_flags(example_data)
 #' colnames(data)
 #'
 #' #add a flag
-#' data <- add_flags(raw_sonde, "fDOM_QSU", "test_flag", c(1,2,3))
+#' data <- add_flags(example_data, "fDOM_QSU", "test_flag", c(1,2,3))
 #' head(data)
 add_flags <- function(data, par=NULL, flag_name=NULL, index=NULL, makeNA=FALSE){
   stopifnot(inherits(data, "data.frame"), is.character(flag_name)|is.null(flag_name), is.character(par)|is.null(par),
@@ -105,75 +95,77 @@ add_flags <- function(data, par=NULL, flag_name=NULL, index=NULL, makeNA=FALSE){
       }
 
   #add flag if inputting specific flags #TODO will need to update with new workflow for storing flags
-  if(!is.null(flag_name)){
-
-    stopifnot(is.character(par), length(index) > 0)
-
-    flag_col <- paste0(par, "_flag", collapse="")
-
-    #add flags
-    flag_list <- list()
-      for(i in data$Index){
-        #get existing flags
-        ext_flag <- data[[flag_col]][[i]]
-
-        #check to see if it already exists
-        # ##checking logic, keep for testing for now
-        #  #case 1: ext_flag is NA -> return TRUE
-        #     ext_flag <- NA
-        #     new <- !(!all(is.na(ext_flag)) && flag_name %in% names(ext_flag))
-        #
-        #   #case 2: ext_flag is "text_flag", flag_name = "test" -> return TRUE
-        #     ext_flag <-  c("test_flag" = TRUE)
-        #     flag_name <- "test"
-        #     new <- !(!all(is.na(ext_flag)) && flag_name %in% names(ext_flag))
-        #
-        #   #case 3: ext_flag is "text", flag_name = "text" -> return FALSE
-        #     ext_flag <- c("test" = TRUE)
-        #     flag_name <- "test"
-        #     new <- !(!all(is.na(ext_flag)) && flag_name %in% names(ext_flag))
-
-        new <- !(!all(is.na(ext_flag)) && flag_name %in% names(ext_flag))
-
-        if(new){
-          # create a named logical
-          flag <- stats::setNames(FALSE, flag_name)
-
-          # set TRUE if i is in the selected index
-          if (i %in% index) {
-            flag[flag_name] <- TRUE
-          }
-
-          #append if already flags
-          if(any(!is.na(ext_flag))){
-            flag <- c(ext_flag, flag)}
-        }else{
-          #change value
-          # set TRUE if i is in the selected index
-          flag <- ext_flag
-
-          if (i %in% index) {
-            flag[flag_name] <- TRUE
-          }
-        }
-
-
-       #add to list
-        flag_list[[i]] <- flag
-      }
-
-    data[[flag_col]] <- flag_list
-
-    #make NA
-    if(makeNA){
-      colnum <- which(colnames(data) == par)
-      data[index,colnum] <- NA
-    }
-  }
+  # if(!is.null(flag_name)){
+  #
+  #   stopifnot(is.character(par), length(index) > 0)
+  #
+  #   flag_col <- paste0(par, "_flag", collapse="")
+  #
+  #   #add flags
+  #   flag_list <- list()
+  #     for(i in data$Index){
+  #       #get existing flags
+  #       ext_flag <- data[[flag_col]][[i]]
+  #
+  #       #check to see if it already exists
+  #       # ##checking logic, keep for testing for now
+  #       #  #case 1: ext_flag is NA -> return TRUE
+  #       #     ext_flag <- NA
+  #       #     new <- !(!all(is.na(ext_flag)) && flag_name %in% names(ext_flag))
+  #       #
+  #       #   #case 2: ext_flag is "text_flag", flag_name = "test" -> return TRUE
+  #       #     ext_flag <-  c("test_flag" = TRUE)
+  #       #     flag_name <- "test"
+  #       #     new <- !(!all(is.na(ext_flag)) && flag_name %in% names(ext_flag))
+  #       #
+  #       #   #case 3: ext_flag is "text", flag_name = "text" -> return FALSE
+  #       #     ext_flag <- c("test" = TRUE)
+  #       #     flag_name <- "test"
+  #       #     new <- !(!all(is.na(ext_flag)) && flag_name %in% names(ext_flag))
+  #
+  #       new <- !(!all(is.na(ext_flag)) && flag_name %in% names(ext_flag))
+  #
+  #       if(new){
+  #         # create a named logical
+  #         flag <- stats::setNames(FALSE, flag_name)
+  #
+  #         # set TRUE if i is in the selected index
+  #         if (i %in% index) {
+  #           flag[flag_name] <- TRUE
+  #         }
+  #
+  #         #append if already flags
+  #         if(any(!is.na(ext_flag))){
+  #           flag <- c(ext_flag, flag)}
+  #       }else{
+  #         #change value
+  #         # set TRUE if i is in the selected index
+  #         flag <- ext_flag
+  #
+  #         if (i %in% index) {
+  #           flag[flag_name] <- TRUE
+  #         }
+  #       }
+  #
+  #
+  #      #add to list
+  #       flag_list[[i]] <- flag
+  #     }
+  #
+  #   data[[flag_col]] <- flag_list
+  #
+  #   #make NA
+  #   if(makeNA){
+  #     colnum <- which(colnames(data) == par)
+  #     data[index,colnum] <- NA
+  #   }
+  # }
 
   #return empty flag dataframe
   if(is.null(flag_name) & is.null(par)){
-    data <- data %>% dplyr::select(-any_of(c(par_names, "Battery_V", "Date", "Time_HH_mm_ss","Site_Name")))
+    data <- data %>% dplyr::select(-any_of(c(par_names, "Battery_V", "Date", "Time_HH_mm_ss","Site_Name"))) %>%
+      mutate(across(-c("Index", "DateTime", "DateTime_rd"), ~ as.character(.x)))
+
   }
 
   return(data)
@@ -187,24 +179,24 @@ add_flags <- function(data, par=NULL, flag_name=NULL, index=NULL, makeNA=FALSE){
 #' @returns a `data.frame` with the flagged values removed
 #' @export
 #'
-remove_flagged <- function(data, flag_names){
-  flags <- grep("_flag$", colnames(data), value = TRUE)
-
-  #for one column
-  for(f in flags){
-    flag_vals <- data[[f]]
-
-    #determine values with flag
-    rm <- sapply(flag_vals, function(x){
-      flag <- x[names(x) %in% flag_names]
-      return(any(flag))
-    })
-
-    #make values NA
-    if(sum(rm) > 0){
-      data[rm,gsub("_flag$", "", f)] <- NA
-    }
-  }
-  return(data)
-}
-
+# remove_flagged <- function(data, flag_names){
+#   flags <- grep("_flag$", colnames(data), value = TRUE)
+#
+#   #for one column
+#   for(f in flags){
+#     flag_vals <- data[[f]]
+#
+#     #determine values with flag
+#     rm <- sapply(flag_vals, function(x){
+#       flag <- x[names(x) %in% flag_names]
+#       return(any(flag))
+#     })
+#
+#     #make values NA
+#     if(sum(rm) > 0){
+#       data[rm,gsub("_flag$", "", f)] <- NA
+#     }
+#   }
+#   return(data)
+# }
+#

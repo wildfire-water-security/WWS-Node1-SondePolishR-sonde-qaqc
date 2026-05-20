@@ -1,8 +1,0 @@
-{
-  "export": {
-    "prj_path": {
-      "type": "package",
-      "path": "extdata/example-sonde-project.RDS"
-    }
-  }
-}

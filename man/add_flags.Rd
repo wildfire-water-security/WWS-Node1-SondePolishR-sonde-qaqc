@@ -2,7 +2,7 @@
 % Please edit documentation in R/add_flag.R
 \name{add_flags}
 \alias{add_flags}
-\title{Add flags to sonde data}
+\title{Flag dataset and save a copy}
 \usage{
 add_flags(data, par = NULL, flag_name = NULL, index = NULL, makeNA = FALSE)
 }
@@ -18,6 +18,13 @@ add_flags(data, par = NULL, flag_name = NULL, index = NULL, makeNA = FALSE)
 \item{makeNA}{if \code{TRUE} the flagged data will be converted to NA values}
 }
 \value{
+returns the flagged copy of the \code{data.frame}
+Add flags to sonde data
+
+Works either to provide a skeleton for the flag data (if no parameter or flag names are provided) or
+adds a flag to the specified data. Used to keep track of which datapoints were flagged in which QA/QC steps.
+If only some flags are added, it will try to add the missing flags.
+
 a data.frame
 \itemize{
 \item if \code{par} and \code{flag_name} are \code{NULL} it will return a \code{data.frame} with the same number of rows as \code{data} but
@@ -26,16 +33,16 @@ with a blank column for each parameter in the \code{data.frame} with the form <*
 }
 }
 \description{
-Works either to provide a skeleton for the flag data (if no parameter or flag names are provided) or
-adds a flag to the specified data. Used to keep track of which datapoints were flagged in which QA/QC steps.
-If only some flags are added, it will try to add the missing flags.
+Adds flags to the dataset, saves the new version of the dataset, and saves the project to the
+project path specified by the user as a \code{.RDS} object. Also provides messages about the
+changes being made.
 }
 \examples{
 #add flag columns
-data <- add_flags(raw_sonde)
+data <- add_flags(example_data)
 colnames(data)
 
 #add a flag
-data <- add_flags(raw_sonde, "fDOM_QSU", "test_flag", c(1,2,3))
+data <- add_flags(example_data, "fDOM_QSU", "test_flag", c(1,2,3))
 head(data)
 }

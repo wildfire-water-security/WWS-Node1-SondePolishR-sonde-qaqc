@@ -30,7 +30,7 @@ read_sonde(
 If \code{return} is \code{df}:
 \strong{A \code{data.frame} containing the date, time, site name, and the "core" measurements (when available):}
 \itemize{
-\item Specific conductivity measured in $\mu$S/cm.
+\item Specific conductivity measured in µS/cm.
 \item Fluorescent dissolved organic matter (fDOM) measured in Quinine Sulfate Units (QSU).
 \item Dissolved oxygen measured in mg/L.
 \item Turbidity measured in Formazin Nephelometric Units (FNU).
@@ -58,7 +58,7 @@ Etc/GMT signs are \strong{reverse} of UTC signs. For example UTC-8 would be Etc/
 signifying Pacific Standard Time (PST).
 }
 \examples{
-file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "sonde-example.csv")
+file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "example-csv-data1.csv")
 data <- read_sonde(file)
 
 file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "sonde-usb-example.csv")

@@ -6,7 +6,6 @@
     ff <- list.files("../WWS-Node1-SONDE-postfire-sonde-network/data/01_site-visit-metadata/Fall-Creek", pattern = "Field-Form", full.names = TRUE)
     cal <- list.files("../WWS-Node1-SONDE-postfire-sonde-network/data/01_site-visit-metadata/Fall-Creek", pattern = "Calibration", full.names = TRUE)
 
-    path <- list(type="package", path="extdata/example-sonde-project.RDS")
 
   #what we'd get from the fileinput function
     csv_files <- data.frame(name=basename(raw_files),
@@ -27,7 +26,7 @@
 
   #what we want for the server code
     #read in csv files, merge as needed
-      data_merge <- lapply(csv_files$datapath, read_sonde, tz = tz, ) %>% dplyr::bind_rows()
+      data_merge <- lapply(csv_files$datapath, read_sonde, tz = tz) %>% dplyr::bind_rows()
 
   #if project and csv loaded, merge together (everything: data, flags, diffs, replace ff and cal)
       data <- data_merge
@@ -53,8 +52,7 @@
     changelog$user <- "smith"
 
    #create sonde object
-    sonde_obj <- list(prj_path = path,
-                      data = data,
+    sonde_obj <- list(data = data,
                       flags = list(
                         flag_rm = empty_flags,
                         flag_chg = empty_flags,
@@ -112,3 +110,7 @@
 
   example_calcheck <- calcheck
   use_data(example_calcheck, overwrite= TRUE)
+
+#move files from ext data to testdata for testing too
+  testfiles <- list.files("inst/extdata")
+  file.copy(file.path("inst/extdata", testfiles), file.path("tests/testthat/testdata", testfiles), overwrite = TRUE)
