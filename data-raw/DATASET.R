@@ -48,7 +48,7 @@
     empty_flags <- add_flags(data)
 
   #create log if not read in from existing project
-    changelog <- write_log(NULL, "all", "initial load", n = 0, diff_name = "raw")
+    changelog <- write_log(NULL, "all", "initial load", n = nrow(data), diff_name = "raw")
     changelog$user <- "smith"
 
    #create sonde object
@@ -92,7 +92,9 @@
     saveRDS(sonde_obj, "inst/extdata/example-sonde-project.RDS")
 
     #also copy over the example csv's for testing
-    file.copy(raw_files, c(file.path("inst/extdata/example-csv-data1.csv"), file.path("inst/extdata/example-csv-data2.csv")))
+    file.copy(raw_files, c(file.path("inst/extdata/example-csv-data1.csv"), file.path("inst/extdata/example-csv-data2.csv")), overwrite = TRUE)
+    raw_file <- list.files("../WWS-Node1-SONDE-postfire-sonde-network/data/02_raw-downloads/Fall-Creek", full.names=TRUE)[5]
+    file.copy(raw_file, c(file.path("inst/extdata/example-csv-data3.csv")), overwrite = TRUE)
 
     #and ff and cal file
     write.csv(fieldform, "inst/extdata/example-fieldform.csv", row.names = FALSE)

@@ -6,7 +6,6 @@
 load_data_UI <- function(id){
 
   ns <- NS(id) #line to make module work
-
   tagList(
   #change button color
     tags$style(
@@ -18,6 +17,7 @@ load_data_UI <- function(id){
           }"),
       HTML(".selectize-input {color: white;}")),
     bslib::page_fluid(
+      shinyjs::useShinyjs(),
       bslib::layout_columns(
       col_widths = c(6, 6, 6, 6),
       bslib::card(bslib::card_header("1.1: Load Data"),
@@ -77,7 +77,9 @@ load_data_UI <- function(id){
                       uiOutput(NS(id, "path_text_box"))))
              )),
       bslib::card(bslib::card_header("1.4: Load Data"),
-         actionButton(NS(id, "load_prj"), "Load Sonde Project", width ="30%")
+         actionButton(NS(id, "load_prj"), "Load Sonde Project", width ="30%"),
+         actionButton(NS(id, "reset"), "Clear File Uploads", width ="30%"),
+
     ))
 
   ))
@@ -123,26 +125,58 @@ load_data_server <- function(id, sondeproj){
 
     })
 
+    #store paths as reactive value so we can clean on reset
+      csv_path <- reactiveVal()
+      prj_path <- reactiveVal()
+      ff_path <- reactiveVal()
+      cc_path <- reactiveVal()
+
+    #keep track of paths
+      observe({
+        req(input$csv_files)
+        csv_path(input$csv_files$datapath)})
+      observe({
+        req(input$pj_file)
+        prj_path(input$pj_file$datapath)})
+      observe({
+        req(input$ff_file)
+        ff_path(input$ff_file$datapath)})
+      observe({
+        req(input$cc_file)
+        cc_path(input$cc_file$datapath)})
+
+    #reset when requested which should prevent files from being uploaded
+      observeEvent(input$reset, {
+        csv_path(NULL)
+        prj_path(NULL)
+        ff_path(NULL)
+        cc_path(NULL)
+        sondeproj(NULL)
+
+        reset('csv_files')
+        reset('pj_file')
+        reset('ff_file')
+        reset('cc_file')
+
+      })
+
   #when button to load project is clicked, read in everything and merge together
     observeEvent(input$load_prj, {
-    #parse save location
-
-
     #set csv merge as NULL if not loaded to prevent errors
       csv_merge <- NULL
 
     #read csv files if added
-      if(!is.null(input$csv_files)){
-        csv_merge <- lapply(input$csv_files$datapath,read_sonde, tz = input$tz) %>%
+      if(!is.null(csv_path())){
+        csv_merge <- lapply(csv_path(),read_sonde, tz = input$tz) %>%
           dplyr::bind_rows()
       }
 
     #load existing project
-      if(!is.null(input$pj_file)){
-         obj <- readRDS(input$pj_file$datapath)
+      if(!is.null(prj_path())){
+         obj <- readRDS(prj_path())
       }else{
         #create new project if one isn't loaded
-        changelog <- write_log(NULL, "all", "initial load", n = 0, diff_name = "raw")
+        changelog <- write_log(NULL, "all", "initial load", n = nrow(csv_merge), diff_name = "raw")
         empty_flags <- add_flags(csv_merge)
 
         #create sonde object
@@ -161,26 +195,40 @@ load_data_server <- function(id, sondeproj){
 
 
     #read in ff and cal file (these cover the entire period and we don't need to merge, just update)
-      if(!is.null(input$ff_file)){
-        fieldform <- read_ff(input$ff_file$datapath)
+      if(!is.null(ff_path())){
+        fieldform <- read_ff(ff_path())
         obj$fieldform <- fieldform
       }
 
-      if(!is.null(input$cc_file)){
-        calcheck <- read_cal(input$cc_file$datapath)
+      if(!is.null(cc_path())){
+        calcheck <- read_cal(cc_path())
         obj$calcheck <- calcheck
       }
 
    #if project and csv loaded, merge together (everything: data, flags, diffs, replace ff and cal)
-    merge_flag <- !is.null(input$pj_file) && !is.null(input$csv_files)
+    merge_flag <- !is.null(prj_path()) && !is.null(csv_path())
 
     if(merge_flag){
-      #document data addition (can't currently do diff because lines are different)
-      obj <- write_log(obj, "all", "adding new data", n = nrow(csv_merge), diff_name = "data_upload", return="sondeproj")
+      #store previous nrow so can see how many we actually added
+      prev_lines <- nrow(obj$data)
 
       #merge data and flags
-      obj$data <- obj$data %>% dplyr::bind_rows(csv_merge) %>% distinct(across(-.data$Index)) %>%
-        arrange(.data$DateTime) %>% mutate(Index = 1:n(), .before="Date")
+        #we want to keep the modified data if datetimes are the same
+      all_data <- obj$data %>% mutate(source = "sondeproj") %>% bind_rows(csv_merge %>% mutate(source = "csv"))
+
+      data_merge <- all_data %>%
+        dplyr::arrange(dplyr::desc(source == "sondeproj")) %>%
+        dplyr::group_by(.data$Date, .data$DateTime, .data$DateTime_rd) %>%
+        dplyr::slice(1) %>%
+        dplyr::ungroup() %>% dplyr::select(-"source")
+
+      obj$data <- data_merge
+
+      if(nrow(obj$data) > prev_lines){
+        #document data addition (can't currently do diff because lines are different)
+        obj <- write_log(obj, "all", "adding new data", n = (nrow(obj$data) - prev_lines), diff_name = "data_upload", return="sondeproj")
+
+      }
 
       #create flag tables for new data
       empty_flags <- add_flags(obj$data)
@@ -209,12 +257,17 @@ load_data_server <- function(id, sondeproj){
         type = "success"
       )
 
-  #export values so we can check them
-
-    exportTestValues(
-         changelog = obj$changelog
-        )
+    print(sondeproj()$changelog)
     })
+
+  #export values so we can check them
+    #save values we want to check as their own reactive
+    exportTestValues(
+      proj = {
+        req(sondeproj())
+        sondeproj()
+      }
+    )
 
   })
 }

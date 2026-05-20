@@ -11,5 +11,10 @@ More about what it does (maybe more than one line). Continuation lines should be
 \author{
 \strong{Maintainer}: Katie Wampler \email{katie.wampler@oregonstate.edu} (\href{https://orcid.org/0000-0002-5584-7554}{ORCID})
 
+Authors:
+\itemize{
+  \item Katie Wampler \email{katie.wampler@oregonstate.edu} (\href{https://orcid.org/0000-0002-5584-7554}{ORCID})
+}
+
 }
 \keyword{internal}

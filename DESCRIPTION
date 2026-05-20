@@ -16,7 +16,7 @@ License: AGPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 LazyDataCompression: xz
-RoxygenNote: 7.3.3
+RoxygenNote: 8.0.0
 Imports: 
     dplyr,
     fs,
@@ -26,12 +26,9 @@ Imports:
     tools,
     utils,
     rlang,
-    stringi,
     anytime,
     DT,
     shiny,
-    sf,
-    terra,
     stats,
     tidyr,
     plotly,
@@ -41,14 +38,12 @@ Imports:
     shinyalert,
     withr,
     bslib,
-    digest,
     htmltools,
     utf8,
     stringr,
-    shinyWidgets,
     thematic,
-    rprojroot,
-    daff
+    daff,
+    shinyjs
 Suggests: 
     shinytest2,
     testthat (>= 3.0.0), 

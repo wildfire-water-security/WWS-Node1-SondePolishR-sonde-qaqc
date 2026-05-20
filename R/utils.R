@@ -190,3 +190,21 @@ nice_yvar <- function(data){
   return(y_var)
 }
 
+
+#' Keep track of fileInput values and clear when reset
+#'
+#' @param rval reactive value
+#' @param path path
+#'
+#' @returns path or NULL
+#' @noRd
+#'
+reactiveInput <- function(rval, path) {
+  if (is.null(rval)) {
+    return(NULL)
+  } else if (rval == 'loaded') {
+    return(path)
+  } else if (rval == 'reset') {
+    return(NULL)
+  }
+}

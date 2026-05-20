@@ -46,10 +46,7 @@ read_ff <- function(file){
   }
 
   #get correct date format
-    #add option for two digit year (only for function)
-    anytime::addFormats("%m/%d/%y")
-    dateform <- anytime::anydate(df$Date)
-    anytime::removeFormats("%m/%d/%y")
+  dateform <- lubridate::parse_date_time(df$Date, orders = c("mdY", "mdy", "Ymd")) %>% as.Date()
 
   #ensure things have the right class
   df <- df %>% dplyr::mutate(Date = dateform,
@@ -115,12 +112,7 @@ read_cal <- function(file){
   df <- df[rowSums(is.na(df)) < ncol(df), ]
 
   #get correct date format
-    #add option for two digit year (only for function)
-    anytime::addFormats("%m/%d/%y")
-    dateform <- anytime::anydate(df$Date)
-    anytime::removeFormats("%m/%d/%y")
-
-  dateform <- anytime::anydate(df$Date)
+    dateform <- lubridate::parse_date_time(df$Date, orders = c("mdY", "mdy", "Ymd")) %>% as.Date()
 
   #ensure things have the right class
   df <- df %>% dplyr::mutate(Date = dateform,

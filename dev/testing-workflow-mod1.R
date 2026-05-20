@@ -1,6 +1,6 @@
 ## testing the logic when files are uploaded
 
-raw_files <- list.files("../WWS-Node1-SONDE-postfire-sonde-network/data/02_raw-downloads/Fall-Creek", full.names=TRUE)[4:5]
+raw_files <- list.files("../WWS-Node1-SONDE-postfire-sonde-network/data/02_raw-downloads/Fall-Creek", full.names=TRUE)[3:4]
 ff <- list.files("../WWS-Node1-SONDE-postfire-sonde-network/data/01_site-visit-metadata/Fall-Creek", pattern = "Field-Form", full.names = TRUE)
 cal <- list.files("../WWS-Node1-SONDE-postfire-sonde-network/data/01_site-visit-metadata/Fall-Creek", pattern = "Calibration", full.names = TRUE)
 prj <- list.files("inst/extdata/", pattern="example-sonde-project", full.names=TRUE) #come back to merging with sample project
@@ -93,6 +93,14 @@ prj <- list.files("inst/extdata/", pattern="example-sonde-project", full.names=T
 
     }
 
-## TODO: tests to write
-  #loading just project, just csv, project and csv
-  #loading when duplicated data
+## testing what to do when you have duplicated data, but vals aren't quite the same because of flags
+  pj_data <- sonde_obj$data
+
+  new_data <- read_sonde("inst/extdata/example-csv-data1.csv")
+
+  all_data <- pj_data %>% mutate(source = "sondeproj") %>% bind_rows(new_data %>% mutate(source = "csv"))
+  data_merge <- all_data %>%
+    arrange(desc(source == "sondeproj")) %>%
+    group_by(Date, DateTime, DateTime_rd) %>%
+    slice(1) %>%
+    ungroup() %>% select(-source)
