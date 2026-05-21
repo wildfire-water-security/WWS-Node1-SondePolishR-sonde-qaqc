@@ -7,7 +7,8 @@ test_that("{shinytest2} recording: checking-module2", {
   app_dir <- system.file("app", package = "SondePolishR")
   local_app_support(app_dir)
   app <- AppDriver$new(app_dir, variant = platform_variant(),
-                       name = "checking-plotting-module", height = 911, width = 1619)
+                       name = "checking-plotting-module", height = 911, width = 1619,
+                       expect_values_screenshot_args = FALSE)
   app$upload_file(`data1-pj_file` = file.path(test_path(), "testdata", "example-sonde-project.RDS"))
 
   #click to load files and create project
@@ -44,14 +45,19 @@ test_that("{shinytest2} recording: checking-module2", {
   plot_obj <- app$get_value(export = "data2-plot_obj")
   vdiffr::expect_doppelganger("changing plot variable", plot_obj)
 
-  # #check on the table
-  # tab <- app$get_value(export = "data2-log_table")
-  # expect_true(nrow(tab) == 3)
+  #check on the table
+  app$expect_values(output = "data2-tab")
 
-  # #try with other df
-  # app$upload_file(`data1-file` = file.path(test_path(), "testdata/sonde-example.csv"))
-  # tab <- app$get_value(export = "data2-log_table")
-  # expect_true(nrow(tab) == 1)
+  #change to get other tables
+  tab <- app$get_value(export = "data2-tab") #changelog
+
+  app$set_inputs(`data2-table_opt` = "Field Form")
+  tab <- app$get_value(export = "data2-tab") #fieldform
+
+  app$set_inputs(`data2-table_opt` = "Calibration Check")
+  tab <- app$get_value(export = "data2-tab") #cal check
+
+
 
 })
 
