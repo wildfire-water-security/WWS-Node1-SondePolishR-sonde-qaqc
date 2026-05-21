@@ -63,16 +63,75 @@ plotting_data_UI <- function(id) {
 #' @rdname plot-data
 plotting_data_server <- function(id, sondeproj, choices_fun = NULL) {
   moduleServer(id, function(input, output, session) {
-  #update UI when project changes
-    #get column names after file upload (dynamic)
+  #set up dates
+    date_bounds <- reactiveVal(NULL)
+
+  #get column names after file upload (dynamic)
     y_var <- SondePolishR::update_parms_server("update_parms", sondeproj, choices_fun = nice_yvar)
+
+  #update date UI when project changes
     observe({
       req(sondeproj())
       dat <- sondeproj()$data
-      updateDateRangeInput(session,"dates",
-        start = min(dat$Date, na.rm = TRUE),
-        end = max(dat$Date, na.rm = TRUE))
+
+      date_bounds(list(
+        min = min(dat$Date, na.rm = TRUE),
+        max = max(dat$Date, na.rm = TRUE)
+      ))
+
+      updateDateRangeInput(
+        session,"dates",
+        start = date_bounds()$min,
+        end   = date_bounds()$max
+      )
     })
+
+  #adjust date bounds
+    observeEvent(input$week_view, {
+      req(date_bounds())
+
+      if(input$week_view) {
+
+        start <- date_bounds()$min
+        end   <- start + 7
+
+        updateDateRangeInput(
+          session,"dates",
+          start = start, end = end)
+
+        updateActionButton(inputId = "next_week", disabled = FALSE)
+        updateActionButton(inputId = "prev_week", disabled = FALSE)
+      }else{
+        updateDateRangeInput(
+          session,"dates",
+          start = date_bounds()$min,
+          end   = date_bounds()$max)
+
+        updateActionButton(inputId = "next_week", disabled = TRUE)
+        updateActionButton(inputId = "prev_week", disabled = TRUE)
+      }
+    })
+
+    #update date range when buttons for next and previous clicked
+    shift_week <- function(direction = c("prev", "next")) {
+      direction <- match.arg(direction)
+      req(input$dates, date_bounds())
+
+      step <- if(direction == "prev") -7 else 7
+      start <- input$dates[1] + step
+
+      start <- max(start, date_bounds()$min)
+      start <- min(start, date_bounds()$max - 7)
+
+      end <- start + 7
+
+      updateDateRangeInput(session,"dates",
+        start = start,end = end)
+
+    }
+
+    observeEvent(input$next_week, shift_week("next"))
+    observeEvent(input$prev_week, shift_week("prev"))
 
   #filter data
     plot_data <- reactive({
@@ -107,14 +166,14 @@ plotting_data_server <- function(id, sondeproj, choices_fun = NULL) {
     })
 
   #create plotly plot
-    output$plot <- plotly::renderPlotly({
-      req(y_var())
+    plot_obj <- reactive({
+      req(y_var(), plot_data())
 
-    #base plot
+      #base plot
       p <- ggplot(plot_data(), aes(x = .data$DateTime_rd,y = .data[[y_var()]])) +
         labs(x="Date", y=y_var())
 
-    #add points (colored or not)
+      #add points (colored or not)
       if(input$points && input$files){
         p <- p +  geom_point(aes(color = .data$FileName),na.rm = TRUE, size = 1.5) +
           labs(color = "File Name")
@@ -124,12 +183,12 @@ plotting_data_server <- function(id, sondeproj, choices_fun = NULL) {
         p <- p + geom_point(na.rm = TRUE, size = 1.5)
       }
 
-    #add a line
+      #add a line
       if(input$line){
         p <- p + geom_line(na.rm = TRUE, linewidth = 0.3)
       }
 
-    #plot oow periods
+      #plot oow periods
       if(input$oow && !is.null(sondeproj()$fieldform)){
         p <- p + geom_rect(data = oow_data(),
                            aes(xmin = .data$start, xmax = .data$end,
@@ -139,20 +198,28 @@ plotting_data_server <- function(id, sondeproj, choices_fun = NULL) {
                            alpha = 0.4)
       }
 
-    #plot cal check
+      #plot cal check
       if(input$calcheck && !is.null(sondeproj()$calcheck)){
         #plot one at at time because color scales are a poop
         p <- p + geom_point(data = cal_data(),
-          aes(x = .data$avg_time, y = .data$value, shape = .data$type),
-          color = "darkred", size = 2) +
+                            aes(x = .data$avg_time, y = .data$value, shape = .data$type),
+                            color = "darkred", size = 2) +
           scale_shape_manual(values = c("Resident_Value" = 17,
-              "Check_Value" = 15),name = "Calibration Check")
-        }
+                                        "Check_Value" = 15),name = "Calibration Check")
+      }
 
-      # convert to plotly
-      plotly::ggplotly(p, dynamicTicks = TRUE)
-
+      p
     })
+
+  #save to export
+    output$plot <- plotly::renderPlotly({
+    # convert to plotly
+      plotly::ggplotly(plot_obj(), dynamicTicks = TRUE)
+    })
+
+  #export plot so we can check it
+      exportTestValues(
+         plot_obj = plot_obj() )
 
     })}
 
