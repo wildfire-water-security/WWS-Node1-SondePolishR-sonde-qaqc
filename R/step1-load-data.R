@@ -21,31 +21,32 @@ load_data_UI <- function(id){
       bslib::layout_columns(
       col_widths = c(6, 6, 6, 6),
       bslib::card(bslib::card_header("1.1: Load Data"),
-                      #load csv files
-                      fluidRow(
-                        column(8,fileInput(
-                          inputId = NS(id, "csv_files"),
-                          label = span(style = "font-size:16px; white-space: nowrap;",
-                                       "Raw Sonde Data File(s) (.csv)"),
-                          accept = c(".csv"),  # restrict to CSV
-                          multiple = TRUE,
-                          width = "80%")),
-                        column(4,
-                               #have user pick the timezone
-                               selectInput(
-                                 inputId=NS(id, "tz"),
-                                 label = "Data Timezone:",
-                                 choices = nice_tz(),
-                                 selected = "Etc/GMT+8",
-                                 selectize=TRUE))
-                      ),
+
                       #load project
                       fileInput(
                         inputId = NS(id, "pj_file"),
                         label = span(style = "font-size:16px; white-space: nowrap;",
                                      "Sonde Project File (.RDS)"),
                         accept = c(".RDS"),
-                        width = "80%")
+                        width = "80%"),
+                  #load csv files
+                  fluidRow(
+                    column(8,fileInput(
+                      inputId = NS(id, "csv_files"),
+                      label = span(style = "font-size:16px; white-space: nowrap;",
+                                   "Raw Sonde Data File(s) (.csv)"),
+                      accept = c(".csv"),  # restrict to CSV
+                      multiple = TRUE,
+                      width = "80%")),
+                    column(4,
+                           #have user pick the timezone
+                           selectInput(
+                             inputId=NS(id, "tz"),
+                             label = "Data Timezone:",
+                             choices = nice_tz(),
+                             selected = "Etc/GMT+8",
+                             selectize=TRUE))
+                  )
                       ),
       bslib::card(bslib::card_header("1.2: Load Metadata"),
                       #load ff file
@@ -259,7 +260,6 @@ load_data_server <- function(id, sondeproj){
         type = "success"
       )
 
-    print(sondeproj()$changelog)
     })
 
   #export values so we can check them

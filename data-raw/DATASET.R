@@ -45,6 +45,9 @@
 
       calcheck <- calcheck %>% filter(Date > min(data_merge$Date) & Date <= max(data_merge$Date)) %>% mutate(Notes=NA)
 
+      data_merge$FileName[data_merge$FileName == "20240820_FAL.csv"] <- "example-csv-data1.csv"
+      data_merge$FileName[data_merge$FileName == "20241023_FAL.csv"] <- "example-csv-data2.csv"
+
   #create flag tables
     empty_flags <- add_flags(data)
 

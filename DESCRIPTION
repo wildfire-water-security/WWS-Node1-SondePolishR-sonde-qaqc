@@ -43,7 +43,8 @@ Imports:
     stringr,
     thematic,
     daff,
-    shinyjs
+    shinyjs,
+    ggnewscale
 Suggests: 
     shinytest2,
     testthat (>= 3.0.0), 

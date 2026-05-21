@@ -1,11 +1,11 @@
 "Date","Site_Code","Parameter","Resident_Probe_Serial","Resident_Value","Check_Probe_Serial","Check_Value","Notes"
-2024-08-20,"FAL","Temp",NA,18.988,NA,19.16,NA
+2024-08-20,"FAL","Temp_C",NA,18.988,NA,19.16,NA
 2024-08-20,"FAL","SpCond_uS_cm",NA,68.6,NA,67.6,NA
 2024-08-20,"FAL","ODO_mg_L",NA,9.19,NA,9.02,NA
 2024-08-20,"FAL","pH",NA,7.66,NA,7.82,NA
 2024-08-20,"FAL","Turbidity_FNU",NA,0.45,NA,0.37,NA
 2024-08-20,"FAL","fDOM_QSU",NA,11.18,NA,11.01,NA
-2024-10-23,"FAL","Temp",NA,11.33,NA,11.335,NA
+2024-10-23,"FAL","Temp_C",NA,11.33,NA,11.335,NA
 2024-10-23,"FAL","SpCond_uS_cm",NA,67,NA,65.4,NA
 2024-10-23,"FAL","ODO_mg_L",NA,11.05,NA,9.55,NA
 2024-10-23,"FAL","pH",NA,7.65,NA,7.98,NA

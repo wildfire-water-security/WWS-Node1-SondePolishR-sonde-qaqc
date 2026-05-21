@@ -163,7 +163,7 @@ add_flags <- function(data, par=NULL, flag_name=NULL, index=NULL, makeNA=FALSE){
 
   #return empty flag dataframe
   if(is.null(flag_name) & is.null(par)){
-    data <- data %>% dplyr::select(-any_of(c(par_names, "Battery_V", "Date", "Time_HH_mm_ss","Site_Name"))) %>%
+    data <- data %>% dplyr::select(-any_of(c(par_names, "Battery_V", "Date", "Time_HH_mm_ss","Site_Name", "FileName"))) %>%
       mutate(across(-c("Index", "DateTime", "DateTime_rd"), ~ as.character(.x)))
 
   }

@@ -3,15 +3,15 @@ test_that("data is loaded", {
   path <- file.path(testthat::test_path(), "testdata/example-csv-data1.csv")
   data <- read_sonde(path)
 
-  expect_equal(dim(data), c(1916, 13))
-  expect_equal(colnames(data)[2], "Date")
+  expect_equal(dim(data), c(1916, 14))
+  expect_equal(colnames(data)[3], "Date")
 
   #test usb csv
   path <- file.path(testthat::test_path(), "testdata/sonde-usb-example.csv")
   data <- read_sonde(path)
 
-  expect_equal(dim(data), c(2701, 13))
-  expect_equal(colnames(data)[2], "Date")
+  expect_equal(dim(data), c(2701, 14))
+  expect_equal(colnames(data)[3], "Date")
 
   #check tz
   path <- file.path(testthat::test_path(), "testdata/example-csv-data1.csv")
@@ -29,7 +29,7 @@ test_that("data is loaded", {
   expect_s3_class(sonde, "sonde")
   expect_s3_class(sonde$serials, "data.frame")
   expect_s3_class(sonde$data, "data.frame")
-  expect_equal(dim(sonde$data), c(1916, 13))
+  expect_equal(dim(sonde$data), c(1916, 14))
   expect_equal(class(sonde$file), "character")
 
 

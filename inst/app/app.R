@@ -31,7 +31,9 @@ ui <-  page_fillable(
                 SondePolishR::load_data_UI("data1"),
                 ),
       nav_panel("2. Visualize",
-                SondePolishR::explore_data_UI("data2")
+                #SondePolishR::explore_data_UI("data2")
+                SondePolishR::plotting_data_UI("data2")
+
                 ),
       nav_panel("3. Physical Limits",
                 #SondePolishR::limits_UI("data3")
@@ -70,8 +72,8 @@ server <- function(input, output, session) {
    SondePolishR::load_data_server("data1", sondeproj)
 
   #step 2: plot data
-   SondePolishR::explore_data_server("data2", sondeproj)
-
+   #SondePolishR::explore_data_server("data2", sondeproj)
+   SondePolishR::plotting_data_server("data2", sondeproj)
   #step 3: physical limits
    #SondePolishR::limits_server("data3", sdata, prj_path, log)
 

@@ -186,8 +186,11 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NUL
       dplyr::mutate(DateTime_rd = lubridate::round_date(.data$DateTime, paste0(interval, " mins")), .after = "DateTime")
 
 
+  #add file name
+    data <- data %>% dplyr::mutate(FileName = basename(file))
+
   #organize order and make a regular df to be consistent
-    data <- data %>% dplyr::select(dplyr::any_of(c("Index", "Date", "Time_HH_mm_ss", "DateTime", "DateTime_rd", "Site_Name", "Battery_V",
+    data <- data %>% dplyr::select(dplyr::any_of(c("Index", "FileName", "Date", "Time_HH_mm_ss", "DateTime", "DateTime_rd", "Site_Name", "Battery_V",
                                    "fDOM_QSU", "ODO_mg_L", "pH", "SpCond_uS_cm", "Temp_C", "Turbidity_FNU"))) %>% as.data.frame() %>%
       arrange(.data$DateTime)
 

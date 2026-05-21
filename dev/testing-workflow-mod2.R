@@ -1,28 +1,39 @@
 #goals of the module 2: general visual plotting of the data, visualize the calibration and OOW period data
-  #color by data source? -> split between FF??
 
 ## input to function will be sondeproj
 
 sondeproj <- example_sondeproj
 
-#options for plotting
-y_var <- "fDOM_QSU"
-points <- TRUE
-line <- TRUE
-oow <- TRUE
-calcheck <- TRUE
+#UI options for plotting
+  y_var <- "Temp_C"
+  points <- TRUE
+  line <- TRUE
+  oow <- TRUE
+  calcheck <- TRUE
+  files <- TRUE
+  date_start <- min(sondeproj$data$Date)
+  date_end <- max(sondeproj$data$Date)
 
 #create plot
-p <- ggplot(sondeproj$data, aes(x=.data$DateTime_rd, y=.data[[y_var]]))
+plot_data <- sondeproj$data %>% filter(Date >= date_start & Date <= date_end)
+p <- ggplot(plot_data, aes(x=.data$DateTime_rd, y=.data[[y_var]]))
 
-if(points){
+#plot points by filename
+if(points & files){
+  p <- p + geom_point(na.rm = TRUE, aes(color=.data$FileName)) + labs(color = "file name")
+}
+
+#plot points without color
+if(points & !files){
   p <- p + geom_point(na.rm = TRUE)
 }
 
+#add line
 if(line){
   p <- p + geom_line(na.rm = TRUE)
 }
 
+#add oow periods
 if(oow & !is.null(sondeproj$fieldform)){
   #convert ff to OOW periods
    oow_data <- get_oow(sondeproj$fieldform)
@@ -33,6 +44,7 @@ if(oow & !is.null(sondeproj$fieldform)){
                        alpha =0.5)
   }
 
+#add cal check data
 if(calcheck & !is.null(sondeproj$calcheck)){
   #pull times from ff
   mean_visit <- oow_data %>% dplyr::rowwise() %>%
@@ -43,6 +55,8 @@ if(calcheck & !is.null(sondeproj$calcheck)){
                                                               values_to = "value")
 
   p <- p + geom_point(data=cal_data,
-                      aes(x=.data$avg_time, y =.data$value, color=type)) + labs(color="Calibration Check")
+                        aes(x=.data$avg_time, y =.data$value, fill=type), shape=24, stroke =1) +
+      labs(fill="Calibration Check") + scale_fill_manual(values=c("#39FF14", "#FFD700"))
+
 }
 

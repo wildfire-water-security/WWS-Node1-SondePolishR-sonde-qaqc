@@ -104,6 +104,15 @@ read_cal <- function(file){
     stop("Unexpected column names. Please see help(example_calcheck) for details on structure.")
   }
 
+  #make sure the parameter names match exactly
+  df <- df %>% dplyr::mutate(Parameter = dplyr::case_when(grepl("Temp", .data$Parameter, ignore.case = TRUE) ~ "Temp_C",
+                                                          grepl("Cond", .data$Parameter, ignore.case = TRUE) ~ "SpCond_uS_cm",
+                                                          grepl("ODO|Oxygen", .data$Parameter, ignore.case = TRUE) ~ "ODO_mg_L",
+                                                          grepl("pH$", .data$Parameter, ignore.case = TRUE) ~ "pH",
+                                                          grepl("Turb", .data$Parameter, ignore.case = TRUE) ~ "Turbidity_FNU",
+                                                          grepl("fDOM", .data$Parameter, ignore.case = TRUE) ~ "fDOM_QSU",
+                                                          .default = .data$Parameter))
+
   #replace blanks and "N/A" with NA
   df[df == ""] <- NA
   df[df == "N/A"] <- NA
