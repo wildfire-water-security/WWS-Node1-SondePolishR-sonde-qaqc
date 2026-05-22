@@ -60,3 +60,96 @@ if(calcheck & !is.null(sondeproj$calcheck)){
 
 }
 
+## testing how to display different versions based on a table selection
+  #user selection via changlelog table row
+  row <- 2
+
+  proj <- example_sondeproj
+  log <- proj$changelog
+
+  #we want to see what the data looks like before altering the ODO_mg_L points
+  #zoom in to better check
+  cur <- ggplot(proj$data[1:100,], aes(x=DateTime, y=ODO_mg_L)) + geom_line()
+
+  #get the diffs to apply
+  diff_list <- log$diff_name[1:2]
+  diff_list <- diff_list[grepl("^dd", diff_list)]
+  diffs <- proj$diffs[names(proj$diffs) %in% diff_list]
+
+#testing storing both diffs
+  data1 <- example_data
+  data2 <- data1
+  data2$fDOM_QSU[1:4] <- NA
+  dd1 <- list(commit_diff(data1, data2))
+
+  #make more changes
+  data3 <- data2
+  data3$ODO_mg_L[5:7] <- data3$ODO_mg_L[5:7] * 0.8
+  dd2 <- list(fw=commit_diff(data2, data3),
+              rv=commit_diff(data3, data2))
+
+  #more changes
+  data4 <- data3
+  data4$Temp_C[1:100] <- NA
+  dd3 <- list(fw=commit_diff(data3, data4),
+              rv=commit_diff(data4, data3))
+
+  #test 1: go between one set of changes
+    test1 <- apply_diff(data3, dd3$fw)
+    test2 <- apply_diff(data4, dd3$rv)
+
+  #test2: go from data to data 4
+    diffs <- list(dd1, dd2, dd3)
+    data_fw <- data1
+    for(x in diffs[1:3]){
+      data_fw <- apply_diff(data_fw, x$fw)
+    }
+
+    all.equal(data4, data_fw)
+
+  #test3: go from data4 to data
+    diffs <- list(dd1, dd2, dd3)
+    data_fw <- data4
+    for(x in diffs[1:3]){
+      data_rv <- apply_diff(data_rv, x$rv)
+    }
+
+    all.equal(data1, data_rv)
+
+#try just storing a unaltered copy of the data (as we add data, we would add to it)
+  ogdata <- example_data
+
+  editdata <- example_sondeproj$data
+
+  #test getting to the first change
+  row <- 2
+
+  proj <- example_sondeproj
+  proj$ogdata <- ogdata
+  log <- proj$changelog
+
+  #we want to see what the data looks like before altering the ODO_mg_L points
+  #zoom in to better check
+  cur <- ggplot(proj$data[1:100,], aes(x=DateTime, y=ODO_mg_L)) + geom_line()
+
+  #get the diffs to apply
+  diff_list <- log$diff_name[1:2]
+  diff_list <- diff_list[grepl("^dd", diff_list)]
+  diffs <- proj$diffs[names(proj$diffs) %in% diff_list]
+
+  #apply changes up to what we want
+  data_fw <- apply_diff(proj$ogdata, dd1)
+
+  datastop <- apply_diff(proj$ogdata, dd1)
+  stop_plot <- ggplot(datastop[1:100,], aes(x=DateTime, y=ODO_mg_L)) + geom_line()
+
+#add some data
+  proj$data <- proj$data %>% bind_rows(read_sonde("inst/extdata/example-csv-data3.csv")) %>%
+    arrange(DateTime) %>% mutate(Index = 1:n())
+  proj$ogdata <- proj$ogdata %>% bind_rows(read_sonde("inst/extdata/example-csv-data3.csv")) %>%
+    arrange(DateTime) %>% mutate(Index = 1:n())
+
+  #reapply the changes
+  datastop2 <- apply_diff(proj$ogdata, dd1)
+  ggplot(datastop, aes(x=DateTime, y=ODO_mg_L)) + geom_line()
+  ggplot(proj$data, aes(x=DateTime, y=ODO_mg_L)) + geom_line()

@@ -46,7 +46,7 @@ commit_diff <- function(olddata, newdata){
   newdata <- newdata %>% dplyr::select(-c("Date", "DateTime_rd"))
 
   #get diff
-  dd <- daff::diff_data(olddata, newdata)
+  dd <- daff::diff_data(olddata, newdata, ids=c("DateTime"))
 
   return(dd)
 }

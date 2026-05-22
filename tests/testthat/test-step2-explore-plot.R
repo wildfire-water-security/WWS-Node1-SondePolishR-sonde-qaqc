@@ -57,7 +57,5 @@ test_that("{shinytest2} recording: checking-module2", {
   app$set_inputs(`data2-table_opt` = "Calibration Check")
   tab <- app$get_value(export = "data2-tab") #cal check
 
-
-
 })
 
