@@ -216,16 +216,16 @@ load_data_server <- function(id, sondeproj){
 
       #merge data and flags
         #we want to keep the modified data if datetimes are the same
-      all_data <- obj$data %>% mutate(source = "sondeproj") %>% bind_rows(csv_merge %>% mutate(source = "csv"))
+        all_data <- obj$data %>% mutate(source = "sondeproj") %>% bind_rows(csv_merge %>% mutate(source = "csv"))
 
-      data_merge <- all_data %>%
-        dplyr::arrange(dplyr::desc(source == "sondeproj")) %>%
-        dplyr::group_by(.data$Date, .data$DateTime, .data$DateTime_rd) %>%
-        dplyr::slice(1) %>%
-        dplyr::ungroup() %>% dplyr::select(-"source") %>%
-        dplyr::mutate(Index = 1:n())
+        data_merge <- all_data %>%
+          dplyr::arrange(dplyr::desc(source == "sondeproj")) %>%
+          dplyr::group_by(.data$Date, .data$DateTime, .data$DateTime_rd) %>%
+          dplyr::slice(1) %>%
+          dplyr::ungroup() %>% dplyr::select(-"source") %>%
+          dplyr::mutate(Index = 1:n())
 
-      obj$data <- data_merge
+        obj$data <- data_merge
 
       if(nrow(obj$data) > prev_lines){
         #document data addition (can't currently do diff because lines are different)

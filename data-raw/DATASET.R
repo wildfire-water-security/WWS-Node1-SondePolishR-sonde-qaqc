@@ -30,8 +30,6 @@
         dplyr::mutate(Index = 1:n())
 
   #if project and csv loaded, merge together (everything: data, flags, diffs, replace ff and cal)
-      data <- data_merge
-
   #read in ff and cal file (these cover the entire period and we don't need to merge, just update)
     fieldform <- read_ff(ff_file$datapath)
     calcheck <- read_cal(cc_file$datapath)
@@ -88,6 +86,27 @@
     sonde_obj <- write_log(sonde_obj, "ODO_mg_L", "applying shift correction", n = 3, diff_name = "dd2", return = "sondeproj") #write log
     sonde_obj$diffs <- append(sonde_obj$diffs, dd2)
     sonde_obj$data <- data2
+
+    #make more changes
+    data2 <- sonde_obj$data
+    data2$Temp_C[52:90] <- NA
+    dd3 <- list(commit_diff(sonde_obj$data, data2)) #commit difference
+    names(dd3) <- "dd3"
+    sonde_obj$flags$flag_rm$Temp_C[52:90] <- "RM02" #add flag
+    sonde_obj <- write_log(sonde_obj, "Temp_C", "removing a bunch of points", n = 39, diff_name = "dd3", return = "sondeproj") #write log
+    sonde_obj$diffs <- append(sonde_obj$diffs, dd3)
+    sonde_obj$data <- data2
+
+    #make more changes
+    data2 <- sonde_obj$data
+    data2$Temp_C[52:90] <- mean(c(data2$Temp_C[51],data2$Temp_C[91]))
+    dd4 <- list(commit_diff(sonde_obj$data, data2)) #commit difference
+    names(dd4) <- "dd4"
+    sonde_obj$flags$flag_add$Temp_C[52:60] <- "AD02" #add flag
+    sonde_obj <- write_log(sonde_obj, "Temp_C", "linear interpolation", n = 39, diff_name = "dd4", return = "sondeproj") #write log
+    sonde_obj$diffs <- append(sonde_obj$diffs, dd4)
+    sonde_obj$data <- data2
+
 
   #remove my username from log
     sonde_obj$changelog$user <- "smith"

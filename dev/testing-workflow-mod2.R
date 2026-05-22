@@ -153,3 +153,16 @@ if(calcheck & !is.null(sondeproj$calcheck)){
   datastop2 <- apply_diff(proj$ogdata, dd1)
   ggplot(datastop, aes(x=DateTime, y=ODO_mg_L)) + geom_line()
   ggplot(proj$data, aes(x=DateTime, y=ODO_mg_L)) + geom_line()
+
+#testing module 2 code (do we somehow lose diff when saved as rds?)
+  proj <- readRDS("inst/extdata/example-sonde-project.RDS")
+
+  apply_diff(proj$base_data, proj$diffs[[1]])
+  #get the diffs to apply
+  row <- 4
+  diff_list <- example_sondeproj$changelog$diff_name[1:4]
+  diff_list <- diff_list[grepl("^dd", diff_list)]
+  diffs <- example_sondeproj$diffs[names(example_sondeproj$diffs) %in% diff_list]
+
+  apply_diff(example_sondeproj$base_data, diffs[[1]])
+  data_ver <- apply_diff(example_sondeproj$base_data, diffs)

@@ -41,7 +41,7 @@ test_that("version control works as expected", {
 
   #check that it works if we apply the changes to a dataset with rows added
     split1 <- data[1:500,]
-    split2 <- data[500:nrow(data),]
+    split2 <- data[501:nrow(data),]
 
     #make change
     data1 <- split1
@@ -57,4 +57,8 @@ test_that("version control works as expected", {
     #check that changes remained
     expect_equal(data_chg$fDOM_QSU[1:500], data1$fDOM_QSU[1:500])
     expect_true(nrow(data_chg) > nrow(split1))
+
+  #check that we can apply to basedata
+    newdata <- apply_diff(example_sondeproj$base_data, dd1)
+    expect_true(all.equal(newdata, data_chg))
 })
