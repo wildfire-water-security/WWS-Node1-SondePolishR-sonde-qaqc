@@ -42,9 +42,8 @@ Imports:
     utf8,
     stringr,
     thematic,
-    daff,
     shinyjs,
-    ggnewscale
+    vctrs
 Suggests: 
     shinytest2,
     testthat (>= 3.0.0), 

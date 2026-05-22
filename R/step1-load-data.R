@@ -225,13 +225,19 @@ load_data_server <- function(id, sondeproj){
           dplyr::ungroup() %>% dplyr::select(-"source") %>%
           dplyr::mutate(Index = 1:n())
 
-        obj$data <- data_merge
 
-      if(nrow(obj$data) > prev_lines){
-        #document data addition (can't currently do diff because lines are different)
-        obj <- write_log(obj, "all", "adding new data", n = (nrow(obj$data) - prev_lines), diff_name = "data_upload", return="sondeproj")
+
+      if(nrow(data_merge) > prev_lines){
+        #document data addition
+        obj <- write_log(obj, "all", "adding new data", n = (nrow(obj$data) - prev_lines), diff_name = diff_version(obj), return="sondeproj")
+
+        #store diff
+        diff <- list(get_diff(obj$data, data_merge))
+        names(diff) <- diff_version(obj)
+        obj$diffs <- append(obj$diffs, diff)
 
       }
+        obj$data <- data_merge
 
       #create flag tables for new data
       empty_flags <- add_flags(obj$data)

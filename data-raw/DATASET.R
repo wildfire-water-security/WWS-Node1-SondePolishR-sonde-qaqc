@@ -70,7 +70,7 @@
     #make some changes and save
     data2 <- sonde_obj$data
     data2$fDOM_QSU[1:4] <- NA
-    dd1 <- list(commit_diff(sonde_obj$data, data2)) #commit difference
+    dd1 <- list(get_diff(sonde_obj$data, data2)) #commit difference
     names(dd1) <- "dd1"
     sonde_obj$flags$flag_rm$fDOM_QSU_flag[1:4] <- "RM01" #add flag
     sonde_obj <- write_log(sonde_obj, "fDOM_QSU", "removing first four points", n = 4, diff_name = "dd1", return = "sondeproj") #write log
@@ -80,7 +80,7 @@
     #make more changes
     data2 <- sonde_obj$data
     data2$ODO_mg_L[5:7] <- data2$ODO_mg_L[5:7] * 0.8
-    dd2 <- list(commit_diff(sonde_obj$data, data2)) #commit difference
+    dd2 <- list(get_diff(sonde_obj$data, data2)) #commit difference
     names(dd2) <- "dd2"
     sonde_obj$flags$flag_chg$ODO_mg_L_flag[5:7] <- "AD01" #add flag
     sonde_obj <- write_log(sonde_obj, "ODO_mg_L", "applying shift correction", n = 3, diff_name = "dd2", return = "sondeproj") #write log
@@ -90,7 +90,7 @@
     #make more changes
     data2 <- sonde_obj$data
     data2$Temp_C[52:90] <- NA
-    dd3 <- list(commit_diff(sonde_obj$data, data2)) #commit difference
+    dd3 <- list(get_diff(sonde_obj$data, data2)) #commit difference
     names(dd3) <- "dd3"
     sonde_obj$flags$flag_rm$Temp_C[52:90] <- "RM02" #add flag
     sonde_obj <- write_log(sonde_obj, "Temp_C", "removing a bunch of points", n = 39, diff_name = "dd3", return = "sondeproj") #write log
@@ -100,7 +100,7 @@
     #make more changes
     data2 <- sonde_obj$data
     data2$Temp_C[52:90] <- mean(c(data2$Temp_C[51],data2$Temp_C[91]))
-    dd4 <- list(commit_diff(sonde_obj$data, data2)) #commit difference
+    dd4 <- list(get_diff(sonde_obj$data, data2)) #commit difference
     names(dd4) <- "dd4"
     sonde_obj$flags$flag_add$Temp_C[52:60] <- "AD02" #add flag
     sonde_obj <- write_log(sonde_obj, "Temp_C", "linear interpolation", n = 39, diff_name = "dd4", return = "sondeproj") #write log

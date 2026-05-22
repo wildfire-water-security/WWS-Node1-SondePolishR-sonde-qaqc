@@ -190,21 +190,13 @@ nice_yvar <- function(data){
   return(y_var)
 }
 
+#used to get the next dd number to keep them unique
+diff_version <- function(sondeproj){
+  log <- sondeproj$changelog
 
-#' Keep track of fileInput values and clear when reset
-#'
-#' @param rval reactive value
-#' @param path path
-#'
-#' @returns path or NULL
-#' @noRd
-#'
-reactiveInput <- function(rval, path) {
-  if (is.null(rval)) {
-    return(NULL)
-  } else if (rval == 'loaded') {
-    return(path)
-  } else if (rval == 'reset') {
-    return(NULL)
-  }
+  diff_names <- log$diff_name[grepl("^dd", log$diff_name)]
+  diff_num <- max(as.numeric(gsub("dd", "", diff_names)))
+
+  return(paste0("dd", diff_num+1))
+
 }

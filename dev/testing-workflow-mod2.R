@@ -154,15 +154,37 @@ if(calcheck & !is.null(sondeproj$calcheck)){
   ggplot(datastop, aes(x=DateTime, y=ODO_mg_L)) + geom_line()
   ggplot(proj$data, aes(x=DateTime, y=ODO_mg_L)) + geom_line()
 
-#testing module 2 code (do we somehow lose diff when saved as rds?)
+#testing module 2 code (do we somehow lose diff when saved as rds?) -> yes -> rewrote version control and retesting...
   proj <- readRDS("inst/extdata/example-sonde-project.RDS")
 
-  apply_diff(proj$base_data, proj$diffs[[1]])
   #get the diffs to apply
-  row <- 4
-  diff_list <- example_sondeproj$changelog$diff_name[1:4]
+  row <- 3
+  diff_list <- example_sondeproj$changelog$diff_name[(row+1):nrow(example_sondeproj$changelog)]
   diff_list <- diff_list[grepl("^dd", diff_list)]
   diffs <- example_sondeproj$diffs[names(example_sondeproj$diffs) %in% diff_list]
 
-  apply_diff(example_sondeproj$base_data, diffs[[1]])
-  data_ver <- apply_diff(example_sondeproj$base_data, diffs)
+  data_ver <- apply_diff(example_sondeproj$data, diffs, invert = TRUE)
+
+  #should see change disappear here because we've stepped back
+  ggplot(data_ver[1:100,], aes(x=DateTime, y=Temp_C)) + geom_line()
+  ggplot(example_sondeproj$data[1:100,], aes(x=DateTime, y=Temp_C)) + geom_line()
+
+  #should still see this change because we're at this version
+  ggplot(data_ver[1:50,], aes(x=DateTime, y=ODO_mg_L)) + geom_line()
+  ggplot(example_sondeproj$data[1:50,], aes(x=DateTime, y=ODO_mg_L)) + geom_line()
+
+  row <- 2
+  diff_list <- example_sondeproj$changelog$diff_name[(row+1):nrow(example_sondeproj$changelog)]
+  diff_list <- diff_list[grepl("^dd", diff_list)]
+  diffs <- example_sondeproj$diffs[names(example_sondeproj$diffs) %in% diff_list]
+
+  data_ver <-apply_diff(example_sondeproj$data, diffs, invert = TRUE)
+
+  #should see change disappear here because we've stepped back
+  ggplot(data_ver[1:50,], aes(x=DateTime, y=ODO_mg_L)) + geom_line()
+  ggplot(example_sondeproj$data[1:50,], aes(x=DateTime, y=ODO_mg_L)) + geom_line()
+
+  #should still see this change because we're at this version
+  ggplot(data_ver[1:50,], aes(x=DateTime, y=fDOM_QSU)) + geom_line()
+  ggplot(example_sondeproj$data[1:50,], aes(x=DateTime, y=fDOM_QSU)) + geom_line()
+

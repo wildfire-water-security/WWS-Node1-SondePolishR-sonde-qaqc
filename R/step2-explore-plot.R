@@ -88,7 +88,7 @@ explore_data_server <- function(id, sondeproj){
                                                      "Remove_Period", "Notes")
     }else if(input$table_opt == "Change Log"){
       req(sondeproj()$changelog)
-      sondeproj()$changelog
+      sondeproj()$changelog %>% mutate(parameter = factor(.data$parameter, levels=unique(.data$parameter)))
     }else if(input$table_opt == "Calibration Check"){
       req(sondeproj()$calcheck, y_var())
       sondeproj()$calcheck %>%
@@ -100,7 +100,8 @@ explore_data_server <- function(id, sondeproj){
     output$log_table <- DT::renderDT({
       DT::datatable(
        tab(),
-       selection = list(mode = "single")
+       selection = list(mode = "single"),
+       filter = "top"
       )})
 
     #set up dates
@@ -181,11 +182,19 @@ explore_data_server <- function(id, sondeproj){
       #alter data is change log rows are selected
       if(!is.null(input$log_table_rows_selected)){
         #get the diffs to apply
-          diff_list <- sondeproj()$changelog$diff_name[1:input$log_table_rows_selected]
-          diff_list <- diff_list[grepl("^dd", diff_list)]
-          diffs <- sondeproj()$diffs[names(sondeproj()$diffs) %in% diff_list]
+          row <- input$log_table_rows_selected
+          #only get diffs if not current data
+          if(row < nrow(sondeproj()$changelog)){
+            diff_list <- sondeproj()$changelog$diff_name[(row+1):nrow(sondeproj()$changelog)]
+            diff_list <- diff_list[grepl("^dd", diff_list)]
+            diffs <- sondeproj()$diffs[names(sondeproj()$diffs) %in% diff_list]
 
-          data_ver <- apply_diff(sondeproj()$base_data, diffs)
+            data_ver <- apply_diff(sondeproj()$data, diffs, invert=TRUE)
+          }else{
+            data_ver <- sondeproj()$data
+
+          }
+
       }else{
         data_ver <- sondeproj()$data
       }

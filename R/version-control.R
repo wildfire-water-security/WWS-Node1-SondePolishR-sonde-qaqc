@@ -1,76 +1,229 @@
-#' Get and apply changes to data
+#' Track differences between sonde data
 #'
-#' Wrappers for `daff::diff_data()` and `daff::apply_patch()`. Natively `daff` functions don't play
-#' nicely with dates and datetimes. So the wrapper confirms they're the same between data and
-#' then temporarily removes them to get the diff without those columns. Used to succinctly track changes to
-#' the raw data and revert changes when needed.
+#' Compares the values between the two `data.frames` and creates a small `diff` object that stores the
+#' datetimes of the change and the new and old values. Used to move between versions. Note that this function
+#' does not currently support addition and removal of columns, but row additions/subtractions are supported.
 #'
-#' @param olddata The original `data.frame` to compare to.
-#' @param newdata The new `data.frame` you want to get the changes for.
-#' @param diff  A `data_diff` object storing the difference between `olddata` and `newdata` or a list of `data_diff`.
+#' @param olddata a `data.frame` with the original data.
+#' @param newdata a `data.frame` with the revised data.
+#' @param id name of the column name used to match observations between `olddata` and `newdata`. Must be convertable to a number.
+#' @param ignore a character vector including any column names to not track.
 #'
-#' @returns
-#' `commit_diff` returns a `data_diff` object storing the differences between `data.frames`. See `daff` package for more details.
-#' `apply_diff` returns a `data.frame` with the `diff` applied.
-#'
+#' @returns A `diff` object with a named list item for each column being tracked.
+#' Each list item will either be `NULL` if there were no changes to that column or have the following structure:
+#' - op_type: a character describing the type of change made
+#' - id: the id values for the change made
+#' - new_data: the values of the changed values in `newdata`
+#' - old_data: the values of the changed values in `olddata`
 #' @export
-#' @md
-#' @rdname version-control
 #'
 #' @examples
-#' data_edit <- example_data
-#'
-#' #make a change in newdata
-#' data_edit$fDOM_QSU[1:4] <- NA
-#' head(data_edit)
-#'
-#' #save difference
-#' dd <- commit_diff(example_data, data_edit)
-#'
-#' #apply difference
-#' data_edit2 <- apply_diff(example_data, dd)
-#' head(data_edit2)
-commit_diff <- function(olddata, newdata){
-  #check that dates/datetime are exactly the same because we can't check these
-  if(any(olddata$Date != newdata$Date)){
-    stop("Dates are different between the two datasets, can't determine differences.")
+#' data1 <- example_data[1:10,]
+#' data2 <- data1
+#' data2$fDOM_QSU[1:4] <- NA
+#' get_diff(data1, data2)
+
+get_diff <- function(olddata, newdata, id="DateTime", ignore=NA){
+  #don't support adding/removing columns right now
+  x <- colnames(olddata)
+  y <- colnames(newdata)
+
+  if(length(union(setdiff(x, y), setdiff(y, x))) > 0){
+    stop("Column names differ between old and new data, diff can't be determined.")
   }
 
-  if(any(olddata$DateTime != newdata$DateTime)){
-    stop("Datetimes are different between the two datasets, can't determine differences.")
-  }
+  #join together so we can match datetimes and make any added data NA in old data
+  data_merge <- olddata %>% mutate(source = "old") %>% bind_rows(newdata %>% mutate(source = "new"))
 
-  #rm date and datetime so we don't get warning
-  dates <- olddata %>% dplyr::select("Date", "DateTime")
-  olddata <- olddata %>% dplyr::select(-c("Date", "DateTime", "DateTime_rd"))
-  newdata <- newdata %>% dplyr::select(-c("Date", "DateTime_rd"))
+  #get columns we want to check for differences (include the id column)
+  cols <- colnames(olddata)
+  cols <- cols[!(cols %in% na.omit(c(id, ignore)))]
 
-  #get diff
-  dd <- daff::diff_data(olddata, newdata, ids=c("Index"))
+  #across tracked columns get diff
+  diff <- lapply(cols, .col_diff, data_merge, id=id)
 
-  return(dd)
+  #if all columns are added with same number of rows, rename operation to data_merge
+  if(.is_data_merge(diff)){
+    diff <- lapply(diff, function(x){x$op_type <- "data_merge"
+    return(x)})}
+
+  #put names of columns for nicer storing
+  names(diff) <- cols
+
+  #make class "diff"
+  class(diff) <- "diff"
+
+  return(diff)
 }
 
+#' Identify column-level differences
+#'
+#' Used as a helper for `get_diff` to identify column level differences and format the list if difference tracking.
+#'
+#' @param param the column name to compare.
+#' @param data_merge a data.frame of the old and new data row bound together, appended with a new column `source`
+#' to define if it was `old` from `olddata` or `new` from `newdata`.
+#' @param id name of the column name used to match observations between `olddata` and `newdata`.
+
+#' @returns
+#' Either `NULL` if there were no changes to the specified column or it will have the following structure:
+#' - op_type: a character describing the type of change made
+#' - id: the id values for the change made
+#' - new_data: the values of the changed values in `newdata`
+#' - old_data: the values of the changed values in `olddata`
+#' @noRd
+.col_diff <- function(param, id="DateTime", data_merge){
+  merge <- data_merge %>%
+    dplyr::select(dplyr::all_of(c(id, "source", param))) %>%
+    tidyr::pivot_wider(names_from = "source", values_from=dplyr::all_of(param))
+
+  changed <- vctrs::vec_compare(merge$old,merge$new, na_equal=TRUE) != 0
+
+  if(sum(changed) == 0){return(NULL)}
+  old <- merge$old[changed]
+  new <- merge$new[changed]
+
+  op_type <- dplyr::case_when(
+    all(is.na(old)) ~ "data_added",
+    all(is.na(new)) ~ "data_removed",
+    all(!is.na(old)) & all(!is.na(new)) ~ "data_changed")
+
+  col_diff <- list(
+    op_type = op_type,
+    id = as.numeric(merge[[id]][changed]),
+    new_data = new,
+    old_data = old
+  )
+
+  return(col_diff)
+}
+
+#' Apply a diff object to a dataset
+#'
+#' Once changes between `data.frame`s have been saved as a `diff` object, they can be used to move between
+#' the changes made by applying the `diff` to data.
+#'
+#' @param data the data to apply the `diff` to. Must contain all the columns in `diff`.
+#' @param diff a list of `diff` or a single `diff` objects generated using `get_diff`.
+#' @param invert logical. If `TRUE` changes will be reversed.
+#' @param id name of the column name used to match observations between `olddata` and `newdata`.
+#' @param skip_merge logical. If `TRUE` will skip any `diff` with are data merges.
+#'
+#' @returns a `data.frame` with the same columns as `data` with the changes from `diff` applied.
+#' Note that this could increase the number of rows if diff is a data merge.
 #' @export
-#' @rdname version-control
-apply_diff <- function(olddata, diff){
-#loop through if multiple diffs
+#'
+#' @examples
+#' data1 <- example_data[1:10,]
+#' data2 <- data1
+#' data2$fDOM_QSU[1:4] <- NA
+#' diff <- get_diff(data1, data2)
+#'
+#' #get new data from original
+#' newdata2 <- apply_diff(data1, diff)
+#' all.equal(data2, newdata2)
+#'
+#' #get orginal data from new data
+#' newdata1 <- apply_diff(data2, diff, invert=TRUE)
+#' all.equal(data1, newdata1)
+#'
+apply_diff <- function(data, diff, id = "DateTime", invert = FALSE, skip_merge=TRUE){
+
+#apply multiple diffs if provided
   if(inherits(diff, "list")){
-    for(x in diff){olddata <- apply_diff(olddata, x)}
+    if(invert){diff <- rev(diff)} #need to flip the order we apply in if we're inverting
+    #loop through list
+    for(x in diff){
+      #skip data merge if requested
+      if(!.is_data_merge(x) | (.is_data_merge(x) & !skip_merge)){
+        data <- apply_diff(data, x, id, invert)
+      }}
 
-    return(olddata)
+    return(data)
   }
-  #pull out dates
-  dates <- olddata %>% dplyr::select("Date", "DateTime", "DateTime_rd")
-  olddata <- olddata %>% dplyr::select(-c("Date", "DateTime", "DateTime_rd"))
 
-  #apply patch
-  suppressWarnings(newdata <- daff::patch_data(olddata, diff))
+  #if data merge, do all together
+  if(.is_data_merge(diff)){
+    if(!invert){
+      add_data <- lapply(1:length(diff), function(x){
+        new <- data.frame(val=diff[[x]]$new_data)
+        colnames(new) <- names(diff)[x]
+        new }) %>% bind_cols()
 
-  #put back in datetimes
-  newdata <- newdata %>% dplyr::mutate(Date = dates$Date, .before="Time_HH_mm_ss") %>%
-    dplyr::mutate(DateTime = dates$DateTime, .after="Time_HH_mm_ss") %>%
-    dplyr::mutate(DateTime_rd = dates$DateTime_rd, .after="DateTime")
+    #deal with dates if used as ID
+      if(inherits(data[[id]], "POSIXct")){
+        add_data[[id]] <- as.POSIXct(diff[[1]]$id, tz= tz(data[[id]]))
+      }else{
+        add_data[[id]] <- diff[[1]]$id
+      }
+
+      data <- data %>% bind_rows(add_data)
+    }else{
+      istime <- inherits(data[[id]], "POSIXct")
+      if(istime){
+        filter_id <- as.POSIXct(diff[[1]]$id, tz= tz(data[[id]]))
+      }else{
+        filter_id <- diff[[1]]$id
+      }
+      data <- data[!(data[[id]] %in% filter_id),]
+    }
+
+    return(data)
+  }
+
+  #otherwise apply .col_apply across data
+  for(x in names(diff)){
+    data <- .col_apply(x, data, diff, id, invert)
+  }
+
+  return(data)
+}
+
+#' Helper function to apply column-level changes
+#'
+#' Used as a helper for `apply_diff` to make column level changes and return the data.
+#'
+#' @param param the column name to apply changes to.
+#' @param data the data to apply the `diff` to. Must contain all the columns in `diff`.
+#' @param diff a `diff` object generated using `get_diff`.
+#' @param id name of the column name used to match observations between `olddata` and `newdata`.
+#' @param invert logical. If `TRUE` changes will be reversed.
+#'
+#' @returns
+#' a `data.frame` with the same columns as `data` with the changes from `diff` applied.
+#' @noRd
+#'
+.col_apply <- function(param, data, diff,id, invert){
+  #get col diff and make sure there's changes
+    col_diff <- diff[[param]]
+    if(is.null(col_diff)){return(data)}
+
+  #identify rows to modify
+  rows <- match(as.POSIXct(col_diff$id), data[[id]])
+  rows <- na.omit(rows)
+
+  #apply change
+  newdata <- data
+  if(invert){
+    newdata[[param]][rows] <- col_diff$old_data
+  }else{
+    newdata[[param]][rows] <- col_diff$new_data
+
+  }
 
   return(newdata)
+}
+
+#' Determine if a diff is a data merge
+#'
+#' Checks if all tracked rows had data added which would indicate a data.frame got added
+#'
+#' @param diff a `diff` object generated using `get_diff`.
+#'
+#' @returns TRUE or FALSE
+#' @noRd
+.is_data_merge <- function(diff){
+  has_diff <- sapply(diff, class) == "list"
+
+  return(all(has_diff) && all(sapply(diff, "[[", 1) == "data_added") | all(sapply(diff, "[[", 1) == "data_merge"))
 }
