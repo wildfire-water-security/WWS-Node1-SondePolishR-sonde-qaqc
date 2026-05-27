@@ -35,7 +35,7 @@ ui <-  page_fillable(
 
                 ),
       nav_panel("3. Physical Limits",
-                #SondePolishR::limits_UI("data3")
+                SondePolishR::limits_UI("data3")
                 ),
       nav_panel("4. Shift Correction",
                 #SondePolishR::additive_UI("data4")
@@ -73,7 +73,7 @@ server <- function(input, output, session) {
   #step 2: plot data
    SondePolishR::explore_data_server("data2", sondeproj)
   #step 3: physical limits
-   #SondePolishR::limits_server("data3", sdata, prj_path, log)
+   SondePolishR::limits_server("data3", sondeproj)
 
   #step 4: additive shift
   # SondePolishR::additive_server("data4", sdata, prj_path, log)

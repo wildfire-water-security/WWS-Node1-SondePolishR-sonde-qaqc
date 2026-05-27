@@ -19,25 +19,25 @@ test_that("{shinytest2} recording: checking-module2", {
   vdiffr::expect_doppelganger("initial plot is made", plot_obj)
 
   #check putting in week view
-  app$set_inputs(`data2-week_view` = TRUE)
+  app$set_inputs(`data2-weekly_range-week_view` = TRUE)
   plot_obj <- app$get_value(export = "data2-plot_obj")
   vdiffr::expect_doppelganger("week view works", plot_obj)
 
   #clicking next week
-  app$click("data2-next_week")
-  rng <- app$get_value(input= "data2-dates")
+  app$click("data2-weekly_range-next_week")
+  rng <- app$get_value(input= "data2-weekly_range-dates")
   expect_equal(rng, as.Date(c("2024-08-07", "2024-08-14")))
 
   #click previous week
-  app$click("data2-prev_week")
-  rng <- app$get_value(input= "data2-dates")
+  app$click("data2-weekly_range-prev_week")
+  rng <- app$get_value(input= "data2-weekly_range-dates")
   expect_equal(rng, as.Date(c("2024-07-31", "2024-08-07")))
 
   #unclick weekly and make sure we get the full plot again
-  app$set_inputs(`data2-week_view` = FALSE)
+  app$set_inputs(`data2-weekly_range-week_view` = FALSE)
   plot_obj <- app$get_value(export = "data2-plot_obj")
   vdiffr::expect_doppelganger("removing week view works", plot_obj)
-  rng <- app$get_value(input= "data2-dates")
+  rng <- app$get_value(input= "data2-weekly_range-dates")
   expect_equal(rng, as.Date(c("2024-07-31", "2024-10-23")))
 
   #check changing variable to plot

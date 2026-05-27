@@ -81,18 +81,20 @@ add_flags <- function(data, par=NULL, flag_name=NULL, index=NULL, makeNA=FALSE){
   stopifnot(inherits(data, "data.frame"), is.character(flag_name)|is.null(flag_name), is.character(par)|is.null(par),
             is.logical(makeNA))
 
+
+
   #add flag columns if they don't exist
    #guess pars
      pars <- paste(c("Cond", "fDOM", "ODO", "Sal", "TDS", "Turbidity","TSS","pH","Temp", "Depth"), collapse="|")
      par_names <- grep(pars, names(data), value = TRUE)
      par_names <- par_names[!grepl("_flag$", par_names)] #remove existing flag columns
 
-     missing <- par_names[!(paste0(par_names, "_flag") %in% colnames(data))]
-
-    #add spot for flags for each parameter
-      for(x in missing){
-        data <- data %>% dplyr::mutate(!!paste0(x, "_flag") := NA, .after=tidyselect::all_of(x))
-      }
+    #  missing <- par_names[!(paste0(par_names, "_flag") %in% colnames(data))]
+    #
+    # #add spot for flags for each parameter
+    #   for(x in missing){
+    #     data <- data %>% dplyr::mutate(!!paste0(x, "_flag") := NA, .after=tidyselect::all_of(x))
+    #   }
 
   #add flag if inputting specific flags #TODO will need to update with new workflow for storing flags
   # if(!is.null(flag_name)){
@@ -163,7 +165,8 @@ add_flags <- function(data, par=NULL, flag_name=NULL, index=NULL, makeNA=FALSE){
 
   #return empty flag dataframe
   if(is.null(flag_name) & is.null(par)){
-    data <- data %>% dplyr::select(-any_of(c(par_names, "Battery_V", "Date", "Time_HH_mm_ss","Site_Name", "FileName"))) %>%
+    data <- data %>% dplyr::select(-any_of(c("Battery_V", "Date", "Time_HH_mm_ss","Site_Name", "FileName"))) %>%
+      mutate(across(-c("Index", "DateTime", "DateTime_rd"), ~ NA)) %>%
       mutate(across(-c("Index", "DateTime", "DateTime_rd"), ~ as.character(.x)))
 
   }
