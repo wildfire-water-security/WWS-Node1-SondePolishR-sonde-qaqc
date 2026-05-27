@@ -53,15 +53,15 @@ limits_UI <- function(id){
 #' @param id An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.
 #' @param sondeproj A `reactiveVal` holding the current dataset.
 #' @param data_ver A `reactiveVal` holding a number used to track when new data is added to trigger resets.
-
+#' @param y_var Y-variable to plot on the y-axis.
 #'
 #' @export
 #' @rdname limits
-limits_server <- function(id, sondeproj, data_ver){
+limits_server <- function(id, sondeproj, data_ver, y_var){
   moduleServer(id, function(input, output, session){
 
   #get column names after file upload (dynamic)
-    y_var <- update_parms_server("update_parms", sondeproj, data_ver, choices_fun = nice_yvar)
+    update_parms_server("update_parms", sondeproj, data_ver, y_var, choices_fun = nice_yvar)
 
   #update limits in UI
     observeEvent(list(y_var(), sondeproj()), {

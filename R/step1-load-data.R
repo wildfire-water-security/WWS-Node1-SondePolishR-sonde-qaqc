@@ -230,7 +230,7 @@ load_data_server <- function(id, sondeproj, data_ver){
 
       if(nrow(data_merge) > prev_lines){
         #document data addition
-        obj <- write_log(obj, "all", "adding new data", n = (nrow(obj$data) - prev_lines), diff_name = diff_version(obj), return="sondeproj")
+        obj <- write_log(obj, "all", "adding new data", n = (nrow(data_merge) - prev_lines), diff_name = diff_version(obj), return="sondeproj")
 
         #store diff
         diff <- list(get_diff(obj$data, data_merge))

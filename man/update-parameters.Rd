@@ -7,12 +7,16 @@
 \usage{
 update_parms_UI(id)
 
-update_parms_server(id, sondeproj, choices_fun = NULL)
+update_parms_server(id, sondeproj, data_ver, y_var, choices_fun = NULL)
 }
 \arguments{
 \item{id}{An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.}
 
 \item{sondeproj}{A \code{reactiveVal} holding the current dataset.}
+
+\item{data_ver}{A \code{reactiveVal} holding a number used to track when new data is added to trigger resets.}
+
+\item{y_var}{Y-variable to plot on the y-axis.}
 
 \item{choices_fun}{Function used to determine the parameter choices, if \code{NULL} will use the column names of the data}
 }

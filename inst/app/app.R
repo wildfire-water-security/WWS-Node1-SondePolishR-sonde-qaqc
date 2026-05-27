@@ -70,15 +70,15 @@ server <- function(input, output, session) {
   #define things that get passed around
     sondeproj <- reactiveVal(NULL) #the sonde project
     data_ver <- reactiveVal(0) #keeping track of when new data is uploaded
-
+    y_var <- reactiveVal(NULL) #the y-variable being looked at
   #step 1: load data
    SondePolishR::load_data_server("data1", sondeproj, data_ver)
 
   #step 2: plot data
-   SondePolishR::explore_data_server("data2", sondeproj, data_ver)
+   SondePolishR::explore_data_server("data2", sondeproj, data_ver, y_var)
 
   #step 4: physical limits
-   SondePolishR::limits_server("data4", sondeproj, data_ver)
+   SondePolishR::limits_server("data4", sondeproj, data_ver, y_var)
 
   #step 5: additive shift
   # SondePolishR::additive_server("data4", sdata, prj_path, log)

@@ -7,12 +7,16 @@
 \usage{
 limits_UI(id)
 
-limits_server(id, sondeproj)
+limits_server(id, sondeproj, data_ver, y_var)
 }
 \arguments{
 \item{id}{An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.}
 
 \item{sondeproj}{A `reactiveVal` holding the current dataset.}
+
+\item{data_ver}{A `reactiveVal` holding a number used to track when new data is added to trigger resets.}
+
+\item{y_var}{Y-variable to plot on the y-axis.}
 }
 \description{
 There are certain thresholds for some of the sonde parameters that aren't physical possible (i.e, water temperature above 100 deg C).

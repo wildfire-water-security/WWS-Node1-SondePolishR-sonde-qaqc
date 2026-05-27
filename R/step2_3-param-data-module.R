@@ -24,13 +24,14 @@ update_parms_UI <- function(id) {
 #' @param sondeproj A `reactiveVal` holding the current dataset.
 #' @param data_ver A `reactiveVal` holding a number used to track when new data is added to trigger resets.
 #' @param choices_fun Function used to determine the parameter choices, if `NULL` will use the column names of the data
-#'
+#' @param y_var Y-variable to plot on the y-axis.
+
 #' @returns the selected variable `y_var` as a reactive object
 #' @md
 #' @export
 #' @keywords internal
 #' @rdname update-parameters
-update_parms_server <- function(id, sondeproj, data_ver, choices_fun = NULL) {
+update_parms_server <- function(id, sondeproj, data_ver, y_var, choices_fun = NULL) {
   moduleServer(id, function(input, output, session) {
 
   #only trigger when new data is added
@@ -54,8 +55,22 @@ update_parms_server <- function(id, sondeproj, data_ver, choices_fun = NULL) {
 
   })
 
-    # return the reactive selected parameter
-    return(reactive(input$y_var))
+  #update y_var when the input changes
+    observeEvent(input$y_var, {
+      y_var(input$y_var)
+    })
+
+  #update user UI
+    observe({
+      req(y_var())
+      if(!identical(input$y_var, y_var())){
+        updateSelectInput(
+          session,
+          "y_var",
+          selected = y_var())}
+    })
+
+
   })
 }
 

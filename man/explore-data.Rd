@@ -7,12 +7,16 @@
 \usage{
 explore_data_UI(id)
 
-explore_data_server(id, sondeproj)
+explore_data_server(id, sondeproj, data_ver, y_var)
 }
 \arguments{
 \item{id}{An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.}
 
 \item{sondeproj}{A \code{reactiveVal} holding the current dataset.}
+
+\item{data_ver}{A \code{reactiveVal} holding a number used to track when new data is added to trigger resets.}
+
+\item{y_var}{Y-variable to plot on the y-axis.}
 }
 \value{
 Invisible NULL
