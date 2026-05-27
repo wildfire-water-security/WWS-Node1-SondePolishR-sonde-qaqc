@@ -34,8 +34,11 @@ ui <-  page_fillable(
                 SondePolishR::explore_data_UI("data2")
 
                 ),
-      nav_panel("3. Physical Limits",
-                SondePolishR::limits_UI("data3")
+      nav_panel("3. Data Checks",
+                "Check data for gaps, dups, etc."
+      ),
+      nav_panel("4. Physical Limits",
+                SondePolishR::limits_UI("data4")
                 ),
       nav_panel("4. Shift Correction",
                 #SondePolishR::additive_UI("data4")
@@ -66,16 +69,18 @@ server <- function(input, output, session) {
 
   #define things that get passed around
     sondeproj <- reactiveVal(NULL) #the sonde project
+    data_ver <- reactiveVal(0) #keeping track of when new data is uploaded
 
   #step 1: load data
-   SondePolishR::load_data_server("data1", sondeproj)
+   SondePolishR::load_data_server("data1", sondeproj, data_ver)
 
   #step 2: plot data
-   SondePolishR::explore_data_server("data2", sondeproj)
-  #step 3: physical limits
-   SondePolishR::limits_server("data3", sondeproj)
+   SondePolishR::explore_data_server("data2", sondeproj, data_ver)
 
-  #step 4: additive shift
+  #step 4: physical limits
+   SondePolishR::limits_server("data4", sondeproj, data_ver)
+
+  #step 5: additive shift
   # SondePolishR::additive_server("data4", sdata, prj_path, log)
   #export values for tests
    # exportTestValues(

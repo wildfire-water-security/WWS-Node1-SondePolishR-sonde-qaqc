@@ -17,7 +17,7 @@
 weekly_range_sidebar_UI <- function(id){
   ns <- NS(id)
   tagList(
-    tags$h4("Set Date Range"),
+    tags$h5("Set Date Range"),
     dateRangeInput(ns("dates"),"Date Range"),
     input_switch(ns("week_view"),"View Data Weekly",value = FALSE)
   )}

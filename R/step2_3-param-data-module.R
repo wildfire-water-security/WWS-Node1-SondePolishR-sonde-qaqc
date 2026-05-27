@@ -22,6 +22,7 @@ update_parms_UI <- function(id) {
 #'
 #' @param id An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.
 #' @param sondeproj A `reactiveVal` holding the current dataset.
+#' @param data_ver A `reactiveVal` holding a number used to track when new data is added to trigger resets.
 #' @param choices_fun Function used to determine the parameter choices, if `NULL` will use the column names of the data
 #'
 #' @returns the selected variable `y_var` as a reactive object
@@ -29,38 +30,29 @@ update_parms_UI <- function(id) {
 #' @export
 #' @keywords internal
 #' @rdname update-parameters
-update_parms_server <- function(id, sondeproj, choices_fun = NULL) {
+update_parms_server <- function(id, sondeproj, data_ver, choices_fun = NULL) {
   moduleServer(id, function(input, output, session) {
 
-    data <- reactive({sondeproj()$data})
+  #only trigger when new data is added
+  observeEvent(data_ver(), {
+    req(data_ver() > 0)
+    data <- sondeproj()$data
 
     # update parameter choices dynamically
-    choices_r <- reactive({
-      req(data())
-      if (!is.null(choices_fun)) {
-        choices_fun(data())
-      } else {
-        names(data())
+      if(!is.null(choices_fun)) {
+        choices_r <- choices_fun(data)
+      }else {
+        choices_r <- names(data)
       }
-    })
 
-    observeEvent(choices_r(), {
-      choices <- choices_r()
       updateSelectInput(
         session,
         "y_var",
-        choices = choices,
-        selected = choices[[1]]
+        choices = choices_r,
+        selected = choices_r[[1]]
       )
-    })
 
-    #really just for tests, as in real life you can't select anything that's not in choices
-    observeEvent(input$y_var, {
-      req(input$y_var)
-      if(!(input$y_var %in% choices_r())){stop("selected y variable not in choices")}
-    })
-
-
+  })
 
     # return the reactive selected parameter
     return(reactive(input$y_var))

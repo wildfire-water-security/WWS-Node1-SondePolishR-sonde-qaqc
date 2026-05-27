@@ -21,7 +21,7 @@ explore_data_UI <- function(id){
         plot_options_UI(ns("plot_opts")),
 
         HTML("<hr>"),
-        tags$h4("Table Options"),
+        tags$h5("Table Options"),
 
         selectInput(
           ns("table_opt"),
@@ -55,14 +55,15 @@ explore_data_UI <- function(id){
 #'
 #' @param id An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.
 #' @param sondeproj A `reactiveVal` holding the current dataset.
-#'
+#' @param data_ver A `reactiveVal` holding a number used to track when new data is added to trigger resets.
+
 #' @md
 #' @keywords internal
 #' @export
 #' @rdname explore-data
 #' @returns Invisible NULL
 #'
-explore_data_server <- function(id, sondeproj){
+explore_data_server <- function(id, sondeproj, data_ver){
   moduleServer(id, function(input, output, session){
 
   #create log table
@@ -96,7 +97,7 @@ explore_data_server <- function(id, sondeproj){
     plot_opts <- plot_options_server("plot_opts")
 
   #get column names after file upload (dynamic)
-    y_var <- update_parms_server("update_parms", sondeproj, choices_fun = nice_yvar)
+    y_var <- update_parms_server("update_parms", sondeproj, data_ver, choices_fun = nice_yvar)
 
   #keep track of dates
     dates <- weekly_range_server(

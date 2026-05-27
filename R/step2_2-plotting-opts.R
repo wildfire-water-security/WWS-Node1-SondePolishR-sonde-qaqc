@@ -21,16 +21,20 @@
 plot_options_UI <- function(id){
   ns <- NS(id)
   tagList(
-    tags$h4("Plot Options"),
-    checkboxInput( ns("points"), "Plot points",value = TRUE),
+    tags$h5("Plot Options"),
 
-    checkboxInput( ns("line"), "Plot line",value = TRUE),
+    fluidRow(
+      column(6,
+             checkboxInput( ns("points"), "Plot points",value = TRUE),
 
-    checkboxInput( ns("files"),"Color points by file",value = FALSE),
+             checkboxInput( ns("line"), "Plot line",value = TRUE),
 
-    checkboxInput(ns("oow"),"Show out-of-water periods",value = FALSE),
+             checkboxInput( ns("files"),"Color points by file",value = FALSE)),
+      column(6,
+             checkboxInput(ns("oow"),"Show out-of-water periods",value = FALSE),
 
-    checkboxInput(ns("calcheck"),"Show calibration checks",value = FALSE),
+             checkboxInput(ns("calcheck"),"Show calibration checks",value = FALSE)))
+
 
   )}
 

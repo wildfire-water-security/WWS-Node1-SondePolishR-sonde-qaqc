@@ -97,12 +97,13 @@ load_data_UI <- function(id){
 #'
 #' @param id An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.
 #' @param sondeproj A `reactiveVal` holding the current dataset.
+#' @param data_ver A `reactiveVal` holding a number used to track when new data is added to trigger resets.
 #' @md
 #' @export
 #' @keywords internal
 #' @returns The loaded data as a reactive object.
 #' @rdname load-data
-load_data_server <- function(id, sondeproj){
+load_data_server <- function(id, sondeproj, data_ver){
   moduleServer(id, function(input, output, session){
   #code for setting up the directory button
     #define preset roots for file path
@@ -253,6 +254,7 @@ load_data_server <- function(id, sondeproj){
 
       #check that flags match data
       stopifnot(all(sapply(obj$flags, nrow) == nrow(obj$data)))
+
     }
 
 
@@ -265,6 +267,9 @@ load_data_server <- function(id, sondeproj){
         text = "Selected data has been loaded and any new data has been merge into existing project.",
         type = "success"
       )
+
+    #track that new data was uploaded
+    data_ver(data_ver() + 1)
 
     })
 

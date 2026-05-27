@@ -53,49 +53,49 @@ confirm_changes_server <- function(id, newdata, sdata, index=NULL, par, flag_nam
 
   moduleServer(id, function(input, output, session) {
 
-    # When button is clicked, update data in place
-    observeEvent(input$rm_points,{
-      req(sdata(), par(), newdata()) #ensure we have what we need
-
-      #check if there's a project path, if no error
-      if(is.null(index()) || length(index()) == 0){
-        # only show alert if running in shiny
-        if (interactive()) {
-          shinyalert::shinyalert(
-            title = "Nothing selected",
-            text = "No points were selected to flag",
-            type = "warning"
-          )
-        }}else if(is.null(resolve_path(prj_path()))){
-          # only show alert if running in shiny
-          if (interactive()) {
-            shinyalert::shinyalert(
-              title = "No Project Path",
-              text = "Specify the project path in 1. Load Data",
-              type = "error"
-            )
-          }       #see if there are points selected, if not warn
-        }else{
-          #add flags to data and save
-            updated <- flag_data(newdata(),
-                                 par = par(),
-                                 index = index(),
-                                 note = paste0(note(), "; ", input$flag_notes),
-                                 flag_name = flag_name,
-                                 prj_path = prj_path())
-
-
-            #update data
-            sdata(updated)
-
-            #update log
-            log(get_log())
-
-            #clear note
-            updateTextInput(session,"flag_notes",value = NULL)
-
-            }
-            })
+    # # When button is clicked, update data in place
+    # observeEvent(input$rm_points,{
+    #   req(sdata(), par(), newdata()) #ensure we have what we need
+    #
+    #   #check if there's a project path, if no error
+    #   if(is.null(index()) || length(index()) == 0){
+    #     # only show alert if running in shiny
+    #     if (interactive()) {
+    #       shinyalert::shinyalert(
+    #         title = "Nothing selected",
+    #         text = "No points were selected to flag",
+    #         type = "warning"
+    #       )
+    #     }}else if(is.null(resolve_path(prj_path()))){
+    #       # only show alert if running in shiny
+    #       if (interactive()) {
+    #         shinyalert::shinyalert(
+    #           title = "No Project Path",
+    #           text = "Specify the project path in 1. Load Data",
+    #           type = "error"
+    #         )
+    #       }       #see if there are points selected, if not warn
+    #     }else{
+    #       #add flags to data and save
+    #         updated <- flag_data(newdata(),
+    #                              par = par(),
+    #                              index = index(),
+    #                              note = paste0(note(), "; ", input$flag_notes),
+    #                              flag_name = flag_name,
+    #                              prj_path = prj_path())
+    #
+    #
+    #         #update data
+    #         sdata(updated)
+    #
+    #         #update log
+    #         log(get_log())
+    #
+    #         #clear note
+    #         updateTextInput(session,"flag_notes",value = NULL)
+    #
+    #         }
+    #         })
 
     })
   }
