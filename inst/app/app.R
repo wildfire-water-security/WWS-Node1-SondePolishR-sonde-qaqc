@@ -40,8 +40,8 @@ ui <-  page_fillable(
       nav_panel("4. Physical Limits",
                 SondePolishR::limits_UI("data4")
                 ),
-      nav_panel("4. Shift Correction",
-                #SondePolishR::additive_UI("data4")
+      nav_panel("5. Shift Correction",
+                SondePolishR::additive_UI("data5")
 
                 ),
       nav_panel("5. Manual Removal", "Remove points manually"),
@@ -81,7 +81,7 @@ server <- function(input, output, session) {
    SondePolishR::limits_server("data4", sondeproj, data_ver, y_var)
 
   #step 5: additive shift
-  # SondePolishR::additive_server("data4", sdata, prj_path, log)
+   SondePolishR::additive_server("data5", sondeproj, data_ver, y_var)
   #export values for tests
    # exportTestValues(
    #   prj_path = prj_path(),

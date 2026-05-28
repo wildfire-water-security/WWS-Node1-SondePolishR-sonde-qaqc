@@ -15,40 +15,40 @@
 #' guess_shift(raw_sonde, "Cond_uS_cm", 1591:1630)
 
 guess_shift <- function(data, par, index){
-  #get start and end of points to shift
-    start <- min(index, na.rm = TRUE)
-    end <- max(index, na.rm = TRUE)
+  if(is.null(index)){
+    return(list(slope = 0, int = 0))
+  }
 
-  #get values
-    vals <- data[[par]]
+  start <- min(index, na.rm = TRUE)
+  end <- max(index, na.rm = TRUE)
 
-  #get values of data to shift and good data
-    y1 <- vals[start]
-    y2 <- vals[end]
+  vals <- data[[par]]
 
-    t1 <- vals[start - 1]
-    t2 <- vals[end + 1]
+  y <- vals[index]
 
-  #calculate slope and intercept (these are used calculate amount to add to val)
+  t1 <- vals[start - 1]
+  t2 <- vals[end + 1]
+
+  # edge cases
   if(length(t1) == 0 || is.na(t1)){
-    #when start of data
-    b <- 0
-    a <- t2-y2
-  }else if(length(t2) == 0 || is.na(t2)){
-    #end of data
-    b <- 0
-    a <- t1 - y1
-  }else{
-    #otherwise calc slope
-    b <- ((t2-y2) - (t1-y1)) / length(index)
-    a <- t1- y1
-    }
+    add <- rep(t2 - vals[end], length(index))
 
-  #return
-    return(list(slope = round(b, 3), int=round(a, 3)))
+  } else if(length(t2) == 0 || is.na(t2)){
+    add <- rep(t1 - vals[start], length(index))
 
+  } else {
 
+    target <- seq(t1, t2, length.out = length(index) + 2)[2:(length(index)+1)]
+
+    add <- target - y
+  }
+
+  list(
+    slope = round(add[2] - add[1], 3),
+    int = round(add[1], 3)
+  )
 }
+
 
 #' Correct points via an absolute shift
 #'
