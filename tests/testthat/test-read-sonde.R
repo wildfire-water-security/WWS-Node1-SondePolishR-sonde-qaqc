@@ -25,12 +25,10 @@ test_that("data is loaded", {
   expect_s3_class(data$DateTime_rd, "POSIXct")
 
   #check that serial numbers are pulled out if requested
-  sonde <- read_sonde(path, return="sonde")
-  expect_s3_class(sonde, "sonde")
+  sonde <- read_sonde(path, return="list")
   expect_s3_class(sonde$serials, "data.frame")
   expect_s3_class(sonde$data, "data.frame")
   expect_equal(dim(sonde$data), c(1916, 14))
-  expect_equal(class(sonde$file), "character")
 
 
 })

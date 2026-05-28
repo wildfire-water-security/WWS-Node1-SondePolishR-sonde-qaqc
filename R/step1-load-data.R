@@ -169,8 +169,9 @@ load_data_server <- function(id, sondeproj, data_ver){
 
     #read csv files if added
       if(!is.null(csv_path())){
-        csv_merge <- lapply(csv_path(),read_sonde, tz = input$tz) %>%
-          dplyr::bind_rows()  %>%
+        data_merge <- lapply(csv_path(), read_sonde, tz = input$tz, return="list")
+        serials <- lapply(data_merge, "[[", 1) %>% bind_rows()
+        csv_merge <- lapply(data_merge, "[[", 2)%>% dplyr::bind_rows() %>%
           dplyr::mutate(Index = 1:n())
       }
 
@@ -205,6 +206,20 @@ load_data_server <- function(id, sondeproj, data_ver){
 
       if(!is.null(cc_path())){
         calcheck <- read_cal(cc_path())
+
+        #link with serial records to know when probes were changed (only if new data is added)
+        if(!is.null(csv_path())){
+          switch_df <- serials %>% pivot_longer(-"Date", names_to = "Parameter", values_to = "serial") %>%
+            dplyr::group_by(.data$Parameter) %>%
+            dplyr::mutate(switched = .data$serial != dplyr::lag(.data$serial, default = dplyr::first(.data$serial))) %>%
+            select(-"serial")
+
+          calcheck <- calcheck %>% left_join(switch_df, by = join_by("Date", "Parameter"))
+
+        }
+
+
+
         obj$calcheck <- calcheck
       }
 

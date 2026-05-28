@@ -16,7 +16,7 @@ read_sonde(
 \arguments{
 \item{file}{File path to sonde data (.csv).}
 
-\item{return}{What format should data be returned in? Either \code{df} or \code{sonde}.}
+\item{return}{What format should data be returned in? Either \code{df} or \code{list}.}
 
 \item{encoding}{File encoding, will guess if \code{NULL}.}
 
@@ -39,10 +39,9 @@ If \code{return} is \code{df}:
 \item Battery voltage measured in volts.
 }
 
-If \code{return} is \code{sonde}:
-\strong{An object of class \code{sonde} containing:}
+If \code{return} is \code{list}:
+\strong{A list containing:}
 \itemize{
-\item \strong{file}: the file name of the sonde data.
 \item \strong{serials}: the probe serial numbers associated with each measurement.
 \item \strong{data}: the sonde data formatted as described above.
 }
@@ -62,5 +61,5 @@ file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "exampl
 data <- read_sonde(file)
 
 file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "sonde-usb-example.csv")
-data <- read_sonde(file, return = "sonde")
+data <- read_sonde(file, return = "list")
 }

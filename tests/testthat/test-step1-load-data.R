@@ -3,8 +3,6 @@
 test_that("{shinytest2} recording: checking-module1", {
   library(shinytest2)
   library(shiny)
-  library(SondePolishR)
-
   app_dir <- system.file("app", package = "SondePolishR")
   local_app_support(app_dir)
   app <- AppDriver$new(app_dir, variant = platform_variant(),

@@ -12,7 +12,7 @@
 #' @export
 #'
 #' @examples
-#' guess_shift(raw_sonde, "Cond_uS_cm", 1591:1630)
+#' guess_shift(example_sondeproj$data, "ODO_mg_L", 5:7)
 
 guess_shift <- function(data, par, index){
   if(is.null(index)){
@@ -64,9 +64,9 @@ guess_shift <- function(data, par, index){
 #' @export
 #'
 #' @examples
-#' raw_sonde$Cond_uS_cm[1591:1600]
-#' data <- shift_points(raw_sonde, "Cond_uS_cm", 1591:1630)
-#' data$Cond_uS_cm[1591:1600]
+#' example_sondeproj$data$ODO_mg_L[5:7]
+#' data <- shift_points(example_sondeproj$data, "ODO_mg_L", 5:7)
+#' data$ODO_mg_L[5:7]
 
 shift_points <- function(data, par, index, shift_val=NULL){
   stopifnot(inherits(data, "data.frame"), is.character(par))

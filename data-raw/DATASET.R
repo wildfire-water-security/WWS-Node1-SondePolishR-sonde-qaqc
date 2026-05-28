@@ -26,13 +26,25 @@
 
   #what we want for the server code
     #read in csv files, merge as needed
-      data_merge <- lapply(csv_files$datapath, read_sonde, tz = tz) %>% dplyr::bind_rows() %>%
+      data_merge <- lapply(csv_files$datapath, read_sonde, tz = tz, return="list")
+      serials <- lapply(data_merge, "[[", 1) %>% bind_rows()
+      data_merge <- lapply(data_merge, "[[", 2)%>% dplyr::bind_rows() %>%
         dplyr::mutate(Index = 1:n())
 
   #if project and csv loaded, merge together (everything: data, flags, diffs, replace ff and cal)
   #read in ff and cal file (these cover the entire period and we don't need to merge, just update)
     fieldform <- read_ff(ff_file$datapath)
     calcheck <- read_cal(cc_file$datapath)
+
+    #add serial switches to calcheck
+    #link with serial records to know when probes were changed
+    switch_df <- serials %>% pivot_longer(-Date, names_to = "Parameter", values_to = "serial") %>%
+      dplyr::group_by(Parameter) %>%
+      dplyr::mutate(switched = serial != dplyr::lag(serial, default = first(serial))) %>%
+      select(-serial)
+
+    calcheck <- calcheck %>% left_join(switch_df, by = join_by(Date, Parameter))
+
 
     #clip data down for a smaller example and clear some actual data
       fieldform <- fieldform %>% filter(Date >= min(data_merge$Date) & Date <= max(data_merge$Date)) %>%

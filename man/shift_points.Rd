@@ -23,7 +23,7 @@ Sometimes a continuous sonde signal will be shifted up or down by a consistent v
 dataset for those values by that set amount.
 }
 \examples{
-raw_sonde$Cond_uS_cm[1591:1600]
-data <- shift_points(raw_sonde, "Cond_uS_cm", 1591:1630)
-data$Cond_uS_cm[1591:1600]
+example_sondeproj$data$ODO_mg_L[5:7]
+data <- shift_points(example_sondeproj$data, "ODO_mg_L", 5:7)
+data$ODO_mg_L[5:7]
 }

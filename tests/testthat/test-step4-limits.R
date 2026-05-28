@@ -1,7 +1,5 @@
 library(shinytest2)
 library(shiny)
-library(SondePolishR)
-
 
 test_that("{shinytest2} recording: checking-module4", {
   app_dir <- system.file("app", package = "SondePolishR")

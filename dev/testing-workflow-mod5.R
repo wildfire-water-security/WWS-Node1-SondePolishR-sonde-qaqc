@@ -112,3 +112,18 @@ add <- (b * (seq_along(proj$data[[y_var]][select])-1)) + a
                           new_val = apply_drift_shift(test_vals, cal_data$Check_Value[1], cal_data$Resident_Value[1]))
     #check shift
     ggplot(test_df, aes(x=datetime)) + geom_line(aes(y=org_val), color="red") + geom_line(aes(y=new_val), color="darkgreen")
+
+
+  ## read in sonde data and get probe serials to match with calcheck
+    files <- c("inst/extdata/example-csv-data1.csv", "inst/extdata/example-csv-data2.csv",
+               "inst/extdata/example-csv-data3.csv")
+    tz <- "Etc/GMT+8"
+    data_merge <- lapply(files, read_sonde, tz = tz, return="list")
+    serials <- lapply(data_merge, "[[", 1) %>% bind_rows()
+    data_merge <- lapply(data_merge, "[[", 2)%>% dplyr::bind_rows() %>%
+      dplyr::mutate(Index = 1:n())
+
+    switch_df <- serials %>% pivot_longer(-date, names_to = "parameter", values_to = "serial") %>%
+      dplyr::group_by(parameter) %>%
+      dplyr::mutate(switched = serial != dplyr::lag(serial, default = first(serial)))
+

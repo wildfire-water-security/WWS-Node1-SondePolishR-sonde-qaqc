@@ -4,7 +4,7 @@
 #' Cleans column names, adds a `DateTime` column, and optionally adds a `flag` column.
 #'
 #' @param file File path to sonde data (.csv).
-#' @param return What format should data be returned in? Either `df` or `sonde`.
+#' @param return What format should data be returned in? Either `df` or `list`.
 #' @param encoding File encoding, will guess if `NULL`.
 #' @param skip The number of rows to skip, assumes the first row is a header,  will guess if `NULL`.
 #' @param flags Logical, if `TRUE` a flag column will be added for each parameter.
@@ -30,9 +30,8 @@
 #' - Temperature measured in degrees C.
 #' - Battery voltage measured in volts.
 #'
-#' If `return` is `sonde`:
-#' **An object of class `sonde` containing:**
-#' - **file**: the file name of the sonde data.
+#' If `return` is `list`:
+#' **A list containing:**
 #' - **serials**: the probe serial numbers associated with each measurement.
 #' - **data**: the sonde data formatted as described above.
 #'
@@ -43,9 +42,9 @@
 #' data <- read_sonde(file)
 #'
 #' file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "sonde-usb-example.csv")
-#' data <- read_sonde(file, return = "sonde")
+#' data <- read_sonde(file, return = "list")
 read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NULL, tz="Etc/GMT+8"){
-  stopifnot(tools::file_ext(file) == "csv", file.exists(file), return %in% c("df", "sonde"))
+  stopifnot(tools::file_ext(file) == "csv", file.exists(file), return %in% c("df", "list"))
 
   #guess timezone
   if(is.null(tz)){tz <- Sys.timezone(location = TRUE)}
@@ -93,11 +92,12 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NUL
                 Depth_m = "DEP_m")
     data <- data %>% dplyr::rename(any_of(lookup))
 
-  #get serial numbers
+  #get serial numbers (needs to be here because it calls to colname of original data)
     if(!usb_export){
       serial <- unlist(strsplit(text[skip-1], ","))
       serials <- data.frame(measure = colnames(data)[-(1:4)], serial = serial[-(1:4)]) %>%
-        filter(.data$measure %in% c("SpCond_uS_cm","fDOM_QSU","ODO_mg_L", "Turbidity_FNU","pH","Temp_C","Battery_V"))
+        filter(.data$measure %in% c("SpCond_uS_cm","fDOM_QSU","ODO_mg_L", "Turbidity_FNU","pH","Temp_C","Battery_V"))%>%
+        tidyr::pivot_wider(names_from="measure", values_from="serial")
     }else{
       serial <- text[4:(skip-4)] %>% as.data.frame() %>% tidyr::separate_wider_delim(cols='.', delim=",", names_sep="") %>% as.data.frame()
       colnames(serial) <- unlist(strsplit(text[3], ","))
@@ -106,15 +106,13 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NUL
       add_c$Model <- "Temp_C"
       serial <- rbind(serial, add_c) %>% dplyr::mutate(Model = .data$Model %>%
                                                          dplyr::recode_values("Turbidity" ~ "Turbidity_FNU",
-                                                             "CT" ~ "SpCond_uS_cm",
-                                                             "ODO" ~ "ODO_mg_L",
-                                                             "fDOM" ~ "fDOM_QSU",
-                                                             default = .data$Model))
+                                                                              "CT" ~ "SpCond_uS_cm",
+                                                                              "ODO" ~ "ODO_mg_L",
+                                                                              "fDOM" ~ "fDOM_QSU",
+                                                                              default = .data$Model))
       serials <- serial %>% dplyr::rename(measure = "Model", serial = " S/N") %>% select("measure", "serial") %>%
-        mutate(serial = trimws(serial))
+        mutate(serial = trimws(serial)) %>% tidyr::pivot_wider(names_from="measure", values_from="serial")
     }
-
-
 
   #some data cleaning
     #remove the not directly measured analytes (this clutters and you can calculate them after the fact)
@@ -185,7 +183,6 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NUL
     data <- data %>%
       dplyr::mutate(DateTime_rd = lubridate::round_date(.data$DateTime, paste0(interval, " mins")), .after = "DateTime")
 
-
   #add file name
     data <- data %>% dplyr::mutate(FileName = basename(file))
 
@@ -206,9 +203,11 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NUL
     }
   }
 
+  #add date to serials
+    serials <- serials %>% mutate(Date = min(data$Date))
+
   #turn in sonde object
-    obj <- list(file = file, serials = serials, data = data)
-    class(obj) <- "sonde"
+    obj <- list(serials = serials, data = data)
 
   #return what is requested
   if(return == "df"){
