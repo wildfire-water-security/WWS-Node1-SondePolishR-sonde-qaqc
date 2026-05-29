@@ -35,12 +35,12 @@ ui <-  page_fillable(
 
                 ),
       nav_panel("3. Data Checks",
-                "Check data for gaps, dups, etc., remove OOW period, drift corrections??"
+                "Check data for gaps, dups, etc., remove OOW periods"
       ),
       nav_panel("4. Physical Limits",
                 SondePolishR::limits_UI("data4")
                 ),
-      nav_panel("5. Shift Correction",
+      nav_panel("5. Shift Corrections",
                 SondePolishR::additive_UI("data5")
 
                 ),

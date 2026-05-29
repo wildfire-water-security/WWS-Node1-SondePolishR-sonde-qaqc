@@ -43,9 +43,16 @@ guess_shift <- function(data, par, index){
     add <- target - y
   }
 
+  #determine slope and int
+  slope <- round(add[2] - add[1], 3)
+  int <- round(add[1], 3)
+
+  #correct if it's a single point
+  slope <- ifelse(is.na(slope), 0 , slope)
+
   list(
-    slope = round(add[2] - add[1], 3),
-    int = round(add[1], 3)
+    slope = slope,
+    int = int
   )
 }
 
@@ -82,4 +89,80 @@ shift_points <- function(data, par, index, shift_val=NULL){
   data[index, par] <- data[index, par] + add
 
   return(data)
+}
+
+#' Apply a drift correction to a parameter
+#'
+#' Applies a linear correction to data based on the final "corrected" value often determined via a freshly calibrated sonde compared
+#' to the sonde that's been deployed ("uncorrected").
+#'
+#' @param x Vector of data to apply correction to.
+#' @param rows Row numbers of the values within x that should be corrected.
+#' @param corrected Value of the corrected end value, used to determine how much to shift data.
+#' @param uncorrected Value of the uncorrected value, used to determine how much to shift data.
+#'
+#' @returns `x` with the drift shift applied.
+#' @export
+#'
+#' @examples
+#' rows <- example_data$FileName == "example-data1.csv"
+#' x_shift <- apply_drift_shift(example_data$fDOM_QSU, rows, 17.49, 21.71)
+apply_drift_shift <- function(x, rows, corrected, uncorrected){
+  n <- sum(rows)
+
+  # amount needed at final point (using paired check, resident)
+  d <- corrected - uncorrected
+
+  # increasing additive correction
+  add <- d * ((seq_len(n) - 1) / (n - 1))
+
+  x[rows] <- x[rows] + add
+
+  return(x)
+}
+
+#' Guess optimal values for drift correction
+#'
+#' Uses the calibration check data when possible to guess values for a drift correction. If not available
+#' it will guess based on the values at the end of the value and the starting values of the next file.
+#'
+#' @param data a data.frame with sonde data
+#' @param calcheck the `calcheck` from the sondeproj
+#' @param par the parameter being corrected
+#' @param file the name of the file to correct
+#'
+#' @noRd
+
+guess_drift <- function(data, calcheck, par, file){
+  rows <- data$FileName == file
+
+  #get potential calcheck data (if available)
+  if(!is.null(calcheck)){
+    par_calcheck <- calcheck %>%
+      filter(.data$Parameter == par & .data$Date == as.Date(max(data$DateTime[rows])))
+  }else{par_calcheck <- NULL}
+
+  if(!is.null(par_calcheck) && nrow(par_calcheck) == 1){
+    ##update uncorrected and corrected value in UI to resident and check values
+    uncorrected <- par_calcheck$Resident_Value
+    corrected <- par_calcheck$Check_Value
+  }else{
+    row_num <- which(rows)
+    #we guess from data
+    #get median 5 points before file ends
+    endvals <- data[[par]][(max(row_num)-4):max(row_num)]
+    newvals <- data[[par]][(max(row_num)+1):(max(row_num)+5)]
+
+    uncorrected <- median(endvals, na.rm = TRUE)
+    corrected <- median(newvals, na.rm = TRUE)
+  }
+
+  #guard against NA
+  if(is.na(corrected) & is.na(uncorrected)){
+    corrected <- uncorrected <- 0
+  }
+    uncorrected <- ifelse(is.na(uncorrected), corrected, uncorrected)
+    corrected <- ifelse(is.na(corrected), uncorrected, corrected)
+
+ return(list(correct = corrected, uncorrect = uncorrected))
 }

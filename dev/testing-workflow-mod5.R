@@ -210,9 +210,38 @@ add <- (b * (seq_along(proj$data[[y_var]][select])-1)) + a
     y_var <- "fDOM_QSU"
 
  #will be UI buttons
-  file <- unique(sondeproj$data$FileName)[2]  #selectize with file names
-  file1_val <- NA #updatable number input, need better names
-  file2_val <- NA #updatable number input, need better names
+  file <- unique(sondeproj$data$FileName)[1]  #selectize with file names
+  uncorrected <- NA #updatable number input, need better names
+  corrected <- NA #updatable number input, need better names
   save_changes <- FALSE #button to flag
 
 #server code
+  #step 1 identify the shift values (either from cal check or guess from data)
+    data <- sondeproj$data
+    rows <- data$FileName == file
+
+    #get potential calcheck data
+    par_calcheck <- sondeproj$calcheck %>%
+      filter(.data$Parameter == y_var & Date == as.Date(max(data$DateTime[rows])))
+
+    if(nrow(par_calcheck) == 1){
+      ##update uncorrected and corrected value in UI to resident and check values
+      uncorrected <- par_calcheck$Resident_Value
+      corrected <- par_calcheck$Check_Value
+    }else{
+      #we guess from data
+        #get median 5 points before file ends
+        endvals <- data[[y_var]][(max(rows)-4):max(rows)]
+        newvals <- data[[y_var]][(max(rows)+1):(max(rows)+5)]
+
+        uncorrected <- median(endvals, na.rm = TRUE)
+        corrected <- median(newvals, na.rm = TRUE)
+    }
+
+  #step 2 perform shift and preliminary update data so we can plot
+    data[[y_var]] <- apply_drift_shift(data[[y_var]], rows, corrected, uncorrected)
+
+  #step 3: visualize the difference
+    p <- plot_sonde(sondeproj$data, y_var) + geom_line(data = data[rows,], aes(x=.data$DateTime_rd, y = .data[[y_var]]), color="darkred")
+    ggplotly(p)
+

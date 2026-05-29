@@ -84,6 +84,7 @@
 #' @importFrom shinyFiles shinySaveButton
 #' @importFrom shinyjs reset
 #' @importFrom shinyjs useShinyjs
+#' @importFrom stats median
 #' @importFrom stats na.omit
 #' @importFrom stats quantile
 #' @importFrom stats setNames
