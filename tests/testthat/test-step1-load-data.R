@@ -31,9 +31,9 @@ test_that("{shinytest2} recording: checking-module1", {
       expect_s3_class(proj$changelog, "data.frame")
 
     #make sure data merged
-      expect_equal(nrow(proj$data), 14528) #expect 8071 + csv-data3 rows
-      expect_equal(nrow(proj$changelog), 6)
-      expect_equal(length(proj$diffs), 5)
+      expect_equal(nrow(proj$data), 14528)
+      expect_equal(nrow(proj$changelog), 5) #no longer merges in
+      expect_equal(length(proj$diffs), 4)
 
 # TEST 2: testing with only csv files
     #reset button to reset files
@@ -89,7 +89,7 @@ test_that("{shinytest2} recording: checking-module1", {
       expect_s3_class(proj$changelog, "data.frame")
 
     #make sure data merged
-      expect_equal(nrow(proj$data), 8071) #expect csv1 + csv2 rows
+      expect_equal(nrow(proj$data), 14528) #expect csv1 + csv2 +csv3 rows
       expect_equal(nrow(proj$changelog), 5)
       expect_equal(length(proj$diffs), 4)
 

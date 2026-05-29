@@ -115,15 +115,104 @@ add <- (b * (seq_along(proj$data[[y_var]][select])-1)) + a
 
 
   ## read in sonde data and get probe serials to match with calcheck
-    files <- c("inst/extdata/example-csv-data1.csv", "inst/extdata/example-csv-data2.csv",
-               "inst/extdata/example-csv-data3.csv")
-    tz <- "Etc/GMT+8"
-    data_merge <- lapply(files, read_sonde, tz = tz, return="list")
-    serials <- lapply(data_merge, "[[", 1) %>% bind_rows()
-    data_merge <- lapply(data_merge, "[[", 2)%>% dplyr::bind_rows() %>%
-      dplyr::mutate(Index = 1:n())
+    example_sondeproj$calcheck  #we need the extra file to know there was a shift on 10/23 so maybe add to example....
+    data <- example_sondeproj$data
 
-    switch_df <- serials %>% pivot_longer(-date, names_to = "parameter", values_to = "serial") %>%
-      dplyr::group_by(parameter) %>%
-      dplyr::mutate(switched = serial != dplyr::lag(serial, default = first(serial)))
+    #for dates with a switch, apply drift correction to that period [don't apply for periods when we don't know if there was a shift]
+    to_cor <- example_sondeproj$calcheck %>% filter(Parameter == y_var)
 
+    #apply shift (start with just set known and make more flexible)
+    shift_period <- data$DateTime_rd <= to_cor$Est_Time[2]
+
+    newdata <- data
+    newdata[[y_var]][shift_period] <- apply_drift_shift(newdata[[y_var]][shift_period], to_cor$Check_Value[2], to_cor$Resident_Value[2])
+
+    #check
+    p <- ggplot() + geom_line(data=newdata, aes(x=DateTime_rd, y=fDOM_QSU), color="red", alpha=0.5) +
+      geom_line(data=data, aes(x=DateTime_rd, y=fDOM_QSU), color="green", alpha=0.5)
+
+    ggplotly(p)
+
+  #make more flexible
+     #pretend we had a switch in first one
+     to_cor <- example_sondeproj$calcheck %>%  filter(Parameter == y_var) %>% mutate(Probe_Switch = c(TRUE, TRUE, NA))
+
+     adj <- which(ifelse(is.na(to_cor$Probe_Switch), FALSE, to_cor$Probe_Switch))
+     data <- example_sondeproj$data
+
+     for(x in adj){
+       if(x == 1){
+         lines <- data$DateTime <= to_cor$Est_Time[x]
+       }else{
+         lines <- data$DateTime <= to_cor$Est_Time[x] & data$DateTime >= to_cor$Est_Time[x-1]
+       }
+       print(sum(lines))
+       data[[y_var]][lines] <- apply_drift_shift(data[[y_var]][lines], to_cor$Check_Value[x], to_cor$Resident_Value[x])
+     }
+
+  olddata<- example_sondeproj$data
+     #check
+     p <- ggplot() + geom_line(data=olddata, aes(x=DateTime_rd, y=fDOM_QSU), color="red", alpha=0.5) +
+       geom_line(data=data, aes(x=DateTime_rd, y=fDOM_QSU), color="green", alpha=0.5)
+
+     ggplotly(p)
+
+
+  ## try to work the workflow how it'd work in the app
+  correct_drift <- TRUE #a button to click
+  apply_edits <- TRUE  #the flagging module to confirm changes
+  y_var <- "fDOM_QSU"
+  sondeproj <- example_sondeproj
+  sondeproj$calcheck$Probe_Switch <- c(TRUE, TRUE, NA) #this is for my testing, shouldn't be carried over
+
+
+  #TODO: how do we prevent correct drift from being run multiple times, or if we add data and want to rerun ,we don't want things to be corrected
+    #multiple times -> store if it's be adjusted in calcheck?? <- probabaly this, check if it looks like it's been corrected??
+  if(correct_drift){
+    #get just calcheck rows with the parameter we're focused on
+      checkrows <- sondeproj$calcheck %>% filter(Parameter == y_var)
+
+    #get the rows in check rows where sonde probes were switched for that parameter
+      adj_periods <- which(ifelse(is.na(checkrows$Probe_Switch), FALSE, checkrows$Probe_Switch))
+
+    #for each period needing correction, apply correction and stick back in data
+    plot_data <- sondeproj$data
+
+    for(x in adj){
+        if(x == 1){
+          adj_rows <- plot_data$DateTime <= checkrows$Est_Time[x]
+        }else{
+          adj_rows <- plot_data$DateTime <= checkrows$Est_Time[x] & plot_data$DateTime >= checkrows$Est_Time[x-1]
+        }
+          plot_data[[y_var]][adj_rows] <- apply_drift_shift(plot_data[[y_var]][adj_rows], checkrows$Check_Value[x], checkrows$Resident_Value[x])
+      }
+
+    p <- plot_sonde(sondeproj$data, y_var) + geom_line(data = plot_data, aes(x=.data$DateTime_rd, y = .data[[y_var]]), color="darkred")
+  }
+
+# scratched ideas -----
+    #we could also look for gaps between datafiles and guess that it's a gap that could be corrected
+    #identify periods where file is switching (sonde could be switched, cleaned, would need correction) --> I don't know if this makes sense
+      #it could just be change in time sonde was OOW
+      file_switch <- data %>% group_by(FileName) %>% summarise(f1 = last(DateTime),
+                                                               f2 = first(DateTime)) %>%
+        mutate(f2 = lead(f2))
+
+      #get essentially a correction from the data itself (next val super low, do after cleaning)
+       data_cor <- file_switch %>% select(-FileName) %>% pivot_longer(f1:f2, names_to = "file", values_to = "DateTime") %>%
+         na.omit() %>%
+         left_join(data, join_by("DateTime"))
+
+
+# actual workflow plan ------
+ #will get passed to module
+    sondeproj <- example_sondeproj
+    y_var <- "fDOM_QSU"
+
+ #will be UI buttons
+  file <- unique(sondeproj$data$FileName)[2]  #selectize with file names
+  file1_val <- NA #updatable number input, need better names
+  file2_val <- NA #updatable number input, need better names
+  save_changes <- FALSE #button to flag
+
+#server code

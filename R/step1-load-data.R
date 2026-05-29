@@ -211,11 +211,22 @@ load_data_server <- function(id, sondeproj, data_ver){
         if(!is.null(csv_path())){
           switch_df <- serials %>% pivot_longer(-"Date", names_to = "Parameter", values_to = "serial") %>%
             dplyr::group_by(.data$Parameter) %>%
-            dplyr::mutate(switched = .data$serial != dplyr::lag(.data$serial, default = dplyr::first(.data$serial))) %>%
+            dplyr::mutate(Probe_Switch = .data$serial != dplyr::lag(.data$serial, default = dplyr::first(.data$serial))) %>%
             select(-"serial")
 
           calcheck <- calcheck %>% left_join(switch_df, by = join_by("Date", "Parameter"))
 
+        }
+
+        if(!is.null(ff_path())){
+          #use ff data to determine when cal data likely was
+          mean_visit <- get_oow(fieldform) %>% rowwise() %>%
+            mutate(Est_Time = mean(c(.data$start, .data$end)),
+                   Date = as.Date(.data$Est_Time))
+
+          calcheck <- calcheck %>%
+            dplyr::left_join(mean_visit %>% select("Date", "Est_Time"),
+                             dplyr::join_by("Date"))
         }
 
 

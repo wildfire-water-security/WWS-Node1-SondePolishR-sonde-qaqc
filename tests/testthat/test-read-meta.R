@@ -8,8 +8,8 @@ test_that("field form is read in nicely", {
     ff <- read_ff(rightfile)
 
     #expect the columns to look at certain way
-    expect_equal(dim(ff), c(3,16))
-    expect_equal(as.Date(ff$Date), as.Date(c("2024-07-31", "2024-08-20", "2024-10-23")), ignore_attr = TRUE)
+    expect_equal(dim(ff), c(4,16))
+    expect_equal(as.Date(ff$Date), as.Date(c("2024-07-31", "2024-08-20", "2024-10-23", "2024-12-18")), ignore_attr = TRUE)
     expect_equal(unname(sapply(ff, class)), c("Date", rep("character", 9), "logical", "character", "logical", rep("character",3)))
     expect_true(sum(is.na(ff)) > 0)
 
@@ -25,10 +25,10 @@ test_that("calibration check is read in nicely", {
   cal <- read_cal(rightfile)
 
   #expect the columns to look at certain way
-  expect_equal(dim(cal), c(12, 9))
+  expect_equal(dim(cal), c(18, 10))
   expect_equal(class(cal$Date), "Date")
   #expect_equal(as.Date(cal$Date), as.Date(rep(c("2024-08-20", "2024-10-23"), each=6)), ignore_attr = TRUE)
-  expect_equal(unname(sapply(cal, class)), c("Date", rep("character", 3), "numeric", "character", "numeric", "character", "logical"))
+  expect_equal(unname(sapply(cal, class)), c("Date", rep("character", 3), "numeric", "character", "numeric", "character", "logical", "character"))
   expect_true(sum(is.na(cal)) > 0)
 
 })

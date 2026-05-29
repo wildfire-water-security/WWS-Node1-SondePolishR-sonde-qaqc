@@ -32,14 +32,8 @@ plot_sonde <- function(data, y_var,
   #get data from field form for determining cal check (oow periods)
   if(!is.null(fieldform)){oow_data <- get_oow(fieldform)}
   #get cal data
-  if(opts$calcheck & !is.null(fieldform) & !is.null(calcheck)){
-    #use ff data to determine when cal data likely was
-    mean_visit <- oow_data %>% rowwise() %>%
-      mutate(avg_time = mean(c(.data$start, .data$end)),date = as.Date(.data$avg_time))
-
+  if(opts$calcheck & !is.null(calcheck) && "Est_Time" %in% colnames(calcheck)){
     cal_data <- calcheck %>%
-      dplyr::left_join(mean_visit %>% select("date", "avg_time"),
-                       join_by("Date" == "date")) %>%
       filter(.data$Parameter == y_var) %>%
       pivot_longer(c("Resident_Value", "Check_Value"),names_to = "type",values_to = "value")}
 
@@ -92,12 +86,12 @@ plot_sonde <- function(data, y_var,
 
     #plot cal check
     if(opts$calcheck && !is.null(calcheck)){
-      cal_data_clip <- cal_data %>% filter(as.Date(.data$avg_time) >= min(date_rg) & as.Date(.data$avg_time) <= max(date_rg))
+      cal_data_clip <- cal_data %>% filter(as.Date(.data$Est_Time) >= min(date_rg) & as.Date(.data$Est_Time) <= max(date_rg))
 
     if(nrow(cal_data_clip) > 0){
       #plot one at at time because color scales are a poop
       p <- p + geom_point(data = cal_data_clip,
-                          aes(x = .data$avg_time, y = .data$value, shape = .data$type),
+                          aes(x = .data$Est_Time, y = .data$value, shape = .data$type),
                           color = "darkred", size = 2) +
         scale_shape_manual(values = c("Resident_Value" = 17,
                                       "Check_Value" = 15),name = "Calibration Check")

@@ -2,7 +2,7 @@
 
 #create an example project with example objects ------
   ## testing the logic when files are uploaded
-    raw_files <- list.files("../WWS-Node1-SONDE-postfire-sonde-network/data/02_raw-downloads/Fall-Creek", full.names=TRUE)[3:4]
+    raw_files <- list.files("../WWS-Node1-SONDE-postfire-sonde-network/data/02_raw-downloads/Fall-Creek", full.names=TRUE)[3:5]
     ff <- list.files("../WWS-Node1-SONDE-postfire-sonde-network/data/01_site-visit-metadata/Fall-Creek", pattern = "Field-Form", full.names = TRUE)
     cal <- list.files("../WWS-Node1-SONDE-postfire-sonde-network/data/01_site-visit-metadata/Fall-Creek", pattern = "Calibration", full.names = TRUE)
 
@@ -40,7 +40,7 @@
     #link with serial records to know when probes were changed
     switch_df <- serials %>% pivot_longer(-Date, names_to = "Parameter", values_to = "serial") %>%
       dplyr::group_by(Parameter) %>%
-      dplyr::mutate(switched = serial != dplyr::lag(serial, default = first(serial))) %>%
+      dplyr::mutate(Probe_Switch = serial != dplyr::lag(serial, default = first(serial))) %>%
       select(-serial)
 
     calcheck <- calcheck %>% left_join(switch_df, by = join_by(Date, Parameter))
@@ -49,14 +49,24 @@
     #clip data down for a smaller example and clear some actual data
       fieldform <- fieldform %>% filter(Date >= min(data_merge$Date) & Date <= max(data_merge$Date)) %>%
         mutate(Crew = "JS", Weather = "Cloudy with a chance of meatballs",
-               Notes = c("Replacing previously removed sonde.", NA, NA),
+               Notes = c("Replacing previously removed sonde.", NA, NA, NA),
                Start_Sonde_Serial = "23K139551",
-               End_Sonde_Serial = c(NA, NA, "23K597634"))
+               End_Sonde_Serial = c(NA, NA, "23K597634", "23K597634"))
 
       calcheck <- calcheck %>% filter(Date > min(data_merge$Date) & Date <= max(data_merge$Date)) %>% mutate(Notes=NA)
 
       data_merge$FileName[data_merge$FileName == "20240820_FAL.csv"] <- "example-csv-data1.csv"
       data_merge$FileName[data_merge$FileName == "20241023_FAL.csv"] <- "example-csv-data2.csv"
+      data_merge$FileName[data_merge$FileName == "20241229_FAL.csv"] <- "example-csv-data3.csv"
+
+      #use ff data to determine when cal data likely was
+      mean_visit <- get_oow(fieldform) %>% rowwise() %>%
+        mutate(Est_Time = mean(c(.data$start, .data$end)),
+               Date = as.Date(.data$Est_Time))
+
+      calcheck <- calcheck %>%
+        dplyr::left_join(mean_visit %>% select("Date", "Est_Time"),
+                         dplyr::join_by("Date"))
 
   #create flag tables
     empty_flags <- add_flags(data_merge)
@@ -127,9 +137,8 @@
     saveRDS(sonde_obj, "inst/extdata/example-sonde-project.RDS")
 
     #also copy over the example csv's for testing
-    file.copy(raw_files, c(file.path("inst/extdata/example-csv-data1.csv"), file.path("inst/extdata/example-csv-data2.csv")), overwrite = TRUE)
-    raw_file <- list.files("../WWS-Node1-SONDE-postfire-sonde-network/data/02_raw-downloads/Fall-Creek", full.names=TRUE)[5]
-    file.copy(raw_file, c(file.path("inst/extdata/example-csv-data3.csv")), overwrite = TRUE)
+    file.copy(raw_files, c("inst/extdata/example-csv-data1.csv",
+                           "inst/extdata/example-csv-data2.csv","inst/extdata/example-csv-data3.csv"), overwrite = TRUE)
 
     #and ff and cal file
     write.csv(fieldform, "inst/extdata/example-fieldform.csv", row.names = FALSE)

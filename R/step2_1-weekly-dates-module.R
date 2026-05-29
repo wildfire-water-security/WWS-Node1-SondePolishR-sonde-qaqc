@@ -89,7 +89,7 @@ weekly_range_server <- function(id, min_date, max_date){
       start <- max(start, min_date())
       start <- min(start, max_date() - 7)
 
-      end <- start + 7
+      end <- start + 6
 
       updateDateRangeInput(session,"dates",
                            start = start,end = end)
