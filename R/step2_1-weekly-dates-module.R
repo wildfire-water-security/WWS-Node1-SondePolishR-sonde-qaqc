@@ -41,63 +41,53 @@ weekly_range_buttons_UI  <- function(id){
 weekly_range_server <- function(id, min_date, max_date){
   moduleServer(id, function(input, output, session){
 
-    observe({
-      req(min_date(), max_date())
+  #store weekly values here so we can refer to them even when replotting
+    week_view <- reactiveVal(FALSE)
+    week_start <- reactiveVal(NULL)
 
-      updateDateRangeInput(
-        session,"dates",
-        start = min_date(),
-        end   = max_date()
-      )
-    })
-
-    #adjust date bounds
+  #keep track of if user wants weekly view, update starting date
     observeEvent(input$week_view, {
-      req(min_date(), max_date())
-
-      if(input$week_view) {
-
-        start <- min_date()
-        end   <- start + 7
-
-        updateDateRangeInput(
-          session,"dates",
-          start = start, end = end)
-
-        updateActionButton(inputId = "next_week", disabled = FALSE)
-        updateActionButton(inputId = "prev_week", disabled = FALSE)
+      week_view(input$week_view)
+      if(input$week_view){
+        if(is.null(week_start()))
+          week_start(min_date())
       }else{
-        updateDateRangeInput(
-          session,"dates",
-          start = min_date(),
-          end   = max_date())
-
-        updateActionButton(inputId = "next_week", disabled = TRUE)
-        updateActionButton(inputId = "prev_week", disabled = TRUE)
+        week_start(NULL)
       }
     })
 
+  #update date range when weeks are clicked
+    observeEvent(input$next_week, {
+      req(week_start())
+      start <- week_start() + 7
+      start <- min(start, max_date() - 6)
+      week_start(start)
+    })
 
-    #update date range when buttons for next and previous clicked
-    shift_week <- function(direction = c("prev", "next")) {
-      direction <- match.arg(direction)
-      req(input$dates)
-
-      step <- if(direction == "prev") -7 else 7
-      start <- input$dates[1] + step
-
+    observeEvent(input$prev_week, {
+      req(week_start())
+      start <- week_start() - 7
       start <- max(start, min_date())
-      start <- min(start, max_date() - 7)
+      week_start(start)
+    })
 
-      end <- start + 6
+  #update UI
+    observe({
+      req(min_date(), max_date())
+      if (week_view()) {
+        start <- week_start()
 
-      updateDateRangeInput(session,"dates",
-                           start = start,end = end)
+        if(is.null(start)){start <- min_date()}
+          start <- max(start, min_date())
+          start <- min(start, max_date() - 6)
 
-    }
-
-    observeEvent(input$next_week, shift_week("next"))
-    observeEvent(input$prev_week, shift_week("prev"))
+          updateDateRangeInput(session,"dates",
+            start = start,end = start + 6)
+      }else {
+        updateDateRangeInput(session,"dates",
+          start = min_date(),end = max_date())
+      }
+    })
 
     reactive(input$dates)
 

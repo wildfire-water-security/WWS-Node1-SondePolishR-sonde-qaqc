@@ -20,6 +20,7 @@ additive_UI <- function(id){
                           numericInput(ns("slope"),"Slope",value = 0,step=0.001),
                           numericInput(ns("int"),"Intercept",value = 0,step=0.01))),
         accordion_panel("Drift Correction",
+                        id = ns("drift_panel"),
                         value="drift",
                         selectInput(
                           inputId=ns("file"),
@@ -239,7 +240,10 @@ additive_server <- function(id, sondeproj, data_ver, y_var){
   #export plot so we can check it
     exportTestValues(
       plot_obj = plot_obj(),
-      changelog = sondeproj()$changelog)
+      changelog = sondeproj()$changelog,
+      edit_type = input$edit_type
+      #edit = edit()
+      )
 
    })
 
