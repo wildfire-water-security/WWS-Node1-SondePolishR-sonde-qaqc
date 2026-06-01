@@ -1,7 +1,7 @@
 
 #' @export
 #' @rdname outliers
-limits_UI <- function(id){
+outlier_UI <- function(id){
   ns <- NS(id) #line to make module work
   tagList(
     sidebarLayout(
@@ -9,13 +9,8 @@ limits_UI <- function(id){
         update_parms_UI(ns("update_parms")),
 
       #select physical limits
-        tags$h5("Set Physical Limits"),
-            numericInput(ns("max"),
-              HTML("<b>Maximum</b> Physical Limit"), value = NULL),
-            numericInput(ns("min"),
-                   HTML("<b>Minimum</b> Physical Limit"),value = NULL),
-
-            input_switch(ns("rm_flags"), "Hide Flagged Data"),
+        tags$h5("Identify Outliers"),
+                input_switch(ns("rm_flags"), "Hide Flagged Data"),
         HTML("<hr>"),
 
         apply_edit_UI(ns("apply_limits"), note=""),
@@ -33,7 +28,7 @@ limits_UI <- function(id){
 
       ),
       mainPanel(
-        plotlyOutput(ns("limit_plot"), height="60%"),
+        plotlyOutput(ns("outlier_plot"), height="60%"),
         #add buttons to navigate date
         weekly_range_buttons_UI(ns("date_nav")),
       ))
@@ -44,8 +39,8 @@ limits_UI <- function(id){
 
 #' Flag data identified as outliers either manually or view methods
 #'
-#' There are certain thresholds for some of the sonde parameters that aren't physical possible (i.e, water temperature above 100 deg C).
-#' This module visualizes those limits and flags data outside specified limits.
+#' Looks for "weird" data where there are large spikes within a short period that are likely unrealistic and caused by
+#' instrument malfunction or a bubble near the sensor.
 #'
 #' @keywords internal
 #'
@@ -56,22 +51,13 @@ limits_UI <- function(id){
 #'
 #' @export
 #' @rdname outliers
-limits_server <- function(id, sondeproj, data_ver, y_var){
+outlier_server <- function(id, sondeproj, data_ver, y_var){
   moduleServer(id, function(input, output, session){
+
+  index <- reactiveVal() #stores index of selected points
 
   #get column names after file upload (dynamic)
     update_parms_server("update_parms", sondeproj, data_ver, y_var, choices_fun = nice_yvar)
-
-  #update limits in UI
-    observeEvent(list(y_var(), sondeproj()), {
-      req(sondeproj(), y_var())
-
-      updateNumericInput(session,"min",
-        value = min(sondeproj()$data[[y_var()]], na.rm=TRUE))
-
-      updateNumericInput(session,"max",
-        value = max(sondeproj()$data[[y_var()]], na.rm=TRUE))
-    })
 
   #get what to plot via user options
     plot_opts <- plot_options_server("plot_opts")
@@ -84,7 +70,19 @@ limits_server <- function(id, sondeproj, data_ver, y_var){
       max_date = reactive({req(sondeproj())
         max(sondeproj()$data$Date, na.rm = TRUE)}))
 
+  #track selected data
+    observeEvent(
+      req(sondeproj(), event_data("plotly_selected", source = "outlier_plot")),{
+        req(sondeproj(), y_var())
 
+        sel <- event_data("plotly_selected", source = "outlier_plot")
+
+        if(!is.null(sel) && length(sel) && nrow(sel) > 0) {
+          full_index <- plot_data()$Index[sel$pointNumber + 1]
+          index(full_index)
+        }else {index(NULL)}
+
+      })
   #filter data to plot
     plot_data <- reactive({
       req(sondeproj(), dates())
@@ -99,18 +97,14 @@ limits_server <- function(id, sondeproj, data_ver, y_var){
 
       #if we want to filter out flagged points, filter before plotting
       if(input$rm_flags){
-        filter_data <- plot_data() %>% dplyr::filter(.data[[y_var()]] >= input$min & .data[[y_var()]] <= input$max)
+        filter_data <- plot_data() %>% filter(!(.data$Index %in% index()))
       }else{
         filter_data <- plot_data()
-        flag_data <- plot_data() %>% dplyr::filter(.data[[y_var()]] < input$min | .data[[y_var()]] > input$max)
+        flag_data <- plot_data() %>% filter(.data$Index %in% index())
       }
 
       #use function to plot sonde data
       p <- plot_sonde(filter_data, y_var(), plot_opts(),sondeproj()$fieldform, sondeproj()$calcheck)
-
-      #add limits
-      p <- p + ggplot2::geom_hline(yintercept = input$min, color="darkred") +
-        ggplot2::geom_hline(yintercept = input$max, color="darkred")
 
       #color points outside limits as red
       if(!input$rm_flags){
@@ -122,9 +116,16 @@ limits_server <- function(id, sondeproj, data_ver, y_var){
     })
 
     #save to export
-    output$limit_plot <- plotly::renderPlotly({
+    output$outlier_plot <- plotly::renderPlotly({
+      req(plot_obj())
+
       # convert to plotly
-      plotly::ggplotly(plot_obj(), dynamicTicks = TRUE)
+      p <- plot_obj() %>%
+        plotly::ggplotly(source = "outlier_plot") %>%
+        plotly::event_register("plotly_selected") %>%
+        plotly::layout(dragmode = "select")
+
+      p
     })
 
 
@@ -133,8 +134,7 @@ limits_server <- function(id, sondeproj, data_ver, y_var){
       newdata <- sondeproj()$data
 
       #get filtered data
-      setna <- newdata[[y_var()]] < input$min | newdata[[y_var()]] > input$max
-      setna[is.na(setna)] <- FALSE #if NA, will return NA, we want to make FALSE
+      setna <- newdata$Index %in% index()
       newdata[[y_var()]][setna] <- NA
 
       #make edit list
@@ -142,9 +142,9 @@ limits_server <- function(id, sondeproj, data_ver, y_var){
         data = newdata,
         rows = setna,
         y_var = y_var(),
-        step = "absolute limits",
-        note = paste0("Data removed based on absolute limits of ", input$min, " and ", input$max),
-        flag = "RM02",
+        step = "outlier removal",
+        note = paste0("Data removed based on manual outlier detection."),
+        flag = "RM03",
         changetype = "flag_rm"
       )
 

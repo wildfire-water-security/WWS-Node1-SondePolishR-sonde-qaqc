@@ -42,12 +42,13 @@ ui <-  page_fillable(
                 ),
       nav_panel("5. Shift Corrections",
                 SondePolishR::additive_UI("data5")
-
                 ),
-      nav_panel("5. Manual Removal", "Remove points manually"),
-      nav_panel("6. Interpolation", "Interpolate Missing Data"),
-      nav_panel("7. fDOM Corrections", "fDOM Corrections"),
-      nav_panel("8. Download Data", "Download Processed Data")
+      nav_panel("6. Outlier Removal",
+                SondePolishR::outlier_UI("data6")
+      ),
+      nav_panel("7. Interpolation", "Interpolate Missing Data and apply smoothing"),
+      nav_panel("8. fDOM Corrections", "fDOM Corrections"),
+      nav_panel("9. Download Data", "Download Processed Data")
 
   ))
 
@@ -82,6 +83,10 @@ server <- function(input, output, session) {
 
   #step 5: additive shift
    SondePolishR::additive_server("data5", sondeproj, data_ver, y_var)
+
+  #step 6: outlier corrections
+   SondePolishR::outlier_server("data6", sondeproj, data_ver, y_var)
+
   #export values for tests
    # exportTestValues(
    #   prj_path = prj_path(),
