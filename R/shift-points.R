@@ -15,7 +15,7 @@
 #' guess_shift(example_sondeproj$data, "ODO_mg_L", 5:7)
 
 guess_shift <- function(data, par, index){
-  if(is.null(index)){
+  if(is.null(index) || is.na(index)){
     return(list(slope = 0, int = 0))
   }
 

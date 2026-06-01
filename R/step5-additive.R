@@ -147,7 +147,6 @@ additive_server <- function(id, sondeproj, data_ver, y_var){
         updateNumericInput(session,"slope", value = guess$slope)
         updateNumericInput(session,"int", value = guess$int)
 
-
       })
 
     #create edit object
@@ -171,7 +170,7 @@ additive_server <- function(id, sondeproj, data_ver, y_var){
         rows <- newdata$FileName == input$file #T/F
         newdata[[y_var()]] <- apply_drift_shift(newdata[[y_var()]], rows, input$correct, input$uncorrect)
         note <- paste0("drift correction based on an uncorrected value of ", input$uncorrect," and corrected value of ", input$correct,
-                       "for file ", input$file)
+                       " for file ", input$file)
         step <- "drift correction"
         flag <- "CHG02"
       }
@@ -205,7 +204,12 @@ additive_server <- function(id, sondeproj, data_ver, y_var){
       }
 
       if(!is.null(input$edit_type) && input$edit_type == "drift"){
-        p <- p + geom_line(data = edit()$data[edit()$rows,], aes(x=.data$DateTime_rd, y = .data[[y_var()]]), color="darkred")
+        dat <-edit()$data[edit()$rows,] %>% dplyr::filter(.data$Date >= dates()[1], .data$Date <= dates()[2])
+
+        if(nrow(dat) > 0){
+          p <- p + geom_line(data = dat, aes(x=.data$DateTime_rd, y = .data[[y_var()]]), color="darkred")
+        }
+
       }
 
       #return plot
