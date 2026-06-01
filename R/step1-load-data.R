@@ -192,7 +192,9 @@ load_data_server <- function(id, sondeproj, data_ver){
                      fieldform = NULL,
                      calcheck = NULL,
                      diffs = list(),
-                     changelog = changelog)
+                     changelog = changelog,
+                    duplicates = NULL,
+                    data_gaps = NULL)
 
         class(obj) <- "sondeproj"
       }

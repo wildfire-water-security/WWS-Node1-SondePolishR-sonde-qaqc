@@ -84,7 +84,9 @@
                       fieldform = fieldform,
                       calcheck = calcheck,
                       diffs = list(),
-                      changelog = changelog)
+                      changelog = changelog,
+                      duplicates = NULL,
+                      data_gaps = NULL)
 
     class(sonde_obj) <- "sondeproj"
 

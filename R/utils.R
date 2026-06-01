@@ -200,3 +200,46 @@ diff_version <- function(sondeproj){
   return(paste0("dd", diff_num+1))
 
 }
+
+#' Convert a vector of dates to continuous periods
+#'
+#' @param x vector datetimes
+#' @param exact logical, is the data exactly the same (used for duplicates)
+#' @param interval the time in minutes between data observations
+#' @param ignore a filter used to filter out small gaps or duplicates, in minutes
+#'
+#' @noRd
+
+summarise_date_ranges <- function(x, exact=NULL, interval=15, ignore=24*60) {
+  if(is.null(exact)){
+    dat <- data.frame(dates = x) %>% arrange(.data$dates)
+  }else{
+    dat <- data.frame(dates = x, exact=exact) %>% arrange(.data$dates)
+  }
+
+  if(nrow(dat) == 0){
+    return(data.frame(start=NA, end=NA))
+  }
+  # Identify breaks between groups
+  breaks <- c(TRUE, diff(dat$dates, units="mins") > interval)
+
+  # Indices of group starts and ends
+  start_idx <- which(breaks)
+  end_idx   <- c(start_idx[-1] - 1L, length(x))
+
+  missing_dat <- data.frame(
+    start = dat$dates[start_idx],
+    end   = dat$dates[end_idx])
+
+  if(!is.null(exact)){
+    missing_dat$n_dif <- sapply(1:nrow(missing_dat), function(x){
+      subdat <- dat %>% filter(.data$dates >= missing_dat$start[x] & .data$dates <= missing_dat$end[x])
+      return(sum(!subdat$exact))
+    })
+  }
+
+
+  missing_dat <- missing_dat %>% mutate(gap_min =as.numeric(.data$end-.data$start, units = "mins")+interval) %>% filter(.data$gap_min > ignore)
+  return(missing_dat)
+}
+

@@ -12,6 +12,11 @@ explore_data_UI <- function(id){
         update_parms_UI(ns("update_parms")),
 
         HTML("<hr>"),
+
+        tags$h5("Remove Out of Water Periods"),
+        actionButton(ns("remove_oow"), "Flag OOW Periods"),
+        HTML("<hr>"),
+
         #date options
         weekly_range_sidebar_UI(ns("weekly_range")),
 
@@ -88,8 +93,16 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var){
   })
 
     output$log_table <- DT::renderDT({
+       df <- tab()
+      #making datetime nice
+      if(input$table_opt == "Change Log"){
+        df$datetime <- format(df$datetime, "%Y-%m-%d  %H:%M")
+      }else if(input$table_opt == "Calibration Check"){
+        df$Est_Time <- format(df$Est_Time, "%Y-%m-%d  %H:%M")
+      }
+
       DT::datatable(
-       tab(),
+       df,
        selection = list(mode = "single"),
        filter = "top"
       )})
@@ -99,6 +112,45 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var){
 
   #get column names after file upload (dynamic)
     update_parms_server("update_parms", sondeproj, data_ver, y_var, choices_fun = nice_yvar)
+
+
+  #remove OOW periods
+    observeEvent(input$remove_oow, {
+      req(sondeproj(), sondeproj()$fieldform)
+
+      data <- sondeproj()$data
+      #get OOW periods
+      oow <- get_oow(sondeproj()$fieldform)
+
+      #remove those periods from data
+      rm_index <- data %>%
+        rowwise() %>%
+        filter(any(.data$DateTime_rd >= oow$start & .data$DateTime_rd <= oow$end)) %>% pull(.data$Index) %>% unique()
+      setna <- data$Index %in% rm_index
+
+      data_filter <- data %>% mutate(filter = setna) %>%
+        mutate(across(-("Index":"Battery_V"), ~ if_else(filter, NA, .x))) %>%
+        select(-"filter")
+
+      #flag these changes were made
+      edit <- list(
+        data = data_filter,
+        rows = setna,
+        y_var = "all",
+        step = "removing oow",
+        note = paste0("OOW periods removed based on information from the field form."),
+        flag = "RM04",
+        changetype = "flag_rm"
+      )
+
+
+      #log edits
+      proj <- apply_edit(sondeproj(), edit)
+
+      #update sondeproj
+      sondeproj(proj)
+
+    })
 
   #keep track of dates
     dates <- weekly_range_server(

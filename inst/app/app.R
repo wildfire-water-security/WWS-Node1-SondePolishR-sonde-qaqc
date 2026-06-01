@@ -35,8 +35,8 @@ ui <-  page_fillable(
 
                 ),
       nav_panel("3. Data Checks",
-                "Check data for gaps, dups, etc., remove OOW periods"
-      ),
+                SondePolishR::check_data_UI("data3")
+                ),
       nav_panel("4. Physical Limits",
                 SondePolishR::limits_UI("data4")
                 ),
@@ -77,6 +77,9 @@ server <- function(input, output, session) {
 
   #step 2: plot data
    SondePolishR::explore_data_server("data2", sondeproj, data_ver, y_var)
+
+  #step 2: plot data
+   SondePolishR::check_data_server("data3", sondeproj, data_ver, y_var)
 
   #step 4: physical limits
    SondePolishR::limits_server("data4", sondeproj, data_ver, y_var)

@@ -43,7 +43,8 @@ Imports:
     stringr,
     thematic,
     shinyjs,
-    vctrs
+    vctrs,
+    timeplyr
 Suggests: 
     shinytest2,
     testthat (>= 3.0.0), 
