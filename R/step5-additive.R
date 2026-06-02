@@ -139,7 +139,11 @@ additive_server <- function(id, sondeproj, data_ver, y_var){
         sel <- event_data("plotly_selected", source = "shift_plot")
 
         if(!is.null(sel) && length(sel) && nrow(sel) > 0) {
-          full_index <- plot_data()$Index[sel$pointNumber + 1]
+          full_index <- sondeproj()$data%>%
+            mutate(value = .data[[y_var()]],
+                   DateTime_rd = as.numeric(.data$DateTime_rd)) %>%
+            inner_join(sel, by = c("DateTime_rd" = "x", "value" = "y")) %>%
+            pull(.data$Index)
           index(full_index)
         }else {index(NULL)}
 

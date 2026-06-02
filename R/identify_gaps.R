@@ -31,5 +31,6 @@ identify_gaps <- function(data, ignore = 60*5){
                                            gap_length =summarise_date_ranges(.data$DateTime_rd, ignore=ignore, interval =interval)$gap_min/interval) %>%
     mutate(user_note =NA)
 
+  if(nrow(missing) == 0){return(NULL)}
   return(missing)
 }

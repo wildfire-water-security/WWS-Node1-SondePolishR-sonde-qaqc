@@ -7,10 +7,20 @@ outlier_UI <- function(id){
     sidebarLayout(
       sidebarPanel(
         update_parms_UI(ns("update_parms")),
-
+        HTML("<hr>"),
       #select physical limits
         tags$h5("Identify Outliers"),
+                selectInput(ns("filter_type"),
+                  "Select Outlier Detection Method:",
+                  choices = c("Hampel Filter" = "hampel", "Relative Change" = "rel_change"),
+                  selected = "hampel"),
+                  fluidRow(
+                    numericInput(ns("k"),"Window Size",value =5,step=2),
+                    numericInput(ns("t"),"Threshold",value = 2,step=0.1))
+                ,
                 input_switch(ns("rm_flags"), "Hide Flagged Data"),
+                radioButtons(ns("selection_mode"),"Selection Method",
+                             choices = c("Add" = "add","Remove" = "remove")),
         HTML("<hr>"),
 
         apply_edit_UI(ns("apply_limits"), note=""),
@@ -54,7 +64,17 @@ outlier_UI <- function(id){
 outlier_server <- function(id, sondeproj, data_ver, y_var){
   moduleServer(id, function(input, output, session){
 
-  index <- reactiveVal() #stores index of selected points
+  #stores index of selected points
+    manual_add <- reactiveVal(integer())
+    manual_rm <- reactiveVal(integer())
+
+  #clearing manual indices if y_var or data updates
+    observeEvent(list(y_var(), data_ver()),{
+      manual_add(NULL)
+      manual_rm(NULL)
+      })
+
+
 
   #get column names after file upload (dynamic)
     update_parms_server("update_parms", sondeproj, data_ver, y_var, choices_fun = nice_yvar)
@@ -70,19 +90,75 @@ outlier_server <- function(id, sondeproj, data_ver, y_var){
       max_date = reactive({req(sondeproj())
         max(sondeproj()$data$Date, na.rm = TRUE)}))
 
+  #implement outlier detection
+    auto_index <- reactive({
+     req(sondeproj(), y_var())
+      data <- sondeproj()$data
+      x <- data[[y_var()]] #needed by everything
+
+      # interpolate to temp fill gaps so filter will work
+      x_fill <- zoo::na.approx(x, na.rm = FALSE)
+      x_fill <- zoo::na.locf(x_fill, na.rm = FALSE)        # forward fill
+      x_fill <- zoo::na.locf(x_fill, fromLast = TRUE)      # backward fill
+
+      if(input$filter_type == "hampel"){
+        hampel_out <- pracma::hampel(x_fill, input$k, input$t)
+
+        outlier <- rep(FALSE, length(x))
+        outlier[hampel_out$ind] <- TRUE
+      }
+
+      if(input$filter_type == "rel_change"){
+        rel_change_lead <- abs(x_fill - lead(x_fill)) / zoo::rollmedian(x_fill, input$k, fill= NA, align = "right") * 100
+        rel_change_lag <- abs(x_fill - lag(x_fill)) / zoo::rollmedian(x_fill, input$k, fill= NA, align = "left") * 100
+
+        outlier <- rel_change_lead >= input$t & rel_change_lag >= input$t
+        outlier[is.na(outlier)] <- FALSE #deal with ending/starting NA
+      }
+
+      #return flagged indices
+      data$Index[outlier]
+      })
+
   #track selected data
     observeEvent(
       req(sondeproj(), event_data("plotly_selected", source = "outlier_plot")),{
         req(sondeproj(), y_var())
 
-        sel <- event_data("plotly_selected", source = "outlier_plot")
+        sel <- event_data("plotly_selected", source = "outlier_plot") %>% filter(.data$curveNumber == 0)
+        print(sel)
 
-        if(!is.null(sel) && length(sel) && nrow(sel) > 0) {
-          full_index <- plot_data()$Index[sel$pointNumber + 1]
-          index(full_index)
-        }else {index(NULL)}
+        #get points based on x and y
+        full_index <- sondeproj()$data%>%
+          mutate(value = .data[[y_var()]],
+                 DateTime_rd = as.numeric(.data$DateTime_rd)) %>%
+          inner_join(sel, by = c("DateTime_rd" = "x", "value" = "y")) %>%
+          pull(.data$Index)
+
+        #full_index <- plot_data()$Index[sel$pointNumber + 1]
+
+        print(full_index)
+        if(input$selection_mode == "add"){
+          manual_add(union(manual_add(), full_index))
+          #also remove if index is in rm
+            manual_rm(setdiff(manual_rm(), full_index))
+        }else {
+          manual_rm(union(manual_rm(), full_index))
+          #also remove if index is in add
+            manual_add(setdiff(manual_add(), full_index))
+
+        }
 
       })
+
+  #keep track of the selected points
+    selected_index <- reactive({
+      auto <- auto_index()
+      auto <- setdiff(auto, manual_rm())
+      union(auto, manual_add())
+
+    })
+
   #filter data to plot
     plot_data <- reactive({
       req(sondeproj(), dates())
@@ -97,10 +173,10 @@ outlier_server <- function(id, sondeproj, data_ver, y_var){
 
       #if we want to filter out flagged points, filter before plotting
       if(input$rm_flags){
-        filter_data <- plot_data() %>% filter(!(.data$Index %in% index()))
+        filter_data <- plot_data() %>% filter(!(.data$Index %in% selected_index()))
       }else{
         filter_data <- plot_data()
-        flag_data <- plot_data() %>% filter(.data$Index %in% index())
+        flag_data <- plot_data() %>% filter(.data$Index %in% selected_index())
       }
 
       #use function to plot sonde data
@@ -134,7 +210,7 @@ outlier_server <- function(id, sondeproj, data_ver, y_var){
       newdata <- sondeproj()$data
 
       #get filtered data
-      setna <- newdata$Index %in% index()
+      setna <- newdata$Index %in% selected_index()
       newdata[[y_var()]][setna] <- NA
 
       #make edit list
