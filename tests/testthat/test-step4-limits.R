@@ -14,7 +14,7 @@ test_that("{shinytest2} recording: checking-module4", {
 
   #check range when df is first added
     rng <- c(app$get_value(input = "data4-min"), app$get_value(input = "data4-max"))
-    expect_equal(rng, c(min(example_data$fDOM_QSU), max(example_data$fDOM_QSU)))
+    expect_equal(rng, c(0,300))
 
   #check initial plot
     plot_obj <- app$get_value(export = "data4-plot_obj")
@@ -23,7 +23,7 @@ test_that("{shinytest2} recording: checking-module4", {
   #make sure limits update when y var changes
     app$set_inputs(`data4-update_parms-y_var` = "Temp_C")
     rng <- c(app$get_value(input = "data4-min"), app$get_value(input = "data4-max"))
-    expect_equal(rng, c(min(example_data$Temp_C), max(example_data$Temp_C)))
+    expect_equal(rng, c(-5,50))
 
   #update limits to see plot/table
     app$set_inputs(`data4-max` = 15)
@@ -42,7 +42,7 @@ test_that("{shinytest2} recording: checking-module4", {
     tab <- app$get_value(export = "data4-changelog")
     expect_true(nrow(tab) > nrow(example_sondeproj$changelog))
     expect_equal(tab$parameter[nrow(tab)], "Temp_C")
-    expect_equal(tab$note[nrow(tab)], paste0("Data removed based on absolute limits of ", min(example_data$Temp_C), " and ", 15))
+    expect_equal(tab$note[nrow(tab)], paste0("Data removed based on absolute limits of ", -5, " and ", 15))
 
 })
 

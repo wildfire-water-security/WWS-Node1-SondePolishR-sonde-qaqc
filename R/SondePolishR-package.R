@@ -26,6 +26,7 @@
 #' @importFrom dplyr first
 #' @importFrom dplyr group_by
 #' @importFrom dplyr if_else
+#' @importFrom dplyr inner_join
 #' @importFrom dplyr join_by
 #' @importFrom dplyr lag
 #' @importFrom dplyr lead
@@ -73,6 +74,7 @@
 #' @importFrom plotly plotlyOutput
 #' @importFrom plotly renderPlotly
 #' @importFrom plotly toWebGL
+#' @importFrom pracma hampel
 #' @importFrom readr guess_encoding
 #' @importFrom rlang .data
 #' @importFrom rlang `:=` !!
@@ -103,5 +105,8 @@
 #' @importFrom utils read.csv
 #' @importFrom vctrs vec_compare
 #' @importFrom withr local_tempdir
+#' @importFrom zoo na.approx
+#' @importFrom zoo na.locf
+#' @importFrom zoo rollmedian
 ## usethis namespace: end
 NULL

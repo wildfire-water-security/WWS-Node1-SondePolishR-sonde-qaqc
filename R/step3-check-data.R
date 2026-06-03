@@ -107,6 +107,23 @@ check_data_server <- function(id, sondeproj, data_ver, y_var){
         df$start <- format(df$start, "%Y-%m-%d  %H:%M")
         df$end   <- format(df$end,   "%Y-%m-%d  %H:%M")
       }
+
+      #colops
+        colopt <- switch(
+          input$table_opt,
+          "Duplicates" = list(
+            list(targets = "_all", className = "dt-center"),
+            list(targets = c(1, 2, 3, 7), width = "120px"),
+            list(targets = which(names(tab()) %in% c("start", "end", "likely_issue", "user_note")),
+                 width = "250px",
+                 className = "dt-nowrap")),
+          "Gaps"       = list(
+            list(targets = "_all", className = "dt-center"),
+            list(targets = c(1, 2), width = "120px"),
+            list(targets = which(names(tab()) %in% c("start", "end", "user_note")),
+                 width = "250px",
+                 className = "dt-nowrap"))
+        )
         DT::datatable(
           df,
           selection = list(mode = "single"),
@@ -115,13 +132,8 @@ check_data_server <- function(id, sondeproj, data_ver, y_var){
           options = list(
             autoWidth = TRUE,
             scrollX = TRUE,
-            columnDefs = list(
-              list(targets = "_all", className = "dt-center"),
-              list(targets = c(1, 2, 3, 7), width = "120px"),
-              list(targets = which(names(tab()) %in% c("start", "end", "likely_issue", "user_note")),
-                   width = "250px",
-                   className = "dt-nowrap")
-            ))
+            columnDefs = colopt
+            )
         )
       })
 

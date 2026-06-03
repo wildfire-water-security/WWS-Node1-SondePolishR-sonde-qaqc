@@ -126,7 +126,6 @@ outlier_server <- function(id, sondeproj, data_ver, y_var){
         req(sondeproj(), y_var())
 
         sel <- event_data("plotly_selected", source = "outlier_plot") %>% filter(.data$curveNumber == 0)
-        print(sel)
 
         #get points based on x and y
         full_index <- sondeproj()$data%>%
@@ -135,9 +134,6 @@ outlier_server <- function(id, sondeproj, data_ver, y_var){
           inner_join(sel, by = c("DateTime_rd" = "x", "value" = "y")) %>%
           pull(.data$Index)
 
-        #full_index <- plot_data()$Index[sel$pointNumber + 1]
-
-        print(full_index)
         if(input$selection_mode == "add"){
           manual_add(union(manual_add(), full_index))
           #also remove if index is in rm
@@ -184,7 +180,10 @@ outlier_server <- function(id, sondeproj, data_ver, y_var){
 
       #color points outside limits as red
       if(!input$rm_flags){
-        p <- p + ggplot2::geom_point(data=flag_data, aes(x = .data$DateTime_rd,y = .data[[y_var()]]), color = "darkred")
+        p <- p + ggplot2::geom_point(data=flag_data,
+                                     aes(x = .data$DateTime_rd,y = .data[[y_var()]]),
+                                     color = "darkred",
+                                     na.rm=TRUE)
       }
 
       #return plot
@@ -213,13 +212,18 @@ outlier_server <- function(id, sondeproj, data_ver, y_var){
       setna <- newdata$Index %in% selected_index()
       newdata[[y_var()]][setna] <- NA
 
+      nicemethod <- switch(input$filter_type,
+                           "hampel" = "Hampel Filter",
+                           "rel_change" = "Relative Change")
       #make edit list
       list(
         data = newdata,
         rows = setna,
         y_var = y_var(),
         step = "outlier removal",
-        note = paste0("Data removed based on manual outlier detection."),
+        note = paste0("Data removed based on ", nicemethod,
+                      " method with a window size of ", input$k, " and threshold of ", input$t,
+                      " paired with manual outlier detection."),
         flag = "RM03",
         changetype = "flag_rm"
       )

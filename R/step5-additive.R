@@ -136,7 +136,7 @@ additive_server <- function(id, sondeproj, data_ver, y_var){
       req(sondeproj(), event_data("plotly_selected", source = "shift_plot"), input$edit_type == "additive"),{
         req(sondeproj(), y_var())
 
-        sel <- event_data("plotly_selected", source = "shift_plot")
+        sel <- event_data("plotly_selected", source = "shift_plot") %>% filter(.data$curveNumber == 0)
 
         if(!is.null(sel) && length(sel) && nrow(sel) > 0) {
           full_index <- sondeproj()$data%>%

@@ -26,24 +26,31 @@ ui <-  page_fillable(
 
   #set menu and navigation
     navset_card_pill(
+      id = "modules",
       #step 1: load data
       nav_panel("1. Load Data",
+                value = "step-1",
                 SondePolishR::load_data_UI("data1"),
                 ),
       nav_panel("2. Visualize",
+                value = "step-2",
                 SondePolishR::explore_data_UI("data2")
 
                 ),
       nav_panel("3. Data Checks",
+                value = "step-3",
                 SondePolishR::check_data_UI("data3")
                 ),
       nav_panel("4. Physical Limits",
+                value = "step-4",
                 SondePolishR::limits_UI("data4")
                 ),
       nav_panel("5. Shift Corrections",
+                value = "step-5",
                 SondePolishR::additive_UI("data5")
                 ),
       nav_panel("6. Outlier Removal",
+                value = "step-6",
                 SondePolishR::outlier_UI("data6")
       ),
       nav_panel("7. Interpolation", "Interpolate Missing Data and apply smoothing"),

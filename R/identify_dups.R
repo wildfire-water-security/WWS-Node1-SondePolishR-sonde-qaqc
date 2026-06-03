@@ -41,7 +41,7 @@ identify_dups <- function(data){
 
     #check for different values (if more than one file)
     if(length(unique(plot_dat$FileName)) > 1){
-      dat <- plot_dat %>% pivot_wider(names_from="FileName", values_from="measure")
+      dat <- plot_dat %>% select(-"Index") %>% pivot_wider(names_from="FileName", values_from="measure")
       colstart <- which(colnames(dat) == "parameter") +1
       colend <- ncol(dat)
       colnames(dat)[colstart:colend] <- paste0("file", 1:length(colstart:colend))

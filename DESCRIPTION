@@ -44,7 +44,9 @@ Imports:
     thematic,
     shinyjs,
     vctrs,
-    timeplyr
+    timeplyr,
+    pracma,
+    zoo
 Suggests: 
     shinytest2,
     testthat (>= 3.0.0), 

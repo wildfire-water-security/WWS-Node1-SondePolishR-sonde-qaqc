@@ -11,6 +11,8 @@ limits_UI <- function(id){
 
       #select physical limits
         tags$h5("Set Physical Limits"),
+      div(style="margin-bottom: 8px; font-size:10px",
+          "Default Limits based on YSI EXO Ranges"),
             numericInput(ns("max"),
               HTML("<b>Maximum</b> Physical Limit"), value = NULL),
             numericInput(ns("min"),
@@ -64,14 +66,20 @@ limits_server <- function(id, sondeproj, data_ver, y_var){
     update_parms_server("update_parms", sondeproj, data_ver, y_var, choices_fun = nice_yvar)
 
   #update limits in UI
-    observeEvent(list(y_var(), sondeproj()), {
-      req(sondeproj(), y_var())
+    observeEvent(y_var(), {
+      req(y_var())
 
-      updateNumericInput(session,"min",
-        value = min(sondeproj()$data[[y_var()]], na.rm=TRUE))
+      #update default limits based on manufacturer specifications
+      rng <- switch(y_var(),
+                    "fDOM_QSU" = c(0,300),
+                    "ODO_mg_L" = c(0,50),
+                    "pH"= c(0, 14),
+                    "SpCond_uS_cm" = c(0, 3000),
+                    "Temp_C" = c(-5, 50),
+                    "Turbidity_FNU" = c(0, 4000))
 
-      updateNumericInput(session,"max",
-        value = max(sondeproj()$data[[y_var()]], na.rm=TRUE))
+      updateNumericInput(session,"min", value = rng[1])
+      updateNumericInput(session,"max", value = rng[2])
     })
 
   #get what to plot via user options

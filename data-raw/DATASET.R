@@ -38,7 +38,7 @@
 
     #add serial switches to calcheck
     #link with serial records to know when probes were changed
-    switch_df <- serials %>% pivot_longer(-Date, names_to = "Parameter", values_to = "serial") %>%
+    switch_df <- serials %>% tidyr::pivot_longer(-Date, names_to = "Parameter", values_to = "serial") %>%
       dplyr::group_by(Parameter) %>%
       dplyr::mutate(Probe_Switch = serial != dplyr::lag(serial, default = first(serial))) %>%
       select(-serial)
@@ -162,3 +162,38 @@
 #move files from ext data to testdata for testing too
   testfiles <- list.files("inst/extdata")
   file.copy(file.path("inst/extdata", testfiles), file.path("tests/testthat/testdata", testfiles), overwrite = TRUE)
+
+#make a "messy" project with dups and gaps for testing (may move to main example??)
+ #two types of duplicates
+  data_messy <- rbind(data_merge, data_merge[1:14,]) #single file dup
+  data_messy <- rbind(data_messy, data_merge[251:264,] %>% mutate(FileName = "dupfile2.csv"))
+
+ #add a gap (missing observations)
+  data_messy <- data_messy[-(500:580),]
+
+  data_messy <- data_messy %>% dplyr::mutate(Index = 1:n()) #redo index
+
+  empty_flags <- add_flags(data_messy)
+
+  #create log if not read in from existing project
+  changelog <- write_log(NULL, "all", "initial load", n = nrow(data_messy), diff_name = "raw")
+  changelog$user <- "smith"
+
+  #create sonde object
+  sonde_obj_messy <- list(data = data_messy,
+                    flags = list(
+                      flag_rm = empty_flags,
+                      flag_chg = empty_flags,
+                      flag_add = empty_flags),
+                    fieldform = fieldform,
+                    calcheck = calcheck,
+                    diffs = list(),
+                    changelog = changelog,
+                    duplicates = NULL,
+                    data_gaps = NULL)
+
+  class(sonde_obj_messy) <- "sondeproj"
+  #remove my username from log
+  sonde_obj_messy$changelog$user <- "smith"
+
+  saveRDS(sonde_obj_messy, "tests/testthat/testdata/example-sondeproj-messy.RDS")
