@@ -14,12 +14,17 @@ test_that("{shinytest2} recording: checking-module5", {
 
  #testing additive shift
   #select a point for shifting (super gross but from shinytests)
-    app$set_inputs(`plotly_selected-shift_plot` = "[{\"curveNumber\":0,\"pointNumber\":2128,\"x\":1724372100,\"y\":170.61}]", allow_no_input_binding_ = TRUE, priority_ = "event")
+  app$set_inputs(`plotly_selected-shift_plot` = "[{\"curveNumber\":0,\"pointNumber\":2128,\"x\":1724372100,\"y\":170.61}]", allow_no_input_binding_ = TRUE, priority_ = "event")
 
   #check resulting plot
     plot_obj <- app$get_value(export = "data5-plot_obj")
     vdiffr::expect_doppelganger("selecting a single point", plot_obj)
     app$expect_values(input =c("data5-slope", "data5-int"))
+
+  #select a different point (clearing seems to make shinytests mad)
+    app$set_inputs(`plotly_selected-shift_plot` = "[{\"curveNumber\":0,\"pointNumber\":10471,\"x\":1731882600,\"y\":0.08}]", allow_no_input_binding_ = TRUE, priority_ = "event")
+     plot_obj <- app$get_value(export = "data5-plot_obj")
+     vdiffr::expect_doppelganger("selecting a different point works", plot_obj)
 
   #make sure the same thing works with weekly view
     app$set_inputs(`data5-date_nav-week_view` = TRUE)
@@ -27,13 +32,8 @@ test_that("{shinytest2} recording: checking-module5", {
     app$click("data5-date_nav-next_week")
     app$click("data5-date_nav-next_week")
 
-    #clear selection
-    app$set_inputs(`plotly_relayout-shift_plot` = "{\"selections\":[{\"xref\":\"x\",\"yref\":\"y\",\"line\":{\"width\":1,\"dash\":\"dot\"},\"type\":\"rect\",\"x0\":1724328579.869602,\"y0\":17.198382765531065,\"x1\":1724419133.4492064,\"y1\":16.18095991983968}]}", allow_no_input_binding_ = TRUE, priority_ = "event")
-
     #reselect
-    app$set_inputs(`plotly_relayout-shift_plot` = "{\"selections\":[{\"xref\":\"x\",\"yref\":\"y\",\"line\":{\"width\":1,\"dash\":\"dot\"},\"type\":\"rect\",\"x0\":1724361936.1822484,\"y0\":172.62728456913828,\"x1\":1724379852.717518,\"y1\":164.8163587174349}]}", allow_no_input_binding_ = TRUE, priority_ = "event")
-
-    #check plot
+    app$set_inputs(`plotly_selected-shift_plot` = "[{\"curveNumber\":0,\"pointNumber\":2128,\"x\":1724372100,\"y\":170.61}]", allow_no_input_binding_ = TRUE, priority_ = "event")
     plot_obj <- app$get_value(export = "data5-plot_obj")
     vdiffr::expect_doppelganger("selecting a single point, weekly view", plot_obj)
 

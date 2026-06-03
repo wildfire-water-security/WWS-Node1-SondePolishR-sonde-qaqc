@@ -236,6 +236,9 @@ outlier_server <- function(id, sondeproj, data_ver, y_var){
   #export plot so we can check it
     exportTestValues(
       plot_obj = plot_obj(),
-      changelog = sondeproj()$changelog)
+      changelog = sondeproj()$changelog,
+      manual_add = manual_add(),
+      manual_rm = manual_rm(),
+      selected = selected_index())
 
   })}

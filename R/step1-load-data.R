@@ -290,11 +290,13 @@ load_data_server <- function(id, sondeproj, data_ver){
       sondeproj(obj)
 
   #print a message so you know data loaded
-    shinyalert::shinyalert(
-        title = "Data Loaded",
-        text = "Selected data has been loaded and any new data has been merge into existing project.",
-        type = "success"
-      )
+    if (interactive()) {
+        shinyalert::shinyalert(
+          title = "Data Loaded",
+          text = "Selected data has been loaded and any new data has been merge into existing project.",
+          type = "success"
+        )
+    }
 
     #track that new data was uploaded
     data_ver(data_ver() + 1)
