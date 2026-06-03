@@ -167,9 +167,18 @@ load_data_server <- function(id, sondeproj, data_ver){
     #set csv merge as NULL if not loaded to prevent errors
       csv_merge <- NULL
 
+      #initialize progress bar
     #read csv files if added
       if(!is.null(csv_path())){
-        data_merge <- lapply(csv_path(), read_sonde, tz = input$tz, return="list")
+        data_merge <- withProgress(min=0,max=length(csv_path()), message = "loading sonde files...",
+                      lapply(csv_path(), function(x){
+                        num <- which(x == csv_path())
+                        dat <- read_sonde(x, tz = input$tz, return="list")
+                        dat$data$FileName <- basename(input$csv_files$name[num]) #in shiny the default filename is nothing
+                        setProgress(num)
+                        dat
+                      }))
+
         serials <- lapply(data_merge, "[[", 1) %>% bind_rows()
         csv_merge <- lapply(data_merge, "[[", 2)%>% dplyr::bind_rows() %>%
           dplyr::mutate(Index = 1:n())
@@ -198,7 +207,6 @@ load_data_server <- function(id, sondeproj, data_ver){
 
         class(obj) <- "sondeproj"
       }
-
 
     #read in ff and cal file (these cover the entire period and we don't need to merge, just update)
       if(!is.null(ff_path())){
@@ -284,7 +292,6 @@ load_data_server <- function(id, sondeproj, data_ver){
       stopifnot(all(sapply(obj$flags, nrow) == nrow(obj$data)))
 
     }
-
 
   #save object as reactive
       sondeproj(obj)

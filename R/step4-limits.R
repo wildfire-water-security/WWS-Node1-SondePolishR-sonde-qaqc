@@ -132,6 +132,13 @@ limits_server <- function(id, sondeproj, data_ver, y_var){
 
     #save to export
     output$limit_plot <- plotly::renderPlotly({
+      validate(
+        need(
+          nrow(plot_data()) > 0,
+          "No data available for the selected date range."
+        )
+      )
+
       # convert to plotly
       plotly::ggplotly(plot_obj(), dynamicTicks = TRUE)
     })

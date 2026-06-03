@@ -216,6 +216,13 @@ additive_server <- function(id, sondeproj, data_ver, y_var){
     output$shift_plot <- plotly::renderPlotly({
         req(plot_obj())
 
+      validate(
+        need(
+          nrow(plot_data()) > 0,
+          "No data available for the selected date range."
+        )
+      )
+
       # convert to plotly
       p <- plot_obj() %>%
                 plotly::ggplotly(source = "shift_plot") %>%
