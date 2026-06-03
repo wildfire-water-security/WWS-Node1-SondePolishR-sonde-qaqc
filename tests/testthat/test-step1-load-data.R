@@ -16,7 +16,7 @@ test_that("{shinytest2} recording: checking-module1", {
     app$upload_file(`data1-cc_file` = file.path(test_path(), "testdata", "example-calcheck.csv"))
 
   #click to load files and create project
-    app$click("data1-load_prj")
+    app$click("data1-load_prj", wait_ = FALSE)
 
   #update unbound `input` value
     proj <- app$get_value(export = "data1-proj")

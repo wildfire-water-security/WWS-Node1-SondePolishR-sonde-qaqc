@@ -9,33 +9,12 @@ additive_UI <- function(id){
       sidebarPanel(
         update_parms_UI(ns("update_parms")),
 
-      accordion(
-        id = ns("edit_type"),
-        multiple =FALSE,
-        accordion_panel("Additive Shift",
-                        value="additive",
-                        fluidRow(
-                          div(style="margin-bottom: 8px; font-size:14px",
-                              "Adjust the slope and intercept to shift the selected data:"),
-                          numericInput(ns("slope"),"Slope",value = 0,step=0.001),
-                          numericInput(ns("int"),"Intercept",value = 0,step=0.01))),
-        accordion_panel("Drift Correction",
-                        id = ns("drift_panel"),
-                        value="drift",
-                        selectInput(
-                          inputId=ns("file"),
-                          label = "File to Drift Correct:",
-                          choices = "",
-                          selectize=TRUE),
-                        fluidRow(
-                          div(style="margin-bottom: 8px; font-size:14px",
-                              "Adjust the corrected and uncorrected values to account for drift:"),
-                          numericInput(ns("uncorrect"),"Uncorrected",value = 0,step=0.01),
-                          numericInput(ns("correct"),"Corrected",value = 0,step=0.01)))
+        HTML("<hr>"),
 
-      ),
-        #select physical limits
-
+        tags$h5("Shift Type"),
+        radioButtons(ns("edit_type"),"",
+                     choices = c("Additive" = "additive","Drift" = "drift")),
+        uiOutput(ns('edit_options')),
 
         HTML("<hr>"),
 
@@ -78,6 +57,24 @@ additive_server <- function(id, sondeproj, data_ver, y_var){
   moduleServer(id, function(input, output, session){
 
   index <- reactiveVal() #stores index of selected points
+  ns = session$ns #needed to make updating UI work
+
+  #update UI options based on edit method
+  output$edit_options <- renderUI({
+    if(input$edit_type == "additive"){
+      tagList(div(style="margin-bottom: 8px; font-size:14px", "Adjust the slope and intercept to shift the selected data:"),
+          fluidRow(numericInput(ns("slope"),"Slope",value = 0,step=0.001),
+          numericInput(ns("int"),"Intercept",value = 0,step=0.01)))
+    }else{
+      tagList(selectInput(inputId=ns("file"),label = "File to Drift Correct:",
+                  choices = unique(sondeproj()$data$FileName), selectize=TRUE),
+       fluidRow(div(style="margin-bottom: 8px; font-size:14px",
+                 "Adjust the corrected and uncorrected values to account for drift:"),
+                 numericInput(ns("uncorrect"),"Uncorrected",value = 0,step=0.01),
+                 numericInput(ns("correct"),"Corrected",value = 0,step=0.01)))
+
+    }
+  })
 
   #get column names after file upload (dynamic)
     update_parms_server("update_parms", sondeproj, data_ver, y_var, choices_fun = nice_yvar)
@@ -95,14 +92,6 @@ additive_server <- function(id, sondeproj, data_ver, y_var){
 
 
  ## code for drift corrections
-  #update file options for drift corrections
-    observe({
-      req(sondeproj())
-
-      updateSelectInput(session,"file",
-        choices = unique(sondeproj()$data$FileName))
-    })
-
   #update the drift correction values
     observeEvent(
       list(input$file, y_var()),{
@@ -156,7 +145,6 @@ additive_server <- function(id, sondeproj, data_ver, y_var){
 
     #create edit object
     edit <- reactive({
-      req(!is.null(input$edit_type))
       newdata <- sondeproj()$data
 
     #if shift corr
@@ -202,13 +190,16 @@ additive_server <- function(id, sondeproj, data_ver, y_var){
       p <- plot_sonde(plot_data(), y_var(), plot_opts(),sondeproj()$fieldform, sondeproj()$calcheck)
 
      #if points are selected color those
-      if(!is.null(index()) & !is.null(input$edit_type) && input$edit_type == "additive"){
+      if(input$edit_type == "additive" &&
+         !is.null(index()) &&
+         !is.null(input$slope) &&
+         !is.null(input$int)){
         flag_data <- plot_data()[plot_data()$Index %in% index(),]
         p <- p + ggplot2::geom_point(data=flag_data, aes(x = .data$DateTime_rd,y = .data[[y_var()]]), color = "darkred")
 
       }
 
-      if(!is.null(input$edit_type) && input$edit_type == "drift"){
+      if(input$edit_type == "drift"){
         dat <-edit()$data[edit()$rows,] %>% dplyr::filter(.data$Date >= dates()[1], .data$Date <= dates()[2])
 
         if(nrow(dat) > 0){
@@ -231,7 +222,7 @@ additive_server <- function(id, sondeproj, data_ver, y_var){
                 plotly::event_register("plotly_selected")
 
       #set to dragmode select as default for input
-      if(!is.null(input$edit_type) && input$edit_type == "additive"){
+      if(input$edit_type == "additive"){
         p <- p %>% plotly::layout(dragmode = "select")
       }
 
@@ -243,11 +234,10 @@ additive_server <- function(id, sondeproj, data_ver, y_var){
 
   #export plot so we can check it
     exportTestValues(
+      edit_type = input$edit_type,
       plot_obj = plot_obj(),
       changelog = sondeproj()$changelog,
-      edit_type = input$edit_type
-      #edit = edit()
-      )
+      edit = edit())
 
    })
 
