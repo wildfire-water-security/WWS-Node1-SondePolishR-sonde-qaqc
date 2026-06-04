@@ -34,3 +34,44 @@ identify_gaps <- function(data, ignore = 60*5){
   if(nrow(missing) == 0){return(NULL)}
   return(missing)
 }
+
+
+#' Updates the duplicate and gaps tables in a project based on the data
+#'
+#' @param proj a `sondeproj` object
+#'
+#' @returns a `sondeproj` object
+#' @noRd
+#'
+refresh_checks <- function(proj) {
+
+  #get duplicates
+  dup_check <- identify_dups(proj$data)
+
+  #put in the project (merge user notes to preserve)
+  if(!is.null(proj$duplicates) && !is.null(dup_check)){
+    old_dups <- proj$duplicates
+
+    merge_dups <- dup_check %>% select(-"user_note") %>% left_join(old_dups %>% select("start", "end", "user_note"), join_by("start", "end"))
+  }else{
+    merge_dups <- dup_check
+  }
+
+  proj$duplicates <- merge_dups
+
+  #get gaps
+  missing <- identify_gaps(proj$data)
+
+  #put in the project (merge user notes to preserve)
+  if(!is.null(proj$data_gaps)){
+    old_gap <- proj$data_gaps
+
+    merge_gap <- missing %>% select(-"user_note") %>% left_join(old_gap %>% select("start", "end", "user_note"), join_by("start", "end"))
+  }else{
+    merge_gap <- missing
+  }
+
+  proj$data_gaps <- merge_gap
+
+  proj
+}

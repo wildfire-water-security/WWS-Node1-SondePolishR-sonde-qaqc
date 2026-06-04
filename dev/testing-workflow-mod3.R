@@ -118,22 +118,21 @@
     #summarise data
     df_sum <-  data %>% filter(.data$DateTime_rd >= dups$start[row] & .data$DateTime_rd <= dups$end[row]) %>%
       group_by(Date, DateTime_rd) %>%
-      summarise(across(everything(), ~ {
-        if(is.character(.)) {paste(unique(.), collapse = ";")
-        }else if (inherits(., c("Date", "POSIXct", "POSIXlt"))) {
-          as.POSIXct(mean(as.numeric(.), na.rm = TRUE), origin = "1970-01-01")
-        }else if (is.numeric(.)) {
-          mean(., na.rm = TRUE)
-        }else{NA}}), .groups = "drop_last")
+      mutate(across("Battery_V":"Turbidity_FNU", ~ if_else(DupNum == 1,mean(.x, na.rm = TRUE),NA_real_)),
+             across("FileName", ~ if_else(DupNum == 1,paste(unique(.), collapse = ";"),NA_character_))) %>%
+      ungroup()
 
-    data_nodup <- data_rm %>% bind_rows(df_sum) %>% arrange(.data$DateTime_rd) %>%
-      mutate(Index = 1:n())
+    data_nodup <- data_rm %>% bind_rows(df_sum) %>% arrange(.data$Index)
 
-    data_nodup
   }else{
+    pars <- paste(c("Cond", "fDOM", "ODO", "Sal", "TDS", "Turbidity","TSS","pH","Temp", "Depth"), collapse="|")
+    par_names <- grep(pars, names(plot_dat), value = TRUE)
+    par_loc <- which(colnames(plot_dat) %in% par_names)
+
+
     rm_index <- plot_dat$Index[plot_dat$duplicate_id != keep_opts]
-    data_nodup <- data[-rm_index]
-    data_nodup
+    data_nodup[rm_index,par_loc] <- NA
+
   }
 
   #when they do this, it creates an edit log that this was done --> problem because current version control won't work with dupes
@@ -141,3 +140,71 @@
       #best I got right now is that the flagging functions will look for duplicates, and if there are duplicates it handles it differently
         #but not sure exactly what that looks like yet....
   #
+
+  ## added dupnum which we can use to track changes, and then just setting to NA to not remove rows
+  dif_test <- get_diff(data, data_nodup, id=c("DateTime_rd", "DupNum"))
+
+  ## add flags
+  flag_diff <- dif_test[names(dif_test) %in% colnames(proj$flags$flag_rm)]
+  flag_diff <- flag_diff[!sapply(flag_diff, is.null)]
+
+  for(y_var in names(flag_diff)){
+    col_diff <- flag_diff[[y_var]]
+
+    proj$flags$flag_chg <- update_dup_flags(proj$flags$flag_chg,
+                                            col_diff, y_var,"data_changed","DUP01") #DUP01, changed, vals averaged
+
+    proj$flags$flag_rm  <- update_dup_flags(proj$flags$flag_rm,
+                                            col_diff, y_var,"data_removed","DUP02") #DUP02, removed
+
+  }
+
+  test <- proj$flags$flag_chg #only flags fDOM because everything else was the same
+  test2 <- proj$flags$flag_rm
+
+
+### the clean pre-shiny workflow for the additional dup functionality for mod 3 -------
+  #UI inputs
+  keep_opt <- "use_mean"
+  row <- 2
+  flag_notes <- "sonde was replaced and old sonde wasn't stopped till the next day"
+
+  #passed to project
+  proj <- readRDS(file.path(test_path(), "testdata", "example-sondeproj-messy.RDS"))
+  y_var <- "fDOM_QSU"
+    #apply additional change [ignore this is for testing]
+      data <- proj$data
+      data[data$FileName == "dupfile2.csv", 10:15] <- data[data$FileName == "dupfile2.csv", 10:15] * 1.1
+      proj$data <- data
+
+  #identify dups
+    dups <- identify_dups(proj$data)
+    proj$duplicates <- dups
+
+  #plot duplicates
+    plot_dat <- data %>% filter(.data$DateTime_rd >= dups$start[row] & .data$DateTime_rd <= dups$end[row])
+
+    p <- ggplot(plot_dat, aes(x=.data$DateTime_rd, y=.data[[y_var]], color=as.factor(DupNum))) + geom_line() + geom_point() +
+      labs(color = "duplicate ID")
+
+    if(dups$duptype[row] == "multiple files"){
+      labels <- unique(plot_dat$FileName)
+      names(labels) <- unique(plot_dat$DupNum)
+      p <- p + scale_color_discrete(labels = labels)}
+    p
+
+  #TODO: update UI here for keep_opts
+    keep_opts <- c(unique(plot_dat$DupNum), "use_mean")
+    if(dups$duptype[row] == "multiple files"){
+      names(keep_opts) <- c(unique(plot_dat$FileName), "Use Mean")
+    }else{
+      names(keep_opts) <- c(paste0("Set ", unique(plot_dat$DupNum)), "Use Mean")
+    }
+
+  #apply edits based on user button
+    proj_test <- apply_dup_edits(proj, dups[row,], keep_opt, flag_notes)
+
+  #update duplicates in project and display because that dup doesn't exist anymore
+
+
+

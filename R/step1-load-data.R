@@ -181,7 +181,8 @@ load_data_server <- function(id, sondeproj, data_ver){
 
         serials <- lapply(data_merge, "[[", 1) %>% bind_rows()
         csv_merge <- lapply(data_merge, "[[", 2)%>% dplyr::bind_rows() %>%
-          dplyr::mutate(Index = 1:n())
+          dplyr::mutate(Index = 1:n()) %>% group_by(.data$DateTime_rd) %>%
+          mutate(DupNum = row_number(), .after="Index") %>% ungroup()
       }
 
     #load existing project

@@ -6,7 +6,7 @@
 #' @param proj A `sondeproj` object holding sonde data.
 #' @param edit A list of length six:
 #' - data: new updated data as a `data.frame`
-#' - rows: logical vector which specifies rows changed a TRUE
+#' - rows: logical vector which specifies rows changed as TRUE
 #' - y_var: parameter being edited
 #' - step: name of the editing step for the changelog
 #' - note: an optional note to add to the changelog
@@ -24,8 +24,8 @@ apply_edit <- function(proj, edit){
     newdata <- edit$data
 
   #get diff
-    dif <- list(get_diff(olddata, newdata))
-    names(dif) <- diff_version(proj)
+    dif <- list(get_diff(olddata, newdata, id=c("DateTime_rd", "DupNum")))
+    names(dif) <- diff_version(proj) #give name to list item
 
 
   #apply flags to project

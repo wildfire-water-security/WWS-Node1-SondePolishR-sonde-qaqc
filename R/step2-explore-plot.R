@@ -174,7 +174,7 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var){
             diff_list <- diff_list[grepl("^dd", diff_list)]
             diffs <- sondeproj()$diffs[names(sondeproj()$diffs) %in% diff_list]
 
-            data_ver <- apply_diff(sondeproj()$data, diffs, invert=TRUE)
+            data_ver <- apply_diff(sondeproj()$data, diffs, id=c("DateTime_rd", "DupNum"), invert=TRUE)
           }else{
             data_ver <- sondeproj()$data
 

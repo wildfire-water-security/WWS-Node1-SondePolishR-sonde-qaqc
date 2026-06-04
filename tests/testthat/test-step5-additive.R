@@ -21,10 +21,10 @@ test_that("{shinytest2} recording: checking-module5", {
 
  #select a point for shifting (super gross but from shinytests)
    app$set_inputs(`plotly_selected-shift_plot` = "[{\"curveNumber\":0,\"pointNumber\":2128,\"x\":1724372100,\"y\":170.61}]", allow_no_input_binding_ = TRUE, priority_ = "event")
+   app$wait_for_idle()
 
   #check resulting plot
     plot_obj <- app$get_value(export = "data5-plot_obj")
-    app$wait_for_idle()
     vdiffr::expect_doppelganger("selecting a single point", plot_obj)
     app$expect_values(input =c("data5-slope", "data5-int"))
 
@@ -62,6 +62,7 @@ test_that("{shinytest2} recording: checking-module5", {
     app$wait_for_idle()
 
     app$set_inputs(`data5-file` = "example-csv-data2.csv")
+    app$wait_for_idle()
 
     app$expect_values(input =c("data5-uncorrect", "data5-correct"))
     app$expect_values(input = "data5-edit_type")

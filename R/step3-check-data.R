@@ -23,7 +23,24 @@ check_data_UI <- function(id){
       mainPanel(
         width =10,
         #visualize data log
-        DT::DTOutput(NS(id, "change_table"))
+        DT::DTOutput(NS(id, "change_table")),
+
+        conditionalPanel(
+          condition = sprintf(
+            "input['%s'] == 'Duplicates'",
+            ns("table_opt")
+          ),
+
+          plotlyOutput(ns("dup_plot"), height = "300px"),
+
+          uiOutput(ns("keep_ui")),
+
+          textInput(ns("flag_notes"), "Analyst Notes (optional):",
+                  value = "",
+                  placeholder = "Enter text..."),
+
+          actionButton(ns("apply_dup"),"Resolve Duplicate" )
+        )
       ))
   )
 }
@@ -49,33 +66,7 @@ check_data_server <- function(id, sondeproj, data_ver, y_var){
     req(sondeproj())
 
     proj <- sondeproj()
-  #get duplicates
-    dup_check <- identify_dups(proj$data)
-
-    #put in the project (merge user notes to preserve)
-    if(!is.null(proj$duplicates)){
-      old_dups <- proj$duplicates
-
-      merge_dups <- dup_check %>% select(-"user_note") %>% left_join(old_dups %>% select("start", "end", "user_note"), join_by("start", "end"))
-    }else{
-      merge_dups <- dup_check
-    }
-
-    proj$duplicates <- merge_dups
-
-  #get gaps
-    missing <- identify_gaps(proj$data)
-
-    #put in the project (merge user notes to preserve)
-    if(!is.null(proj$data_gaps)){
-      old_gap <- proj$data_gaps
-
-      merge_gap <- missing %>% select(-"user_note") %>% left_join(old_gap %>% select("start", "end", "user_note"), join_by("start", "end"))
-    }else{
-      merge_gap <- missing
-    }
-
-    proj$data_gaps <- merge_gap
+    proj <- refresh_checks(proj)
 
     #replace sondeproj with updated
     sondeproj(proj)
@@ -108,7 +99,7 @@ check_data_server <- function(id, sondeproj, data_ver, y_var){
         df$end   <- format(df$end,   "%Y-%m-%d  %H:%M")
       }
 
-      #colops
+      #column options
         colopt <- switch(
           input$table_opt,
           "Duplicates" = list(
@@ -123,9 +114,10 @@ check_data_server <- function(id, sondeproj, data_ver, y_var){
             list(targets = c(3), width = "60px"),
             list(targets = c(4), width = "350px"))
         )
+
         DT::datatable(
           df,
-          selection = list(mode = "single"),
+          selection = "single",
           filter = "top",
           editable = "cell",
           options = list(
@@ -138,11 +130,7 @@ check_data_server <- function(id, sondeproj, data_ver, y_var){
 
   #keep track of edits
     observeEvent(input$change_table_cell_edit, {
-
-      print("edit logged")
       info <- input$change_table_cell_edit
-
-      print(info)
       df <- tab()
       df[info$row, info$col] <- info$value
       proj <- sondeproj()
@@ -156,7 +144,60 @@ check_data_server <- function(id, sondeproj, data_ver, y_var){
       sondeproj(proj)
     })
 
-    #export plot so we can check it
+  #keep track of which dup is selected
+    selected_dup <- reactive({
+      req(input$table_opt == "Duplicates")
+
+      rows <- input$change_table_rows_selected
+      req(length(rows) == 1)
+
+      sondeproj()$duplicates[rows, ]
+    })
+
+  #plot selected dup
+    dup_plot_data <- reactive({
+      req(selected_dup())
+      data <- sondeproj()$data
+      data %>% filter(DateTime_rd >= selected_dup()$start,DateTime_rd <= selected_dup()$end) %>%
+      mutate(color_labs = if(selected_dup()$duptype == "multiple files"){.data$FileName}else{paste0("Set ", .data$DupNum)})
+
+    })
+
+    output$dup_plot <- renderPlotly({
+      dat <- dup_plot_data()
+
+      p <- plot_sonde(dat, y_var()) + aes(color = color_labs) +labs(color = "Duplicate ID")
+
+      ggplotly(p)
+    })
+
+  #update options for which version to keep
+    output$keep_ui <- renderUI({
+      dat <- dup_plot_data()
+      opts <- c(unique(dat$DupNum), "use_mean")
+
+      if(selected_dup()$duptype == "multiple files"){
+        names(opts) <- c(unique(dat$FileName),"Use Mean")
+      }else{
+        names(opts) <- c(paste("Set", unique(dat$DupNum)),"Use Mean")
+      }
+
+      radioButtons(session$ns("keep_opt"),"Select Which Duplicate Set to Keep",choices = opts)
+    })
+
+  #apply duplicate edits
+    observeEvent(input$apply_dup,{
+      req(selected_dup())
+      req(input$keep_opt)
+
+      proj <- sondeproj()
+      proj <- apply_dup_edits(proj,selected_dup(),input$keep_opt,input$flag_notes)
+      proj <- refresh_checks(proj)
+
+      sondeproj(proj) #update project
+    })
+
+  #export plot so we can check it
     exportTestValues(
       table = tab())
 

@@ -29,7 +29,8 @@
       data_merge <- lapply(csv_files$datapath, read_sonde, tz = tz, return="list")
       serials <- lapply(data_merge, "[[", 1) %>% bind_rows()
       data_merge <- lapply(data_merge, "[[", 2)%>% dplyr::bind_rows() %>%
-        dplyr::mutate(Index = 1:n())
+        dplyr::mutate(Index = 1:n()) %>% group_by(.data$DateTime_rd) %>%
+        mutate(DupNum = row_number(), .after="Index") %>% ungroup()
 
   #if project and csv loaded, merge together (everything: data, flags, diffs, replace ff and cal)
   #read in ff and cal file (these cover the entire period and we don't need to merge, just update)
@@ -106,7 +107,7 @@
     data2$ODO_mg_L[5:7] <- data2$ODO_mg_L[5:7] * 0.8
     dd2 <- list(get_diff(sonde_obj$data, data2)) #commit difference
     names(dd2) <- "dd2"
-    sonde_obj$flags$flag_chg$ODO_mg_L[5:7] <- "AD01" #add flag
+    sonde_obj$flags$flag_chg$ODO_mg_L[5:7] <- "CH01" #add flag
     sonde_obj <- write_log(sonde_obj, "ODO_mg_L", "applying shift correction", n = 3, diff_name = "dd2", return = "sondeproj") #write log
     sonde_obj$diffs <- append(sonde_obj$diffs, dd2)
     sonde_obj$data <- data2
@@ -167,11 +168,14 @@
  #two types of duplicates
   data_messy <- rbind(data_merge, data_merge[1:14,]) #single file dup
   data_messy <- rbind(data_messy, data_merge[251:264,] %>% mutate(FileName = "dupfile2.csv"))
+  data_messy[data_messy$FileName == "dupfile2.csv", 10:15] <- data_messy[data_messy$FileName == "dupfile2.csv", 10:15] * 1.1
+
 
  #add a gap (missing observations)
   data_messy <- data_messy[-(500:580),]
 
-  data_messy <- data_messy %>% dplyr::mutate(Index = 1:n()) #redo index
+  data_messy <- data_messy %>% dplyr::mutate(Index = 1:n()) %>% group_by(.data$DateTime_rd) %>%
+    mutate(DupNum = row_number(), .after="Index") %>% ungroup() #redo index and dupnum
 
   empty_flags <- add_flags(data_messy)
 

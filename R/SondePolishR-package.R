@@ -36,6 +36,7 @@
 #' @importFrom dplyr pull
 #' @importFrom dplyr reframe
 #' @importFrom dplyr rename
+#' @importFrom dplyr row_number
 #' @importFrom dplyr rowwise
 #' @importFrom dplyr select
 #' @importFrom dplyr slice

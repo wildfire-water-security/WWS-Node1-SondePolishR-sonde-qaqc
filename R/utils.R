@@ -160,7 +160,7 @@ nice_yvar <- function(data){
   y_var <- colnames(data)[sapply(data, is.numeric)]
 
   #remove variables that aren't needed
-  y_var <- y_var[!(y_var %in% c("Index", "Time_Fract_Sec", "Wiper_Position_volt", "Cable_Pwr_V", "Battery_V"))]
+  y_var <- y_var[!(y_var %in% c("Index", "Time_Fract_Sec", "Wiper_Position_volt", "Cable_Pwr_V", "Battery_V", "DupNum"))]
 
   #give nice names
   nice_names <- c("Cond_uS_cm"= "Conductivity (\u03BCS/cm)",
@@ -195,7 +195,10 @@ diff_version <- function(sondeproj){
   log <- sondeproj$changelog
 
   diff_names <- log$diff_name[grepl("^dd", log$diff_name)]
-  diff_num <- max(as.numeric(gsub("dd", "", diff_names)))
+
+  if(length(diff_names) > 0){diff_num <- max(as.numeric(gsub("dd", "", diff_names)))}else{
+    diff_num <- 0
+  }
 
   return(paste0("dd", diff_num+1))
 

@@ -2,83 +2,8 @@ test_that("flags are added", {
   #check that if we add flags it turns a df with the same rows/columns but NA (as character)
     data <- add_flags(example_data)
     expect_equal(sum(grepl("_flag", colnames(data))), 0)
-    expect_equal(colnames(data)[1:3], c("Index", "DateTime", "DateTime_rd"))
-    expect_true(all(sapply(data, class)[-c(1:3)] == "character"))
-    expect_true(all(sapply(data, function(x){sum(is.na(x))})[-c(1:3)] == nrow(data)))
+    expect_equal(colnames(data)[1:4], c("Index", "DupNum", "DateTime", "DateTime_rd"))
+    expect_true(all(sapply(data, class)[-c(1:4)] == "character"))
+    expect_true(all(sapply(data, function(x){sum(is.na(x))})[-c(1:4)] == nrow(data)))
 
-  # #add new flags
-  #   data <- add_flags(example_data, "fDOM_QSU", "test_flag", c(1,2,3))
-  #   expect_equal(data$fDOM_QSU_flag[[1]], c(test_flag = TRUE))
-  #   expect_equal(data$fDOM_QSU_flag[[4]], c(test_flag = FALSE))
-  #
-  #   #add to existing flags
-  #     data <- add_flags(data, "fDOM_QSU", "test_flag2", c(1,2))
-  #     expect_equal(data$fDOM_QSU_flag[[1]], c(test_flag = TRUE, test_flag2 = TRUE))
-  #     expect_equal(data$fDOM_QSU_flag[[3]], c(test_flag = TRUE, test_flag2 = FALSE))
-  #     expect_equal(data$fDOM_QSU_flag[[4]], c(test_flag = FALSE, test_flag2 = FALSE))
-  #
-  # #ensure flags rewrite
-  #   data <- add_flags(data, "fDOM_QSU", "test_flag", c(4))
-  #   expect_equal(data$fDOM_QSU_flag[[1]], c(test_flag = TRUE,test_flag2 = TRUE))
-  #   expect_equal(data$fDOM_QSU_flag[[4]], c(test_flag = TRUE, test_flag2 = FALSE))
 })
-
-# test_that("saving flags works",{
-#   SondePolishR::clear_data()
-#   SondePolishR::clear_log()
-#   SondePolishR::clear_prjpath()
-#
-#   prj_path <- list(type="absolute", path =file.path(withr::local_tempdir(), "test_prj.RDS"))
-#
-#   write_data(raw_sonde, "raw")
-#   write_log("All", "Initial Load", n = 0, note= "", version = "raw")
-#   set_prjpath(prj_path)
-#
-#   data <- flag_data(raw_sonde, "fDOM_QSU", "test_flag", 1:4, prj_path=prj_path)
-#
-#   #ensure file is saved
-#   expect_true(file.exists(SondePolishR:::resolve_path(prj_path)))
-#
-#   #ensure log is written
-#   expect_equal(nrow(get_log()), 2)
-#   expect_equal(get_log()$step, c("Initial Load", "test_flag"))
-#
-#   #ensure data ver is saved
-#   expect_equal(names(get_data()), c("raw", "824f400c52499aa98d40f5efe0623169"))
-#
-#   #ensure no new version is saved if same changes are made
-#     data <- flag_data(data, "fDOM_QSU", "test_flag", 1:4, prj_path=prj_path)
-#
-#     #ensure log is written
-#     expect_equal(nrow(get_log()), 2)
-#     expect_equal(get_log()$step, c("Initial Load", "test_flag"))
-#
-#     #ensure data ver is saved
-#     expect_equal(names(get_data()), c("raw", "824f400c52499aa98d40f5efe0623169"))
-#
-#
-# })
-#
-# test_that("flags are omitted", {
-#   #add flags
-#   data <- add_flags(raw_sonde, "fDOM_QSU", "test_flag", c(1,2,3), makeNA=FALSE)
-#   data <- add_flags(data, "fDOM_QSU", "test_flag2", c(1,3), makeNA=FALSE)
-#
-#   expect_equal(data$fDOM_QSU[1], 6.23)
-#   expect_equal(data$fDOM_QSU[2], 6.18)
-#   expect_equal(data$fDOM_QSU[3], 6.10)
-#
-#   #remove all flags
-#   data2 <- remove_flagged(data, c("test_flag", "test_flag2"))
-#   expect_equal(data2$fDOM_QSU[1], as.numeric(NA))
-#   expect_equal(data2$fDOM_QSU[2], as.numeric(NA))
-#   expect_equal(data2$fDOM_QSU[3], as.numeric(NA))
-#
-#   #remove just one flag
-#   data2 <- remove_flagged(data, c("test_flag2"))
-#   expect_equal(data2$fDOM_QSU[1], as.numeric(NA))
-#   expect_equal(data2$fDOM_QSU[2], 6.18)
-#   expect_equal(data2$fDOM_QSU[3], as.numeric(NA))
-#
-#
-# })

@@ -66,11 +66,12 @@ get_diff <- function(olddata, newdata, id="DateTime", ignore=NA){
 #' @param id name of the column name used to match observations between `olddata` and `newdata`.
 
 #' @returns
-#' Either `NULL` if there were no changes to the specified column or it will have the following structure:
-#' - op_type: a character describing the type of change made
-#' - id: the id values for the change made
+#' Either `NULL` if there were no changes to the specified column or a `data.frame` with the following columns:
+#' - id: the id values for the change made (may be more than one column)
 #' - new_data: the values of the changed values in `newdata`
 #' - old_data: the values of the changed values in `olddata`
+#' - op_type: a character describing the type of change made
+
 #' @noRd
 .col_diff <- function(param, id="DateTime", data_merge){
   merge <- data_merge %>%
@@ -84,16 +85,11 @@ get_diff <- function(olddata, newdata, id="DateTime", ignore=NA){
   new <- merge$new[changed]
 
   op_type <- dplyr::case_when(
-    all(is.na(old)) ~ "data_added",
-    all(is.na(new)) ~ "data_removed",
-    all(!is.na(old)) & all(!is.na(new)) ~ "data_changed")
+    is.na(old) ~ "data_added",
+    is.na(new) ~ "data_removed",
+    !is.na(old) & !is.na(new) ~ "data_changed")
 
-  col_diff <- list(
-    op_type = op_type,
-    id = as.numeric(merge[[id]][changed]),
-    new_data = new,
-    old_data = old
-  )
+  col_diff <- merge[changed,] %>%  ungroup() %>% mutate(op_type = op_type)
 
   return(col_diff)
 }
@@ -199,15 +195,17 @@ apply_diff <- function(data, diff, id = "DateTime", invert = FALSE, skip_merge=T
     if(is.null(col_diff)){return(data)}
 
   #identify rows to modify
-  rows <- match(as.POSIXct(col_diff$id), data[[id]])
-  rows <- na.omit(rows)
+    rows <- data %>% ungroup() %>%
+      dplyr::mutate(.row = dplyr::row_number()) %>%
+      dplyr::inner_join(col_diff, by = id) %>%
+      dplyr::pull(.row)
 
   #apply change
   newdata <- data
   if(invert){
-    newdata[[param]][rows] <- col_diff$old_data
+    newdata[[param]][rows] <- col_diff$old
   }else{
-    newdata[[param]][rows] <- col_diff$new_data
+    newdata[[param]][rows] <- col_diff$new
 
   }
 
@@ -227,3 +225,4 @@ apply_diff <- function(data, diff, id = "DateTime", invert = FALSE, skip_merge=T
 
   return(all(has_diff) && all(sapply(diff, "[[", 1) == "data_added") | all(sapply(diff, "[[", 1) == "data_merge"))
 }
+

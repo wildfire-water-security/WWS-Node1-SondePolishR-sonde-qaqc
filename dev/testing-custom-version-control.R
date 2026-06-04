@@ -284,3 +284,73 @@ apply_diff <- function(data, diff, invert = FALSE){
 
 #test 4: go from data 5 to data without reversing merge
   newdata1 <- apply_mult_diff(data5, diff_list, invert=TRUE, skip_merge = TRUE)
+
+## Testing how to do version control with duplicates -------
+ #start with a small dataset for testing
+  proj <- example_sondeproj
+  messy <- example_data[1:20,]
+  same_dif <- messy[2:4,]
+  same_dif[,9:15] <- same_dif[,9:15] * 1.1
+  messy <- rbind(messy, same_dif) #same file
+  messy <- rbind(messy, messy[8:10,]) # different file
+
+  messy$FileName[8:10] <- "dupfile2.csv"
+
+  messy <- messy %>% arrange(FileName, DateTime_rd) %>% mutate(Index= 1:n())
+
+  messy <- messy %>% group_by(.data$DateTime_rd) %>% mutate(DupNum = row_number(), .after="Index")
+
+  #testing removing data from a duplicate file
+    messy2 <- messy
+    messy2[messy2$FileName == "dupfile2.csv",9:15] <- NA
+
+  #testing removing data from same file
+    messy2 <- messy
+    messy2[messy2$DupNum == 2,9:15] <- NA
+
+  #testing summarizing two files into one
+    pars <- paste(c("Cond", "fDOM", "ODO", "Sal", "TDS", "Turbidity","TSS","pH","Temp", "Depth"), collapse="|")
+    par_names <- grep(pars, names(messy), value = TRUE)
+
+    messy2 <- messy
+    messy2 <- messy2 %>%
+      group_by(Date, DateTime_rd) %>%
+      mutate(across(any_of(c(par_names, "Battery_V")), ~ if_else(DupNum == 1,mean(.x, na.rm = TRUE),NA_real_)),
+            across("FileName", ~ if_else(DupNum == 1,paste(unique(.), collapse = ";"),NA_character_))) %>%
+      ungroup()
+
+#getting dif including index
+  dif <- get_diff(messy, messy2, id=c("DateTime_rd", "DupNum"))
+  new_messy <- apply_diff(messy, dif, id=c("DateTime_rd", "DupNum"))
+  identical(messy2, new_messy)
+
+  #apply flags
+    flag_diff <- dif[names(dif) %in% colnames(proj$flags$flag_rm)]
+    flag_diff <- flag_diff[!sapply(flag_diff, is.null)]
+
+    for(y_var in names(flag_diff)){
+      col_diff <- flag_diff[[y_var]]
+
+      proj$flags$flag_chg <- update_dup_flags(proj$flags$flag_chg,
+                                              col_diff, y_var,"data_changed","DUP01")
+
+      proj$flags$flag_rm  <- update_dup_flags(proj$flags$flag_chg,
+                                              col_diff, y_var,"data_removed","DUP02")
+
+    }
+
+  test1 <- proj$flags$flag_rm
+  test2 <- proj$flags$flag_chg
+  proj$flags[[edit$changetype]][[edit$y_var]][edit$rows] <- edit$flag
+
+  #update log entry
+  proj <- write_log(proj, edit$y_var, edit$step, n=sum(edit$rows, na.rm=TRUE),
+                    note = edit$note, diff_name = names(dif), return = "sondeproj")
+
+
+  #add in new df and diff
+  proj$data <- newdata
+  proj$diffs <- c(proj$diffs, dif)
+
+## test with our messy project
+
