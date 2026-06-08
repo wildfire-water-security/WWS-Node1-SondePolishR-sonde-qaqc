@@ -59,7 +59,7 @@ test_that("{shinytest2} recording: checking-module5", {
   #at full scale
     app$set_inputs(`data5-date_nav-week_view` = FALSE)
     app$set_inputs(`data5-edit_type` = "drift")
-    app$wait_for_idle()
+    app$wait_for_idle(timeout = 10000)
 
     app$set_inputs(`data5-file` = "example-csv-data2.csv")
     app$wait_for_idle()

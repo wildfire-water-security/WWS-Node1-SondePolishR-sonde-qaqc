@@ -233,7 +233,9 @@ additive_server <- function(id, sondeproj, data_ver, y_var){
         p <- p %>% plotly::layout(dragmode = "select")
       }
 
-      p
+      p <- strip_hoveron(p)
+      toWebGL(p)
+
     })
 
   #flagging module

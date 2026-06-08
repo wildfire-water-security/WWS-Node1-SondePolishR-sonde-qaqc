@@ -246,3 +246,19 @@ summarise_date_ranges <- function(x, exact=NULL, interval=15, ignore=24*60) {
   return(missing_dat)
 }
 
+#' Used to prevent warnings when using toWebGL
+#'
+#' @param p a ggplotly object
+#'
+#' @returns a ggplotly object with "hoveron" attribute removed to prevent warnings
+#' @noRd
+#'
+strip_hoveron <- function(p){
+  for (i in seq_along(p$x$data)) {
+    if (!is.null(p$x$data[[i]]$hoveron)) {
+      p$x$data[[i]]$hoveron <- NULL
+    }
+  }
+
+  p
+}

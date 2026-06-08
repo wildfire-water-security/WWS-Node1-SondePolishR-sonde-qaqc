@@ -201,3 +201,4 @@
   sonde_obj_messy$changelog$user <- "smith"
 
   saveRDS(sonde_obj_messy, "tests/testthat/testdata/example-sondeproj-messy.RDS")
+  saveRDS(sonde_obj_messy, "inst/extdata/example-sondeproj-messy.RDS")

@@ -208,7 +208,8 @@ outlier_server <- function(id, sondeproj, data_ver, y_var){
         plotly::event_register("plotly_selected") %>%
         plotly::layout(dragmode = "select")
 
-      p
+      p <- strip_hoveron(p)
+      toWebGL(p)
     })
 
 

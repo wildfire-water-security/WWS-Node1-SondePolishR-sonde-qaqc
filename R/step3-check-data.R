@@ -158,12 +158,12 @@ check_data_server <- function(id, sondeproj, data_ver, y_var){
     dup_plot_data <- reactive({
       req(selected_dup())
       data <- sondeproj()$data
-      dupdata <- data %>% filter(DateTime_rd >= selected_dup()$start,DateTime_rd <= selected_dup()$end) %>%
+      dupdata <- data %>% filter(.data$DateTime_rd >= selected_dup()$start,.data$DateTime_rd <= selected_dup()$end) %>%
       mutate(color_labs = if(selected_dup()$duptype == "multiple files"){.data$FileName}else{paste0("Set ", .data$DupNum)})
 
       #get data for before and after dup period
-      prepost <- data %>% filter((DateTime_rd >= (selected_dup()$start - lubridate::hours(8)) & DateTime_rd < selected_dup()$start) |
-                                 (DateTime_rd > selected_dup()$end & DateTime_rd <= selected_dup()$end + lubridate::hours(8))) %>%
+      prepost <- data %>% filter((.data$DateTime_rd >= (selected_dup()$start - lubridate::hours(8)) & .data$DateTime_rd < selected_dup()$start) |
+                                 (.data$DateTime_rd > selected_dup()$end & .data$DateTime_rd <= selected_dup()$end + lubridate::hours(8))) %>%
         mutate(color_labs = "non-duplicated data")
 
       rbind(dupdata, prepost)

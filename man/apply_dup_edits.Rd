@@ -25,7 +25,9 @@ and the requested data summary will be performed, the appropriate flags will be 
 will be made.
 }
 \examples{
-messy <- readRDS(file.path(test_path(), "testdata/example-sondeproj-messy.RDS"))
-messy$duplicates <- identify_dups(messy$data)
-flagged <- apply_dup_edits(messy, messy$duplicates[1,], "use_mean")
+path <- file.path(fs::path_package("extdata", package = "SondePolishR"),
+"example-sondeproj-messy.RDS")
+proj <- readRDS(path)
+proj$duplicates <- identify_dups(proj$data)
+flagged <- apply_dup_edits(proj, proj$duplicates[1,], "use_mean")
 }

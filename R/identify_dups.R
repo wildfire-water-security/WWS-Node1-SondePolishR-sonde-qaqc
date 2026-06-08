@@ -145,9 +145,11 @@ update_dup_flags <- function(flag_tbl, col_diff, y_var, op_type, flag_code) {
 #' @returns a `sondeproj` with the updated data, flags, and changelog
 #' @export
 #' @examples
-#' messy <- readRDS(file.path(test_path(), "testdata/example-sondeproj-messy.RDS"))
-#' messy$duplicates <- identify_dups(messy$data)
-#' flagged <- apply_dup_edits(messy, messy$duplicates[1,], "use_mean")
+#' path <- file.path(fs::path_package("extdata", package = "SondePolishR"),
+#' "example-sondeproj-messy.RDS")
+#' proj <- readRDS(path)
+#' proj$duplicates <- identify_dups(proj$data)
+#' flagged <- apply_dup_edits(proj, proj$duplicates[1,], "use_mean")
 
 apply_dup_edits <- function(proj, dup_row, keep_opt, flag_notes=""){
    data <- proj$data

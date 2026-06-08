@@ -140,7 +140,9 @@ limits_server <- function(id, sondeproj, data_ver, y_var){
       )
 
       # convert to plotly
-      plotly::ggplotly(plot_obj(), dynamicTicks = TRUE)
+      p <- plotly::ggplotly(plot_obj(), dynamicTicks = TRUE)
+      p <- strip_hoveron(p)
+      toWebGL(p)
     })
 
 
