@@ -25,7 +25,7 @@ identify_dups <- function(data){
   stopifnot(inherits(data, "data.frame"))
   #gets start and end of duplicated sections, filter out parts with all parameters NA, those have been dealt with
   pars <- paste(c("Cond", "fDOM", "ODO", "Sal", "TDS", "Turbidity","TSS","pH","Temp", "Depth"), collapse="|")
-  par_names <- grep(pars, names(plot_dat), value = TRUE)
+  par_names <- grep(pars, names(data), value = TRUE)
   keep <- rowSums(!is.na(data[par_names])) > 0
 
 
@@ -138,18 +138,23 @@ update_dup_flags <- function(flag_tbl, col_diff, y_var, op_type, flag_code) {
 #'
 #' @param proj  `sondeproj` object holding sonde data.
 #' @param dup_row Row from the outputs of `identify_dups`
-#' @param keep_opt Character describing which set of duplicates to keep (identified by `DupNum`) or "use_mean" to take the mean of the values
+#' @param keep_opt Character describing which set of duplicates to keep (identified by `DupNum`),
+#'  "use_mean" to take the mean of the values, "remove_both" to remove all the duplicated values.
 #' @param flag_notes Optional character with additional notes to write to the changelog
 #'
 #' @returns a `sondeproj` with the updated data, flags, and changelog
 #' @export
-#'
-apply_dup_edits <- function(proj, dup_row, keep_opt, flag_notes){
+#' @examples
+#' messy <- readRDS(file.path(test_path(), "testdata/example-sondeproj-messy.RDS"))
+#' messy$duplicates <- identify_dups(messy$data)
+#' flagged <- apply_dup_edits(messy, messy$duplicates[1,], "use_mean")
+
+apply_dup_edits <- function(proj, dup_row, keep_opt, flag_notes=""){
    data <- proj$data
 
   #identify parameters that need to be set to NA
     pars <- paste(c("Cond", "fDOM", "ODO", "Sal", "TDS", "Turbidity","TSS","pH","Temp", "Depth"), collapse="|")
-    par_names <- grep(pars, names(plot_dat), value = TRUE)
+    par_names <- grep(pars, names(data), value = TRUE)
 
    #determine which values should be summarised
       row_filter <- data$DateTime_rd >= dup_row$start & data$DateTime_rd <= dup_row$end
@@ -162,14 +167,19 @@ apply_dup_edits <- function(proj, dup_row, keep_opt, flag_notes){
   if(keep_opt  == "use_mean"){
     #summarise data
     df_sum <- df_sum %>%
-      group_by(Date, DateTime_rd) %>%
+      group_by(.data$Date, .data$DateTime_rd) %>%
       mutate(across(any_of(par_names), ~ if_else(DupNum == 1,mean(.x, na.rm = TRUE),NA_real_)),
              across("FileName", ~ if_else(DupNum == 1,paste(unique(.), collapse = ";"),NA_character_))) %>%
       ungroup()
 
+  }else if(keep_opt == "remove_both"){
+    #set all duplicated values to NA
+    df_sum <- df_sum %>% mutate(across(any_of(par_names), ~ NA_real_))
   }else{
    #otherwise just keep the group we're interested in
-    df_sum <- df_sum %>% mutate(across(any_of(par_names), ~ ifelse(as.numeric(keep_opt) == DupNum, .x, NA_real_)))
+    #get dup number of file
+    dupfilter <- ifelse(dup_row$duptype == "multiple files", unique(df_sum$DupNum[df_sum$FileName == keep_opt]), keep_opt)
+    df_sum <- df_sum %>% mutate(across(any_of(par_names), ~ ifelse(as.numeric(dupfilter) == DupNum, .x, NA_real_)))
   }
 
   #recombine and re-sort
@@ -196,7 +206,10 @@ apply_dup_edits <- function(proj, dup_row, keep_opt, flag_notes){
 
   #update log entry
     #make note
-    note <- ifelse(keep_opt == "use_mean", "averaged across duplicate values", paste("kept duplicates from duplicate Set", keep_opt))
+    note <- switch(keep_opt,
+                   "use_mean" = "averaged across duplicate values",
+                   "remove_both" = "removed all duplicated values",
+                   paste("kept duplicates from duplicate set", keep_opt))
     if(flag_notes != ""){note <- paste(note, flag_notes, sep="; ")}
 
     #give name to diff
@@ -208,7 +221,7 @@ apply_dup_edits <- function(proj, dup_row, keep_opt, flag_notes){
 
   #add in new df and diff
     proj$data <- data_nodup
-    proj$diffs <- c(proj$diffs, dif)
+    proj$diffs <- c(proj$diffs, diff)
 
   return(proj)
 }

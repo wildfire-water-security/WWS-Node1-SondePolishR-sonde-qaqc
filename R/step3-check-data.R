@@ -39,7 +39,7 @@ check_data_UI <- function(id){
                   value = "",
                   placeholder = "Enter text..."),
 
-          actionButton(ns("apply_dup"),"Resolve Duplicate" )
+          actionButton(ns("apply_dup"),"Resolve Duplicate")
         )
       ))
   )
@@ -158,28 +158,38 @@ check_data_server <- function(id, sondeproj, data_ver, y_var){
     dup_plot_data <- reactive({
       req(selected_dup())
       data <- sondeproj()$data
-      data %>% filter(DateTime_rd >= selected_dup()$start,DateTime_rd <= selected_dup()$end) %>%
+      dupdata <- data %>% filter(DateTime_rd >= selected_dup()$start,DateTime_rd <= selected_dup()$end) %>%
       mutate(color_labs = if(selected_dup()$duptype == "multiple files"){.data$FileName}else{paste0("Set ", .data$DupNum)})
+
+      #get data for before and after dup period
+      prepost <- data %>% filter((DateTime_rd >= (selected_dup()$start - lubridate::hours(8)) & DateTime_rd < selected_dup()$start) |
+                                 (DateTime_rd > selected_dup()$end & DateTime_rd <= selected_dup()$end + lubridate::hours(8))) %>%
+        mutate(color_labs = "non-duplicated data")
+
+      rbind(dupdata, prepost)
 
     })
 
-    output$dup_plot <- renderPlotly({
+    plot_obj <- reactive({
       dat <- dup_plot_data()
 
-      p <- plot_sonde(dat, y_var()) + aes(color = color_labs) +labs(color = "Duplicate ID")
+      p <- plot_sonde(dat, y_var()) + aes(color = .data$color_labs) +labs(color = "Duplicate ID")
+      p
+    })
 
-      ggplotly(p)
+    output$dup_plot <- renderPlotly({
+      ggplotly(plot_obj())
     })
 
   #update options for which version to keep
     output$keep_ui <- renderUI({
       dat <- dup_plot_data()
-      opts <- c(unique(dat$DupNum), "use_mean")
+      opts <- c(unique(dat$DupNum), "use_mean", "remove_both")
 
       if(selected_dup()$duptype == "multiple files"){
-        names(opts) <- c(unique(dat$FileName),"Use Mean")
+        names(opts) <- c(unique(dat$FileName),"Use Mean", "Remove Both")
       }else{
-        names(opts) <- c(paste("Set", unique(dat$DupNum)),"Use Mean")
+        names(opts) <- c(paste("Set", unique(dat$DupNum)),"Use Mean","Remove Both")
       }
 
       radioButtons(session$ns("keep_opt"),"Select Which Duplicate Set to Keep",choices = opts)
@@ -199,7 +209,8 @@ check_data_server <- function(id, sondeproj, data_ver, y_var){
 
   #export plot so we can check it
     exportTestValues(
-      table = tab())
+      table = tab(),
+      plot_obj = plot_obj())
 
   })
 }

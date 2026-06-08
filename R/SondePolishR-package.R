@@ -63,6 +63,7 @@
 #' @importFrom lubridate ceiling_date
 #' @importFrom lubridate floor_date
 #' @importFrom lubridate force_tz
+#' @importFrom lubridate hours
 #' @importFrom lubridate minutes
 #' @importFrom lubridate parse_date_time
 #' @importFrom lubridate round_date

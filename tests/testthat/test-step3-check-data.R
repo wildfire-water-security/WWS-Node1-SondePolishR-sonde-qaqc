@@ -49,4 +49,31 @@ test_that("{shinytest2} recording: checking-module3", {
     expect_equal(nrow(tab), 1)
     app$expect_screenshot() #make sure table prints
 
+#TEST 3: dealing with dupes
+  app$set_inputs(`data3-table_opt` = "Duplicates")
+
+  #select first row
+  app$set_inputs(`data3-change_table_rows_selected` = 1, allow_no_input_binding_ = TRUE)
+
+  #check for plot
+    plot_obj <- app$get_value(export = "data3-plot_obj")
+    vdiffr::expect_doppelganger("dup 1 plot works", plot_obj)
+
+  #change row, expect a different plot
+    app$set_inputs(`data3-change_table_rows_selected` = 2, allow_no_input_binding_ = TRUE)
+    plot_obj <- app$get_value(export = "data3-plot_obj")
+    vdiffr::expect_doppelganger("dup 2 plot works", plot_obj)
+
+
+  #select option and deal with dup (don't need to test cases because those checked in non-shiny tests)
+    app$set_inputs(`data3-keep_opt` = "use_mean")
+    app$click("data3-apply_dup")
+
+  #check that row is removed from table
+    tab <- app$get_value(export = "data3-table")
+    expect_equal(nrow(tab), 1)
+    app$expect_screenshot() #make sure table prints
+
+
+
 })
