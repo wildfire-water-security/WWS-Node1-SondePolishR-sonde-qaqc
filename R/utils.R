@@ -262,3 +262,35 @@ strip_hoveron <- function(p){
 
   p
 }
+
+
+#' Identifies the parameters contained within the data
+#'
+#' @param data Sonde dataset
+#'
+#' @returns a vector of parameter names in the dataset
+#' @noRd
+get_parms <- function(data){
+  pars <- paste(c("Cond", "fDOM", "ODO", "Sal", "TDS", "Turbidity","TSS","pH","Temp", "Depth"), collapse="|")
+  par_names <- grep(pars, names(data), value = TRUE)
+
+  return(par_names)
+}
+
+#' Guess the data interval length of the data
+#'
+#' @param data Sonde dataset
+#'
+#' @returns the interval length as a number
+#' @noRd
+#'
+get_interval <- function(data){
+  get_mode <- function(x) {
+    ux <- unique(x)
+    ux[which.max(tabulate(match(x, ux)))]
+  }
+
+  interval <- get_mode(as.numeric(difftime(data$DateTime, lag(data$DateTime), units="mins")))
+
+  return(interval)
+}

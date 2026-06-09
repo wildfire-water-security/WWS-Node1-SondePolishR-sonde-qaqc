@@ -62,7 +62,7 @@ check_data_server <- function(id, sondeproj, data_ver, y_var){
   moduleServer(id, function(input, output, session){
 
   #when data loaded, get dups and gaps
-  observeEvent(data_ver(),{
+  observeEvent(sondeproj(),{
     req(sondeproj())
 
     proj <- sondeproj()

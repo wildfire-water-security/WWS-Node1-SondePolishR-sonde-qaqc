@@ -19,11 +19,7 @@
 identify_gaps <- function(data, ignore = 60*5){
   stopifnot(inherits(data, "data.frame"))
 
-  get_mode <- function(x) {
-    ux <- unique(x)
-    ux[which.max(tabulate(match(x, ux)))]
-  }
-  interval <- get_mode(as.numeric(difftime(data$DateTime, lag(data$DateTime), units="mins")))
+  interval <- get_interval(data)
 
   missing <- data %>% complete(DateTime_rd = seq(min(.data$DateTime_rd), max(.data$DateTime_rd), by = paste(interval, "min"))) %>%
     filter(is.na(.data$Index)) %>% reframe(start = summarise_date_ranges(.data$DateTime_rd, ignore=ignore, interval =interval)$start,

@@ -24,8 +24,7 @@
 identify_dups <- function(data){
   stopifnot(inherits(data, "data.frame"))
   #gets start and end of duplicated sections, filter out parts with all parameters NA, those have been dealt with
-  pars <- paste(c("Cond", "fDOM", "ODO", "Sal", "TDS", "Turbidity","TSS","pH","Temp", "Depth"), collapse="|")
-  par_names <- grep(pars, names(data), value = TRUE)
+  par_names <- get_parms(data)
   keep <- rowSums(!is.na(data[par_names])) > 0
 
 
@@ -155,8 +154,7 @@ apply_dup_edits <- function(proj, dup_row, keep_opt, flag_notes=""){
    data <- proj$data
 
   #identify parameters that need to be set to NA
-    pars <- paste(c("Cond", "fDOM", "ODO", "Sal", "TDS", "Turbidity","TSS","pH","Temp", "Depth"), collapse="|")
-    par_names <- grep(pars, names(data), value = TRUE)
+   par_names <- get_parms(data)
 
    #determine which values should be summarised
       row_filter <- data$DateTime_rd >= dup_row$start & data$DateTime_rd <= dup_row$end

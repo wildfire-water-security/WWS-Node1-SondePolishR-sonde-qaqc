@@ -85,8 +85,7 @@ add_flags <- function(data, par=NULL, flag_name=NULL, index=NULL, makeNA=FALSE){
 
   #add flag columns if they don't exist
    #guess pars
-     pars <- paste(c("Cond", "fDOM", "ODO", "Sal", "TDS", "Turbidity","TSS","pH","Temp", "Depth"), collapse="|")
-     par_names <- grep(pars, names(data), value = TRUE)
+     par_names <- get_parms(data)
      par_names <- par_names[!grepl("_flag$", par_names)] #remove existing flag columns
 
     #  missing <- par_names[!(paste0(par_names, "_flag") %in% colnames(data))]

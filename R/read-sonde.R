@@ -174,11 +174,7 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NUL
     data <- data %>% dplyr::mutate(dplyr::across(all_of(numeric), as.numeric))
 
   #create rounded datetime column for checking dups, gaps
-    get_mode <- function(x) {
-      ux <- unique(x)
-      ux[which.max(tabulate(match(x, ux)))]
-    }
-    interval <- get_mode(as.numeric(difftime(data$DateTime, lag(data$DateTime), units="mins")))
+    interval <- get_interval(data)
 
     data <- data %>%
       dplyr::mutate(DateTime_rd = lubridate::round_date(.data$DateTime, paste0(interval, " mins")), .after = "DateTime")
@@ -194,8 +190,7 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NUL
  #add flags
   if(flags){
     #guess pars
-    pars <- paste(c("Cond", "fDOM", "ODO", "Sal", "TDS", "Turbidity","TSS","pH","Temp", "Depth"), collapse="|")
-    par_names <- grep(pars, names(data), value = TRUE)
+    par_names <- get_parms(data)
 
     #add spot for flags for each parameter
     for(x in par_names){

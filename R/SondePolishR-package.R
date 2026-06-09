@@ -98,6 +98,7 @@
 #' @importFrom thematic thematic_shiny
 #' @importFrom tidyr complete
 #' @importFrom tidyr drop_na
+#' @importFrom tidyr fill
 #' @importFrom tidyr pivot_longer
 #' @importFrom tidyr pivot_wider
 #' @importFrom tidyselect all_of
