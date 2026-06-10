@@ -46,7 +46,9 @@ Imports:
     vctrs,
     timeplyr,
     pracma,
-    zoo
+    zoo,
+    forecast,
+    missForest
 Suggests: 
     shinytest2,
     testthat (>= 3.0.0), 

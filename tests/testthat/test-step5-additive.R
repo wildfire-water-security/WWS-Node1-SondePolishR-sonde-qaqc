@@ -76,6 +76,8 @@ test_that("{shinytest2} recording: checking-module5", {
       app$click("data5-date_nav-next_week")
     }
 
+    app$wait_for_idle()
+
     plot_obj <- app$get_value(export = "data5-plot_obj")
     vdiffr::expect_doppelganger("drift correction with weekly view", plot_obj)
 

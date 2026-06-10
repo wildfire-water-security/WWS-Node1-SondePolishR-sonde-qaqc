@@ -53,7 +53,10 @@ ui <-  page_fillable(
                 value = "step-6",
                 SondePolishR::outlier_UI("data6")
       ),
-      nav_panel("7. Interpolation", "Interpolate Missing Data and apply smoothing"),
+      nav_panel("7. Interpolation",
+                value = "step-7",
+                SondePolishR::interp_UI("data7")
+      ),
       nav_panel("8. fDOM Corrections", "fDOM Corrections"),
       nav_panel("9. Download Data", "Download Processed Data")
 
@@ -96,6 +99,9 @@ server <- function(input, output, session) {
 
   #step 6: outlier corrections
    SondePolishR::outlier_server("data6", sondeproj, data_ver, y_var)
+
+  #step 7: data interpolation
+   SondePolishR::interp_server("data7", sondeproj, data_ver, y_var)
 
   #export values for tests
    # exportTestValues(

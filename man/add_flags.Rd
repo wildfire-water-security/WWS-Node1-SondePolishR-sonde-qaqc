@@ -2,47 +2,28 @@
 % Please edit documentation in R/add_flag.R
 \name{add_flags}
 \alias{add_flags}
-\title{Flag dataset and save a copy}
+\title{Get skeleton flagging dataframe}
 \usage{
-add_flags(data, par = NULL, flag_name = NULL, index = NULL, makeNA = FALSE)
+add_flags(proj, data)
 }
 \arguments{
+\item{proj}{a \code{sondeproj} object to add the flags to. If it has existing flags they will be merged
+with the new flags from \code{data} with existing flags.}
+
 \item{data}{a data.frame with sonde data}
-
-\item{par}{the parameter to check}
-
-\item{flag_name}{a character with the name of the flag}
-
-\item{index}{the index values for the rows to be flagged}
-
-\item{makeNA}{if \code{TRUE} the flagged data will be converted to NA values}
 }
 \value{
-returns the flagged copy of the \code{data.frame}
-Add flags to sonde data
-
-Works either to provide a skeleton for the flag data (if no parameter or flag names are provided) or
-adds a flag to the specified data. Used to keep track of which datapoints were flagged in which QA/QC steps.
-If only some flags are added, it will try to add the missing flags.
-
 a data.frame
 \itemize{
 \item if \code{par} and \code{flag_name} are \code{NULL} it will return a \code{data.frame} with the same number of rows as \code{data} but
-with a blank column for each parameter in the \code{data.frame} with the form <*_flag> and only the index, datetime and datetime_rd columns.
-\item if \code{par} and \code{flag_name} are specified it will add a named vector to the <par_flag> column specifying \code{TRUE} for flagged and \code{FALSE} for not flagged
+with a blank column for each parameter in the \code{data.frame} only the index, datetimme, datetime_rd, and DupNum columns.
 }
 }
 \description{
-Adds flags to the dataset, saves the new version of the dataset, and saves the project to the
-project path specified by the user as a \code{.RDS} object. Also provides messages about the
-changes being made.
+Works to provide a skeleton for the flag data (if no parameter or flag names are provided).
 }
 \examples{
 #add flag columns
-data <- add_flags(example_data)
-colnames(data)
-
-#add a flag
-data <- add_flags(example_data, "fDOM_QSU", "test_flag", c(1,2,3))
-head(data)
+updated_proj <- add_flags(example_sondeproj, example_data)
+colnames(updated_proj$flags$flag_rm)
 }

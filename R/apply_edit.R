@@ -27,8 +27,12 @@ apply_edit <- function(proj, edit){
     dif <- list(get_diff(olddata, newdata, id=c("DateTime_rd", "DupNum")))
     names(dif) <- diff_version(proj) #give name to list item
 
-
   #apply flags to project
+    #update flags if adding new rows
+    if(nrow(proj$flags$flag_rm) != nrow(edit$data)){
+      proj <- add_flags(proj, edit$data)
+    }
+
     proj$flags[[edit$changetype]][[edit$y_var]][edit$rows] <- edit$flag
 
   #update log entry

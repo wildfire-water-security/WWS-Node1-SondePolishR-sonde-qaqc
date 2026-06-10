@@ -191,14 +191,10 @@ load_data_server <- function(id, sondeproj, data_ver){
       }else{
         #create new project if one isn't loaded
         changelog <- write_log(NULL, "all", "initial load", n = nrow(csv_merge), diff_name = "raw")
-        empty_flags <- add_flags(csv_merge)
 
         #create sonde object
         obj <- list(data = csv_merge,
-                    flags = list(
-                            flag_rm = empty_flags,
-                            flag_chg = empty_flags,
-                            flag_add = empty_flags),
+                    flags = NULL,
                      fieldform = NULL,
                      calcheck = NULL,
                      diffs = list(),
@@ -207,6 +203,8 @@ load_data_server <- function(id, sondeproj, data_ver){
                     data_gaps = NULL)
 
         class(obj) <- "sondeproj"
+
+        obj <- add_flags(obj, csv_merge)
       }
 
     #read in ff and cal file (these cover the entire period and we don't need to merge, just update)
@@ -277,17 +275,8 @@ load_data_server <- function(id, sondeproj, data_ver){
       }
         obj$data <- data_merge
 
-      #create flag tables for new data
-      empty_flags <- add_flags(obj$data)
-
       #keep existing flags
-      ext_flags <- obj$flags
-      new_flags <- empty_flags %>% filter(!(.data$DateTime %in% ext_flags$flag_rm$DateTime))
-
-      obj$flags <- lapply(obj$flags, function(x){
-        x %>% dplyr::bind_rows(new_flags) %>%
-          arrange(.data$DateTime) %>% mutate(Index = 1:n(), .before="DateTime")
-      })
+        obj <- add_flags(obj, obj$data)
 
       #check that flags match data
       stopifnot(all(sapply(obj$flags, nrow) == nrow(obj$data)))
