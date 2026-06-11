@@ -292,5 +292,6 @@ get_interval <- function(data){
 
   interval <- get_mode(as.numeric(difftime(data$DateTime, lag(data$DateTime), units="mins")))
 
+  if(is.na(interval)){interval <- 15} #default to 15 minutes if it doesn't know
   return(interval)
 }

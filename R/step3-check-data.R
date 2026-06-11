@@ -183,14 +183,15 @@ check_data_server <- function(id, sondeproj, data_ver, y_var){
 
   #update options for which version to keep
     output$keep_ui <- renderUI({
-      dat <- dup_plot_data()
-      opts <- c(unique(dat$DupNum), "use_mean", "remove_both")
+     # browser()
+      dat <- dup_plot_data() %>% filter(.data$color_labs != "non-duplicated data")
+      opts <- c(unique(dat$color_labs), "use_mean", "remove_both")
 
       if(selected_dup()$duptype == "multiple files"){
         names(opts) <- c(unique(dat$FileName),"Use Mean", "Remove Both")
       }else{
-        names(opts) <- c(paste("Set", unique(dat$DupNum)),"Use Mean","Remove Both")
-      }
+        names(opts) <- c(unique(dat$color_labs),"Use Mean","Remove Both")
+       }
 
       radioButtons(session$ns("keep_opt"),"Select Which Duplicate Set to Keep",choices = opts)
     })

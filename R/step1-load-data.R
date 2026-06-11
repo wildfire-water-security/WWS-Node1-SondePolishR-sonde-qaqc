@@ -78,7 +78,7 @@ load_data_UI <- function(id){
                       uiOutput(NS(id, "path_text_box"))))
              )),
       bslib::card(bslib::card_header("1.4: Load Data"),
-         actionButton(NS(id, "load_prj"), "Load Sonde Project", width ="30%"),
+         actionButton(NS(id, "load_prj"), "Load Sonde Data", width ="30%"),
          actionButton(NS(id, "reset"), "Clear File Uploads", width ="30%"),
 
     ))
