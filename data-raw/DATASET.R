@@ -69,19 +69,13 @@
         dplyr::left_join(mean_visit %>% select("Date", "Est_Time"),
                          dplyr::join_by("Date"))
 
-  #create flag tables
-    empty_flags <- add_flags(data_merge)
-
   #create log if not read in from existing project
     changelog <- write_log(NULL, "all", "initial load", n = nrow(data_merge), diff_name = "raw")
     changelog$user <- "smith"
 
    #create sonde object
     sonde_obj <- list(data = data_merge,
-                      flags = list(
-                        flag_rm = empty_flags,
-                        flag_chg = empty_flags,
-                        flag_add = empty_flags),
+                      flags = NULL,
                       fieldform = fieldform,
                       calcheck = calcheck,
                       diffs = list(),
@@ -91,11 +85,14 @@
 
     class(sonde_obj) <- "sondeproj"
 
+  #create flag tables
+    sonde_obj <- add_flags(sonde_obj, data_merge)
+
   #add some changes
     #make some changes and save
     data2 <- sonde_obj$data
     data2$fDOM_QSU[1:4] <- NA
-    dd1 <- list(get_diff(sonde_obj$data, data2)) #commit difference
+    dd1 <- list(get_diff(sonde_obj$data, data2, id=c("DateTime_rd", "DupNum"))) #commit difference
     names(dd1) <- "dd1"
     sonde_obj$flags$flag_rm$fDOM_QSU[1:4] <- "RM01" #add flag
     sonde_obj <- write_log(sonde_obj, "fDOM_QSU", "removing first four points", n = 4, diff_name = "dd1", return = "sondeproj") #write log
@@ -105,7 +102,7 @@
     #make more changes
     data2 <- sonde_obj$data
     data2$ODO_mg_L[5:7] <- data2$ODO_mg_L[5:7] * 0.8
-    dd2 <- list(get_diff(sonde_obj$data, data2)) #commit difference
+    dd2 <- list(get_diff(sonde_obj$data, data2,id=c("DateTime_rd", "DupNum"))) #commit difference
     names(dd2) <- "dd2"
     sonde_obj$flags$flag_chg$ODO_mg_L[5:7] <- "CH01" #add flag
     sonde_obj <- write_log(sonde_obj, "ODO_mg_L", "applying shift correction", n = 3, diff_name = "dd2", return = "sondeproj") #write log
@@ -115,7 +112,7 @@
     #make more changes
     data2 <- sonde_obj$data
     data2$Temp_C[52:90] <- NA
-    dd3 <- list(get_diff(sonde_obj$data, data2)) #commit difference
+    dd3 <- list(get_diff(sonde_obj$data, data2, id=c("DateTime_rd", "DupNum"))) #commit difference
     names(dd3) <- "dd3"
     sonde_obj$flags$flag_rm$Temp_C[52:90] <- "RM02" #add flag
     sonde_obj <- write_log(sonde_obj, "Temp_C", "removing a bunch of points", n = 39, diff_name = "dd3", return = "sondeproj") #write log
@@ -125,7 +122,7 @@
     #make more changes
     data2 <- sonde_obj$data
     data2$Temp_C[52:90] <- mean(c(data2$Temp_C[51],data2$Temp_C[91]))
-    dd4 <- list(get_diff(sonde_obj$data, data2)) #commit difference
+    dd4 <- list(get_diff(sonde_obj$data, data2, id=c("DateTime_rd", "DupNum"))) #commit difference
     names(dd4) <- "dd4"
     sonde_obj$flags$flag_add$Temp_C[52:60] <- "AD02" #add flag
     sonde_obj <- write_log(sonde_obj, "Temp_C", "linear interpolation", n = 39, diff_name = "dd4", return = "sondeproj") #write log
@@ -177,18 +174,13 @@
   data_messy <- data_messy %>% dplyr::mutate(Index = 1:n()) %>% group_by(.data$DateTime_rd) %>%
     mutate(DupNum = row_number(), .after="Index") %>% ungroup() #redo index and dupnum
 
-  empty_flags <- add_flags(data_messy)
-
   #create log if not read in from existing project
   changelog <- write_log(NULL, "all", "initial load", n = nrow(data_messy), diff_name = "raw")
   changelog$user <- "smith"
 
   #create sonde object
   sonde_obj_messy <- list(data = data_messy,
-                    flags = list(
-                      flag_rm = empty_flags,
-                      flag_chg = empty_flags,
-                      flag_add = empty_flags),
+                    flags = NULL,
                     fieldform = fieldform,
                     calcheck = calcheck,
                     diffs = list(),
@@ -197,6 +189,9 @@
                     data_gaps = NULL)
 
   class(sonde_obj_messy) <- "sondeproj"
+
+  sonde_obj_messy <- add_flags(sonde_obj_messy, data_messy)
+
   #remove my username from log
   sonde_obj_messy$changelog$user <- "smith"
 

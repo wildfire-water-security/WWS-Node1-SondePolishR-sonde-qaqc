@@ -1,17 +1,82 @@
-#' Fill data gaps with interpolation
+#' Prepare interpolation dataset
 #'
-#' Provides a number of methods to fill NA values for a given parameter within the dataset with
-#' options to only fill a certain gap length otherwise leave the missing values alone.
+#' Completes the date-time sequence to add missing rows for missing datetimes. Also creates an
+#' interpolation dataset where any duplicates have been condensed to a single value. In the case of
+#' two different values, they will be set to NA for the purposes of interpolation to not
+#' interpolate with questionable data.
 #'
 #' @param proj A `sondeproj` object holding sonde data.
-#' @param y_var Variable being interpolated.
-#' @param max_length The maximum length in hours to fill via interpolation.
-#' @param method The method to use for interpolation, options include: `linear`, `spline`, `random_forest`, and `ts_interp` see details for further information about the methods.
-#' @param freq The period interval for the time series in days, only used if `method` is `ts_interp`.
-#' @param progress A function passed from a shiny module to create a progress bar.
 #'
-#' @returns A data.frame if there were completely missing observations, rows may have been added with the missing datetimes. Additionally, an extra column is added (`x_fill`)
-#' which is a logical flag identifying which values were interpolated.
+#' @returns a list of length two:
+#' - fill: `data.frame` based on `proj$data` with missing `datetime` values added.
+#' - interp: `data.frame` based on `proj$data` with duplicates condensed to a single value.
+#' @export
+#' @md
+#' @examples
+#' interp_dfs <- prep_interp(example_sondeproj)
+prep_interp <- function(proj){
+  stopifnot(inherits(proj, "sondeproj"))
+
+  #get data from project
+  data <- proj$data
+
+  #determine interval of data for gap length
+  interval <- get_interval(data)
+
+  #stuff to fill in missing correctly
+  tz <- tz(data$DateTime_rd)
+  name <- unique(data$Site_Name)
+  par_names <- get_parms(data)
+
+  #get the dataset to interpolate (still may have dupes)
+  data_fill <- data %>%
+    complete(DateTime_rd = seq(min(.data$DateTime_rd), max(.data$DateTime_rd),
+                               by = paste(interval, "min"))) %>%
+    arrange(.data$DateTime_rd, .data$DupNum) %>% #want to arrange in time order for filling
+    mutate(Index = 1:n(),
+           DupNum = ifelse(is.na(.data$DupNum), 1, .data$DupNum),
+           FileName = ifelse(is.na(.data$FileName), "interpolated", .data$FileName),
+           Date = if_else(is.na(.data$Date), as.Date(.data$DateTime_rd, tz = tz), .data$Date),
+           Time_HH_mm_ss = if_else(is.na(.data$Time_HH_mm_ss), strftime(.data$DateTime_rd, "%H:%M:%S"), .data$Time_HH_mm_ss),
+           DateTime = if_else(is.na(.data$DateTime), .data$DateTime_rd, .data$DateTime),
+           Site_Name = name)
+
+  #get df with a single stamp per row (conflicting duplicates are set to NA)
+  #determine which sets of dups are conflicting (for removing from interpolated data)
+  conflict <- data %>%
+    pivot_longer(any_of(par_names), names_to = "param", values_to = "value") %>%
+    group_by(.data$DateTime_rd, .data$param) %>%
+    summarise(count = n(),sd = sd(.data$value),.groups = "drop_last") %>%
+    filter(.data$count > 1 & .data$sd != 0)
+  conflict_list <- split(conflict$DateTime_rd, conflict$param)
+
+  #set those parameters/datetimes to NA
+  data_interp <- data_fill %>%
+    mutate(across(all_of(names(conflict_list)),
+                  ~ replace(.x, .data$DateTime_rd %in% conflict_list[[cur_column()]],NA)))
+
+  #fill and summarize to a single obs per datetime
+  data_interp <- data_interp %>% arrange(.data$DateTime_rd, .data$DupNum) %>%
+    group_by(.data$DateTime_rd) %>%
+    tidyr::fill(any_of(par_names), .direction = "downup") %>%
+    slice(1) %>% ungroup()
+
+  return(list(fill = data_fill, interp = data_interp))
+
+}
+
+#' Interpolate data gaps
+#'
+#' Uses the specified method to fill NA values for a given parameter within the dataset.
+#'
+#' @param data_interp `data.frame` from `prep_interp()` with dupes condensed.
+#' @param y_var Variable being interpolated.
+#' @param method The method to use for interpolation, options include:
+#' `linear`, `spline`, `random_forest`, and `ts_interp` see details for further information about the methods.
+#' @param freq The period interval for the time series in days, only used if `method` is `ts_interp`.
+#'
+#' @returns a `data_interp` with a extra column added:
+#' - `yvar_fill`: Filled values for `y_var`.
 #' @export
 #' @md
 #'
@@ -26,120 +91,79 @@
 #' If set to 365 it wil look at annual fluctuations.
 #'
 #' @examples
-#' path <- file.path(fs::path_package("extdata", package = "SondePolishR"),
-#' "example-sondeproj-messy.RDS")
-#' proj <- readRDS(path)
-#' data_filled <- data_interp(proj, "fDOM_QSU", 4, method="linear")
-#'
-data_interp <- function(proj, y_var, method, max_length, freq=1, progress=NULL){
-  stopifnot(inherits(proj, "sondeproj"), is.character(y_var), is.numeric(max_length),
-            is.null(freq) || is.numeric(freq))
-
-  update_progress <- function(value, detail = NULL) {
-    if (!is.null(progress)){progress(value, detail)}}
-
-  update_progress(0.05, "Preparing data")
-
-  #get data from project
-    data <- proj$data
-
-  #determine interval of data for gap length
-    interval <- get_interval(data)
-
-  #stuff to fill in missing correctly
-    tz <- tz(data$DateTime_rd)
-    name <- unique(data$Site_Name)
-    par_names <- get_parms(data)
-
-  #get the dataset to interpolate (still may have dupes)
-    #fill in info from totally missing lines
-    update_progress(0.10, "Creating complete time series")
-    data_fill <- data %>%
-      complete(DateTime_rd = seq(min(.data$DateTime_rd), max(.data$DateTime_rd),
-                                 by = paste(interval, "min"))) %>%
-      arrange(.data$DateTime_rd, .data$DupNum) %>% #want to arrange in time order for filling
-      mutate(Index = 1:n(),
-             DupNum = ifelse(is.na(.data$DupNum), 1, .data$DupNum),
-             FileName = ifelse(is.na(.data$FileName), "interpolated", .data$FileName),
-             Date = if_else(is.na(.data$Date), as.Date(.data$DateTime_rd, tz = tz), .data$Date),
-             Time_HH_mm_ss = if_else(is.na(.data$Time_HH_mm_ss), strftime(.data$DateTime_rd, "%H:%M:%S"), .data$Time_HH_mm_ss),
-             DateTime = if_else(is.na(.data$DateTime), .data$DateTime_rd, .data$DateTime),
-             Site_Name = name)
-
-  #get df with a single stamp per row (conflicting duplicates are set to NA)
-    #determine which sets of dups are conflicting (for removing from interpolated data)
-    update_progress(0.25, "Identifying duplicate conflicts")
-
-    conflict <- data %>%
-      pivot_longer(any_of(par_names), names_to = "param", values_to = "value") %>%
-      group_by(.data$DateTime_rd, .data$param) %>%
-      summarise(count = n(),sd = sd(.data$value),.groups = "drop_last") %>%
-      filter(.data$count > 1 & .data$sd != 0)
-
-    #track which values we want to fill in (ignoring gap size)
-    update_progress(0.40, "Preparing interpolation dataset")
-
-    data_fill <- data_fill %>% group_by(.data$DateTime_rd) %>%
-      mutate(n_dup = n(), n_non_na = sum(!is.na(.data[[y_var]]))) %>%
-      mutate(fill_flag = ifelse(is.na(.data[[y_var]]) & (.data$n_dup == 1 | .data$n_non_na == 0 & .data$DupNum == 1), TRUE,FALSE))
-
-    #set those parameters/datetimes to NA
-    conflict_list <- split(conflict$DateTime_rd, conflict$param)
-
-    data_interp <- data_fill %>%
-      mutate(across(all_of(names(conflict_list)),
-                    ~ replace(.x, .data$DateTime_rd %in% conflict_list[[cur_column()]],NA)))
-
-    #fill and summarize to a single obs per datetime
-    data_interp <- data_interp %>% arrange(.data$DateTime_rd, .data$DupNum) %>%
-      group_by(.data$DateTime_rd) %>%
-      tidyr::fill(any_of(par_names), .direction = "downup") %>%
-      slice(1) %>% ungroup()
-
-#pass non-duplicated data to interpolation functions
-  update_progress(0.60, "Running interpolation")
+#' interp_dfs <- prep_interp(example_sondeproj)
+#' filled_yvar <- run_interp(interp_dfs$interp, "fDOM_QSU", "linear")
+run_interp <- function(data_interp, y_var, method, freq=1){
+  stopifnot(is.data.frame(data_interp))
 
   if(method == "linear"){
-    x_fill <- zoo::na.approx(data_interp[[y_var]],
-                             maxgap = max_length*(60/interval),
-                             na.rm=FALSE)}
+    yvar_fill <- zoo::na.approx(data_interp[[y_var]], na.rm=FALSE)}
 
   if(method == "spline"){
-    x_fill <- zoo::na.spline(data_interp[[y_var]],
-                             maxgap = max_length*(60/interval),
-                             na.rm=FALSE)}
+    yvar_fill <- zoo::na.spline(data_interp[[y_var]], na.rm=FALSE)}
 
   if(method == "random_forest"){
-    update_progress(0.70, "Fitting random forest")
-
     filled <- data_interp %>%
       select(-any_of(c("DateTime_rd", "FileName", "Date", "Time_HH_mm_ss",
                        "DateTime", "Site_Name", "DupNum", "fill_flag"))) %>%
       as.data.frame() %>% missForest::missForest()
 
     #only fill to max gap
-    x_fill <- .fill_short_gaps(data_interp[[y_var]], filled$ximp[[y_var]],
-                               maxgap = max_length*(60/interval))}
+    yvar_fill <- filled$ximp[[y_var]]}
 
   if(method == "ts_interp"){
+    interval <- get_interval(data_interp)
+
     #make time series
     var_ts <- ts(data_interp[[y_var]], frequency = freq*24*(60/interval))
     #only fill to max gap
-    x_fill <- .fill_short_gaps(data_interp[[y_var]],
-                               as.numeric(forecast::na.interp(var_ts)),
-                               maxgap = max_length*(60/interval))}
+    yvar_fill <- as.numeric(forecast::na.interp(var_ts))}
 
   #save as df that we can join with
-  fill_df <- data.frame(DateTime_rd = data_interp$DateTime_rd, x_fill = x_fill)
+  data_interp$yvar_fill <- yvar_fill
 
-  #map filled values back to filled df
-  update_progress(0.95, "Mapping values back to original data")
+  return(data_interp)
+}
 
+#' Map interpolated data back to dataset
+#'
+#' Uses interpolated values to attempt to fill in missing data being aware of
+#' maximum gap lengths to fill and duplicates.
+#'
+#' @param data_fill `data.frame` based on `proj$data` with missing `datetime` values added from `prep_interp()`.
+#' @param data_interp `data.frame` based on `proj$data` with duplicates condensed to a single value and missing values interpolated from `run_interp()`.
+#' @param y_var Variable being interpolated.
+#' @param max_length The maximum length in hours to fill via interpolation.
+#'
+#' @returns `data_fill` with missing values interpolated.
+#' @export
+#' @md
+#'
+#' @examples
+#' interp_dfs <- prep_interp(example_sondeproj)
+#' filled_yvar <- run_interp(interp_dfs$interp, "fDOM_QSU", "linear")
+#' data_filled <- apply_interp(interp_dfs$fill, filled_yvar, "fDOM_QSU", 8)
+apply_interp <- function(data_fill, data_interp, y_var, max_length){
+  interval <- get_interval(data_fill)
+
+  yvar_fill <- .fill_short_gaps(data_interp[[y_var]],
+                                data_interp$yvar_fill,
+                                maxgap = max_length * (60 / interval))
+
+  fill_df <- data.frame(DateTime_rd = data_interp$DateTime_rd,
+                        yvar_fill = yvar_fill)
+
+  #track which values we want to fill in (ignoring gap size)
+  data_fill <- data_fill %>% group_by(.data$DateTime_rd) %>%
+    mutate(n_dup = n(), n_non_na = sum(!is.na(.data[[y_var]]))) %>%
+    mutate(fill_flag = ifelse(is.na(.data[[y_var]]) & (.data$n_dup == 1 | .data$n_non_na == 0 & .data$DupNum == 1), TRUE,FALSE))
+
+  #map interpolated data back
   data_fill <- data_fill %>% left_join(fill_df, by="DateTime_rd") %>%
-    mutate(!!y_var := ifelse(.data$fill_flag, .data$x_fill, .data[[y_var]])) %>%
-    select(-(c("n_dup", "n_non_na", "x_fill"))) %>% ungroup() %>% arrange(.data$DateTime_rd, .data$DupNum) %>%
-    mutate(Index = 1:n())
-  update_progress(1.00, "Done")
+    mutate(!!y_var := ifelse(.data$fill_flag, .data$yvar_fill, .data[[y_var]])) %>%
+    select(-(c("n_dup", "n_non_na", "yvar_fill"))) %>% ungroup() %>% arrange(.data$DateTime_rd, .data$DupNum) %>%
+    mutate(Index = 1:n()) %>% relocate("DateTime_rd", .after = "DateTime")
+
   return(data_fill)
 
 }

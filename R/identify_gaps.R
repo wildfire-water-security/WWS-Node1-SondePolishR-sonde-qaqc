@@ -22,12 +22,15 @@ identify_gaps <- function(data, ignore = 60*5){
   interval <- get_interval(data)
 
   missing <- data %>% complete(DateTime_rd = seq(min(.data$DateTime_rd), max(.data$DateTime_rd), by = paste(interval, "min"))) %>%
-    filter(is.na(.data$Index)) %>% reframe(start = summarise_date_ranges(.data$DateTime_rd, ignore=ignore, interval =interval)$start,
+    filter(is.na(.data$Index))
+  if(nrow(missing) == 0){return(NULL)}
+
+  missing <- missing %>% reframe(start = summarise_date_ranges(.data$DateTime_rd, ignore=ignore, interval =interval)$start,
                                            end = summarise_date_ranges(.data$DateTime_rd, ignore=ignore, interval =interval)$end,
                                            gap_length =summarise_date_ranges(.data$DateTime_rd, ignore=ignore, interval =interval)$gap_min/interval) %>%
     mutate(user_note =NA)
-
   if(nrow(missing) == 0){return(NULL)}
+
   return(missing)
 }
 
@@ -59,7 +62,7 @@ refresh_checks <- function(proj) {
   missing <- identify_gaps(proj$data)
 
   #put in the project (merge user notes to preserve)
-  if(!is.null(proj$data_gaps)){
+  if(!is.null(proj$data_gaps) && !is.null(missing)){
     old_gap <- proj$data_gaps
 
     merge_gap <- missing %>% select(-"user_note") %>% left_join(old_gap %>% select("start", "end", "user_note"), join_by("start", "end"))

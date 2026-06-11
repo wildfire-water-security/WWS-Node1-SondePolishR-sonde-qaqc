@@ -81,18 +81,30 @@ interp_server <- function(id, sondeproj, data_ver, y_var){
       max_date = reactive({req(sondeproj())
         max(sondeproj()$data$Date, na.rm = TRUE)}))
 
-  #interpolate data
-   data_fill <- eventReactive(
-     list(sondeproj(), y_var(),input$method, input$max_length, input$freq),{
-     req(sondeproj(), y_var())
-
-     withProgress(message = "Interpolating data", value = 0, {
-                    current <- 0
-                    data_interp(sondeproj(), y_var(), input$max_length, input$method, input$freq,
-                                progress = function(value, detail){incProgress(value-current, message=detail)
-                                  current <<- value})
-                  })
+  #get data to fill and interpolation df as list
+   data_fill_list <- reactive({
+     req(sondeproj())
+     prep_interp(sondeproj())
    })
+
+  #interpolate
+  data_interp <- reactive({
+    if(input$method == "ts_interp"){req(input$freq)}
+
+    withProgress(message = "Preparing data", value = 0, {
+      current <- 0.5
+      run_interp(data_fill_list()$interp, y_var(), input$method, input$freq)
+    })
+  })
+
+  #fill data
+  data_fill <- reactive({
+    req(data_fill_list(), data_interp(), y_var())
+    withProgress(message = "Interpolating data", value = 0, {
+      current <- 0.5
+      apply_interp(data_fill_list()$fill, data_interp(), y_var(), input$max_length)
+    })
+    })
 
   #filter data to plot
     plot_data <- reactive({
@@ -110,10 +122,14 @@ interp_server <- function(id, sondeproj, data_ver, y_var){
       p <- plot_sonde(plot_data() %>% filter(!.data$fill_flag), y_var(), plot_opts(),sondeproj()$fieldform, sondeproj()$calcheck)
 
       #add interpolated data (show as green points)
-      p <- p + ggplot2::geom_point(data=plot_data() %>% filter(fill_flag),
+      interp_points <- plot_data() %>% filter(.data$fill_flag)
+      if(nrow(interp_points) > 0){
+        p <- p + ggplot2::geom_point(data=interp_points,
                                      aes(x = .data$DateTime_rd,y = .data[[y_var()]]),
                                      color = "#2ECC71",
                                      na.rm=TRUE)
+      }
+
 
       #return plot
       p
@@ -130,7 +146,6 @@ interp_server <- function(id, sondeproj, data_ver, y_var){
         )
       )
 
-
       # convert to plotly
       p <- plot_obj() %>%
         plotly::ggplotly(source = "interp_plot")
@@ -142,28 +157,29 @@ interp_server <- function(id, sondeproj, data_ver, y_var){
 
   #create edit object
     edit <- reactive({
-      # newdata <- sondeproj()$data
-      #
-      # #get filtered data
-      # setna <- newdata$Index %in% selected_index()
-      # newdata[[y_var()]][setna] <- NA
-      #
-      # nicemethod <- switch(input$filter_type,
-      #                      "hampel" = "Hampel Filter",
-      #                      "rel_change" = "Relative Change")
-      # #make edit list
-      # list(
-      #   data = newdata,
-      #   rows = setna,
-      #   y_var = y_var(),
-      #   step = "outlier removal",
-      #   note = paste0("Data removed based on ", nicemethod,
-      #                 " method with a window size of ", input$k, " and threshold of ", input$t,
-      #                 " paired with manual outlier detection."),
-      #   flag = "RM03",
-      #   changetype = "flag_rm"
-      # )
+      req(data_fill(), y_var())
+      newdata <- data_fill()
+      rows <- newdata$fill_flag
+      newdata <- newdata %>% select(-"fill_flag")
 
+      #nice names of methods
+      label_name <- switch(input$method,
+                           "linear" = "linear interpolation",
+                           "spline" = "spline interpolation",
+                           "random_forest" = "a random forest",
+                           "ts_interp" = "seasonally adjusted linear interpolation")
+
+      #get diff and flags
+      edit <- list(
+        data = newdata,
+        rows = rows,
+        y_var = y_var(),
+        step = "data interpolation",
+        note = paste0("Data interpolated using ", label_name, " with a maximum gap size of ", input$max_length, " hours."),
+        flag = "AD01",
+        changetype = "flag_add")
+
+      edit
     })
 
   #flagging module
