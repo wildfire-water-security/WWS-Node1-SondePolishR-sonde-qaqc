@@ -35,7 +35,6 @@ ui <-  page_fillable(
       nav_panel("2. Visualize",
                 value = "step-2",
                 SondePolishR::explore_data_UI("data2")
-
                 ),
       nav_panel("3. Data Checks",
                 value = "step-3",
@@ -45,18 +44,19 @@ ui <-  page_fillable(
                 value = "step-4",
                 SondePolishR::limits_UI("data4")
                 ),
-      nav_panel("5. Shift Corrections",
+      nav_panel("5. Outlier Removal",
                 value = "step-5",
-                SondePolishR::additive_UI("data5")
-                ),
-      nav_panel("6. Outlier Removal",
+                SondePolishR::outlier_UI("data5")
+      ),
+      nav_panel("6. Interpolation",
                 value = "step-6",
-                SondePolishR::outlier_UI("data6")
+                SondePolishR::interp_UI("data6")
       ),
-      nav_panel("7. Interpolation",
+      nav_panel("7. Shift Corrections",
                 value = "step-7",
-                SondePolishR::interp_UI("data7")
-      ),
+                SondePolishR::additive_UI("data7")
+                ),
+
       nav_panel("8. fDOM Corrections", "fDOM Corrections"),
       nav_panel("9. Download Data", "Download Processed Data")
 
@@ -94,14 +94,14 @@ server <- function(input, output, session) {
   #step 4: physical limits
    SondePolishR::limits_server("data4", sondeproj, data_ver, y_var)
 
-  #step 5: additive shift
-   SondePolishR::additive_server("data5", sondeproj, data_ver, y_var)
+  #step 5: outlier corrections
+   SondePolishR::outlier_server("data5", sondeproj, data_ver, y_var)
 
-  #step 6: outlier corrections
-   SondePolishR::outlier_server("data6", sondeproj, data_ver, y_var)
+  #step 6: data interpolation
+   SondePolishR::interp_server("data6", sondeproj, data_ver, y_var)
 
-  #step 7: data interpolation
-   SondePolishR::interp_server("data7", sondeproj, data_ver, y_var)
+  #step 7: additive shift
+   SondePolishR::additive_server("data7", sondeproj, data_ver, y_var)
 
   #export values for tests
    # exportTestValues(

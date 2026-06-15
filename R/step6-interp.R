@@ -18,7 +18,8 @@ interp_UI <- function(id){
                               "Random Forest" = "random_forest")),
                   fluidRow(
                     numericInput(ns("max_length"),"Max Fill Window (hr)",value =8,step=1, min=0),
-                    uiOutput(ns("freq"))),
+                    conditionalPanel(condition = sprintf("input['%s'] == 'ts_interp'",ns("method")),
+                      numericInput(ns("freq"), "Season Period (days)", value = 1,step = 1, min = 0))),
         HTML("<hr>"),
 
         apply_edit_UI(ns("apply_limits"), note=""),
@@ -66,12 +67,12 @@ interp_server <- function(id, sondeproj, data_ver, y_var){
     plot_opts <- plot_options_server("plot_opts")
 
   #dynamic UI for frequency
-    ns = session$ns #needed to make updating UI work
-  output$freq <- renderUI({
-    if(input$method == "ts_interp"){
-       numericInput(ns("freq"),"Season Period (days)",value = 1,step=1, min =0)
-      }
-  })
+  #   ns = session$ns #needed to make updating UI work
+  # output$freq <- renderUI({
+  #   if(input$method == "ts_interp"){
+  #      numericInput(ns("freq"),"Season Period (days)",value = 1,step=1, min =0)
+  #     }
+  # })
 
   #keep track of dates
     dates <- weekly_range_server(
@@ -89,8 +90,6 @@ interp_server <- function(id, sondeproj, data_ver, y_var){
 
   #interpolate
   data_interp <- reactive({
-    if(input$method == "ts_interp"){req(input$freq)}
-
     withProgress(message = "Preparing data", value = 0, {
       current <- 0.5
       run_interp(data_fill_list()$interp, y_var(), input$method, input$freq)
