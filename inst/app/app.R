@@ -56,8 +56,10 @@ ui <-  page_fillable(
                 value = "step-7",
                 SondePolishR::additive_UI("data7")
                 ),
-
-      nav_panel("8. fDOM Corrections", "fDOM Corrections"),
+      nav_panel("8. fDOM Corrections",
+                value = "step-8",
+                SondePolishR::fdom_UI("data8")
+      ),
       nav_panel("9. Download Data", "Download Processed Data")
 
   ))
@@ -103,18 +105,8 @@ server <- function(input, output, session) {
   #step 7: additive shift
    SondePolishR::additive_server("data7", sondeproj, data_ver, y_var)
 
-  #export values for tests
-   # exportTestValues(
-   #   prj_path = prj_path(),
-   #   data = {
-   #     req(sdata())
-   #     head(sdata())
-   #   },
-   #   log = list(
-   #     value = log(),
-   #     stamp = Sys.time()
-   #   )
-   # )
+  #step 8: fdom corrections
+   SondePolishR::fdom_server("data8", sondeproj, data_ver, y_var)
 
 }
 
