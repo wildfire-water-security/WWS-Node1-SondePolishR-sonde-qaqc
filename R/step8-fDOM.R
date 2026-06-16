@@ -12,7 +12,7 @@ fdom_UI <- function(id){
       #temperature correction
       tags$h5("Temperature Corrections"),
       fluidRow(column(width = 6,p("\\[fDOM_{T} = \\frac{fDOM}{1 + \\rho (T - 25)}\\]")),
-               column(width = 6,numericInput(ns("rho"), tags$span("ρ", style = "font-size: 20px;"), value = -0.011, step=0.001))),
+               column(width = 6,numericInput(ns("rho"), tags$span("\U03C1", style = "font-size: 20px;"), value = -0.011, step=0.001))),
       tags$small("Source: Watras et al. 2011"),
 
 
@@ -152,7 +152,7 @@ fdom_server <- function(id, sondeproj, data_ver, y_var){
       p <- plot_sonde(plot_data(), "fDOM_QSU", plot_opts(),sondeproj()$fieldform, sondeproj()$calcheck)
 
       #add corrected fDOM
-      p <- p + ggplot2::geom_line(data=corr_data(), aes(x=DateTime_rd, y=fDOM_QSU_Tt), color="darkred")
+      p <- p + ggplot2::geom_line(data=corr_data(), aes(x=.data$DateTime_rd, y=.data$fDOM_QSU_Tt), color="darkred")
 
       #return plot
       p
@@ -187,7 +187,13 @@ fdom_server <- function(id, sondeproj, data_ver, y_var){
           select(-"fDOM_QSU_T")
 
       #create note
-      method_note <- ifelse(input$method == "none", "", paste0(" and turbidity using the ", input$method, " method (coef here)"))
+      nice_method <- switch(input$method,
+                           "inverse_poly" = "Inverse Polynomial",
+                           "1p_exponential" ="Exponential (1-parameter)",
+                           "2p_exponential" = "Exponential (2-parameter)",
+                           "5p_exponential" = "Exponential (5-parameter)")
+      nice_coeff <- paste(paste0(names(coef_vals()), " = ", coef_vals()), collapse = ", ")
+      method_note <- ifelse(input$method == "none", "", paste0(" and turbidity using the ", nice_method, " method (", nice_coeff, ")"))
 
       #make edit list
       list(
