@@ -60,7 +60,9 @@ ui <-  page_fillable(
                 value = "step-8",
                 SondePolishR::fdom_UI("data8")
       ),
-      nav_panel("9. Download Data", "Download Processed Data")
+      nav_panel("9. Download Data",
+                value = "step-9",
+                SondePolishR::export_UI("data9"))
 
   ))
 
@@ -107,6 +109,10 @@ server <- function(input, output, session) {
 
   #step 8: fdom corrections
    SondePolishR::fdom_server("data8", sondeproj, data_ver, y_var)
+
+  #step 9: export data
+   SondePolishR::export_server("data9", sondeproj, data_ver, y_var)
+
 
 }
 

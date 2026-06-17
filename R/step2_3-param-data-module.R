@@ -3,12 +3,12 @@
 # UI
 #' @rdname update-parameters
 #' @export
-update_parms_UI <- function(id) {
+update_parms_UI <- function(id, text="Select Parameter to Plot:") {
   ns <- NS(id)
   tagList(
     selectInput(
       ns("y_var"),
-      "Select Parameter to Plot:",
+      text,
       choices = NULL
     ),
   )
@@ -25,6 +25,7 @@ update_parms_UI <- function(id) {
 #' @param data_ver A `reactiveVal` holding a number used to track when new data is added to trigger resets.
 #' @param choices_fun Function used to determine the parameter choices, if `NULL` will use the column names of the data
 #' @param y_var Y-variable to plot on the y-axis.
+#' @param text Text associated with the UI
 
 #' @returns the selected variable `y_var` as a reactive object
 #' @md

@@ -19,8 +19,8 @@ load_data_UI <- function(id){
     bslib::page_fluid(
       shinyjs::useShinyjs(),
       bslib::layout_columns(
-      col_widths = c(6, 6, 6, 6),
-      bslib::card(bslib::card_header("1.1 - Load Data"),
+      col_widths = c(6, 6),
+      bslib::card(bslib::card_header("Data Locations"),
 
                       #load project
                       fileInput(
@@ -48,7 +48,7 @@ load_data_UI <- function(id){
                              selectize=TRUE))
                   )
                       ),
-      bslib::card(bslib::card_header("1.2 - Load Metadata"),
+      bslib::card(bslib::card_header("Metadata Locations"),
                       #load ff file
                       fileInput(
                         inputId = NS(id, "ff_file"),
@@ -63,13 +63,12 @@ load_data_UI <- function(id){
                         label = span(style = "font-size:16px; white-space: nowrap;",
                                      "Calibration Check File (.csv)"),
                         accept = c(".csv"),
-                        width = "80%")),
+                        width = "80%"))),
 
-      bslib::card(bslib::card_header("1.4 - Load Data"),
+      bslib::layout_columns(
+        bslib::card(bslib::card_header("Upload Data"),
          actionButton(NS(id, "load_prj"), "Load Sonde Data", width ="30%"),
-         actionButton(NS(id, "reset"), "Clear File Uploads", width ="30%"),
-
-    ))
+         actionButton(NS(id, "reset"), "Clear File Uploads", width ="30%")))
 
   ))
 
@@ -93,28 +92,6 @@ load_data_UI <- function(id){
 #' @rdname load-data
 load_data_server <- function(id, sondeproj, data_ver){
   moduleServer(id, function(input, output, session){
-  #code for setting up the directory button
-    #define preset roots for file path
-    roots <- c(
-      "Working Directory" = getwd(),
-      Downloads = file.path(fs::path_home(), "Downloads"),
-      Documents = file.path(fs::path_home(), "Documents"),
-      "C Drive" = "C:/")
-
-    observe({
-      shinyFiles::shinyFileSave(input, "save_file", roots = roots, session = session)
-    })
-
-    output$path_text_box <- renderUI({
-      fileinfo <- parseSavePath(roots, input$save_file)
-      if(length(fileinfo) > 0){
-        tags$span(fileinfo$datapath,
-                  style = "background-color: #fff;border: 1px solid #ddd;padding: 6px 12px;
-                  border-radius: 6px; display: inline-block;min-width: 120px;color: #343a40")
-      }
-
-    })
-
     #store paths as reactive value so we can clean on reset
       csv_path <- reactiveVal()
       prj_path <- reactiveVal()
