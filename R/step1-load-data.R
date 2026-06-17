@@ -20,7 +20,7 @@ load_data_UI <- function(id){
       shinyjs::useShinyjs(),
       bslib::layout_columns(
       col_widths = c(6, 6, 6, 6),
-      bslib::card(bslib::card_header("1.1: Load Data"),
+      bslib::card(bslib::card_header("1.1 - Load Data"),
 
                       #load project
                       fileInput(
@@ -48,7 +48,7 @@ load_data_UI <- function(id){
                              selectize=TRUE))
                   )
                       ),
-      bslib::card(bslib::card_header("1.2: Load Metadata"),
+      bslib::card(bslib::card_header("1.2 - Load Metadata"),
                       #load ff file
                       fileInput(
                         inputId = NS(id, "ff_file"),
@@ -65,19 +65,7 @@ load_data_UI <- function(id){
                         accept = c(".csv"),
                         width = "80%")),
 
-      bslib::card(bslib::card_header("1.3: Save Path"),
-           fluidRow(
-             column(12,
-                    div(
-                      class = "d-flex align-items-center gap-2",  # Bootstrap flex classes
-                      shinyFiles::shinySaveButton(NS(id, "save_file"),
-                                                 label = "Processed Data Save Location",
-                                                 style="font-size:16px",
-                                                 title= "Select location to save processed data", multiple=FALSE,
-                                                 filetype = ".RDS"),
-                      uiOutput(NS(id, "path_text_box"))))
-             )),
-      bslib::card(bslib::card_header("1.4: Load Data"),
+      bslib::card(bslib::card_header("1.4 - Load Data"),
          actionButton(NS(id, "load_prj"), "Load Sonde Data", width ="30%"),
          actionButton(NS(id, "reset"), "Clear File Uploads", width ="30%"),
 
