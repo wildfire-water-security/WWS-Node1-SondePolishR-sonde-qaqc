@@ -71,6 +71,7 @@
 #' @importFrom lubridate hours
 #' @importFrom lubridate minutes
 #' @importFrom lubridate parse_date_time
+#' @importFrom lubridate period
 #' @importFrom lubridate round_date
 #' @importFrom lubridate tz
 #' @importFrom magrittr %>%

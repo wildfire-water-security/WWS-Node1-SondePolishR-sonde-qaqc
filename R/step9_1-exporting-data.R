@@ -18,18 +18,17 @@ save_path_UI <- function(id,
   ns <- NS(id)
 
   tagList(
-    div(
-      class = "d-flex gap-3 align-items-center",
-
-      shinyFiles::shinySaveButton(ns("save"),label = label,
-                                  title = title,filetype = filetype),
-      uiOutput(ns("path_text")),
-      tags$hr(),
       div(
-        class = "text-center",
-        actionButton(ns("export"),button_label, width = "220px"))
-    )
-  )
+        class = "d-flex align-items-start gap-2",
+        shinyFiles::shinySaveButton(ns("save"),label = label,
+                                    title = title,filetype = filetype),
+        div(style = "flex-grow:1; min-width:0;",
+            uiOutput(ns("path_text")))),
+        div(
+          class = "text-left",
+          actionButton(ns("export"),button_label, width = "220px"))
+)
+
 }
 
 #' @rdname file-export
@@ -46,7 +45,8 @@ save_path_server <- function(id, data) {
       "C Drive" = "C:/")
 
     observe({shinyFiles::shinyFileSave(input,"save",
-        roots = roots,session = session)})
+        roots = roots,session = session)
+      })
 
     observe({
       req(input$save)
@@ -74,7 +74,42 @@ save_path_server <- function(id, data) {
     })
 
     observeEvent(input$export, {
-      write.csv(data(), parsed_path()$datapath, row.names = FALSE, quote = FALSE)
+      if(is.null(data())){
+        if (interactive()) {
+          shinyalert::shinyalert(
+            title = "No Data Available",
+            text = "Selected data is not available.",
+            type = "warning"
+          )
+        }
+      }
+
+      if(tools::file_ext(parsed_path()$datapath) == "csv" && !is.null(data())){
+        write.csv(data(), parsed_path()$datapath, row.names = FALSE, quote = FALSE)
+
+        #print a message so you know data downloaded
+        if (interactive()) {
+          shinyalert::shinyalert(
+            title = "Data Downloaded",
+            text = "Selected data has been downloaded.",
+            type = "success"
+          )
+        }
+      }
+      if(tools::file_ext(parsed_path()$datapath) == "RDS"&& !is.null(data())){
+        saveRDS(data(), parsed_path()$datapath)
+
+        #print a message so you know data downloaded
+        if (interactive()) {
+          shinyalert::shinyalert(
+            title = "Project Saved",
+            text = "Current Sonde Project has been saved.",
+            type = "success"
+          )
+        }
+      }
+
+
     })
 
     return(

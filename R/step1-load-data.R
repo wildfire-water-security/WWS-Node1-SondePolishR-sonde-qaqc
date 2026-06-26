@@ -129,20 +129,21 @@ load_data_server <- function(id, sondeproj, data_ver){
 
   #when button to load project is clicked, read in everything and merge together
     observeEvent(input$load_prj, {
-    #set csv merge as NULL if not loaded to prevent errors
+    if(any(c(!is.null(input$pj_file), !is.null(input$csv_files)))){
+      #set csv merge as NULL if not loaded to prevent errors
       csv_merge <- NULL
 
       #initialize progress bar
-    #read csv files if added
+      #read csv files if added
       if(!is.null(csv_path())){
         data_merge <- withProgress(min=0,max=length(csv_path()), message = "loading sonde files...",
-                      lapply(csv_path(), function(x){
-                        num <- which(x == csv_path())
-                        dat <- read_sonde(x, tz = input$tz, return="list")
-                        dat$data$FileName <- basename(input$csv_files$name[num]) #in shiny the default filename is nothing
-                        setProgress(num)
-                        dat
-                      }))
+                                   lapply(csv_path(), function(x){
+                                     num <- which(x == csv_path())
+                                     dat <- read_sonde(x, tz = input$tz, return="list")
+                                     dat$data$FileName <- basename(input$csv_files$name[num]) #in shiny the default filename is nothing
+                                     setProgress(num)
+                                     dat
+                                   }))
 
         serials <- lapply(data_merge, "[[", 1) %>% bind_rows()
         csv_merge <- lapply(data_merge, "[[", 2)%>% dplyr::bind_rows() %>%
@@ -150,9 +151,9 @@ load_data_server <- function(id, sondeproj, data_ver){
           mutate(DupNum = row_number(), .after="Index") %>% ungroup()
       }
 
-    #load existing project
+      #load existing project
       if(!is.null(prj_path())){
-         obj <- readRDS(prj_path())
+        obj <- readRDS(prj_path())
       }else{
         #create new project if one isn't loaded
         changelog <- write_log(NULL, "all", "initial load", n = nrow(csv_merge), diff_name = "raw")
@@ -160,10 +161,10 @@ load_data_server <- function(id, sondeproj, data_ver){
         #create sonde object
         obj <- list(data = csv_merge,
                     flags = NULL,
-                     fieldform = NULL,
-                     calcheck = NULL,
-                     diffs = list(),
-                     changelog = changelog,
+                    fieldform = NULL,
+                    calcheck = NULL,
+                    diffs = list(),
+                    changelog = changelog,
                     duplicates = NULL,
                     data_gaps = NULL)
 
@@ -172,7 +173,7 @@ load_data_server <- function(id, sondeproj, data_ver){
         obj <- add_flags(obj, csv_merge)
       }
 
-    #read in ff and cal file (these cover the entire period and we don't need to merge, just update)
+      #read in ff and cal file (these cover the entire period and we don't need to merge, just update)
       if(!is.null(ff_path())){
         fieldform <- read_ff(ff_path())
         obj$fieldform <- fieldform
@@ -208,14 +209,14 @@ load_data_server <- function(id, sondeproj, data_ver){
         obj$calcheck <- calcheck
       }
 
-   #if project and csv loaded, merge together (everything: data, flags, diffs, replace ff and cal)
-    merge_flag <- !is.null(prj_path()) && !is.null(csv_path())
+      #if project and csv loaded, merge together (everything: data, flags, diffs, replace ff and cal)
+      merge_flag <- !is.null(prj_path()) && !is.null(csv_path())
 
-    if(merge_flag){
-      #store previous nrow so can see how many we actually added
-      prev_lines <- nrow(obj$data)
+      if(merge_flag){
+        #store previous nrow so can see how many we actually added
+        prev_lines <- nrow(obj$data)
 
-      #merge data and flags
+        #merge data and flags
         #we want to keep the modified data if datetimes are the same
         all_data <- obj$data %>% mutate(source = "sondeproj") %>% bind_rows(csv_merge %>% mutate(source = "csv"))
 
@@ -228,40 +229,50 @@ load_data_server <- function(id, sondeproj, data_ver){
 
 
 
-      if(nrow(data_merge) > prev_lines){
-        #document data addition
-        obj <- write_log(obj, "all", "adding new data", n = (nrow(data_merge) - prev_lines), diff_name = diff_version(obj), return="sondeproj")
+        if(nrow(data_merge) > prev_lines){
+          #document data addition
+          obj <- write_log(obj, "all", "adding new data", n = (nrow(data_merge) - prev_lines), diff_name = diff_version(obj), return="sondeproj")
 
-        #store diff
-        diff <- list(get_diff(obj$data, data_merge))
-        names(diff) <- diff_version(obj)
-        obj$diffs <- append(obj$diffs, diff)
+          #store diff
+          diff <- list(get_diff(obj$data, data_merge))
+          names(diff) <- diff_version(obj)
+          obj$diffs <- append(obj$diffs, diff)
 
-      }
+        }
         obj$data <- data_merge
 
-      #keep existing flags
+        #keep existing flags
         obj <- add_flags(obj, obj$data)
 
-      #check that flags match data
-      stopifnot(all(sapply(obj$flags, nrow) == nrow(obj$data)))
+        #check that flags match data
+        stopifnot(all(sapply(obj$flags, nrow) == nrow(obj$data)))
 
-    }
+      }
 
-  #save object as reactive
+      #save object as reactive
       sondeproj(obj)
 
-  #print a message so you know data loaded
-    if (interactive()) {
+      #print a message so you know data loaded
+      if (interactive()) {
         shinyalert::shinyalert(
           title = "Data Loaded",
           text = "Selected data has been loaded and any new data has been merge into existing project.",
           type = "success"
         )
+      }
+
+      #track that new data was uploaded
+      data_ver(data_ver() + 1)
+    }else{
+      if(interactive()){
+        shinyalert::shinyalert(
+          title = "No Data Specified",
+          text = "Please specify the path to either a sonde project or a data .csv file.",
+          type = "warning"
+        )
+      }
     }
 
-    #track that new data was uploaded
-    data_ver(data_ver() + 1)
 
     })
 

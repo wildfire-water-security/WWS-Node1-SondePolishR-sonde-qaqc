@@ -34,6 +34,7 @@
       export_data <- summarize_data(export_data, frequency, sum_method)
 
       data <- export_data
+
 ## Functions to summarize the data ------
   summarize_data <- function(data, frequency, sum_method){
     stopifnot(is.data.frame(data), inherits(frequency, "Period"),

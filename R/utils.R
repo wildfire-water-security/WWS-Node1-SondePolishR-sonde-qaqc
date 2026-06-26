@@ -295,3 +295,19 @@ get_interval <- function(data){
   if(is.na(interval)){interval <- 15} #default to 15 minutes if it doesn't know
   return(interval)
 }
+
+
+#' #' Get min or max without warning for all NA
+#' #'
+#' #' @param x a vector to summarize
+#' #'
+#' #' @noRd
+#' #' @name safe-summary
+#' safe_min <- function(x) {
+#'   if (length(x) > 0 && any(!is.na(x))) min(x, na.rm = TRUE) else NA
+#' }
+#'
+#' #' @name safe-summary
+#' safe_max <- function(x) {
+#'   if (length(x) > 0 && any(!is.na(x))) max(x, na.rm = TRUE) else NA
+#' }

@@ -1,0 +1,38 @@
+library(shinytest2)
+library(shiny)
+
+test_that("{shinytest2} recording: checking-module9", {
+  app_dir <- system.file("app", package = "SondePolishR")
+  local_app_support(app_dir)
+  app <- AppDriver$new(app_dir, variant = platform_variant(),
+                       name = "checking-plotting-module", height = 911, width = 1619,
+                       expect_values_screenshot_args = FALSE)
+  app$upload_file(`data1-pj_file` = file.path(test_path(), "testdata", "example-sonde-project.RDS"))
+
+  #click to load files and create project
+  app$click("data1-load_prj")
+
+  app$set_inputs(modules = "step-9")
+  app$wait_for_idle()
+
+  #check initial plot
+    plot_obj <- app$get_value(export = "data9-plot_obj")
+    vdiffr::expect_doppelganger("intial export plot", plot_obj)
+
+  #test different methods of summarizing
+    app$set_inputs(`data9-frequency` = "week")
+    plot_obj <- app$get_value(export = "data9-plot_obj")
+    vdiffr::expect_doppelganger("weekly summary", plot_obj)
+
+    app$set_inputs(`data9-summary_method` = "min")
+    plot_obj <- app$get_value(export = "data9-plot_obj")
+    vdiffr::expect_doppelganger("change to min", plot_obj)
+
+  #test changing date range
+    app$set_inputs(`data9-frequency` = "day")
+    app$set_inputs(`data9-dates` = as.Date(c("2024-08-07", "2024-08-13")))
+    plot_obj <- app$get_value(export = "data9-plot_obj")
+    vdiffr::expect_doppelganger("change date range", plot_obj)
+
+})
+
