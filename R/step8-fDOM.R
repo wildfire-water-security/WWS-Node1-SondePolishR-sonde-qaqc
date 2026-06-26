@@ -149,7 +149,7 @@ fdom_server <- function(id, sondeproj, data_ver, y_var){
       req(plot_data())
 
       #use function to plot sonde data
-      p <- plot_sonde(plot_data(), "fDOM_QSU", plot_opts(),sondeproj()$fieldform, sondeproj()$calcheck)
+      p <- plot_sonde(plot_data(), "fDOM_QSU", plot_opts(),sondeproj()$fieldform, sondeproj()$calcheck, sondeproj()$precip)
 
       #add corrected fDOM
       p <- p + ggplot2::geom_line(data=corr_data(), aes(x=.data$DateTime_rd, y=.data$fDOM_QSU_Tt), color="darkred", na.rm=TRUE)

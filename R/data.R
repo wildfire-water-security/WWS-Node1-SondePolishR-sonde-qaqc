@@ -36,6 +36,7 @@
 #'    Used to store flag values for values that were altered.
 #'  - **flag_add**: A `data.frame` with the same measurement columns with _flag appended to the name and the same number of rows.
 #'    Used to store flag values for values that were added (likely through interpolation).
+#' - **precip**: A `data.frame` with  precipitation values.
 #' - **fieldform**: A `data.frame` with the field form data. See `example_fieldform` for details on the structure.
 #' - **calcheck**: A `data.frame` with the calibration check data. See `example_calcheck` for details on the structure.
 #' - **diffs**: A list of `data_diff` which stores the changes made to `data`. See `daff` package for more details on this structure.
@@ -99,4 +100,20 @@
 #' - **Notes**: Notes associated with the calibration check or data entry.
 
 "example_calcheck"
+
+#' Sample Precipitation Data
+#'
+#' An example of a precipitation data file used to plot with sonde data to help determine if
+#' peak values are real (particularly for fDOM and turbidity).
+#'
+#' @md
+#' @format A `data.frame` with the following columns:
+#' - **DateTime**: The date and time of the observation.
+#' - **Precip_mm_hr**: The hourly precipitation value for that hour in mm.
+#' @source The average MERRA-2 bias corrected total precipitation at the surface of the earth. NASA POWER Project.
+#' NASA Langley Research Center (LaRC), Prediction Of Worldwide Energy Resources (POWER),
+#' accessed 2026-06-26. https://power.larc.nasa.gov/parameters/?parameter=PRECTOTCORR
+
+"example_precip"
+
 

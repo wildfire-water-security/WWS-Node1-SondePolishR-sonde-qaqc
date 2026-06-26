@@ -3,77 +3,90 @@
 # UI Function
 #' @rdname load-data
 #' @export
+
 load_data_UI <- function(id){
-
-  ns <- NS(id) #line to make module work
+  ns <- NS(id)
   tagList(
-  #change button color
-    tags$style(
-      HTML("
-           .btn-default {
-           background-color: #E3795E !important;
-           border-color: #E3795E !important;
-           color: white;
-          }"),
-      HTML(".selectize-input {color: white;}")),
+    tags$style(HTML("
+      .btn-default{
+        background-color:#E3795E!important;
+        border-color:#E3795E!important;
+        color:white;}
+
+      .section-label{
+        font-weight:600;
+        margin-bottom:0.5rem;}
+
+      .selectize-input{color: white;}")),
+
+    shinyjs::useShinyjs(),
+
     bslib::page_fluid(
-      shinyjs::useShinyjs(),
       bslib::layout_columns(
-      col_widths = c(6, 6),
-      bslib::card(bslib::card_header("Data Locations"),
-
-                      #load project
-                      fileInput(
-                        inputId = NS(id, "pj_file"),
-                        label = span(style = "font-size:16px; white-space: nowrap;",
-                                     "Sonde Project File (.RDS)"),
-                        accept = c(".RDS"),
-                        width = "80%"),
-                  #load csv files
-                  fluidRow(
-                    column(8,fileInput(
-                      inputId = NS(id, "csv_files"),
-                      label = span(style = "font-size:16px; white-space: nowrap;",
-                                   "Raw Sonde Data File(s) (.csv)"),
-                      accept = c(".csv"),  # restrict to CSV
-                      multiple = TRUE,
-                      width = "80%")),
-                    column(4,
-                           #have user pick the timezone
-                           selectInput(
-                             inputId=NS(id, "tz"),
-                             label = "Data Timezone:",
-                             choices = nice_tz(),
-                             selected = "Etc/GMT+8",
-                             selectize=TRUE))
-                  )
-                      ),
-      bslib::card(bslib::card_header("Metadata Locations"),
-                      #load ff file
-                      fileInput(
-                        inputId = NS(id, "ff_file"),
-                        label = span(style = "font-size:16px; white-space: nowrap;",
-                                     "Field Form File (.csv)"),
-                        accept = c(".csv"),
-                        width = "80%"),
-
-                      #load cal check
-                      fileInput(
-                        inputId = NS(id, "cc_file"),
-                        label = span(style = "font-size:16px; white-space: nowrap;",
-                                     "Calibration Check File (.csv)"),
-                        accept = c(".csv"),
-                        width = "80%"))),
+        col_widths = c(6,6),
+        bslib::card(
+          class = "upload-card",
+          bslib::card_header("1. Load Sonde Data"),
+            fileInput(ns("pj_file"),"Existing Sonde Project (.RDS)",accept = ".RDS", width = "80%"),
+            tags$hr(),
+            fluidRow(
+              style = "align-items: start; margin-bottom: 1rem;",
+                column(
+                  width = 8,
+                  fileInput(inputId = ns("csv_files"),label = "Raw Sonde Data (.csv)",
+                            multiple = TRUE, width = "100%")),
+                column(
+                  width = 4,
+                  selectInput(inputId = ns("tz"),label = "Timezone",choices = nice_tz(),
+                              selected = "Etc/GMT+8",selectize = TRUE))
+          )),
+        bslib::card(
+          class = "upload-card",
+          bslib::card_header("2. Load Metadata"),
+            fileInput(ns("ff_file"),"Field Form (.csv)",accept = ".csv", width = "80%"),
+            fileInput(ns("cc_file"),"Calibration Checks (.csv)",accept = ".csv", width = "80%")
+        )),
 
       bslib::layout_columns(
-        bslib::card(bslib::card_header("Upload Data"),
-         actionButton(NS(id, "load_prj"), "Load Sonde Data", width ="30%"),
-         actionButton(NS(id, "reset"), "Clear File Uploads", width ="30%")))
+        col_widths = c(4,8),
+        bslib::card(
+          bslib::card_header("3. Load Data"),
+          div(
+            class = "d-flex flex-column justify-content-center align-items-center gap-3 h-100",
+            actionButton(ns("load_prj"),"Load Sonde Data",width = "60%"),
+            actionButton(ns("reset"),"Clear Uploads",width = "60%")
+            )),
 
-  ))
-
-
-}
+        bslib::card(
+          bslib::card_header("4. Add Precipitation"),
+            radioButtons(ns("precip_source"),NULL,
+              choices = c("Download from NASA POWER" = "nasa",
+                "Upload Precipitation" = "upload"),
+              selected = "nasa"),
+          conditionalPanel(
+            condition = sprintf("input['%s'] == 'nasa'", ns("precip_source")),
+            div(
+              class = "d-flex justify-content-center",
+              div(
+                style = "width: 60%;",
+            bslib::layout_columns(
+              col_widths = c(6,6),
+                  numericInput(ns("lat"),"Latitude",value = NA, width="100%"),
+                  numericInput(ns("long"),"Longitude",value = NA, width="100%")
+            )))),
+          conditionalPanel(
+            condition = sprintf("input['%s'] == 'upload'", ns("precip_source")),
+            div(
+              style = "margin-bottom: -15px;",
+              fileInput( ns("precip_file"),"Precipitation File (.csv)",
+                accept = ".csv",width = "80%")),
+            div(
+              style = "margin-top: -15px; margin-bottom: -5px; font-size:12px",
+              "Note: Data must have two columns: DateTime and Precip_mm_hr")),
+          div(class = "d-flex flex-column align-items-center",
+            actionButton(ns("load_precip"),"Load Precipitation",width = "45%"))
+        )
+        )))}
 
 # Server Function
 #' Read in the dataset or project and set save path
@@ -97,6 +110,7 @@ load_data_server <- function(id, sondeproj, data_ver){
       prj_path <- reactiveVal()
       ff_path <- reactiveVal()
       cc_path <- reactiveVal()
+      precip_path <- reactiveVal()
 
     #keep track of paths
       observe({
@@ -111,6 +125,9 @@ load_data_server <- function(id, sondeproj, data_ver){
       observe({
         req(input$cc_file)
         cc_path(input$cc_file$datapath)})
+      observe({
+        req(input$precip_file)
+        precip_path(input$precip_file$datapath)})
 
     #reset when requested which should prevent files from being uploaded
       observeEvent(input$reset, {
@@ -119,135 +136,24 @@ load_data_server <- function(id, sondeproj, data_ver){
         ff_path(NULL)
         cc_path(NULL)
         sondeproj(NULL)
+        precip_path(NULL)
 
         reset('csv_files')
         reset('pj_file')
         reset('ff_file')
         reset('cc_file')
+        reset('precip_file')
 
       })
 
   #when button to load project is clicked, read in everything and merge together
     observeEvent(input$load_prj, {
     if(any(c(!is.null(input$pj_file), !is.null(input$csv_files)))){
-      #set csv merge as NULL if not loaded to prevent errors
-      csv_merge <- NULL
-
-      #initialize progress bar
-      #read csv files if added
-      if(!is.null(csv_path())){
-        data_merge <- withProgress(min=0,max=length(csv_path()), message = "loading sonde files...",
-                                   lapply(csv_path(), function(x){
-                                     num <- which(x == csv_path())
-                                     dat <- read_sonde(x, tz = input$tz, return="list")
-                                     dat$data$FileName <- basename(input$csv_files$name[num]) #in shiny the default filename is nothing
-                                     setProgress(num)
-                                     dat
-                                   }))
-
-        serials <- lapply(data_merge, "[[", 1) %>% bind_rows()
-        csv_merge <- lapply(data_merge, "[[", 2)%>% dplyr::bind_rows() %>%
-          dplyr::mutate(Index = 1:n()) %>% group_by(.data$DateTime_rd) %>%
-          mutate(DupNum = row_number(), .after="Index") %>% ungroup()
-      }
-
-      #load existing project
-      if(!is.null(prj_path())){
-        obj <- readRDS(prj_path())
-      }else{
-        #create new project if one isn't loaded
-        changelog <- write_log(NULL, "all", "initial load", n = nrow(csv_merge), diff_name = "raw")
-
-        #create sonde object
-        obj <- list(data = csv_merge,
-                    flags = NULL,
-                    fieldform = NULL,
-                    calcheck = NULL,
-                    diffs = list(),
-                    changelog = changelog,
-                    duplicates = NULL,
-                    data_gaps = NULL)
-
-        class(obj) <- "sondeproj"
-
-        obj <- add_flags(obj, csv_merge)
-      }
-
-      #read in ff and cal file (these cover the entire period and we don't need to merge, just update)
-      if(!is.null(ff_path())){
-        fieldform <- read_ff(ff_path())
-        obj$fieldform <- fieldform
-      }
-
-      if(!is.null(cc_path())){
-        calcheck <- read_cal(cc_path())
-
-        #link with serial records to know when probes were changed (only if new data is added)
-        if(!is.null(csv_path())){
-          switch_df <- serials %>% pivot_longer(-"Date", names_to = "Parameter", values_to = "serial") %>%
-            dplyr::group_by(.data$Parameter) %>%
-            dplyr::mutate(Probe_Switch = .data$serial != dplyr::lag(.data$serial, default = dplyr::first(.data$serial))) %>%
-            select(-"serial")
-
-          calcheck <- calcheck %>% left_join(switch_df, by = join_by("Date", "Parameter"))
-
-        }
-
-        if(!is.null(ff_path())){
-          #use ff data to determine when cal data likely was
-          mean_visit <- get_oow(fieldform) %>% rowwise() %>%
-            mutate(Est_Time = mean(c(.data$start, .data$end)),
-                   Date = as.Date(.data$Est_Time))
-
-          calcheck <- calcheck %>%
-            dplyr::left_join(mean_visit %>% select("Date", "Est_Time"),
-                             dplyr::join_by("Date"))
-        }
-
-
-
-        obj$calcheck <- calcheck
-      }
-
-      #if project and csv loaded, merge together (everything: data, flags, diffs, replace ff and cal)
-      merge_flag <- !is.null(prj_path()) && !is.null(csv_path())
-
-      if(merge_flag){
-        #store previous nrow so can see how many we actually added
-        prev_lines <- nrow(obj$data)
-
-        #merge data and flags
-        #we want to keep the modified data if datetimes are the same
-        all_data <- obj$data %>% mutate(source = "sondeproj") %>% bind_rows(csv_merge %>% mutate(source = "csv"))
-
-        data_merge <- all_data %>%
-          dplyr::arrange(dplyr::desc(source == "sondeproj")) %>%
-          dplyr::group_by(.data$Date, .data$DateTime, .data$DateTime_rd) %>%
-          dplyr::slice(1) %>%
-          dplyr::ungroup() %>% dplyr::select(-"source") %>%
-          dplyr::mutate(Index = 1:n())
-
-
-
-        if(nrow(data_merge) > prev_lines){
-          #document data addition
-          obj <- write_log(obj, "all", "adding new data", n = (nrow(data_merge) - prev_lines), diff_name = diff_version(obj), return="sondeproj")
-
-          #store diff
-          diff <- list(get_diff(obj$data, data_merge))
-          names(diff) <- diff_version(obj)
-          obj$diffs <- append(obj$diffs, diff)
-
-        }
-        obj$data <- data_merge
-
-        #keep existing flags
-        obj <- add_flags(obj, obj$data)
-
-        #check that flags match data
-        stopifnot(all(sapply(obj$flags, nrow) == nrow(obj$data)))
-
-      }
+      withProgress(message = "loading sonde files...", min=0,max=length(csv_path()), {
+          obj <- load_project(csv_path(), csv_files=input$csv_files$name, prj_path=prj_path(),
+                   ff_path=ff_path(), cc_path=cc_path(), tz=input$tz,
+                   update_pb = function(amount){incProgress(amount)})
+        })
 
       #save object as reactive
       sondeproj(obj)
@@ -276,6 +182,41 @@ load_data_server <- function(id, sondeproj, data_ver){
 
     })
 
+  #deal with precipitation
+    observeEvent(input$load_precip, {
+      proj <- sondeproj()
+
+      #provide message if data isn't loaded first
+        if(is.null(proj)){
+          if(interactive()){
+            shinyalert::shinyalert(
+              title = "No Data Specified",
+              text = "Please load sonde data first.",
+              type = "warning")}
+        }
+
+      #otherwise get
+      if(input$precip_source == "nasa"){
+        precip <- get_precip(proj$data, input$lat, input$long)
+      }else{
+        req(precip_path())
+        precip <- read.csv(precip_path())
+        colnames(precip) <- c("DateTime", "Precip_mm_hr")
+        precip$DateTime <- as.POSIXct(precip$DateTime, tz=tz(proj$data$DateTime_rd))
+      }
+
+      proj$precip <- precip
+
+      sondeproj(proj)
+
+      if (interactive()) {
+        shinyalert::shinyalert(
+          title = "Precipitation Data Loaded",
+          text = "Precipitation data has been added to existing project.",
+          type = "success"
+        )
+      }
+    })
   #export values so we can check them
     #save values we want to check as their own reactive
     exportTestValues(

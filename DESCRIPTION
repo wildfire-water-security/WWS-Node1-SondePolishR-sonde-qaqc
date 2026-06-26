@@ -48,7 +48,8 @@ Imports:
     pracma,
     zoo,
     forecast,
-    missForest
+    missForest,
+    nasapower
 Suggests: 
     shinytest2,
     testthat (>= 3.0.0), 

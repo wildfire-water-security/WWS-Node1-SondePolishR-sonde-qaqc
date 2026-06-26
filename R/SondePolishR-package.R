@@ -76,6 +76,7 @@
 #' @importFrom lubridate tz
 #' @importFrom magrittr %>%
 #' @importFrom missForest missForest
+#' @importFrom nasapower get_power
 #' @importFrom plotly event_data
 #' @importFrom plotly event_register
 #' @importFrom plotly ggplotly

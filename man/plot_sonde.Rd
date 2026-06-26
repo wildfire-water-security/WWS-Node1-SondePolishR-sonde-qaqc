@@ -7,9 +7,11 @@
 plot_sonde(
   data,
   y_var,
-  opts = list(points = TRUE, line = TRUE, files = FALSE, oow = FALSE, calcheck = FALSE),
+  opts = list(points = TRUE, line = TRUE, files = FALSE, oow = FALSE, calcheck = FALSE,
+    precip = FALSE),
   fieldform = NULL,
-  calcheck = NULL
+  calcheck = NULL,
+  precip = NULL
 )
 }
 \arguments{
@@ -22,11 +24,14 @@ plot_sonde(
 - line: should line be plotted?
 -files: should points be colored by file?
 -oow: should out of water periods be plotted?
--calcheck: should cal check be plotted?}
+-calcheck: should cal check be plotted?
+-precip: should precip data be plotted?}
 
 \item{fieldform}{Field form from the `sondeproj`.}
 
 \item{calcheck}{Calibration check from the `sondeproj`.}
+
+\item{precip}{Precip data from the `sondeproj`.}
 }
 \value{
 a `ggplot2` object

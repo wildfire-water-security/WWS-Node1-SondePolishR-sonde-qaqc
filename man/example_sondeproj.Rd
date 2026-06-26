@@ -15,6 +15,7 @@ Used to store flag values for values that were removed.
 Used to store flag values for values that were altered.
 \item \strong{flag_add}: A \code{data.frame} with the same measurement columns with _flag appended to the name and the same number of rows.
 Used to store flag values for values that were added (likely through interpolation).
+\item \strong{precip}: A \code{data.frame} with  precipitation values.
 \item \strong{fieldform}: A \code{data.frame} with the field form data. See \code{example_fieldform} for details on the structure.
 \item \strong{calcheck}: A \code{data.frame} with the calibration check data. See \code{example_calcheck} for details on the structure.
 \item \strong{diffs}: A list of \code{data_diff} which stores the changes made to \code{data}. See \code{daff} package for more details on this structure.

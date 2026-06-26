@@ -13,8 +13,10 @@
 #' -files: should points be colored by file?
 #' -oow: should out of water periods be plotted?
 #' -calcheck: should cal check be plotted?
+#' -precip: should precip data be plotted?
 #' @param fieldform Field form from the `sondeproj`.
 #' @param calcheck Calibration check from the `sondeproj`.
+#' @param precip Precip data from the `sondeproj`.
 #'
 #' @returns a `ggplot2` object
 #' @export
@@ -26,9 +28,11 @@ plot_sonde <- function(data, y_var,
                                  line=TRUE,
                                  files=FALSE,
                                  oow=FALSE,
-                                 calcheck=FALSE),
+                                 calcheck=FALSE,
+                                 precip=FALSE),
                        fieldform=NULL,
-                       calcheck=NULL){
+                       calcheck=NULL,
+                       precip = NULL){
   #get data from field form for determining cal check (oow periods)
   if(!is.null(fieldform)){oow_data <- get_oow(fieldform)}
   #get cal data
@@ -54,6 +58,24 @@ plot_sonde <- function(data, y_var,
     #base plot
     p <- ggplot(data, aes(x = .data$DateTime_rd,y = .data[[y_var]])) +
       labs(x="Date", y=y_var_nice)
+
+    #add precip data
+    if(opts$precip){
+      #get scale so it's scaled for all the data
+      precip_scale <- diff(range(data[[y_var]], na.rm = TRUE)) / diff(range(precip$Precip_mm_hr, na.rm = TRUE))
+
+      precip <- precip %>% filter(.data$DateTime >= min(date_rg) & .data$DateTime <= max(date_rg)) %>%
+        mutate(Precip_mm_hr = ifelse(.data$Precip_mm_hr == 0, 0.001, .data$Precip_mm_hr))
+
+      #get offset to plot
+      precip_offset <- min(data[[y_var]], na.rm = TRUE) - min(precip$Precip_mm_hr, na.rm = TRUE) * precip_scale
+
+      precip <- precip %>% mutate(ymax = .data$Precip_mm_hr * precip_scale + precip_offset,
+                                              ymin = min(data[[y_var]], na.rm=TRUE))
+
+      p <- p + geom_segment(data = precip,aes(x=.data$DateTime, xend=.data$DateTime,
+                                                    y=ymin, yend=ymax),alpha = 0.3)
+    }
 
     #add points (colored or not)
     if(opts$points && opts$files){

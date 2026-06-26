@@ -119,7 +119,7 @@ export_server <- function(id, sondeproj, data_ver, y_var){
 
         #use function to plot sonde data
         plot_sonde(plot_data(), y_var(), list(points=FALSE,line=TRUE,files=FALSE,
-                                              oow=FALSE,calcheck=FALSE))
+                                              oow=FALSE,calcheck=FALSE,precip=FALSE))
       })
 
       #save to export
