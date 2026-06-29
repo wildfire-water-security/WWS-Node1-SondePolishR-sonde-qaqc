@@ -1,3 +1,6 @@
+library(dplyr)
+library(lubridate)
+
 test_that("combining flags works", {
   data <- SondePolishR:::combine_flags(example_sondeproj)
 
@@ -20,7 +23,7 @@ test_that("data summarizing works", {
     sum_data <- summarize_data(data, freq, "mean")
 
       #check number of rows
-      exp_rows <- nrow(data %>% mutate(DateTime_rd = round_date(.data$DateTime_rd, freq)) %>% select(DateTime_rd) %>% unique())
+      exp_rows <- nrow(data %>% dplyr::mutate(DateTime_rd = lubridate::round_date(.data$DateTime_rd, freq)) %>% dplyr::select(DateTime_rd) %>% unique())
       expect_equal(nrow(sum_data), exp_rows)
 
       #check flags

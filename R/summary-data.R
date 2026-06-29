@@ -1,11 +1,16 @@
 #' Summarize data to a different time period
 #'
+#' Used to take data and aggregate it to a different interval.
+#'
 #' @param data a `data.frame` to summarize
 #' @param frequency a `Period` object created using `lubridate::period()` specifying the time frame to summarize over
 #' @param sum_method the summary method to use to summarize the data
 #'
-#' @returns a `data.frame`
-#' @noRd
+#' @returns a `data.frame.
+#' @export
+#' @md
+#' @examples
+#' summarize_data(example_data, lubridate::period(1, "month"), "mean")
 #'
 summarize_data <- function(data, frequency, sum_method){
   stopifnot(is.data.frame(data), inherits(frequency, "Period"),

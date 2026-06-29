@@ -25,6 +25,6 @@ Precipitation is downloaded from \href{https://power.larc.nasa.gov/}{NASA Power}
 coordinates.
 }
 \examples{
-data <- example_data \%>\% filter(Date == "2024-08-01")
+data <- example_data[example_data$Date == "2024-08-01",]
 get_precip(data, 43.96775, -122.63012)
 }

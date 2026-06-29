@@ -13,14 +13,14 @@
 #' @export
 #'
 #' @examples
-#' data <- example_data %>% filter(Date == "2024-08-01")
+#' data <- example_data[example_data$Date == "2024-08-01",]
 #' get_precip(data, 43.96775, -122.63012)
 get_precip <- function(data, lat, long){
   stopifnot("DateTime_rd" %in% colnames(data), is.numeric(lat), is.numeric(long))
 
-  dates <- data %>% select(DateTime_rd) %>% mutate(DateTime_UTC = lubridate::with_tz(.data$DateTime_rd, tz="UTC"),
-                                                   Dates = as.Date(DateTime_UTC)) %>% summarise(min=min(Dates),
-                                                                                                max = max(Dates))
+  dates <- data %>% select("DateTime_rd") %>% mutate(DateTime_UTC = lubridate::with_tz(.data$DateTime_rd, tz="UTC"),
+                                                   Dates = as.Date(.data$DateTime_UTC)) %>% summarise(min=min(.data$Dates),
+                                                                                                max = max(.data$Dates))
   #get precip from NASA Power
   precip  <- nasapower::get_power(community = "ag",lonlat = c(long, lat),
                        pars = c("PRECTOTCORR"),dates = c(dates$min, dates$max),temporal_api = "hourly",

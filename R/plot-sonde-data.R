@@ -74,7 +74,7 @@ plot_sonde <- function(data, y_var,
                                               ymin = min(data[[y_var]], na.rm=TRUE))
 
       p <- p + geom_segment(data = precip,aes(x=.data$DateTime, xend=.data$DateTime,
-                                                    y=ymin, yend=ymax),alpha = 0.3)
+                                                    y=.data$ymin, yend=.data$ymax),alpha = 0.3)
     }
 
     #add points (colored or not)
