@@ -58,6 +58,8 @@ additive_server <- function(id, sondeproj, data_ver, y_var){
 
   index <- reactiveVal() #stores index of selected points
   ns = session$ns #needed to make updating UI work
+  plot_exist <- reactiveVal() #keeps warning about missing plot
+  traces <- reactiveVal() #tracks which traces hold our points to track
 
   #update UI options based on edit method
   output$edit_options <- renderUI({
@@ -122,15 +124,17 @@ additive_server <- function(id, sondeproj, data_ver, y_var){
 
     #observe selection from plot and get indices of selected
     observeEvent(
-      req(sondeproj(), event_data("plotly_selected", source = "shift_plot"), input$edit_type == "additive"),{
+      req(plot_exist(), event_data("plotly_selected", source = "shift_plot"), input$edit_type == "additive"),{
         req(sondeproj(), y_var())
 
-        sel <- event_data("plotly_selected", source = "shift_plot") %>% filter(.data$curveNumber == 0)
+        sel <- event_data("plotly_selected", source = "shift_plot")
 
         if(!is.null(sel) && length(sel) && nrow(sel) > 0) {
+          sel <- sel %>%  filter(.data$curveNumber %in% traces()) %>%
+            mutate(x = parse_date_time(x, tz=tz(data$DateTime_rd), orders = "Ymd HMS", truncated =3))
           full_index <- sondeproj()$data%>%
             mutate(value = .data[[y_var()]],
-                   DateTime_rd = as.numeric(.data$DateTime_rd)) %>%
+                   DateTime_rd = .data$DateTime_rd) %>%
             inner_join(sel, by = c("DateTime_rd" = "x", "value" = "y")) %>%
             pull(.data$Index)
           index(full_index)
@@ -159,25 +163,27 @@ additive_server <- function(id, sondeproj, data_ver, y_var){
 
     #if drift corr
     if(input$edit_type == "drift"){
+      req(input$file)
         #get updated data
         rows <- newdata$FileName == input$file #T/F
         newdata[[y_var()]] <- apply_drift_shift(newdata[[y_var()]], rows, input$correct, input$uncorrect)
         note <- paste0("drift correction based on an uncorrected value of ", input$uncorrect," and corrected value of ", input$correct,
-                       " for file ", input$file)
+                         " for file ", input$file)
         step <- "drift correction"
         flag <- "CHG02"
-      }
 
-      #make edit list
-      list(
-        data = newdata,
-        rows = rows,
-        y_var = y_var(),
-        step = step,
-        note = note,
-        flag = flag,
-        changetype = "flag_chg"
-      )
+
+        #make edit list
+        list(
+          data = newdata,
+          rows = rows,
+          y_var = y_var(),
+          step = step,
+          note = note,
+          flag = flag,
+          changetype = "flag_chg"
+        )
+        }
 
     })
 
@@ -185,9 +191,10 @@ additive_server <- function(id, sondeproj, data_ver, y_var){
   #create plotly plot
     plot_obj <- reactive({
       req(y_var(), plot_data())
+      y <- y_var()
 
      #use function to plot sonde data
-      p <- plot_sonde(plot_data(), y_var(), plot_opts(),sondeproj()$fieldform, sondeproj()$calcheck, sondeproj()$precip)
+      p <- plot_sonde(plot_data(), y_var(), plot_opts(),sondeproj()$fieldform, sondeproj()$calcheck, sondeproj()$precip, "shift_plot")
 
      #if points are selected color those
       if(input$edit_type == "additive" &&
@@ -195,18 +202,27 @@ additive_server <- function(id, sondeproj, data_ver, y_var){
          !is.null(input$slope) &&
          !is.null(input$int)){
         flag_data <- plot_data()[plot_data()$Index %in% index(),]
-        p <- p + ggplot2::geom_point(data=flag_data, aes(x = .data$DateTime_rd,y = .data[[y_var()]]), color = "darkred")
+        p <- p %>% add_trace(data= flag_data, x=~DateTime_rd, y=as.formula(paste0("~`", y, "`")), type="scatter", mode="markers",
+                                 name = "Changed", marker = list(color = "darkred"), yaxis="y")
 
       }
 
       if(input$edit_type == "drift"){
-        dat <-edit()$data[edit()$rows,] %>% dplyr::filter(.data$Date >= dates()[1], .data$Date <= dates()[2])
+        dat <-edit()$data[edit()$rows,] %>% dplyr::filter(.data$Date >= dates()[1], .data$Date <= dates()[2]) %>%
+          arrange(DateTime_rd)
 
         if(nrow(dat) > 0){
-          p <- p + geom_line(data = dat, aes(x=.data$DateTime_rd, y = .data[[y_var()]]), color="darkred")
+          p <- p %>% add_trace(data= dat, x=~DateTime_rd, y=as.formula(paste0("~`", y, "`")), type="scatter", mode="lines",
+                                   name = "Changed", line = list(color = "darkred"), yaxis="y")
+
         }
 
       }
+
+      #set which traces hold points
+      built_p <- plotly_build(p)
+      names <- sapply(built_p$x$data, function(x){x$name})
+      traces((which(names != "Changed")-1))
 
       #return plot
       p
@@ -214,27 +230,23 @@ additive_server <- function(id, sondeproj, data_ver, y_var){
 
     #save to export
     output$shift_plot <- plotly::renderPlotly({
-        req(plot_obj())
-
       validate(
-        need(
-          nrow(plot_data()) > 0,
-          "No data available for the selected date range."
-        )
-      )
+        need(nrow(plot_data()) > 0,
+             "No data available for the selected date range."))
 
       # convert to plotly
       p <- plot_obj() %>%
-                plotly::ggplotly(source = "shift_plot") %>%
-                plotly::event_register("plotly_selected")
+        plotly::event_register("plotly_selected")
+      p <- toWebGL(p)
 
       #set to dragmode select as default for input
       if(input$edit_type == "additive"){
         p <- p %>% plotly::layout(dragmode = "select")
       }
 
-      p <- strip_hoveron(p)
-      toWebGL(p)
+      plot_exist(TRUE)
+
+      p
 
     })
 

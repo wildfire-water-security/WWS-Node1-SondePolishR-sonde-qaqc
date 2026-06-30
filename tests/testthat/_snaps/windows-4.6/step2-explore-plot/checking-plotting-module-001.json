@@ -1,5 +1,55 @@
 {
-  "output": {
-
+  "export": {
+    "data2-table": {
+      "datetime": [
+        "2026-06-26T21:59:33Z",
+        "2026-06-26T21:59:34Z",
+        "2026-06-26T21:59:34Z",
+        "2026-06-26T21:59:34Z",
+        "2026-06-26T21:59:34Z"
+      ],
+      "parameter": [
+        "all",
+        "fDOM_QSU",
+        "ODO_mg_L",
+        "Temp_C",
+        "Temp_C"
+      ],
+      "step": [
+        "initial load",
+        "removing first four points",
+        "applying shift correction",
+        "removing a bunch of points",
+        "linear interpolation"
+      ],
+      "n_changed": [
+        14528,
+        4,
+        3,
+        39,
+        39
+      ],
+      "note": [
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "user": [
+        "smith",
+        "smith",
+        "smith",
+        "smith",
+        "smith"
+      ],
+      "diff_name": [
+        "raw",
+        "dd1",
+        "dd2",
+        "dd3",
+        "dd4"
+      ]
+    }
   }
 }

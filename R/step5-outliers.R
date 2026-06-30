@@ -191,7 +191,7 @@ outlier_server <- function(id, sondeproj, data_ver, y_var){
       if(!input$rm_flags){
         y <- y_var()
         p <- p %>% add_trace(data= flag_data, x=~DateTime_rd, y=as.formula(paste0("~`", y, "`")), type="scatter", mode="markers",
-                                 name = "Flagged", marker = list(color = "darkred"))
+                                 name = "Flagged", marker = list(color = "darkred"), yaxis="y")
       }
 
       #set which traces hold points

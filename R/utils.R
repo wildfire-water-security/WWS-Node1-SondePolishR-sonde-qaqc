@@ -310,4 +310,16 @@ get_interval <- function(data){
 #' #' @name safe-summary
 #' safe_max <- function(x) {
 #'   if (length(x) > 0 && any(!is.na(x))) max(x, na.rm = TRUE) else NA
-#' }
+#' @returns a character.
+#' @noRd
+get_yvar <- function(y_var){
+  nice_names <- c("fDOM_QSU" = "fDOM (QSU)",
+                  "ODO_mg_L" = "Dissolved Oyxgen (mg/L)",
+                  "SpCond_uS_cm" = "Specific Conductance (\u03BCS/cm)",
+                  "Turbidity_FNU" = "Turbidity (FNU)",
+                  "pH"  = "pH",
+                  "Temp_C" = "Temperature (\u00B0C)")
+
+  y_var_nice <- ifelse(y_var %in% names(nice_names),nice_names[y_var],y_var)
+  return(y_var_nice)
+}

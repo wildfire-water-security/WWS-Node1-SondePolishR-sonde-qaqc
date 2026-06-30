@@ -43,14 +43,7 @@ plot_sonde <- function(data, y_var,
       pivot_longer(c("Resident_Value", "Check_Value"),names_to = "type",values_to = "value")}
 
   #nice name for y axis
-    nice_names <- c("fDOM_QSU" = "fDOM (QSU)",
-                    "ODO_mg_L" = "Dissolved Oyxgen (mg/L)",
-                    "SpCond_uS_cm" = "Specific Conductance (\u03BCS/cm)",
-                    "Turbidity_FNU" = "Turbidity (FNU)",
-                    "pH"  = "pH",
-                    "Temp_C" = "Temperature (\u00B0C)")
-
-    y_var_nice <- ifelse(y_var %in% names(nice_names),nice_names[y_var],y_var)
+    y_var_nice <- get_yvar(y_var)
 
   #sort data so line looks correct
     data <- data %>% arrange(.data$DateTime_rd)
@@ -85,11 +78,13 @@ plot_sonde <- function(data, y_var,
 
       if(!opts$files){
         p <- p %>% add_trace(data = data, x = ~DateTime_rd,y = as.formula(paste0("~`", y_var, "`")),
-                             mode=mode, type="scatter", name=y_var_nice,line = list(color = "#ebebeb"),
-                             marker = list(color = "#ebebeb"))
+                             mode=mode, type="scatter", name=y_var_nice, yaxis="y")
+
+          if(opts$line){p <- p %>% style(line = list(color = "#ebebeb"), traces =ifelse(opts$precip, 2,1))}
+          if(opts$points){p <- p %>% style(marker = list(color = "#ebebeb"), traces =ifelse(opts$precip, 2,1))}
       }else{
         p <- p %>% add_trace(data = data, x = ~DateTime_rd,y = as.formula(paste0("~`", y_var, "`")),
-                     mode=mode, type="scatter", color = ~FileName)
+                     mode=mode, type="scatter", color = ~FileName, yaxis="y")
       }
 
 
@@ -114,7 +109,9 @@ plot_sonde <- function(data, y_var,
 
     if(nrow(cal_data_clip) > 0){
       #plot one at at time because color scales are a poop
-      p <- p %>% add_markers(data = cal_data_clip,x = ~Est_Time,y = ~value,color = ~type, symbol = I("triangle-up"))
+      p <- p %>% add_trace(data = cal_data_clip, x = ~Est_Time,y = ~value,
+                           mode="markers", type="scatter", color = ~type, symbol = I("triangle-up"), yaxis="y",
+                           inherit = FALSE, marker = list(size = 12))
     }
 
     }

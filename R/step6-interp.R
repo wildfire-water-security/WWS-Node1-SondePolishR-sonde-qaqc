@@ -121,12 +121,11 @@ interp_server <- function(id, sondeproj, data_ver, y_var){
       p <- plot_sonde(plot_data() %>% filter(!.data$fill_flag), y_var(), plot_opts(),sondeproj()$fieldform, sondeproj()$calcheck, sondeproj()$precip)
 
       #add interpolated data (show as green points)
-      interp_points <- plot_data() %>% filter(.data$fill_flag)
+      interp_points <- plot_data() %>% filter(.data$fill_flag) %>% filter(!is.na(.data[[y_var()]]))
       if(nrow(interp_points) > 0){
-        p <- p + ggplot2::geom_point(data=interp_points,
-                                     aes(x = .data$DateTime_rd,y = .data[[y_var()]]),
-                                     color = "#2ECC71",
-                                     na.rm=TRUE)
+        y <- y_var()
+        p <- p  %>% add_trace(data= interp_points, x=~DateTime_rd, y=as.formula(paste0("~`", y, "`")), type="scatter", mode="markers",
+                                  name = "Flagged", marker = list(color = "#2ECC71"))
       }
 
 
@@ -134,25 +133,15 @@ interp_server <- function(id, sondeproj, data_ver, y_var){
       p
     })
 
-    #save to export
     output$interp_plot <- plotly::renderPlotly({
-      req(plot_obj())
-
       validate(
-        need(
-          nrow(plot_data()) > 0,
-          "No data available for the selected date range."
-        )
-      )
+        need(nrow(plot_data()) > 0,
+             "No data available for the selected date range."))
 
       # convert to plotly
-      p <- plot_obj() %>%
-        plotly::ggplotly(source = "interp_plot")
-
-      p <- strip_hoveron(p)
+      p <- plot_obj()
       toWebGL(p)
     })
-
 
   #create edit object
     edit <- reactive({

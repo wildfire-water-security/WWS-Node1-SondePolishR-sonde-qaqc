@@ -152,7 +152,9 @@ fdom_server <- function(id, sondeproj, data_ver, y_var){
       p <- plot_sonde(plot_data(), "fDOM_QSU", plot_opts(),sondeproj()$fieldform, sondeproj()$calcheck, sondeproj()$precip)
 
       #add corrected fDOM
-      p <- p + ggplot2::geom_line(data=corr_data(), aes(x=.data$DateTime_rd, y=.data$fDOM_QSU_Tt), color="darkred", na.rm=TRUE)
+      dat <- corr_data() %>% arrange(DateTime_rd)
+      p <- p %>% add_trace(data= dat, x=~DateTime_rd, y=~fDOM_QSU_Tt, type="scatter", mode="lines",
+                               name = "Changed", line = list(color = "darkred"), yaxis="y")
 
       #return plot
       p
@@ -161,18 +163,13 @@ fdom_server <- function(id, sondeproj, data_ver, y_var){
     #save to export
     output$fdom_plot <- plotly::renderPlotly({
       validate(
-        need(
-          nrow(plot_data()) > 0,
-          "No data available for the selected date range."
-        )
-      )
+        need(nrow(plot_data()) > 0,
+             "No data available for the selected date range."))
 
       # convert to plotly
-      p <- plotly::ggplotly(plot_obj(), dynamicTicks = TRUE)
-      p <- strip_hoveron(p)
+      p <- plot_obj()
       toWebGL(p)
     })
-
 
   #create edit object
     edit <- reactive({

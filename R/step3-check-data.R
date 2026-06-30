@@ -173,12 +173,20 @@ check_data_server <- function(id, sondeproj, data_ver, y_var){
     plot_obj <- reactive({
       dat <- dup_plot_data()
 
-      p <- plot_sonde(dat, y_var()) + aes(color = .data$color_labs) +labs(color = "Duplicate ID")
-      p
+      y <- y_var()
+      y_var_nice <- get_yvar(y)
+
+      plot_ly() %>%
+        layout(paper_bgcolor = "#3c4d5a", plot_bgcolor = "#475763", font = list(color = "#ebebeb", family="sans-serif"),
+               xaxis = list(title = "<b>Date</b>"),
+               yaxis=list(gridcolor = "#3c4d5a", zeroline = FALSE,title = paste0("<b>", y_var_nice, "</b>"))) %>%
+                 add_trace(data = dat, x = ~DateTime_rd,y = as.formula(paste0("~`", y, "`")),
+                           mode="lines+markers", type="scatter", color = ~color_labs)
+
     })
 
     output$dup_plot <- renderPlotly({
-      ggplotly(plot_obj())
+      toWebGL(plot_obj())
     })
 
   #update options for which version to keep

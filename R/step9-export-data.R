@@ -124,15 +124,14 @@ export_server <- function(id, sondeproj, data_ver, y_var){
 
       #save to export
       output$export_plot <- plotly::renderPlotly({
-        validate(need(nrow(plot_data()) > 0,
-            "No data available for the selected date range."))
+        validate(
+          need(nrow(plot_data()) > 0,
+               "No data available for the selected date range."))
 
         # convert to plotly
-          p <- plotly::ggplotly(plot_obj(), dynamicTicks = TRUE, height = 450)
-          p <- strip_hoveron(p)
-          toWebGL(p)
+        p <- plot_obj()
+        toWebGL(p)
       })
-
 
     #when data loaded get interval of data
       observeEvent(data_ver(),{
