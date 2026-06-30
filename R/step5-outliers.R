@@ -67,6 +67,8 @@ outlier_server <- function(id, sondeproj, data_ver, y_var){
   #stores index of selected points
     manual_add <- reactiveVal(integer())
     manual_rm <- reactiveVal(integer())
+    plot_exist <- reactiveVal() #keeps warning about missing plot
+    traces <- reactiveVal() #tracks which traces hold our points to track
 
   #clearing manual indices if y_var or data updates
     observeEvent(list(y_var(), data_ver()),{
@@ -122,28 +124,35 @@ outlier_server <- function(id, sondeproj, data_ver, y_var){
 
   #track selected data
     observeEvent(
-      req(sondeproj(), event_data("plotly_selected", source = "outlier_plot")),{
+      req(plot_exist(), event_data("plotly_selected", source = "outlier_plot")),{
         req(sondeproj(), y_var())
 
-        sel <- event_data("plotly_selected", source = "outlier_plot") %>% filter(.data$curveNumber == 0)
+        data <- sondeproj()$data
 
-        #get points based on x and y
-        full_index <- sondeproj()$data%>%
-          mutate(value = .data[[y_var()]],
-                 DateTime_rd = as.numeric(.data$DateTime_rd)) %>%
-          inner_join(sel, by = c("DateTime_rd" = "x", "value" = "y")) %>%
-          pull(.data$Index)
+        sel <- event_data("plotly_selected", source = "outlier_plot")
 
-        if(input$selection_mode == "add"){
-          manual_add(union(manual_add(), full_index))
-          #also remove if index is in rm
+        if(is.data.frame(sel)){
+          sel <- sel %>% filter(.data$curveNumber %in% traces()) %>%
+            mutate(x = parse_date_time(x, tz=tz(data$DateTime_rd), orders = "Ymd HMS", truncated =3))
+          #get points based on x and y
+          full_index <- data %>%
+            mutate(value = .data[[y_var()]],
+                   DateTime_rd = .data$DateTime_rd) %>%
+            inner_join(sel, by = c("DateTime_rd" = "x", "value" = "y")) %>%
+            pull(.data$Index)
+
+          if(input$selection_mode == "add"){
+            manual_add(union(manual_add(), full_index))
+            #also remove if index is in rm
             manual_rm(setdiff(manual_rm(), full_index))
-        }else {
-          manual_rm(union(manual_rm(), full_index))
-          #also remove if index is in add
+          }else {
+            manual_rm(union(manual_rm(), full_index))
+            #also remove if index is in add
             manual_add(setdiff(manual_add(), full_index))
 
+          }
         }
+
 
       })
 
@@ -176,15 +185,19 @@ outlier_server <- function(id, sondeproj, data_ver, y_var){
       }
 
       #use function to plot sonde data
-      p <- plot_sonde(filter_data, y_var(), plot_opts(),sondeproj()$fieldform, sondeproj()$calcheck, sondeproj()$precip)
+      p <- plot_sonde(filter_data, y_var(), plot_opts(),sondeproj()$fieldform, sondeproj()$calcheck, sondeproj()$precip, "outlier_plot")
 
       #color points outside limits as red
       if(!input$rm_flags){
-        p <- p + ggplot2::geom_point(data=flag_data,
-                                     aes(x = .data$DateTime_rd,y = .data[[y_var()]]),
-                                     color = "darkred",
-                                     na.rm=TRUE)
+        y <- y_var()
+        p <- p %>% add_trace(data= flag_data, x=~DateTime_rd, y=as.formula(paste0("~`", y, "`")), type="scatter", mode="markers",
+                                 name = "Flagged", marker = list(color = "darkred"))
       }
+
+      #set which traces hold points
+      built_p <- plotly_build(p)
+      names <- sapply(built_p$x$data, function(x){x$name})
+      traces((which(names != "Flagged")-1))
 
       #return plot
       p
@@ -192,26 +205,21 @@ outlier_server <- function(id, sondeproj, data_ver, y_var){
 
     #save to export
     output$outlier_plot <- plotly::renderPlotly({
-      req(plot_obj())
-
       validate(
-        need(
-          nrow(plot_data()) > 0,
-          "No data available for the selected date range."
-        )
-      )
-
+        need(nrow(plot_data()) > 0,
+             "No data available for the selected date range."))
 
       # convert to plotly
       p <- plot_obj() %>%
-        plotly::ggplotly(source = "outlier_plot") %>%
         plotly::event_register("plotly_selected") %>%
         plotly::layout(dragmode = "select")
+      p <- toWebGL(p)
 
-      p <- strip_hoveron(p)
-      toWebGL(p)
+      plot_exist(TRUE)
+
+      p
+
     })
-
 
   #create edit object
     edit <- reactive({

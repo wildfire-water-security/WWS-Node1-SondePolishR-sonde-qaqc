@@ -23,7 +23,7 @@
 #'
 #' @examples
 #' plot_sonde(example_data, "Temp_C")
-plot_sonde <- function(data, y_var,
+plot_sonde_old <- function(data, y_var,
                        opts=list(points=TRUE,
                                  line=TRUE,
                                  files=FALSE,
@@ -56,7 +56,12 @@ plot_sonde <- function(data, y_var,
 
   #create plot based on options
     #base plot
-    p <- ggplot(data, aes(x = .data$DateTime_rd,y = .data[[y_var]])) +
+    p <- ggplot(data, aes(x = .data$DateTime_rd,y = .data[[y_var]],
+                          # text = paste0("<b> Date: </b>", .data$DateTime_rd,
+                          #               "<br>",
+                          #               "<b>", y_var_nice, ":</b>",
+                          #               .data[[y_var]])
+                )) +
       labs(x="Date", y=y_var_nice)
 
     #add precip data
@@ -79,7 +84,14 @@ plot_sonde <- function(data, y_var,
 
     #add points (colored or not)
     if(opts$points && opts$files){
-      p <- p +  geom_point(aes(color = .data$FileName),na.rm = TRUE, size = 1.5) +
+      p <- p +  geom_point(aes(color = .data$FileName,
+                               # text = paste0("<b> Date: </b>", .data$DateTime_rd,
+                               #               "<br>",
+                               #               "<b>", y_var_nice, ": </b>",
+                               #               .data[[y_var]], "<br>",
+                               #               "<b> File: </b>", .data$FileName)
+                               ),
+                           na.rm = TRUE, size = 1.5) +
         labs(color = "File Name")
     }
 

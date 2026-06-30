@@ -117,14 +117,27 @@ limits_server <- function(id, sondeproj, data_ver, y_var){
       #use function to plot sonde data
       p <- plot_sonde(filter_data, y_var(), plot_opts(),sondeproj()$fieldform, sondeproj()$calcheck, sondeproj()$precip)
 
-      #add limits
-      p <- p + ggplot2::geom_hline(yintercept = input$min, color="darkred") +
-        ggplot2::geom_hline(yintercept = input$max, color="darkred")
-
       #color points outside limits as red
       if(!input$rm_flags){
-        p <- p + ggplot2::geom_point(data=flag_data, aes(x = .data$DateTime_rd,y = .data[[y_var()]]), color = "darkred")
+        y <- y_var()
+        p <- p %>% add_trace(data= flag_data, x=~DateTime_rd, y=as.formula(paste0("~`", y, "`")), type="scatter", mode="markers",
+                             name = "Flagged", marker = list(color = "darkred"))
       }
+
+      #add limits (guarded if OOW periods are also plotted)
+      new_shapes <- lapply(c(input$min, input$max), function(x){
+        list(type = "line",
+             x0 = 0, x1 = 1, xref = "paper", # Spans the full width of the plot
+             y0 = x, y1 = x, yref = "y",
+             line = list(color = "darkred", width = 2, dash = "dash"))
+      })
+        trace <- which(sapply(p$x$layoutAttrs, names) == "shapes")
+        if(length(trace) > 0){
+          exist_shapes <- p$x$layoutAttrs[[trace]]$shapes
+          p$x$layoutAttrs[[trace]]$shapes <- c(exist_shapes, new_shapes)
+        }else{
+          p <- p %>% layout(shapes = new_shapes)
+        }
 
       #return plot
       p
@@ -133,15 +146,11 @@ limits_server <- function(id, sondeproj, data_ver, y_var){
     #save to export
     output$limit_plot <- plotly::renderPlotly({
       validate(
-        need(
-          nrow(plot_data()) > 0,
-          "No data available for the selected date range."
-        )
-      )
+        need(nrow(plot_data()) > 0,
+             "No data available for the selected date range."))
 
       # convert to plotly
-      p <- plotly::ggplotly(plot_obj(), dynamicTicks = TRUE)
-      p <- strip_hoveron(p)
+      p <- plot_obj()
       toWebGL(p)
     })
 
