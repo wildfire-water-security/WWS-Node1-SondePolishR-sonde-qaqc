@@ -3,11 +3,11 @@
 # UI
 #' @rdname update-parameters
 #' @export
-update_parms_UI <- function(id, text="Select Parameter to Plot:") {
+update_parms_UI <- function(id, input_id = "y_var", text="Select Parameter to Plot:") {
   ns <- NS(id)
   tagList(
     selectInput(
-      ns("y_var"),
+      ns(input_id),
       text,
       choices = NULL
     ),
@@ -32,7 +32,7 @@ update_parms_UI <- function(id, text="Select Parameter to Plot:") {
 #' @export
 #' @keywords internal
 #' @rdname update-parameters
-update_parms_server <- function(id, sondeproj, data_ver, y_var, choices_fun = NULL) {
+update_parms_server <- function(id, sondeproj, data_ver, y_var,input_id = "y_var",choices_fun = NULL) {
   moduleServer(id, function(input, output, session) {
 
   #only trigger when new data is added
@@ -47,9 +47,13 @@ update_parms_server <- function(id, sondeproj, data_ver, y_var, choices_fun = NU
         choices_r <- names(data)
       }
 
+    if(input_id == "y2_var"){
+      choices_r <- c("None" = "none", "Precipitation" = "precip", choices_r)
+    }
+
       updateSelectInput(
         session,
-        "y_var",
+        input_id,
         choices = choices_r,
         selected = choices_r[[1]]
       )
@@ -57,20 +61,21 @@ update_parms_server <- function(id, sondeproj, data_ver, y_var, choices_fun = NU
   })
 
   #update y_var when the input changes
-    observeEvent(input$y_var, {
-      y_var(input$y_var)
+    observeEvent(input[[input_id]], {
+      y_var(input[[input_id]])
     })
 
   #update user UI
     observe({
       req(y_var())
-      if(!identical(input$y_var, y_var())){
+      if(!identical(input[[input_id]], y_var())){
         updateSelectInput(
           session,
-          "y_var",
+          input_id,
           selected = y_var())}
     })
 
+    return(reactive(y_var()))
 
   })
 }

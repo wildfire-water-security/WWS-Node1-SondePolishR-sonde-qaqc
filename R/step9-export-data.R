@@ -15,7 +15,7 @@ export_UI <- function(id){
           bslib::layout_columns(col_widths = c(3,9),
                                 div(
                                   style = "padding-right: 1rem;",
-                                update_parms_UI(ns("update_parms"), "Select Parameter to View:"),
+                                update_parms_UI(ns("update_parms"), text="Select Parameter to View:"),
                                 dateRangeInput(ns("dates"),"Date Range"),
                                 radioButtons(ns("frequency"),"Export Frequency",
                                              choices = c("Hourly" = "hour","Daily" = "day",
@@ -42,7 +42,8 @@ export_UI <- function(id){
               ns("meta_opts"),NULL,choices = c(
                 "Duplicate Notes" = "dups",
                 "Missing Data Notes" = "gaps",
-                "Change Log" = "changelog")),
+                "Change Log" = "changelog",
+                "Precipitation" = "precip")),
 
             save_path_UI(ns("save_meta"),filetype = ".csv", button_label = "Export Metadata"))
 
@@ -118,8 +119,8 @@ export_server <- function(id, sondeproj, data_ver, y_var){
         req(y_var(), plot_data())
 
         #use function to plot sonde data
-        plot_sonde(data=plot_data(), y_var = y_var(), opts=list(points=FALSE,line=TRUE,files=FALSE,
-                                              oow=FALSE,calcheck=FALSE,precip=FALSE))
+        plot_sonde(data=plot_data(), y_var = y_var(), y2_var = NULL, opts=list(points=FALSE,line=TRUE,files=FALSE,
+                                              oow=FALSE,calcheck=FALSE))
       })
 
       #save to export
@@ -153,7 +154,8 @@ export_server <- function(id, sondeproj, data_ver, y_var){
       switch(input$meta_opts,
              "dups" = sondeproj()$duplicates,
              "gaps" = sondeproj()$data_gaps,
-             "changelog" = sondeproj()$changelog)
+             "changelog" = sondeproj()$changelog,
+             "precip" = sondeproj()$precip)
     })
 
     meta_path <- save_path_server("save_meta", metadata)

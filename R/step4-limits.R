@@ -9,6 +9,9 @@ limits_UI <- function(id){
       sidebarPanel(
         update_parms_UI(ns("update_parms")),
 
+        update_parms_UI(ns("update_parms"), input_id = "y2_var", text = "Select Second Parameter to Plot:"),
+        HTML("<hr>"),
+
       #select physical limits
         tags$h5("Set Physical Limits"),
       div(style="margin-bottom: 8px; font-size:10px",
@@ -61,9 +64,12 @@ limits_UI <- function(id){
 #' @rdname limits
 limits_server <- function(id, sondeproj, data_ver, y_var){
   moduleServer(id, function(input, output, session){
+    #keep track of second y_variable
+    y2_var <- reactiveVal()
 
   #get column names after file upload (dynamic)
     update_parms_server("update_parms", sondeproj, data_ver, y_var, choices_fun = nice_yvar)
+    update_parms_server("update_parms", sondeproj, data_ver, y2_var, input_id= "y2_var", choices_fun = nice_yvar)
 
   #update limits in UI
     observeEvent(y_var(), {
@@ -104,7 +110,8 @@ limits_server <- function(id, sondeproj, data_ver, y_var){
 
   #create plotly plot
     plot_obj <- reactive({
-      req(y_var(), plot_data())
+      req(y_var(),y2_var(), plot_data())
+      if(y2_var() == "none"){y2 <- NULL}else{y2 <- y2_var()}
 
       #if we want to filter out flagged points, filter before plotting
       if(input$rm_flags){
@@ -114,8 +121,9 @@ limits_server <- function(id, sondeproj, data_ver, y_var){
         flag_data <- plot_data() %>% dplyr::filter(.data[[y_var()]] < input$min | .data[[y_var()]] > input$max)
       }
 
+
       #use function to plot sonde data
-      p <- plot_sonde(data = filter_data, y_var=y_var(), opts=plot_opts(),fieldform=sondeproj()$fieldform,
+      p <- plot_sonde(data = filter_data, y_var=y_var(), y2_var = y2, opts=plot_opts(),fieldform=sondeproj()$fieldform,
                  calcheck =sondeproj()$calcheck, precip=sondeproj()$precip)
       #color points outside limits as red
       if(!input$rm_flags){

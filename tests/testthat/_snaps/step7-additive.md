@@ -181,7 +181,7 @@
                 {
                   "type": "character",
                   "attributes": {},
-                  "value": ["<b>Precipitation (mm hr⁻¹)<\/b>"]
+                  "value": ["<b><\/b>"]
                 }
               ]
             },
@@ -212,7 +212,7 @@
               "value": [12, 2]
             }
           },
-          "value": ["x", "y", "mode", "type", "name", "yaxis", "marker", "error_y", "error_x", "line", "xaxis", "frame", "x", "y", "mode", "type", "name", "yaxis", "marker", "error_y", "error_x", "line", "xaxis", "frame"]
+          "value": ["x", "y", "mode", "type", "name", "yaxis", "marker", "error_y", "error_x", "line", "xaxis", "frame", "x", "y", "type", "mode", "name", "marker", "yaxis", "error_y", "error_x", "line", "xaxis", "frame"]
         },
         {
           "type": "integer",
@@ -491,7 +491,7 @@
                 {
                   "type": "character",
                   "attributes": {},
-                  "value": ["<b>Precipitation (mm hr⁻¹)<\/b>"]
+                  "value": ["<b><\/b>"]
                 }
               ]
             },
@@ -522,7 +522,7 @@
               "value": [12, 2]
             }
           },
-          "value": ["x", "y", "mode", "type", "name", "yaxis", "marker", "error_y", "error_x", "line", "xaxis", "frame", "x", "y", "mode", "type", "name", "yaxis", "marker", "error_y", "error_x", "line", "xaxis", "frame"]
+          "value": ["x", "y", "mode", "type", "name", "yaxis", "marker", "error_y", "error_x", "line", "xaxis", "frame", "x", "y", "type", "mode", "name", "marker", "yaxis", "error_y", "error_x", "line", "xaxis", "frame"]
         },
         {
           "type": "integer",
@@ -801,7 +801,7 @@
                 {
                   "type": "character",
                   "attributes": {},
-                  "value": ["<b>Precipitation (mm hr⁻¹)<\/b>"]
+                  "value": ["<b><\/b>"]
                 }
               ]
             },
@@ -832,7 +832,7 @@
               "value": [12, 2]
             }
           },
-          "value": ["x", "y", "mode", "type", "name", "yaxis", "marker", "error_y", "error_x", "line", "xaxis", "frame", "x", "y", "mode", "type", "name", "yaxis", "marker", "error_y", "error_x", "line", "xaxis", "frame"]
+          "value": ["x", "y", "mode", "type", "name", "yaxis", "marker", "error_y", "error_x", "line", "xaxis", "frame", "x", "y", "type", "mode", "name", "marker", "yaxis", "error_y", "error_x", "line", "xaxis", "frame"]
         },
         {
           "type": "integer",
@@ -1111,7 +1111,7 @@
                 {
                   "type": "character",
                   "attributes": {},
-                  "value": ["<b>Precipitation (mm hr⁻¹)<\/b>"]
+                  "value": ["<b><\/b>"]
                 }
               ]
             },
@@ -1142,7 +1142,7 @@
               "value": [12, 2]
             }
           },
-          "value": ["x", "y", "mode", "type", "name", "yaxis", "marker", "error_y", "error_x", "line", "xaxis", "frame", "x", "y", "mode", "type", "name", "yaxis", "marker", "error_y", "error_x", "line", "xaxis", "frame"]
+          "value": ["x", "y", "mode", "type", "name", "yaxis", "marker", "error_y", "error_x", "line", "xaxis", "frame", "x", "y", "type", "mode", "name", "marker", "yaxis", "error_y", "error_x", "line", "xaxis", "frame"]
         },
         {
           "type": "integer",
@@ -1421,7 +1421,7 @@
                 {
                   "type": "character",
                   "attributes": {},
-                  "value": ["<b>Precipitation (mm hr⁻¹)<\/b>"]
+                  "value": ["<b><\/b>"]
                 }
               ]
             },
@@ -1731,7 +1731,7 @@
                 {
                   "type": "character",
                   "attributes": {},
-                  "value": ["<b>Precipitation (mm hr⁻¹)<\/b>"]
+                  "value": ["<b><\/b>"]
                 }
               ]
             },
@@ -2041,7 +2041,7 @@
                 {
                   "type": "character",
                   "attributes": {},
-                  "value": ["<b>Precipitation (mm hr⁻¹)<\/b>"]
+                  "value": ["<b><\/b>"]
                 }
               ]
             },

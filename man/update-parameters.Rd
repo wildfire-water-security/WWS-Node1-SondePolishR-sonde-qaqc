@@ -5,9 +5,16 @@
 \alias{update_parms_server}
 \title{Shiny module to update plotting parameters}
 \usage{
-update_parms_UI(id, text = "Select Parameter to Plot:")
+update_parms_UI(id, input_id = "y_var", text = "Select Parameter to Plot:")
 
-update_parms_server(id, sondeproj, data_ver, y_var, choices_fun = NULL)
+update_parms_server(
+  id,
+  sondeproj,
+  data_ver,
+  y_var,
+  input_id = "y_var",
+  choices_fun = NULL
+)
 }
 \arguments{
 \item{id}{An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.}

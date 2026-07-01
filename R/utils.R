@@ -308,7 +308,8 @@ get_yvar <- function(y_var){
                   "SpCond_uS_cm" = "Specific Conductance (\u03BCS/cm)",
                   "Turbidity_FNU" = "Turbidity (FNU)",
                   "pH"  = "pH",
-                  "Temp_C" = "Temperature (\u00B0C)")
+                  "Temp_C" = "Temperature (\u00B0C)",
+                  "precip" = "Precipitation (mm hr\U207B\U00B9)")
 
   y_var_nice <- ifelse(y_var %in% names(nice_names),nice_names[y_var],y_var)
   return(y_var_nice)

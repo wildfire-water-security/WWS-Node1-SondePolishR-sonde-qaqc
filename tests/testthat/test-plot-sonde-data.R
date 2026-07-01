@@ -14,7 +14,7 @@ test_that("plotting sonde data works", {
 #check that options work
   # plot only line
     p <- plot_sonde(data=example_data,  y_var="fDOM_QSU", opts=list(points=FALSE,line=TRUE,files=FALSE,
-                                                   oow=FALSE,calcheck=FALSE,precip=FALSE))
+                                                   oow=FALSE,calcheck=FALSE))
     #inspect elements
     p <- plotly::plotly_build(p)
     expect_equal(length(p$x$data), 1)
@@ -25,7 +25,7 @@ test_that("plotting sonde data works", {
 
   # color by filename
     p <- plot_sonde(data=example_data,  y_var="fDOM_QSU", opts=list(points=TRUE,line=TRUE,files=TRUE,
-                                                   oow=FALSE,calcheck=FALSE,precip=FALSE))
+                                                   oow=FALSE,calcheck=FALSE))
     #inspect elements
     p <- plotly::plotly_build(p)
     expect_equal(length(p$x$data), 3)
@@ -34,7 +34,7 @@ test_that("plotting sonde data works", {
 
   # add OOW periods
     p <- plot_sonde(data=example_data,  y_var="fDOM_QSU", opts=list(points=TRUE,line=TRUE,files=FALSE,
-                                                   oow=TRUE,calcheck=FALSE,precip=FALSE),
+                                                   oow=TRUE,calcheck=FALSE),
                     fieldform = example_fieldform, calcheck = example_calcheck,
                     precip = example_precip)
     p <- plotly::plotly_build(p)
@@ -42,7 +42,7 @@ test_that("plotting sonde data works", {
 
   # add cal checks
     p <- plot_sonde(data=example_data,  y_var="fDOM_QSU", opts=list(points=TRUE,line=TRUE,files=FALSE,
-                                                   oow=FALSE,calcheck=TRUE,precip=FALSE),
+                                                   oow=FALSE,calcheck=TRUE),
                     fieldform = example_fieldform, calcheck = example_calcheck,
                     precip = example_precip)
     p <- plotly::plotly_build(p)
@@ -50,14 +50,24 @@ test_that("plotting sonde data works", {
     expect_equal(sapply(p$x$data, function(x){x$name}), c("fDOM (QSU)", "Check_Value", "Resident_Value"))
     expect_equal(length(p$x$data[[2]]$x), 2)
 
-  # show precipitation
-    p <- plot_sonde(data=example_data,  y_var="fDOM_QSU", opts=list(points=TRUE,line=TRUE,files=FALSE,
-                                                   oow=FALSE,calcheck=FALSE,precip=TRUE),
+  # show second axis (precip)
+    p <- plot_sonde(data=example_data,  y_var="fDOM_QSU", y2_var = "precip", opts=list(points=TRUE,line=TRUE,files=FALSE,
+                                                   oow=FALSE,calcheck=FALSE),
                     fieldform = example_fieldform, calcheck = example_calcheck,
                     precip = example_precip)
     p <- plotly::plotly_build(p)
     expect_equal(length(p$x$data), 2)
-    expect_equal(sapply(p$x$data, function(x){x$name}), c("Precipitation","fDOM (QSU)"))
+    expect_equal(sapply(p$x$data, function(x){x$name}), c("Precipitation (mm hr\U207B\U00B9)","fDOM (QSU)"))
     expect_equal(p$x$data[[1]]$y, example_precip$Precip_mm_hr,ignore_attr = TRUE)
+
+  # show second axis (non-precip)
+    p <- plot_sonde(data=example_data,  y_var="fDOM_QSU", y2_var = "Turbidity_FNU", opts=list(points=TRUE,line=TRUE,files=FALSE,
+                                                                    oow=FALSE,calcheck=FALSE),
+                    fieldform = example_fieldform, calcheck = example_calcheck,
+                    precip = example_precip)
+    p <- plotly::plotly_build(p)
+    expect_equal(length(p$x$data), 2)
+    expect_equal(sapply(p$x$data, function(x){x$name}), c("Turbidity (FNU)","fDOM (QSU)"))
+    expect_equal(p$x$data[[1]]$y, example_data$Turbidity_FNU,ignore_attr = TRUE)
 
 })

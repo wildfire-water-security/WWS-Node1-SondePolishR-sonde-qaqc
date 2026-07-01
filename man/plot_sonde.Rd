@@ -7,9 +7,8 @@
 plot_sonde(
   data,
   y_var,
-  sec_y_var,
-  opts = list(points = TRUE, line = TRUE, files = FALSE, oow = FALSE, calcheck = FALSE,
-    precip = FALSE),
+  y2_var = NULL,
+  opts = list(points = TRUE, line = TRUE, files = FALSE, oow = FALSE, calcheck = FALSE),
   fieldform = NULL,
   calcheck = NULL,
   precip = NULL,
@@ -21,15 +20,14 @@ plot_sonde(
 
 \item{y_var}{Y-variable to plot on the y-axis.}
 
-\item{sec_y_var}{A second, optional y-variable to plot on a second axis.}
+\item{y2_var}{A second, optional y-variable to plot on a second axis.}
 
 \item{opts}{A list of options for plotting:
 - points: should points be plotted?
 - line: should line be plotted?
 -files: should points be colored by file?
 -oow: should out of water periods be plotted?
--calcheck: should cal check be plotted?
--precip: should precip data be plotted?}
+-calcheck: should cal check be plotted?}
 
 \item{fieldform}{Field form from the `sondeproj`.}
 
@@ -37,7 +35,7 @@ plot_sonde(
 
 \item{precip}{Precip data from the `sondeproj`.}
 
-\item{source}{A character specifiying the plot name for shiny reactivity.}
+\item{source}{A character specifying the plot name for shiny reactivity.}
 }
 \value{
 a `plotly` object
@@ -48,4 +46,6 @@ used within modules to simplify code for plotting.
 }
 \examples{
 plot_sonde(example_data, "Temp_C")
+plot_sonde(example_data, "Temp_C", "ODO_mg_L") #adding a second axis
+plot_sonde(example_data, "Temp_C", "precip", precip = example_precip)
 }

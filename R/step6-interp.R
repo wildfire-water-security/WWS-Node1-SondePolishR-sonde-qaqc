@@ -7,6 +7,8 @@ interp_UI <- function(id){
     sidebarLayout(
       sidebarPanel(
         update_parms_UI(ns("update_parms")),
+        update_parms_UI(ns("update_parms"), input_id = "y2_var", text = "Select Second Parameter to Plot:"),
+
         HTML("<hr>"),
       #select physical limits
         tags$h5("Fill Missing Observations"),
@@ -59,9 +61,12 @@ interp_UI <- function(id){
 #' @rdname interp
 interp_server <- function(id, sondeproj, data_ver, y_var){
   moduleServer(id, function(input, output, session){
+  #keep track of second y_variable
+    y2_var <- reactiveVal()
 
   #get column names after file upload (dynamic)
     update_parms_server("update_parms", sondeproj, data_ver, y_var, choices_fun = nice_yvar)
+    update_parms_server("update_parms", sondeproj, data_ver, y2_var, input_id= "y2_var", choices_fun = nice_yvar)
 
   #get what to plot via user options
     plot_opts <- plot_options_server("plot_opts")
@@ -115,17 +120,18 @@ interp_server <- function(id, sondeproj, data_ver, y_var){
 
   #create plotly plot
     plot_obj <- reactive({
-      req(y_var(), plot_data())
+      req(y_var(),y2_var(), plot_data())
+      if(y2_var() == "none"){y2 <- NULL}else{y2 <- y2_var()}
 
       #use function to plot sonde data
-      p <- plot_sonde(data = plot_data()%>% filter(!.data$fill_flag), y_var=y_var(), opts=plot_opts(),fieldform=sondeproj()$fieldform,
+      p <- plot_sonde(data = plot_data()%>% filter(!.data$fill_flag), y_var=y_var(), y2_var= y2, opts=plot_opts(),fieldform=sondeproj()$fieldform,
                       calcheck =sondeproj()$calcheck, precip=sondeproj()$precip)
       #add interpolated data (show as green points)
       interp_points <- plot_data() %>% filter(.data$fill_flag) %>% filter(!is.na(.data[[y_var()]]))
       if(nrow(interp_points) > 0){
         y <- y_var()
         p <- p  %>% add_trace(data= interp_points, x=~DateTime_rd, y=as.formula(paste0("~`", y, "`")), type="scatter", mode="markers",
-                                  name = "Flagged", marker = list(color = "#2ECC71"))
+                                  name = "Flagged", marker = list(color = "#2ECC71"), inherit = FALSE)
       }
 
 

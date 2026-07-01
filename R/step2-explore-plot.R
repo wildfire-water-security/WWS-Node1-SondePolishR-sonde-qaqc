@@ -11,6 +11,8 @@ explore_data_UI <- function(id){
 
         update_parms_UI(ns("update_parms")),
 
+        update_parms_UI(ns("update_parms"), input_id = "y2_var", text = "Select Second Parameter to Plot:"),
+
         HTML("<hr>"),
 
         tags$h5("Remove Out of Water Periods"),
@@ -72,6 +74,9 @@ explore_data_UI <- function(id){
 explore_data_server <- function(id, sondeproj, data_ver, y_var){
   moduleServer(id, function(input, output, session){
 
+  #keep track of second y_variable
+    y2_var <- reactiveVal()
+
   #create log table
   tab <- reactive({
     req(sondeproj())
@@ -113,6 +118,7 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var){
   #get column names after file upload (dynamic)
     update_parms_server("update_parms", sondeproj, data_ver, y_var, choices_fun = nice_yvar)
 
+    update_parms_server("update_parms", sondeproj, data_ver, y2_var, input_id= "y2_var", choices_fun = nice_yvar)
 
   #remove OOW periods
     observeEvent(input$remove_oow, {
@@ -189,10 +195,11 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var){
 
     #create plotly plot
     plot_obj <- reactive({
-      req(y_var(), plot_data())
+      req(y_var(),y2_var(), plot_data())
+      if(y2_var() == "none"){y2 <- NULL}else{y2 <- y2_var()}
 
       #use function to plot sonde data
-      plot_sonde(data = plot_data(), y_var=y_var(), opts=plot_opts(),fieldform=sondeproj()$fieldform,
+      plot_sonde(data = plot_data(), y_var=y_var(), y2_var= y2, opts=plot_opts(),fieldform=sondeproj()$fieldform,
                  calcheck =sondeproj()$calcheck, precip=sondeproj()$precip)
     })
 

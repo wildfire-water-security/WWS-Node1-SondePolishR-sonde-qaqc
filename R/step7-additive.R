@@ -8,6 +8,7 @@ additive_UI <- function(id){
     sidebarLayout(
       sidebarPanel(
         update_parms_UI(ns("update_parms")),
+        update_parms_UI(ns("update_parms"), input_id = "y2_var", text = "Select Second Parameter to Plot:"),
 
         HTML("<hr>"),
 
@@ -60,6 +61,7 @@ additive_server <- function(id, sondeproj, data_ver, y_var){
   ns = session$ns #needed to make updating UI work
   plot_exist <- reactiveVal() #keeps warning about missing plot
   traces <- reactiveVal() #tracks which traces hold our points to track
+  y2_var <- reactiveVal()   #keep track of second y_variable
 
   #update UI options based on edit method
   output$edit_options <- renderUI({
@@ -80,6 +82,7 @@ additive_server <- function(id, sondeproj, data_ver, y_var){
 
   #get column names after file upload (dynamic)
     update_parms_server("update_parms", sondeproj, data_ver, y_var, choices_fun = nice_yvar)
+    update_parms_server("update_parms", sondeproj, data_ver, y2_var, input_id= "y2_var", choices_fun = nice_yvar)
 
   #get what to plot via user options
     plot_opts <- plot_options_server("plot_opts")
@@ -196,11 +199,12 @@ additive_server <- function(id, sondeproj, data_ver, y_var){
  ## exporting code
   #create plotly plot
     plot_obj <- reactive({
-      req(y_var(), plot_data())
+      req(y_var(),y2_var(), plot_data())
+      if(y2_var() == "none"){y2 <- NULL}else{y2 <- y2_var()}
       y <- y_var()
 
      #use function to plot sonde data
-      p <- plot_sonde(data = plot_data(), y_var=y_var(), opts=plot_opts(),fieldform=sondeproj()$fieldform,
+      p <- plot_sonde(data = plot_data(), y_var=y_var(), y2_var= y2, opts=plot_opts(),fieldform=sondeproj()$fieldform,
                       calcheck =sondeproj()$calcheck, precip=sondeproj()$precip, source="shift_plot")
 
      #if points are selected color those
@@ -210,7 +214,7 @@ additive_server <- function(id, sondeproj, data_ver, y_var){
          !is.null(input$int)){
         flag_data <- plot_data()[plot_data()$Index %in% index(),]
         p <- p %>% add_trace(data= flag_data, x=~DateTime_rd, y=as.formula(paste0("~`", y, "`")), type="scatter", mode="markers",
-                                 name = "Changed", marker = list(color = "darkred"), yaxis="y")
+                                 name = "Changed", marker = list(color = "darkred"), yaxis="y", inherit=FALSE)
 
       }
 

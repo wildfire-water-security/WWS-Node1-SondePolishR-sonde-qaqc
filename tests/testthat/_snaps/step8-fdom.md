@@ -181,7 +181,7 @@
                 {
                   "type": "character",
                   "attributes": {},
-                  "value": ["<b>Precipitation (mm hr⁻¹)<\/b>"]
+                  "value": ["<b><\/b>"]
                 }
               ]
             },
@@ -491,7 +491,7 @@
                 {
                   "type": "character",
                   "attributes": {},
-                  "value": ["<b>Precipitation (mm hr⁻¹)<\/b>"]
+                  "value": ["<b><\/b>"]
                 }
               ]
             },
@@ -801,7 +801,7 @@
                 {
                   "type": "character",
                   "attributes": {},
-                  "value": ["<b>Precipitation (mm hr⁻¹)<\/b>"]
+                  "value": ["<b><\/b>"]
                 }
               ]
             },
@@ -1111,7 +1111,7 @@
                 {
                   "type": "character",
                   "attributes": {},
-                  "value": ["<b>Precipitation (mm hr⁻¹)<\/b>"]
+                  "value": ["<b><\/b>"]
                 }
               ]
             },

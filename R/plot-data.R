@@ -5,31 +5,31 @@
 #'
 #' @param data A `data.frame` with the sonde data to plot.
 #' @param y_var Y-variable to plot on the y-axis.
-#' @param sec_y_var A second, optional y-variable to plot on a second axis.
+#' @param y2_var A second, optional y-variable to plot on a second axis.
 #' @param opts A list of options for plotting:
 #' - points: should points be plotted?
 #' - line: should line be plotted?
 #' -files: should points be colored by file?
 #' -oow: should out of water periods be plotted?
 #' -calcheck: should cal check be plotted?
-#' -precip: should precip data be plotted?
 #' @param fieldform Field form from the `sondeproj`.
 #' @param calcheck Calibration check from the `sondeproj`.
 #' @param precip Precip data from the `sondeproj`.
-#' @param source A character specifiying the plot name for shiny reactivity.
+#' @param source A character specifying the plot name for shiny reactivity.
 #'
 #' @returns a `plotly` object
 #' @export
 #'
 #' @examples
 #' plot_sonde(example_data, "Temp_C")
-plot_sonde <- function(data, y_var, sec_y_var,
+#' plot_sonde(example_data, "Temp_C", "ODO_mg_L") #adding a second axis
+#' plot_sonde(example_data, "Temp_C", "precip", precip = example_precip)
+plot_sonde <- function(data, y_var, y2_var=NULL,
                        opts=list(points=TRUE,
                                  line=TRUE,
                                  files=FALSE,
                                  oow=FALSE,
-                                 calcheck=FALSE,
-                                 precip=FALSE),
+                                 calcheck=FALSE),
                        fieldform=NULL,
                        calcheck=NULL,
                        precip = NULL,
@@ -42,8 +42,9 @@ plot_sonde <- function(data, y_var, sec_y_var,
       filter(.data$Parameter == y_var) %>%
       pivot_longer(c("Resident_Value", "Check_Value"),names_to = "type",values_to = "value")}
 
-  #nice name for y axis
+  #nice name for y axes
     y_var_nice <- get_yvar(y_var)
+    y2_var_nice <- ifelse(!is.null(y2_var), get_yvar(y2_var), "")
 
   #sort data so line looks correct
     data <- data %>% arrange(.data$DateTime_rd)
@@ -63,25 +64,31 @@ plot_sonde <- function(data, y_var, sec_y_var,
                xaxis = list(title = "<b>Date</b>"),
                yaxis=list(gridcolor = "#3c4d5a", zeroline = FALSE,title = paste0("<b>", y_var_nice, "</b>")),
                yaxis2=list(gridcolor = "#3c4d5a",zeroline = FALSE,side = "right",
-                           overlaying = "y", title = "<b>Precipitation (mm hr\U207B\U00B9)</b>"))
+                           overlaying = "y", title = paste0("<b>", y2_var_nice, "</b>")))
+      #add second axis
+      if(!is.null(y2_var)){
+        if(y2_var == "precip"){
+          precip <- precip %>% filter(.data$DateTime >= min(date_rg) & .data$DateTime <= max(date_rg)) %>%
+            arrange(.data$DateTime)
 
-      #add precip data
-      if(opts$precip){
-        precip <- precip %>% filter(.data$DateTime >= min(date_rg) & .data$DateTime <= max(date_rg)) %>%
-          arrange(.data$DateTime)
-
-        #add second axis
-        p <- p %>% add_trace(data= precip, x=~DateTime, y=~Precip_mm_hr, type="scatter", yaxis="y2", mode="lines",
-                             name = "Precipitation",
-                             line = list(color = "#1d3040"))
+          #add second axis
+          p <- p %>% add_trace(data= precip, x=~DateTime, y=~Precip_mm_hr, type="scatter", yaxis="y2", mode="lines",
+                               name = y2_var_nice,
+                               line = list(color = "#1d3040"))
+        }else{
+          p <- p %>% add_trace(data= data, x=~DateTime_rd, y=as.formula(paste0("~`", y2_var, "`")),
+                               type="scatter", yaxis="y2", mode="lines",
+                               name = y2_var_nice,
+                               line = list(color = "#1d3040"))
+        }
       }
 
       if(!opts$files){
-        p <- p %>% add_trace(data = data, x = ~DateTime_rd,y = as.formula(paste0("~`", y_var, "`")),
+        p <- p %>% add_trace(data = data, x = ~DateTime_rd,y =as.formula(paste0("~`", y_var, "`")),
                              mode=mode, type="scatter", name=y_var_nice, yaxis="y")
 
-          if(opts$line){p <- p %>% style(line = list(color = "#ebebeb"), traces =ifelse(opts$precip, 2,1))}
-          if(opts$points){p <- p %>% style(marker = list(color = "#ebebeb"), traces =ifelse(opts$precip, 2,1))}
+          if(opts$line){p <- p %>% style(line = list(color = "#ebebeb"), traces =ifelse(!is.null(y2_var), 2,1))}
+          if(opts$points){p <- p %>% style(marker = list(color = "#ebebeb"), traces =ifelse(!is.null(y2_var), 2,1))}
       }else{
         p <- p %>% add_trace(data = data, x = ~DateTime_rd,y = as.formula(paste0("~`", y_var, "`")),
                      mode=mode, type="scatter", color = ~FileName, yaxis="y")
