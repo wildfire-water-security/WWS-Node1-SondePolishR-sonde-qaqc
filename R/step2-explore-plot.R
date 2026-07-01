@@ -208,7 +208,7 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var){
 
     #export plot so we can check it
     exportTestValues(
-      plot_obj = plotly_build(plot_obj()),
+      plot_obj = plot_obj(),
       table = tab())
 
   })

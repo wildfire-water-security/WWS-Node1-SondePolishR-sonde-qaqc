@@ -7,6 +7,7 @@
 plot_sonde(
   data,
   y_var,
+  sec_y_var,
   opts = list(points = TRUE, line = TRUE, files = FALSE, oow = FALSE, calcheck = FALSE,
     precip = FALSE),
   fieldform = NULL,
@@ -19,6 +20,8 @@ plot_sonde(
 \item{data}{A `data.frame` with the sonde data to plot.}
 
 \item{y_var}{Y-variable to plot on the y-axis.}
+
+\item{sec_y_var}{A second, optional y-variable to plot on a second axis.}
 
 \item{opts}{A list of options for plotting:
 - points: should points be plotted?
@@ -35,8 +38,6 @@ plot_sonde(
 \item{precip}{Precip data from the `sondeproj`.}
 
 \item{source}{A character specifiying the plot name for shiny reactivity.}
-
-\item{sec_y_var}{A second, optional y-variable to plot on a second axis.}
 }
 \value{
 a `plotly` object

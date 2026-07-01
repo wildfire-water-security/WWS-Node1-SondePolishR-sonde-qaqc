@@ -5,8 +5,7 @@ test_that("{shinytest2} recording: checking-module7", {
   app_dir <- system.file("app", package = "SondePolishR")
   local_app_support(app_dir)
   app <- AppDriver$new(app_dir, variant = platform_variant(),
-                       name = "checking-plotting-module", height = 911, width = 1619,
-                       expect_values_screenshot_args = FALSE)
+                       name = "checking-plotting-module", height = 911, width = 1619)
   app$upload_file(`data1-pj_file` = file.path(test_path(), "testdata", "example-sonde-project.RDS"))
 
   #click to load files and create project
@@ -17,22 +16,24 @@ test_that("{shinytest2} recording: checking-module7", {
  #testing additive shift
   app$set_inputs(`data7-edit_type` = "additive")
   app$wait_for_idle()
-  app$expect_values(input =c("data7-slope", "data7-int")) #should be zero
+  app$expect_values(input =c("data7-slope", "data7-int"), name="start_shift_val") #should be zero
 
- #select a point for shifting (super gross but from shinytests)
-   app$set_inputs(`plotly_selected-shift_plot` = "[{\"curveNumber\":0,\"pointNumber\":2128,\"x\":1724372100,\"y\":170.61}]", allow_no_input_binding_ = TRUE, priority_ = "event")
-   app$wait_for_idle()
+ # #select a point for shifting (super gross but from shinytests2)
+  app$set_inputs(`plotly_selected-shift_plot` = "[{\"curveNumber\":0,\"pointNumber\":2075,\"x\":\"2024-08-22 16:15\",\"y\":170.61}]", allow_no_input_binding_ = TRUE, priority_ = "event")
+  app$wait_for_idle()
 
   #check resulting plot
     plot_obj <- app$get_value(export = "data7-plot_obj")
-    vdiffr::expect_doppelganger("selecting a single point", plot_obj)
-    app$expect_values(input =c("data7-slope", "data7-int"))
+    expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
+    app$expect_screenshot(name = "select_single_point")
+    app$expect_values(input =c("data7-slope", "data7-int"), name="shift_val")
 
   #select a different point (clearing seems to make shinytests mad)
-    app$set_inputs(`plotly_selected-shift_plot` = "[{\"curveNumber\":0,\"pointNumber\":10471,\"x\":1731882600,\"y\":0.08}]", allow_no_input_binding_ = TRUE, priority_ = "event")
+    app$set_inputs(`plotly_selected-shift_plot` = "[{\"curveNumber\":0,\"pointNumber\":10418,\"x\":\"2024-11-17 14:30\",\"y\":0.08}]", allow_no_input_binding_ = TRUE, priority_ = "event")
     app$wait_for_idle()
     plot_obj <- app$get_value(export = "data7-plot_obj")
-    vdiffr::expect_doppelganger("selecting a different point works", plot_obj)
+    expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
+    app$expect_screenshot(name = "select_diffsingle_point")
 
   #make sure the same thing works with weekly view
     app$set_inputs(`data7-date_nav-week_view` = TRUE)
@@ -41,34 +42,39 @@ test_that("{shinytest2} recording: checking-module7", {
     app$click("data7-date_nav-next_week")
 
     #reselect
-    app$set_inputs(`plotly_selected-shift_plot` = "[{\"curveNumber\":0,\"pointNumber\":2128,\"x\":1724372100,\"y\":170.61}]", allow_no_input_binding_ = TRUE, priority_ = "event")
+    app$set_inputs(`plotly_selected-shift_plot` = "[{\"curveNumber\":0,\"pointNumber\":2075,\"x\":\"2024-08-22 16:15\",\"y\":170.61}]", allow_no_input_binding_ = TRUE, priority_ = "event")
     app$wait_for_idle()
     plot_obj <- app$get_value(export = "data7-plot_obj")
-    vdiffr::expect_doppelganger("selecting a single point, weekly view", plot_obj)
+    expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
+    app$expect_screenshot(name = "select_single_point_weekly")
 
     #flag values
     app$click("data7-apply_limits-apply_flags")
+    app$set_inputs(`data7-date_nav-week_view` = FALSE)
+    app$wait_for_idle()
     plot_obj <- app$get_value(export = "data7-plot_obj")
-    vdiffr::expect_doppelganger("after values are flagged", plot_obj)
+    expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
+    app$expect_screenshot(name = "additive_after_flagging")
     tab <- app$get_value(export = "data7-changelog")
+
     expect_true(nrow(tab) > nrow(example_sondeproj$changelog))
     expect_equal(tab$parameter[nrow(tab)], "fDOM_QSU")
     expect_equal(tab$note[nrow(tab)], paste0("shift with slope ", 0," and intercept ", -160.445))
 
  #test drift correction
   #at full scale
-    app$set_inputs(`data7-date_nav-week_view` = FALSE)
     app$set_inputs(`data7-edit_type` = "drift")
     app$wait_for_idle(timeout = 10000)
 
     app$set_inputs(`data7-file` = "example-csv-data2.csv")
     app$wait_for_idle()
 
-    app$expect_values(input =c("data7-uncorrect", "data7-correct"))
-    app$expect_values(input = "data7-edit_type")
+    app$expect_values(input =c("data7-uncorrect", "data7-correct"), name="drift_values")
+    app$expect_values(input = "data7-edit_type", name="edit_type")
 
     plot_obj <- app$get_value(export = "data7-plot_obj")  #not showing drift correction
-    vdiffr::expect_doppelganger("drift correction with full view", plot_obj)
+    expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
+    app$expect_screenshot(name = "drift_fullview")
 
   #at weekly scale
     app$set_inputs(`data7-date_nav-week_view` = TRUE)
@@ -79,12 +85,15 @@ test_that("{shinytest2} recording: checking-module7", {
     app$wait_for_idle()
 
     plot_obj <- app$get_value(export = "data7-plot_obj")
-    vdiffr::expect_doppelganger("drift correction with weekly view", plot_obj)
+    expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
+    app$expect_screenshot(name = "drift_weekview")
 
   #flag values
     app$click("data7-apply_limits-apply_flags")
     plot_obj <- app$get_value(export = "data7-plot_obj")
-    vdiffr::expect_doppelganger("after drift values are flagged", plot_obj)
+    expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
+    app$expect_screenshot(name = "drift_after_flagging")
+
     tab <- app$get_value(export = "data7-changelog")
     expect_true(nrow(tab) > nrow(example_sondeproj$changelog))
     expect_equal(tab$parameter[nrow(tab)], "fDOM_QSU")

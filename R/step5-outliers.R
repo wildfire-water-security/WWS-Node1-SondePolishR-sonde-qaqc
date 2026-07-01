@@ -12,8 +12,8 @@ outlier_UI <- function(id){
         tags$h5("Identify Outliers"),
                 selectInput(ns("filter_type"),
                   "Select Outlier Detection Method:",
-                  choices = c("Hampel Filter" = "hampel", "Relative Change" = "rel_change"),
-                  selected = "hampel"),
+                  choices = c("None" = "none", "Hampel Filter" = "hampel", "Relative Change" = "rel_change"),
+                  selected = "none"),
                   fluidRow(
                     numericInput(ns("k"),"Window Size",value =5,step=2),
                     numericInput(ns("t"),"Threshold",value = 2,step=0.1))
@@ -119,7 +119,12 @@ outlier_server <- function(id, sondeproj, data_ver, y_var){
       }
 
       #return flagged indices
-      data$Index[outlier]
+      if(input$filter_type == "none"){
+        NULL
+      }else{
+        data$Index[outlier]
+
+      }
       })
 
   #track selected data
@@ -181,7 +186,7 @@ outlier_server <- function(id, sondeproj, data_ver, y_var){
         filter_data <- plot_data() %>% filter(!(.data$Index %in% selected_index()))
       }else{
         filter_data <- plot_data()
-        flag_data <- plot_data() %>% filter(.data$Index %in% selected_index())
+        flag_data <- plot_data() %>% filter(.data$Index %in% selected_index() & !is.na(.data[[y_var()]]))
       }
 
       #use function to plot sonde data

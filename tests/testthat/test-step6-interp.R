@@ -12,38 +12,47 @@ test_that("{shinytest2} recording: checking-module6", {
   #click to load files and create project
   app$click("data1-load_prj")
 
+  app$set_inputs(modules = "step-6")
+
   #check initial plot
   plot_obj <- app$get_value(export = "data6-plot_obj")
-  vdiffr::expect_doppelganger("intial interpolation plot", plot_obj)
+  expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
+  app$expect_screenshot(name = "intial_plot")
 
   #test changing method
   app$set_inputs(`data6-method` = "spline")
   app$wait_for_idle()
   plot_obj <- app$get_value(export = "data6-plot_obj")
-  vdiffr::expect_doppelganger("switching to spline", plot_obj)
+  expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
+  app$expect_screenshot(name = "spline")
 
   #test changing max length
   app$set_inputs(`data6-max_length` = 100)
   plot_obj <- app$get_value(export = "data6-plot_obj")
-  vdiffr::expect_doppelganger("changing max length", plot_obj)
+  expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
+  app$expect_screenshot(name = "change_max_len")
 
   #test changing method
   app$set_inputs(`data6-max_length` = 8)
   app$set_inputs(`data6-method` = "ts_interp")
   app$wait_for_idle()
   plot_obj <- app$get_value(export = "data6-plot_obj")
-  vdiffr::expect_doppelganger("switching to linear ts", plot_obj)
+  expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
+  app$expect_screenshot(name = "linear_ts")
 
   #change freq
   app$set_inputs(`data6-freq` = 100)
   app$wait_for_idle()
   plot_obj <- app$get_value(export = "data6-plot_obj")
-  vdiffr::expect_doppelganger("changing freq", plot_obj)
+  expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
+  app$expect_screenshot(name = "change_freq")
 
   #test flagging points
-  app$click("data6-apply_limits-apply_flags")
+  app$click("data6-apply_limits-apply_flags", timeout_ = 10000)
   plot_obj <- app$get_value(export = "data6-plot_obj")
-  vdiffr::expect_doppelganger("after values are flagged", plot_obj)
+  expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
+  app$expect_screenshot(name = "after_flagging")
+
   tab <- app$get_value(export = "data6-changelog")
   expect_true(nrow(tab) > 1)
   expect_equal(tab$parameter[nrow(tab)], "fDOM_QSU")

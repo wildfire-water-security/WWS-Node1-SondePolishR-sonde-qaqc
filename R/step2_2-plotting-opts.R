@@ -22,22 +22,29 @@ plot_options_UI <- function(id){
   ns <- NS(id)
   tagList(
     tags$h5("Plot Options"),
-
+    tags$div(
+      style = "margin-bottom:-5px;",
     fluidRow(
       column(6,
-             checkboxInput( ns("points"), "Plot points",value = TRUE),
+             div(style = "margin-bottom:-10px;",
+             checkboxInput( ns("points"), "Plot points",value = TRUE)),
 
-             checkboxInput( ns("line"), "Plot line",value = TRUE),
+             div(style = "margin-bottom:-10px;",
+                 checkboxInput( ns("line"), "Plot line",value = TRUE)),
 
-             checkboxInput( ns("files"),"Color points by file",value = FALSE)),
+             div(style = "margin-bottom:-10px;",
+                 checkboxInput( ns("files"),"Color points by file",value = FALSE))),
       column(6,
-             checkboxInput(ns("oow"),"Show out-of-water periods",value = FALSE),
+             div(style = "margin-bottom:-10px;",
+                 checkboxInput(ns("oow"),"Show out-of-water periods",value = FALSE)),
 
-             checkboxInput(ns("calcheck"),"Show calibration checks",value = FALSE),
+             div(style = "margin-bottom:-10px;",
+                 checkboxInput(ns("calcheck"),"Show calibration checks",value = FALSE)),
 
-             checkboxInput(ns("precip"),"Show precipitation data",value = FALSE)))
+             div(style = "margin-bottom:-10px;",
+                 checkboxInput(ns("precip"),"Show precipitation data",value = FALSE))))
 
-
+)
   )}
 
 

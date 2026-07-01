@@ -17,25 +17,27 @@ test_that("{shinytest2} recording: checking-module8", {
 
   #check initial plot
     plot_obj <- app$get_value(export = "data8-plot_obj")
-    vdiffr::expect_doppelganger("intial fdom plot", plot_obj)
+    expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
+    app$expect_screenshot(name = "initial_plot")
 
   #test changing method
     app$set_inputs(`data8-method` = "1p_exponential")
     plot_obj <- app$get_value(export = "data8-plot_obj")
-    vdiffr::expect_doppelganger("switching method", plot_obj)
+    expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
+    app$expect_screenshot(name = "switching_method")
 
   #test changing parameter
     app$set_inputs(`data8-a` = -0.004)
     plot_obj <- app$get_value(export = "data8-plot_obj")
-    vdiffr::expect_doppelganger("changing parameter value", plot_obj)
-
-  #make sure source and things show up correctly
-    app$expect_screenshot() #make sure message prints
+    expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
+    app$expect_screenshot(name = "change_parm")
 
   #test flagging points
     app$click("data8-apply_limits-apply_flags")
     plot_obj <- app$get_value(export = "data8-plot_obj")
-    vdiffr::expect_doppelganger("after values are flagged", plot_obj)
+    expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
+    app$expect_screenshot(name = "after_flagging")
+
     tab <- app$get_value(export = "data8-changelog")
     expect_true(nrow(tab) > nrow(example_sondeproj$changelog))
     expect_equal(tab$parameter[nrow(tab)], "fDOM_QSU")

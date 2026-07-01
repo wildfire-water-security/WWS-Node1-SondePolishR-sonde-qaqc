@@ -17,22 +17,26 @@ test_that("{shinytest2} recording: checking-module9", {
 
   #check initial plot
     plot_obj <- app$get_value(export = "data9-plot_obj")
-    vdiffr::expect_doppelganger("intial export plot", plot_obj)
+    expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
+    app$expect_screenshot(name = "initial_plot")
 
   #test different methods of summarizing
     app$set_inputs(`data9-frequency` = "week")
     plot_obj <- app$get_value(export = "data9-plot_obj")
-    vdiffr::expect_doppelganger("weekly summary", plot_obj)
+    expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
+    app$expect_screenshot(name = "weekly_summary")
 
     app$set_inputs(`data9-summary_method` = "min")
     plot_obj <- app$get_value(export = "data9-plot_obj")
-    vdiffr::expect_doppelganger("change to min", plot_obj)
+    expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
+    app$expect_screenshot(name = "change_min")
 
   #test changing date range
     app$set_inputs(`data9-frequency` = "day")
     app$set_inputs(`data9-dates` = as.Date(c("2024-08-07", "2024-08-13")))
     plot_obj <- app$get_value(export = "data9-plot_obj")
-    vdiffr::expect_doppelganger("change date range", plot_obj)
+    expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
+    app$expect_screenshot(name = "change_daterng")
 
 })
 

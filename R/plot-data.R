@@ -23,7 +23,7 @@
 #'
 #' @examples
 #' plot_sonde(example_data, "Temp_C")
-plot_sonde <- function(data, y_var,
+plot_sonde <- function(data, y_var, sec_y_var,
                        opts=list(points=TRUE,
                                  line=TRUE,
                                  files=FALSE,

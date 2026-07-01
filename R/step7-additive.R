@@ -122,17 +122,23 @@ additive_server <- function(id, sondeproj, data_ver, y_var){
       dat
     })
 
+    #reset slope and intercept when data updates
+    observeEvent(sondeproj(),{
+      updateNumericInput(session,"slope", value =0)
+      updateNumericInput(session,"int", value = 0)
+    })
+
     #observe selection from plot and get indices of selected
     observeEvent(
       req(plot_exist(), event_data("plotly_selected", source = "shift_plot"), input$edit_type == "additive"),{
         req(sondeproj(), y_var())
-
+        data <- sondeproj()$data
         sel <- event_data("plotly_selected", source = "shift_plot")
 
         if(!is.null(sel) && length(sel) && nrow(sel) > 0) {
           sel <- sel %>%  filter(.data$curveNumber %in% traces()) %>%
-            mutate(x = parse_date_time(x, tz=tz(data$DateTime_rd), orders = "Ymd HMS", truncated =3))
-          full_index <- sondeproj()$data%>%
+            mutate(x = parse_date_time(.data$x, tz=tz(data$DateTime_rd), orders = "Ymd HMS", truncated =3))
+          full_index <- data %>%
             mutate(value = .data[[y_var()]],
                    DateTime_rd = .data$DateTime_rd) %>%
             inner_join(sel, by = c("DateTime_rd" = "x", "value" = "y")) %>%
@@ -170,7 +176,7 @@ additive_server <- function(id, sondeproj, data_ver, y_var){
         note <- paste0("drift correction based on an uncorrected value of ", input$uncorrect," and corrected value of ", input$correct,
                          " for file ", input$file)
         step <- "drift correction"
-        flag <- "CHG02"
+        flag <- "CHG02"}
 
 
         #make edit list
@@ -183,7 +189,7 @@ additive_server <- function(id, sondeproj, data_ver, y_var){
           flag = flag,
           changetype = "flag_chg"
         )
-        }
+
 
     })
 
@@ -209,7 +215,7 @@ additive_server <- function(id, sondeproj, data_ver, y_var){
 
       if(input$edit_type == "drift"){
         dat <-edit()$data[edit()$rows,] %>% dplyr::filter(.data$Date >= dates()[1], .data$Date <= dates()[2]) %>%
-          arrange(DateTime_rd)
+          arrange(.data$DateTime_rd)
 
         if(nrow(dat) > 0){
           p <- p %>% add_trace(data= dat, x=~DateTime_rd, y=as.formula(paste0("~`", y, "`")), type="scatter", mode="lines",

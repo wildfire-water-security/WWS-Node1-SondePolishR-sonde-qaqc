@@ -186,7 +186,6 @@ nice_yvar <- function(data){
     y_var %in% names(nice_names),
     nice_names[y_var],
     y_var)
-
   return(y_var)
 }
 
@@ -297,19 +296,10 @@ get_interval <- function(data){
 }
 
 
-#' #' Get min or max without warning for all NA
-#' #'
-#' #' @param x a vector to summarize
-#' #'
-#' #' @noRd
-#' #' @name safe-summary
-#' safe_min <- function(x) {
-#'   if (length(x) > 0 && any(!is.na(x))) min(x, na.rm = TRUE) else NA
-#' }
+#' Get the nice name of a y-var for plotting
 #'
-#' #' @name safe-summary
-#' safe_max <- function(x) {
-#'   if (length(x) > 0 && any(!is.na(x))) max(x, na.rm = TRUE) else NA
+#' @param y_var Y-variable to get name name of.
+#'
 #' @returns a character.
 #' @noRd
 get_yvar <- function(y_var){

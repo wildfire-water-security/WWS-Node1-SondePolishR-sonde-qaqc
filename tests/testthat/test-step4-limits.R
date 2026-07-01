@@ -12,13 +12,16 @@ test_that("{shinytest2} recording: checking-module4", {
   #click to load files and create project
   app$click("data1-load_prj")
 
+  app$set_inputs(modules = "step-4")
+
   #check range when df is first added
     rng <- c(app$get_value(input = "data4-min"), app$get_value(input = "data4-max"))
     expect_equal(rng, c(0,300))
 
   #check initial plot
     plot_obj <- app$get_value(export = "data4-plot_obj")
-    vdiffr::expect_doppelganger("intial limit plot", plot_obj)
+    expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
+    app$expect_screenshot(name = "intial_plot")
 
   #make sure limits update when y var changes
     app$set_inputs(`data4-update_parms-y_var` = "Temp_C")
@@ -28,17 +31,23 @@ test_that("{shinytest2} recording: checking-module4", {
   #update limits to see plot/table
     app$set_inputs(`data4-max` = 15)
     plot_obj <- app$get_value(export = "data4-plot_obj")
-    vdiffr::expect_doppelganger("manually-changing-limits", plot_obj)
+    expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
+    app$expect_screenshot(name = "manually_change_limits")
 
   #hide flagged values
     app$set_inputs(`data4-rm_flags` = TRUE)
     plot_obj <- app$get_value(export = "data4-plot_obj")
-    vdiffr::expect_doppelganger("hiding flagged points", plot_obj)
+    expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
+    app$expect_screenshot(name = "hiding_flagged_points")
 
   #flag values
     app$click("data4-apply_limits-apply_flags")
+    app$set_inputs(`data4-rm_flags` = FALSE)
     plot_obj <- app$get_value(export = "data4-plot_obj")
-    vdiffr::expect_doppelganger("after values are flagged", plot_obj)
+    expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
+    app$expect_screenshot(name = "after_flagging")
+
+
     tab <- app$get_value(export = "data4-changelog")
     expect_true(nrow(tab) > nrow(example_sondeproj$changelog))
     expect_equal(tab$parameter[nrow(tab)], "Temp_C")

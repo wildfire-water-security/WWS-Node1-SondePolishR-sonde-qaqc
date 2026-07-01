@@ -14,7 +14,7 @@ test_that("{shinytest2} recording: checking-module1", {
   app$upload_file(`data1-csv_files` = file.path(test_path(), "testdata", c("example-csv-data1.csv", "example-csv-data2.csv")))
 
   #click to load files and create project
-  app$click("data1-load_prj")
+  app$click("data1-load_prj", timeout_=20000)
 
   #upload user precip files
   app$set_inputs(`data1-precip_source` = "upload")

@@ -10,7 +10,7 @@ export_UI <- function(id){
         col_widths = c(7, 5),
        #exporting data
         bslib::card(
-          height = "675px",
+          height = "700px",
           bslib::card_header("Export Data"),
           bslib::layout_columns(col_widths = c(3,9),
                                 div(
