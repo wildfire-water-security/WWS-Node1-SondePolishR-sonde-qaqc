@@ -5,7 +5,7 @@ test_that("{shinytest2} recording: checking-module2", {
   app_dir <- system.file("app", package = "SondePolishR")
   local_app_support(app_dir)
   app <- AppDriver$new(app_dir, variant = platform_variant(),
-                       name = "checking-plotting-module", height = 911, width = 1619)
+                       name = "m2", height = 911, width = 1619)
   app$upload_file(`data1-pj_file` = file.path(test_path(), "testdata", "example-sonde-project.RDS"))
 
   #click to load files and create project
@@ -35,6 +35,7 @@ test_that("{shinytest2} recording: checking-module2", {
 
   #unclick weekly and make sure we get the full plot again
   app$set_inputs(`data2-weekly_range-week_view` = FALSE)
+  app$wait_for_idle()
   plot_obj <- app$get_value(export = "data2-plot_obj")
   expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
   app$expect_screenshot(name = "removing_weekly_view")

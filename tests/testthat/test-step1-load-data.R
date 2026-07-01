@@ -6,10 +6,8 @@ test_that("{shinytest2} recording: checking-module1", {
   app_dir <- system.file("app", package = "SondePolishR")
   local_app_support(app_dir)
   app <- AppDriver$new(app_dir, variant = platform_variant(),
-                       name = "checking-module1", height = 911, width = 1619)
+                       name = "m1", height = 911, width = 1619)
 
-  cat(getwd(), "\n")
-  print(test_path())
   #upload files
   app$upload_file(`data1-csv_files` = file.path(test_path(), "testdata", c("example-csv-data1.csv", "example-csv-data2.csv")))
 

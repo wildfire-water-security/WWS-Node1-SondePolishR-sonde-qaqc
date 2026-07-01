@@ -115,8 +115,8 @@ limits_server <- function(id, sondeproj, data_ver, y_var){
       }
 
       #use function to plot sonde data
-      p <- plot_sonde(filter_data, y_var(), plot_opts(),sondeproj()$fieldform, sondeproj()$calcheck, sondeproj()$precip)
-
+      p <- plot_sonde(data = filter_data, y_var=y_var(), opts=plot_opts(),fieldform=sondeproj()$fieldform,
+                 calcheck =sondeproj()$calcheck, precip=sondeproj()$precip)
       #color points outside limits as red
       if(!input$rm_flags){
         y <- y_var()

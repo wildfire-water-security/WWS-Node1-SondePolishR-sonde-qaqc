@@ -5,7 +5,7 @@ test_that("{shinytest2} recording: checking-module5", {
   app_dir <- system.file("app", package = "SondePolishR")
   local_app_support(app_dir)
   app <- AppDriver$new(app_dir, variant = platform_variant(),
-                       name = "checking-plotting-module", height = 911, width = 1619,
+                       name = "m5", height = 911, width = 1619,
                        expect_values_screenshot_args = FALSE)
   app$upload_file(`data1-pj_file` = file.path(test_path(), "testdata", "example-sonde-project.RDS"))
 

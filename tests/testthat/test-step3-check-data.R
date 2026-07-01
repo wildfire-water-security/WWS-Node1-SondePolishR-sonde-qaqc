@@ -6,7 +6,7 @@ test_that("{shinytest2} recording: checking-module3", {
   app_dir <- system.file("app", package = "SondePolishR")
   local_app_support(app_dir)
   app <- AppDriver$new(app_dir, variant = platform_variant(),
-                       name = "checking-module1", height = 911, width = 1619)
+                       name = "m3", height = 911, width = 1619)
 
 #TEST 1: testing example data with no gaps/dups
   #upload files

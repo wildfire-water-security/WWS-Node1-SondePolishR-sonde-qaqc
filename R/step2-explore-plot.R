@@ -192,7 +192,8 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var){
       req(y_var(), plot_data())
 
       #use function to plot sonde data
-      plot_sonde(plot_data(), y_var(), plot_opts(),sondeproj()$fieldform, sondeproj()$calcheck, sondeproj()$precip)
+      plot_sonde(data = plot_data(), y_var=y_var(), opts=plot_opts(),fieldform=sondeproj()$fieldform,
+                 calcheck =sondeproj()$calcheck, precip=sondeproj()$precip)
     })
 
     #save to export

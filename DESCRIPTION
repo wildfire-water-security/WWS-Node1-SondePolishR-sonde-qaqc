@@ -41,7 +41,6 @@ Imports:
     htmltools,
     utf8,
     stringr,
-    thematic,
     shinyjs,
     vctrs,
     timeplyr,
@@ -52,7 +51,7 @@ Imports:
     nasapower
 Suggests: 
     shinytest2,
-    testthat (>= 3.0.0), 
-Config/testthat/edition: 3
+    testthat (>= 3.0.0)
 Depends: 
     R (>= 3.5)
+Config/testthat/edition: 3

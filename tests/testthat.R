@@ -8,9 +8,5 @@
 
 library(testthat)
 library(SondePolishR)
-library(shinytest2)
-library(shiny)
 
 test_check("SondePolishR")
-
-shinytest2::test_app()

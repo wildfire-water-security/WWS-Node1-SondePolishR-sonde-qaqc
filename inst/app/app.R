@@ -9,10 +9,6 @@ library(DT)
 ## TODO:
   #just marking bad points
 
-
-#ensure plots inherit theme
-  thematic::thematic_shiny()
-
 #getting timezones and making nice
   tz <- SondePolishR:::nice_tz()
 

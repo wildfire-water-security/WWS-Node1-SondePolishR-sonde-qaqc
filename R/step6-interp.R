@@ -118,8 +118,8 @@ interp_server <- function(id, sondeproj, data_ver, y_var){
       req(y_var(), plot_data())
 
       #use function to plot sonde data
-      p <- plot_sonde(plot_data() %>% filter(!.data$fill_flag), y_var(), plot_opts(),sondeproj()$fieldform, sondeproj()$calcheck, sondeproj()$precip)
-
+      p <- plot_sonde(data = plot_data()%>% filter(!.data$fill_flag), y_var=y_var(), opts=plot_opts(),fieldform=sondeproj()$fieldform,
+                      calcheck =sondeproj()$calcheck, precip=sondeproj()$precip)
       #add interpolated data (show as green points)
       interp_points <- plot_data() %>% filter(.data$fill_flag) %>% filter(!is.na(.data[[y_var()]]))
       if(nrow(interp_points) > 0){

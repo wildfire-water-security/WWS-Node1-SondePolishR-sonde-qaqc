@@ -110,7 +110,6 @@
 #' @importFrom stats setNames
 #' @importFrom stats ts
 #' @importFrom stringr str_split_i
-#' @importFrom thematic thematic_shiny
 #' @importFrom tidyr complete
 #' @importFrom tidyr drop_na
 #' @importFrom tidyr fill
