@@ -12,17 +12,20 @@ outlier_UI <- function(id){
         HTML("<hr>"),
       #select physical limits
         tags$h5("Identify Outliers"),
-                selectInput(ns("filter_type"),
-                  "Select Outlier Detection Method:",
-                  choices = c("None" = "none", "Hampel Filter" = "hampel", "Relative Change" = "rel_change"),
-                  selected = "none"),
+            bslib::layout_columns(
+              col_widths = c(7, 5),
+              selectInput(ns("filter_type"),
+                        "Select Outlier Detection Method:",
+                        choices = c("None" = "none", "Hampel Filter" = "hampel", "Relative Change" = "rel_change"),
+                        selected = "none"),
+              radioButtons(ns("selection_mode"),"Manual Selection Method",
+                                     choices = c("Add" = "add","Remove" = "remove"))),
                   fluidRow(
                     numericInput(ns("k"),"Window Size",value =5,step=2),
                     numericInput(ns("t"),"Threshold",value = 2,step=0.1))
                 ,
                 input_switch(ns("rm_flags"), "Hide Flagged Data"),
-                radioButtons(ns("selection_mode"),"Selection Method",
-                             choices = c("Add" = "add","Remove" = "remove")),
+
         HTML("<hr>"),
 
         apply_edit_UI(ns("apply_limits"), note=""),

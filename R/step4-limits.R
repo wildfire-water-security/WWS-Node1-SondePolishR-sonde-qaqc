@@ -16,10 +16,10 @@ limits_UI <- function(id){
         tags$h5("Set Physical Limits"),
       div(style="margin-bottom: 8px; font-size:10px",
           "Default Limits based on YSI EXO Ranges"),
-            numericInput(ns("max"),
+      fluidRow(numericInput(ns("max"),
               HTML("<b>Maximum</b> Physical Limit"), value = NULL),
             numericInput(ns("min"),
-                   HTML("<b>Minimum</b> Physical Limit"),value = NULL),
+                   HTML("<b>Minimum</b> Physical Limit"),value = NULL)),
 
             input_switch(ns("rm_flags"), "Hide Flagged Data"),
         HTML("<hr>"),
