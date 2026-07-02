@@ -36,10 +36,10 @@ test_that("{shinytest2} recording: checking-module7", {
     app$expect_screenshot(name = "select_diffsingle_point")
 
   #make sure the same thing works with weekly view
-    app$set_inputs(`data7-date_nav-week_view` = TRUE)
-    app$click("data7-date_nav-next_week")
-    app$click("data7-date_nav-next_week")
-    app$click("data7-date_nav-next_week")
+    app$set_inputs(`data7-date_nav-period_view` = TRUE)
+    app$click("data7-date_nav-next_period")
+    app$click("data7-date_nav-next_period")
+    app$click("data7-date_nav-next_period")
 
     #reselect
     app$set_inputs(`plotly_selected-shift_plot` = "[{\"curveNumber\":0,\"pointNumber\":2075,\"x\":\"2024-08-22 16:15\",\"y\":170.61}]", allow_no_input_binding_ = TRUE, priority_ = "event")
@@ -50,7 +50,7 @@ test_that("{shinytest2} recording: checking-module7", {
 
     #flag values
     app$click("data7-apply_limits-apply_flags")
-    app$set_inputs(`data7-date_nav-week_view` = FALSE)
+    app$set_inputs(`data7-date_nav-period_view` = FALSE)
     app$wait_for_idle()
     plot_obj <- app$get_value(export = "data7-plot_obj")
     expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
@@ -77,9 +77,9 @@ test_that("{shinytest2} recording: checking-module7", {
     app$expect_screenshot(name = "drift_fullview")
 
   #at weekly scale
-    app$set_inputs(`data7-date_nav-week_view` = TRUE)
+    app$set_inputs(`data7-date_nav-period_view` = TRUE)
     for(x in 1:12){
-      app$click("data7-date_nav-next_week")
+      app$click("data7-date_nav-next_period")
     }
 
     app$wait_for_idle()

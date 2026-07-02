@@ -18,23 +18,23 @@ test_that("{shinytest2} recording: checking-module2", {
   app$expect_screenshot(name = "intial_plot")
 
   #check putting in week view
-  app$set_inputs(`data2-weekly_range-week_view` = TRUE)
+  app$set_inputs(`data2-weekly_range-period_view` = TRUE)
   plot_obj <- app$get_value(export = "data2-plot_obj")
   expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
   app$expect_screenshot(name = "weekly_view")
 
   #clicking next week
-  app$click("data2-weekly_range-next_week")
+  app$click("data2-weekly_range-next_period")
   rng <- app$get_value(input= "data2-weekly_range-dates")
   expect_equal(rng, as.Date(c("2024-08-07", "2024-08-13")))
 
   #click previous week
-  app$click("data2-weekly_range-prev_week")
+  app$click("data2-weekly_range-prev_period")
   rng <- app$get_value(input= "data2-weekly_range-dates")
   expect_equal(rng, as.Date(c("2024-07-31", "2024-08-06")))
 
   #unclick weekly and make sure we get the full plot again
-  app$set_inputs(`data2-weekly_range-week_view` = FALSE)
+  app$set_inputs(`data2-weekly_range-period_view` = FALSE)
   app$wait_for_idle()
   plot_obj <- app$get_value(export = "data2-plot_obj")
   expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
