@@ -40,6 +40,7 @@ add_flags <- function(proj, data){
          arrange(.data$DateTime, .data$DupNum) %>% mutate(Index = 1:n(), .before="DateTime")})
    }else{
      proj$flags <- list(
+       flag_qual=flags,
        flag_rm = flags,
        flag_chg = flags,
        flag_add = flags)

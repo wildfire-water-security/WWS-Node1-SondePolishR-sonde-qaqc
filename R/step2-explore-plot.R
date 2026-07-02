@@ -233,7 +233,15 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var){
 
       # convert to plotly
       p <- plot_obj()
-      #toWebGL(p)
+      toWebGL(p)
+    })
+
+    #redraw when back on module to prevent weird drawing issues
+    observeEvent(input$modules, {
+      req(input$modules == "step-2")
+
+      plotlyProxy("plot", session) %>%
+        plotlyProxyInvoke("resize")
     })
 
     #export plot so we can check it

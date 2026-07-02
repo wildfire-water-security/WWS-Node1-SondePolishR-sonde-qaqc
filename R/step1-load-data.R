@@ -34,7 +34,7 @@ load_data_UI <- function(id){
                 column(
                   width = 8,
                   fileInput(inputId = ns("csv_files"),label = "Raw Sonde Data (.csv)",
-                            multiple = TRUE, width = "100%")),
+                            multiple = TRUE, width = "100%",accept = ".csv")),
                 column(
                   width = 4,
                   selectInput(inputId = ns("tz"),label = "Timezone",choices = nice_tz(),

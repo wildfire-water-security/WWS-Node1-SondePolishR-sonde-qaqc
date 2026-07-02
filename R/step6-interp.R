@@ -90,13 +90,14 @@ interp_server <- function(id, sondeproj, data_ver, y_var){
   #get data to fill and interpolation df as list
    data_fill_list <- reactive({
      req(sondeproj())
+     withProgress(message = "Preparing data", value = 0, {
      prep_interp(sondeproj())
+     })
    })
 
   #interpolate
   data_interp <- reactive({
-    withProgress(message = "Preparing data", value = 0, {
-      current <- 0.5
+    withProgress(message = "Interpolating data", value = 0, {
       run_interp(data_fill_list()$interp, y_var(), input$method, input$freq)
     })
   })
@@ -104,8 +105,7 @@ interp_server <- function(id, sondeproj, data_ver, y_var){
   #fill data
   data_fill <- reactive({
     req(data_fill_list(), data_interp(), y_var())
-    withProgress(message = "Interpolating data", value = 0, {
-      current <- 0.5
+    withProgress(message = "Interpolating data", value = 0.5, {
       apply_interp(data_fill_list()$fill, data_interp(), y_var(), input$max_length)
     })
     })
@@ -146,7 +146,14 @@ interp_server <- function(id, sondeproj, data_ver, y_var){
 
       # convert to plotly
       p <- plot_obj()
-      #toWebGL(p)
+      toWebGL(p)
+    })
+
+    observeEvent(input$modules, {
+      req(input$modules == "step-6")
+
+      plotlyProxy("interp_plot", session) %>%
+        plotlyProxyInvoke("resize")
     })
 
   #create edit object

@@ -41,6 +41,7 @@ prep_interp <- function(proj){
            DateTime = if_else(is.na(.data$DateTime), .data$DateTime_rd, .data$DateTime),
            Site_Name = name)
 
+
   #get df with a single stamp per row (conflicting duplicates are set to NA)
   #determine which sets of dups are conflicting (for removing from interpolated data)
   conflict <- data %>%

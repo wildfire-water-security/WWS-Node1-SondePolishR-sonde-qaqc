@@ -70,8 +70,9 @@ additive_server <- function(id, sondeproj, data_ver, y_var){
           fluidRow(numericInput(ns("slope"),"Slope",value = 0,step=0.001),
           numericInput(ns("int"),"Intercept",value = 0,step=0.01)))
     }else{
+      opts <- unique(sondeproj()$data$FileName)
       tagList(selectInput(inputId=ns("file"),label = "File to Drift Correct:",
-                  choices = unique(sondeproj()$data$FileName), selectize=TRUE),
+                  choices = opts[opts != "interpolated"], selectize=TRUE),
        fluidRow(div(style="margin-bottom: 8px; font-size:14px",
                  "Adjust the corrected and uncorrected values to account for drift:"),
                  numericInput(ns("uncorrect"),"Uncorrected",value = 0,step=0.01),
@@ -248,7 +249,7 @@ additive_server <- function(id, sondeproj, data_ver, y_var){
       # convert to plotly
       p <- plot_obj() %>%
         plotly::event_register("plotly_selected")
-      #p <- toWebGL(p)
+      p <- toWebGL(p)
 
       #set to dragmode select as default for input
       if(input$edit_type == "additive"){
@@ -259,6 +260,13 @@ additive_server <- function(id, sondeproj, data_ver, y_var){
 
       p
 
+    })
+
+    observeEvent(input$modules, {
+      req(input$modules == "step-7")
+
+      plotlyProxy("shift_plot", session) %>%
+        plotlyProxyInvoke("resize")
     })
 
   #flagging module

@@ -117,7 +117,7 @@
                 "names": {
                   "type": "character",
                   "attributes": {},
-                  "value": ["domain", "automargin", "gridcolor", "zeroline", "title"]
+                  "value": ["domain", "automargin", "gridcolor", "zeroline", "title", "overlaying"]
                 }
               },
               "value": [
@@ -145,6 +145,11 @@
                   "type": "character",
                   "attributes": {},
                   "value": ["<b>fDOM (QSU)<\/b>"]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["y2"]
                 }
               ]
             },
@@ -154,7 +159,7 @@
                 "names": {
                   "type": "character",
                   "attributes": {},
-                  "value": ["gridcolor", "zeroline", "side", "overlaying", "title"]
+                  "value": ["gridcolor", "zeroline", "side", "title"]
                 }
               },
               "value": [
@@ -172,11 +177,6 @@
                   "type": "character",
                   "attributes": {},
                   "value": ["right"]
-                },
-                {
-                  "type": "character",
-                  "attributes": {},
-                  "value": ["y"]
                 },
                 {
                   "type": "character",
@@ -427,7 +427,7 @@
                 "names": {
                   "type": "character",
                   "attributes": {},
-                  "value": ["domain", "automargin", "gridcolor", "zeroline", "title"]
+                  "value": ["domain", "automargin", "gridcolor", "zeroline", "title", "overlaying"]
                 }
               },
               "value": [
@@ -455,6 +455,11 @@
                   "type": "character",
                   "attributes": {},
                   "value": ["<b>fDOM (QSU)<\/b>"]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["y2"]
                 }
               ]
             },
@@ -464,7 +469,7 @@
                 "names": {
                   "type": "character",
                   "attributes": {},
-                  "value": ["gridcolor", "zeroline", "side", "overlaying", "title"]
+                  "value": ["gridcolor", "zeroline", "side", "title"]
                 }
               },
               "value": [
@@ -482,11 +487,6 @@
                   "type": "character",
                   "attributes": {},
                   "value": ["right"]
-                },
-                {
-                  "type": "character",
-                  "attributes": {},
-                  "value": ["y"]
                 },
                 {
                   "type": "character",
@@ -737,7 +737,7 @@
                 "names": {
                   "type": "character",
                   "attributes": {},
-                  "value": ["domain", "automargin", "gridcolor", "zeroline", "title"]
+                  "value": ["domain", "automargin", "gridcolor", "zeroline", "title", "overlaying"]
                 }
               },
               "value": [
@@ -765,6 +765,11 @@
                   "type": "character",
                   "attributes": {},
                   "value": ["<b>fDOM (QSU)<\/b>"]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["y2"]
                 }
               ]
             },
@@ -774,7 +779,7 @@
                 "names": {
                   "type": "character",
                   "attributes": {},
-                  "value": ["gridcolor", "zeroline", "side", "overlaying", "title"]
+                  "value": ["gridcolor", "zeroline", "side", "title"]
                 }
               },
               "value": [
@@ -792,11 +797,6 @@
                   "type": "character",
                   "attributes": {},
                   "value": ["right"]
-                },
-                {
-                  "type": "character",
-                  "attributes": {},
-                  "value": ["y"]
                 },
                 {
                   "type": "character",
@@ -1047,7 +1047,7 @@
                 "names": {
                   "type": "character",
                   "attributes": {},
-                  "value": ["domain", "automargin", "gridcolor", "zeroline", "title"]
+                  "value": ["domain", "automargin", "gridcolor", "zeroline", "title", "overlaying"]
                 }
               },
               "value": [
@@ -1075,6 +1075,11 @@
                   "type": "character",
                   "attributes": {},
                   "value": ["<b>fDOM (QSU)<\/b>"]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["y2"]
                 }
               ]
             },
@@ -1084,7 +1089,7 @@
                 "names": {
                   "type": "character",
                   "attributes": {},
-                  "value": ["gridcolor", "zeroline", "side", "overlaying", "title"]
+                  "value": ["gridcolor", "zeroline", "side", "title"]
                 }
               },
               "value": [
@@ -1102,11 +1107,6 @@
                   "type": "character",
                   "attributes": {},
                   "value": ["right"]
-                },
-                {
-                  "type": "character",
-                  "attributes": {},
-                  "value": ["y"]
                 },
                 {
                   "type": "character",
@@ -1357,7 +1357,7 @@
                 "names": {
                   "type": "character",
                   "attributes": {},
-                  "value": ["domain", "automargin", "gridcolor", "zeroline", "title"]
+                  "value": ["domain", "automargin", "gridcolor", "zeroline", "title", "overlaying"]
                 }
               },
               "value": [
@@ -1385,6 +1385,11 @@
                   "type": "character",
                   "attributes": {},
                   "value": ["<b>fDOM (QSU)<\/b>"]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["y2"]
                 }
               ]
             },
@@ -1394,7 +1399,7 @@
                 "names": {
                   "type": "character",
                   "attributes": {},
-                  "value": ["gridcolor", "zeroline", "side", "overlaying", "title"]
+                  "value": ["gridcolor", "zeroline", "side", "title"]
                 }
               },
               "value": [
@@ -1412,11 +1417,6 @@
                   "type": "character",
                   "attributes": {},
                   "value": ["right"]
-                },
-                {
-                  "type": "character",
-                  "attributes": {},
-                  "value": ["y"]
                 },
                 {
                   "type": "character",
@@ -1667,7 +1667,7 @@
                 "names": {
                   "type": "character",
                   "attributes": {},
-                  "value": ["domain", "automargin", "gridcolor", "zeroline", "title"]
+                  "value": ["domain", "automargin", "gridcolor", "zeroline", "title", "overlaying"]
                 }
               },
               "value": [
@@ -1695,6 +1695,11 @@
                   "type": "character",
                   "attributes": {},
                   "value": ["<b>fDOM (QSU)<\/b>"]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["y2"]
                 }
               ]
             },
@@ -1704,7 +1709,7 @@
                 "names": {
                   "type": "character",
                   "attributes": {},
-                  "value": ["gridcolor", "zeroline", "side", "overlaying", "title"]
+                  "value": ["gridcolor", "zeroline", "side", "title"]
                 }
               },
               "value": [
@@ -1722,11 +1727,6 @@
                   "type": "character",
                   "attributes": {},
                   "value": ["right"]
-                },
-                {
-                  "type": "character",
-                  "attributes": {},
-                  "value": ["y"]
                 },
                 {
                   "type": "character",
@@ -1977,7 +1977,7 @@
                 "names": {
                   "type": "character",
                   "attributes": {},
-                  "value": ["domain", "automargin", "gridcolor", "zeroline", "title"]
+                  "value": ["domain", "automargin", "gridcolor", "zeroline", "title", "overlaying"]
                 }
               },
               "value": [
@@ -2005,6 +2005,11 @@
                   "type": "character",
                   "attributes": {},
                   "value": ["<b>fDOM (QSU)<\/b>"]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["y2"]
                 }
               ]
             },
@@ -2014,7 +2019,7 @@
                 "names": {
                   "type": "character",
                   "attributes": {},
-                  "value": ["gridcolor", "zeroline", "side", "overlaying", "title"]
+                  "value": ["gridcolor", "zeroline", "side", "title"]
                 }
               },
               "value": [
@@ -2032,11 +2037,6 @@
                   "type": "character",
                   "attributes": {},
                   "value": ["right"]
-                },
-                {
-                  "type": "character",
-                  "attributes": {},
-                  "value": ["y"]
                 },
                 {
                   "type": "character",
@@ -2287,7 +2287,7 @@
                 "names": {
                   "type": "character",
                   "attributes": {},
-                  "value": ["domain", "automargin", "gridcolor", "zeroline", "title"]
+                  "value": ["domain", "automargin", "gridcolor", "zeroline", "title", "overlaying"]
                 }
               },
               "value": [
@@ -2315,6 +2315,11 @@
                   "type": "character",
                   "attributes": {},
                   "value": ["<b>fDOM (QSU)<\/b>"]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["y2"]
                 }
               ]
             },
@@ -2324,7 +2329,7 @@
                 "names": {
                   "type": "character",
                   "attributes": {},
-                  "value": ["gridcolor", "zeroline", "side", "overlaying", "title"]
+                  "value": ["gridcolor", "zeroline", "side", "title"]
                 }
               },
               "value": [
@@ -2342,11 +2347,6 @@
                   "type": "character",
                   "attributes": {},
                   "value": ["right"]
-                },
-                {
-                  "type": "character",
-                  "attributes": {},
-                  "value": ["y"]
                 },
                 {
                   "type": "character",
@@ -2560,7 +2560,7 @@
                 "names": {
                   "type": "character",
                   "attributes": {},
-                  "value": ["domain", "automargin", "gridcolor", "zeroline", "title"]
+                  "value": ["domain", "automargin", "gridcolor", "zeroline", "title", "overlaying"]
                 }
               },
               "value": [
@@ -2588,6 +2588,11 @@
                   "type": "character",
                   "attributes": {},
                   "value": ["<b>fDOM (QSU)<\/b>"]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["y2"]
                 }
               ]
             },
@@ -2597,7 +2602,7 @@
                 "names": {
                   "type": "character",
                   "attributes": {},
-                  "value": ["gridcolor", "zeroline", "side", "overlaying", "title"]
+                  "value": ["gridcolor", "zeroline", "side", "title"]
                 }
               },
               "value": [
@@ -2615,11 +2620,6 @@
                   "type": "character",
                   "attributes": {},
                   "value": ["right"]
-                },
-                {
-                  "type": "character",
-                  "attributes": {},
-                  "value": ["y"]
                 },
                 {
                   "type": "character",
@@ -2833,7 +2833,7 @@
                 "names": {
                   "type": "character",
                   "attributes": {},
-                  "value": ["domain", "automargin", "gridcolor", "zeroline", "title"]
+                  "value": ["domain", "automargin", "gridcolor", "zeroline", "title", "overlaying"]
                 }
               },
               "value": [
@@ -2861,6 +2861,11 @@
                   "type": "character",
                   "attributes": {},
                   "value": ["<b>fDOM (QSU)<\/b>"]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["y2"]
                 }
               ]
             },
@@ -2870,7 +2875,7 @@
                 "names": {
                   "type": "character",
                   "attributes": {},
-                  "value": ["gridcolor", "zeroline", "side", "overlaying", "title"]
+                  "value": ["gridcolor", "zeroline", "side", "title"]
                 }
               },
               "value": [
@@ -2888,11 +2893,6 @@
                   "type": "character",
                   "attributes": {},
                   "value": ["right"]
-                },
-                {
-                  "type": "character",
-                  "attributes": {},
-                  "value": ["y"]
                 },
                 {
                   "type": "character",
@@ -3143,7 +3143,7 @@
                 "names": {
                   "type": "character",
                   "attributes": {},
-                  "value": ["domain", "automargin", "gridcolor", "zeroline", "title"]
+                  "value": ["domain", "automargin", "gridcolor", "zeroline", "title", "overlaying"]
                 }
               },
               "value": [
@@ -3171,6 +3171,11 @@
                   "type": "character",
                   "attributes": {},
                   "value": ["<b>fDOM (QSU)<\/b>"]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["y2"]
                 }
               ]
             },
@@ -3180,7 +3185,7 @@
                 "names": {
                   "type": "character",
                   "attributes": {},
-                  "value": ["gridcolor", "zeroline", "side", "overlaying", "title"]
+                  "value": ["gridcolor", "zeroline", "side", "title"]
                 }
               },
               "value": [
@@ -3198,11 +3203,6 @@
                   "type": "character",
                   "attributes": {},
                   "value": ["right"]
-                },
-                {
-                  "type": "character",
-                  "attributes": {},
-                  "value": ["y"]
                 },
                 {
                   "type": "character",

@@ -48,7 +48,8 @@ Imports:
     zoo,
     forecast,
     missForest,
-    nasapower
+    nasapower,
+    grDevices
 Suggests: 
     shinytest2,
     testthat (>= 3.0.0)

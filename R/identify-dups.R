@@ -168,8 +168,7 @@ apply_dup_edits <- function(proj, dup_row, keep_opt, flag_notes=""){
     #summarise data
     df_sum <- df_sum %>%
       group_by(.data$Date, .data$DateTime_rd) %>%
-      mutate(across(any_of(par_names), ~ if_else(DupNum == 1,mean(.x, na.rm = TRUE),NA_real_)),
-             across("FileName", ~ if_else(DupNum == 1,paste(unique(.), collapse = ";"),NA_character_))) %>%
+      mutate(across(any_of(par_names), ~ if_else(DupNum == 1,mean(.x, na.rm = TRUE),NA_real_))) %>%
       ungroup()
 
   }else if(keep_opt == "remove_both"){
@@ -178,8 +177,10 @@ apply_dup_edits <- function(proj, dup_row, keep_opt, flag_notes=""){
   }else{
    #otherwise just keep the group we're interested in
     #get dup number of file
-    dupfilter <- ifelse(dup_row$duptype == "multiple files", unique(df_sum$DupNum[df_sum$FileName == keep_opt]), keep_opt)
-    df_sum <- df_sum %>% mutate(across(any_of(par_names), ~ ifelse(as.numeric(dupfilter) == DupNum, .x, NA_real_)))
+    dupfilter <- ifelse(dup_row$duptype == "multiple files",
+                        unique(df_sum$DupNum[df_sum$FileName == keep_opt]),
+                        as.numeric(gsub("Set ", "", keep_opt)))
+    df_sum <- df_sum %>% mutate(across(any_of(par_names), ~ ifelse(dupfilter == DupNum, .x, NA_real_)))
   }
 
   #recombine and re-sort

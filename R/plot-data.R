@@ -68,7 +68,7 @@ plot_sonde <- function(data, y_var, y2_var=NULL,
                             title = paste0("<b>", y2_var_nice, "</b>")))
       #add second axis
       if(!is.null(y2_var)){
-        if(y2_var == "precip"){
+        if(y2_var == "precip" & !is.null(precip)){
           precip <- precip %>% filter(.data$DateTime >= min(date_rg) & .data$DateTime <= max(date_rg)) %>%
             arrange(.data$DateTime)
 
@@ -76,7 +76,7 @@ plot_sonde <- function(data, y_var, y2_var=NULL,
           p <- p %>% add_trace(data= precip, x=~DateTime, y=~Precip_mm_hr, type="scatter", yaxis="y2", mode="lines",
                                name = y2_var_nice,
                                line = list(color = "#1d3040"))
-        }else{
+        }else if(y2_var != "precip"){
           p <- p %>% add_trace(data= data, x=~DateTime_rd, y=as.formula(paste0("~`", y2_var, "`")),
                                type="scatter", yaxis="y2", mode="lines",
                                name = y2_var_nice,
@@ -91,8 +91,10 @@ plot_sonde <- function(data, y_var, y2_var=NULL,
           if(opts$line){p <- p %>% style(line = list(color = "#ebebeb"), traces =ifelse(!is.null(y2_var), 2,1))}
           if(opts$points){p <- p %>% style(marker = list(color = "#ebebeb"), traces =ifelse(!is.null(y2_var), 2,1))}
       }else{
+        files <- unique(data$FileName)
+        pal <- colorRampPalette(c("#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854" ,"#FFD92F" ,"#E5C494", "#B3B3B3")) #from Set 2 color brewer
         p <- p %>% add_trace(data = data, x = ~DateTime_rd,y = as.formula(paste0("~`", y_var, "`")),
-                     mode=mode, type="scatter", color = ~FileName, yaxis="y")
+                     mode=mode, type="scatter", color = ~FileName, yaxis="y", colors = setNames(pal(length(files)), files))
       }
 
 

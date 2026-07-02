@@ -1,7 +1,7 @@
 
 #' @export
-#' @rdname outliers
-outlier_UI <- function(id){
+#' @rdname quality-flags
+quality_UI <- function(id){
   ns <- NS(id) #line to make module work
   tagList(
     sidebarLayout(
@@ -11,20 +11,14 @@ outlier_UI <- function(id){
 
         HTML("<hr>"),
       #select physical limits
-        tags$h5("Identify Outliers"),
+        tags$h5("Apply Quality Flags"),
             bslib::layout_columns(
               col_widths = c(7, 5),
-              selectInput(ns("filter_type"),
-                        "Select Outlier Detection Method:",
-                        choices = c("None" = "none", "Hampel Filter" = "hampel", "Relative Change" = "rel_change"),
-                        selected = "none"),
+              selectInput(ns("quality_flag"),
+                        "Select Quality Flag:",
+                        choices = c("Questionable" = "questionable")),
               radioButtons(ns("selection_mode"),"Manual Selection Method",
                                      choices = c("Add" = "add","Remove" = "remove"))),
-                  fluidRow(
-                    numericInput(ns("k"),"Window Size",value =5,step=2),
-                    numericInput(ns("t"),"Threshold",value = 2,step=0.1))
-                ,
-                input_switch(ns("rm_flags"), "Hide Flagged Data"),
 
         HTML("<hr>"),
 
@@ -39,11 +33,9 @@ outlier_UI <- function(id){
       #plotting options
         plot_options_UI(ns("plot_opts")),
 
-
-
       ),
       mainPanel(
-        plotlyOutput(ns("outlier_plot"), height="60%"),
+        plotlyOutput(ns("quality_plot"), height="60%"),
         #add buttons to navigate date
         weekly_range_buttons_UI(ns("date_nav")),
       ))
@@ -52,10 +44,10 @@ outlier_UI <- function(id){
   )}
 
 
-#' Flag data identified as outliers either manually or view methods
+#' Flag data as questionable
 #'
-#' Looks for "weird" data where there are large spikes within a short period that are likely unrealistic and caused by
-#' instrument malfunction or a bubble near the sensor.
+#' Allows the user to mark data that looks for "weird" and can be viewed as a plotting option or
+#' used to auto-select as an outlier.
 #'
 #' @keywords internal
 #'
@@ -66,7 +58,7 @@ outlier_UI <- function(id){
 #'
 #' @export
 #' @rdname outliers
-outlier_server <- function(id, sondeproj, data_ver, y_var){
+quality_server <- function(id, sondeproj, data_ver, y_var){
   moduleServer(id, function(input, output, session){
 
   #keep track of second y_variable
@@ -84,8 +76,6 @@ outlier_server <- function(id, sondeproj, data_ver, y_var){
       manual_rm(NULL)
       })
 
-
-
   #get column names after file upload (dynamic)
     update_parms_server("update_parms", sondeproj, data_ver, y_var, choices_fun = nice_yvar)
     update_parms_server("update_parms", sondeproj, data_ver, y2_var, input_id= "y2_var", choices_fun = nice_yvar)
@@ -100,41 +90,6 @@ outlier_server <- function(id, sondeproj, data_ver, y_var){
         min(sondeproj()$data$Date, na.rm = TRUE)}),
       max_date = reactive({req(sondeproj())
         max(sondeproj()$data$Date, na.rm = TRUE)}))
-
-  #implement outlier detection
-    auto_index <- reactive({
-     req(sondeproj(), y_var())
-      data <- sondeproj()$data
-      x <- data[[y_var()]] #needed by everything
-
-      # interpolate to temp fill gaps so filter will work
-      x_fill <- zoo::na.approx(x, na.rm = FALSE)
-      x_fill <- zoo::na.locf(x_fill, na.rm = FALSE)        # forward fill
-      x_fill <- zoo::na.locf(x_fill, fromLast = TRUE)      # backward fill
-
-      if(input$filter_type == "hampel"){
-        hampel_out <- pracma::hampel(x_fill, input$k, input$t)
-
-        outlier <- rep(FALSE, length(x))
-        outlier[hampel_out$ind] <- TRUE
-      }
-
-      if(input$filter_type == "rel_change"){
-        rel_change_lead <- abs(x_fill - lead(x_fill)) / zoo::rollmedian(x_fill, input$k, fill= NA, align = "right") * 100
-        rel_change_lag <- abs(x_fill - lag(x_fill)) / zoo::rollmedian(x_fill, input$k, fill= NA, align = "left") * 100
-
-        outlier <- rel_change_lead >= input$t & rel_change_lag >= input$t
-        outlier[is.na(outlier)] <- FALSE #deal with ending/starting NA
-      }
-
-      #return flagged indices
-      if(input$filter_type == "none"){
-        NULL
-      }else{
-        data$Index[outlier]
-
-      }
-      })
 
   #track selected data
     observeEvent(
@@ -170,14 +125,6 @@ outlier_server <- function(id, sondeproj, data_ver, y_var){
 
       })
 
-  #keep track of the selected points
-    selected_index <- reactive({
-      auto <- auto_index()
-      auto <- setdiff(auto, manual_rm())
-      union(auto, manual_add())
-
-    })
-
   #filter data to plot
     plot_data <- reactive({
       req(sondeproj(), dates())
@@ -191,36 +138,32 @@ outlier_server <- function(id, sondeproj, data_ver, y_var){
       req(y_var(),y2_var(), plot_data())
       if(y2_var() == "none"){y2 <- NULL}else{y2 <- y2_var()}
 
+      #switch this up to change color based on flag?? show different kinds of flags??
+
       #if we want to filter out flagged points, filter before plotting
-      if(input$rm_flags){
-        filter_data <- plot_data() %>% filter(!(.data$Index %in% selected_index()))
-      }else{
         filter_data <- plot_data()
-        flag_data <- plot_data() %>% filter(.data$Index %in% selected_index() & !is.na(.data[[y_var()]]))
-      }
+        flag_data <- plot_data() %>% filter(.data$Index %in% manual_add() & !is.na(.data[[y_var()]]))
 
       #use function to plot sonde data
       p <- plot_sonde(data = filter_data, y_var=y_var(), y2_var= y2, opts=plot_opts(),fieldform=sondeproj()$fieldform,
                       calcheck =sondeproj()$calcheck, precip=sondeproj()$precip, source="outlier_plot")
 
       #color points outside limits as red
-      if(!input$rm_flags){
         y <- y_var()
         p <- p %>% add_trace(data= flag_data, x=~DateTime_rd, y=as.formula(paste0("~`", y, "`")), type="scatter", mode="markers",
-                                 name = "Flagged", marker = list(color = "darkred"), yaxis="y", inherit = FALSE)
-      }
+                                 name = "Questionable", marker = list(color = "orange"), yaxis="y", inherit = FALSE)
 
       #set which traces hold points
       built_p <- plotly_build(p)
       names <- sapply(built_p$x$data, function(x){x$name})
-      traces((which(names != "Flagged")-1))
+      traces((which(names != "Questionable")-1))
 
       #return plot
       p
     })
 
     #save to export
-    output$outlier_plot <- plotly::renderPlotly({
+    output$quality_plot <- plotly::renderPlotly({
       validate(
         need(nrow(plot_data()) > 0,
              "No data available for the selected date range."))
@@ -238,12 +181,12 @@ outlier_server <- function(id, sondeproj, data_ver, y_var){
     })
 
     #redraw when back on module to prevent weird drawing issues
-    observeEvent(input$modules, {
-      req(input$modules == "step-5")
-
-      plotlyProxy("outlier_plot", session) %>%
-        plotlyProxyInvoke("resize")
-    })
+    # observeEvent(input$modules, {
+    #   req(input$modules == "step-5")
+    #
+    #   plotlyProxy("quality_plot", session) %>%
+    #     plotlyProxyInvoke("resize")
+    # })
 
   #create edit object
     edit <- reactive({
@@ -253,20 +196,20 @@ outlier_server <- function(id, sondeproj, data_ver, y_var){
       setna <- newdata$Index %in% selected_index()
       newdata[[y_var()]][setna] <- NA
 
-      nicemethod <- switch(input$filter_type,
-                           "hampel" = "Hampel Filter",
-                           "rel_change" = "Relative Change")
+      flag_info <- switch(input$quality_flag,
+                           "questionable" = list(
+                             nicename = "questionable",
+                             flag = "QUAL01"))
+
       #make edit list
       list(
         data = newdata,
         rows = setna,
         y_var = y_var(),
-        step = "outlier removal",
-        note = paste0("Data removed based on ", nicemethod,
-                      " method with a window size of ", input$k, " and threshold of ", input$t,
-                      " paired with manual outlier detection."),
-        flag = "RM03",
-        changetype = "flag_rm"
+        step = "questionable data",
+        note = paste0("Data flagged as ", flag_info$nicename),
+        flag = flag_info$flag,
+        changetype = "flag_qual"
       )
 
     })

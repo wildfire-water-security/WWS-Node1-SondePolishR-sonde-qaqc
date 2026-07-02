@@ -159,9 +159,16 @@ limits_server <- function(id, sondeproj, data_ver, y_var){
 
       # convert to plotly
       p <- plot_obj()
-      #toWebGL(p)
+      toWebGL(p)
     })
 
+    #redraw when back on module to prevent weird drawing issues
+    observeEvent(input$modules, {
+      req(input$modules == "step-4")
+
+      plotlyProxy("limit_plot", session) %>%
+        plotlyProxyInvoke("resize")
+    })
 
   #create edit object
     edit <- reactive({

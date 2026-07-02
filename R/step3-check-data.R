@@ -114,10 +114,6 @@ check_data_server <- function(id, sondeproj, data_ver, y_var){
             list(targets = c(1, 2), width = "120px"),
             list(targets = c(3), width = "95px"),
             list(targets = c(4), width = "350px")),
-          # "Data Summary" = list(
-          #   list(targets = "_all", className = "dt-center"),
-          #   list(targets = c(1), width = "180px"),
-          #   list(targets = c(2,3,4,5,6,7,8,9), width = "120px"))
         )
 
       #column names

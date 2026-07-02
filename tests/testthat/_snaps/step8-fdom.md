@@ -117,7 +117,7 @@
                 "names": {
                   "type": "character",
                   "attributes": {},
-                  "value": ["domain", "automargin", "gridcolor", "zeroline", "title"]
+                  "value": ["domain", "automargin", "gridcolor", "zeroline", "title", "overlaying"]
                 }
               },
               "value": [
@@ -145,6 +145,11 @@
                   "type": "character",
                   "attributes": {},
                   "value": ["<b>fDOM (QSU)<\/b>"]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["y2"]
                 }
               ]
             },
@@ -154,7 +159,7 @@
                 "names": {
                   "type": "character",
                   "attributes": {},
-                  "value": ["gridcolor", "zeroline", "side", "overlaying", "title"]
+                  "value": ["gridcolor", "zeroline", "side", "title"]
                 }
               },
               "value": [
@@ -172,11 +177,6 @@
                   "type": "character",
                   "attributes": {},
                   "value": ["right"]
-                },
-                {
-                  "type": "character",
-                  "attributes": {},
-                  "value": ["y"]
                 },
                 {
                   "type": "character",
@@ -212,7 +212,7 @@
               "value": [12, 2]
             }
           },
-          "value": ["x", "y", "mode", "type", "name", "yaxis", "marker", "error_y", "error_x", "line", "xaxis", "frame", "x", "y", "mode", "type", "name", "yaxis", "line", "marker", "error_y", "error_x", "xaxis", "frame"]
+          "value": ["x", "y", "mode", "type", "name", "yaxis", "marker", "error_y", "error_x", "line", "xaxis", "frame", "x", "y", "type", "mode", "name", "line", "yaxis", "marker", "error_y", "error_x", "xaxis", "frame"]
         },
         {
           "type": "integer",
@@ -427,7 +427,7 @@
                 "names": {
                   "type": "character",
                   "attributes": {},
-                  "value": ["domain", "automargin", "gridcolor", "zeroline", "title"]
+                  "value": ["domain", "automargin", "gridcolor", "zeroline", "title", "overlaying"]
                 }
               },
               "value": [
@@ -455,6 +455,11 @@
                   "type": "character",
                   "attributes": {},
                   "value": ["<b>fDOM (QSU)<\/b>"]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["y2"]
                 }
               ]
             },
@@ -464,7 +469,7 @@
                 "names": {
                   "type": "character",
                   "attributes": {},
-                  "value": ["gridcolor", "zeroline", "side", "overlaying", "title"]
+                  "value": ["gridcolor", "zeroline", "side", "title"]
                 }
               },
               "value": [
@@ -482,11 +487,6 @@
                   "type": "character",
                   "attributes": {},
                   "value": ["right"]
-                },
-                {
-                  "type": "character",
-                  "attributes": {},
-                  "value": ["y"]
                 },
                 {
                   "type": "character",
@@ -522,7 +522,7 @@
               "value": [12, 2]
             }
           },
-          "value": ["x", "y", "mode", "type", "name", "yaxis", "marker", "error_y", "error_x", "line", "xaxis", "frame", "x", "y", "mode", "type", "name", "yaxis", "line", "marker", "error_y", "error_x", "xaxis", "frame"]
+          "value": ["x", "y", "mode", "type", "name", "yaxis", "marker", "error_y", "error_x", "line", "xaxis", "frame", "x", "y", "type", "mode", "name", "line", "yaxis", "marker", "error_y", "error_x", "xaxis", "frame"]
         },
         {
           "type": "integer",
@@ -737,7 +737,7 @@
                 "names": {
                   "type": "character",
                   "attributes": {},
-                  "value": ["domain", "automargin", "gridcolor", "zeroline", "title"]
+                  "value": ["domain", "automargin", "gridcolor", "zeroline", "title", "overlaying"]
                 }
               },
               "value": [
@@ -765,6 +765,11 @@
                   "type": "character",
                   "attributes": {},
                   "value": ["<b>fDOM (QSU)<\/b>"]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["y2"]
                 }
               ]
             },
@@ -774,7 +779,7 @@
                 "names": {
                   "type": "character",
                   "attributes": {},
-                  "value": ["gridcolor", "zeroline", "side", "overlaying", "title"]
+                  "value": ["gridcolor", "zeroline", "side", "title"]
                 }
               },
               "value": [
@@ -792,11 +797,6 @@
                   "type": "character",
                   "attributes": {},
                   "value": ["right"]
-                },
-                {
-                  "type": "character",
-                  "attributes": {},
-                  "value": ["y"]
                 },
                 {
                   "type": "character",
@@ -832,7 +832,7 @@
               "value": [12, 2]
             }
           },
-          "value": ["x", "y", "mode", "type", "name", "yaxis", "marker", "error_y", "error_x", "line", "xaxis", "frame", "x", "y", "mode", "type", "name", "yaxis", "line", "marker", "error_y", "error_x", "xaxis", "frame"]
+          "value": ["x", "y", "mode", "type", "name", "yaxis", "marker", "error_y", "error_x", "line", "xaxis", "frame", "x", "y", "type", "mode", "name", "line", "yaxis", "marker", "error_y", "error_x", "xaxis", "frame"]
         },
         {
           "type": "integer",
@@ -1047,7 +1047,7 @@
                 "names": {
                   "type": "character",
                   "attributes": {},
-                  "value": ["domain", "automargin", "gridcolor", "zeroline", "title"]
+                  "value": ["domain", "automargin", "gridcolor", "zeroline", "title", "overlaying"]
                 }
               },
               "value": [
@@ -1075,6 +1075,11 @@
                   "type": "character",
                   "attributes": {},
                   "value": ["<b>fDOM (QSU)<\/b>"]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["y2"]
                 }
               ]
             },
@@ -1084,7 +1089,7 @@
                 "names": {
                   "type": "character",
                   "attributes": {},
-                  "value": ["gridcolor", "zeroline", "side", "overlaying", "title"]
+                  "value": ["gridcolor", "zeroline", "side", "title"]
                 }
               },
               "value": [
@@ -1102,11 +1107,6 @@
                   "type": "character",
                   "attributes": {},
                   "value": ["right"]
-                },
-                {
-                  "type": "character",
-                  "attributes": {},
-                  "value": ["y"]
                 },
                 {
                   "type": "character",
@@ -1142,7 +1142,7 @@
               "value": [12, 2]
             }
           },
-          "value": ["x", "y", "mode", "type", "name", "yaxis", "marker", "error_y", "error_x", "line", "xaxis", "frame", "x", "y", "mode", "type", "name", "yaxis", "line", "marker", "error_y", "error_x", "xaxis", "frame"]
+          "value": ["x", "y", "mode", "type", "name", "yaxis", "marker", "error_y", "error_x", "line", "xaxis", "frame", "x", "y", "type", "mode", "name", "line", "yaxis", "marker", "error_y", "error_x", "xaxis", "frame"]
         },
         {
           "type": "integer",

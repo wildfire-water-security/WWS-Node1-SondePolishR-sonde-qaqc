@@ -131,7 +131,14 @@ export_server <- function(id, sondeproj, data_ver, y_var){
 
         # convert to plotly
         p <- plot_obj()
-        #toWebGL(p)
+        toWebGL(p)
+      })
+
+      observeEvent(input$modules, {
+        req(input$modules == "step-9")
+
+        plotlyProxy("export_plot", session) %>%
+          plotlyProxyInvoke("resize")
       })
 
     #when data loaded get interval of data

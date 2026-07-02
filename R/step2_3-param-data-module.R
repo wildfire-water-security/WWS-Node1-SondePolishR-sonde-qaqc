@@ -48,7 +48,12 @@ update_parms_server <- function(id, sondeproj, data_ver, y_var,input_id = "y_var
       }
 
     if(input_id == "y2_var"){
-      choices_r <- c("None" = "none", "Precipitation" = "precip", choices_r)
+      include_precip <- !is.null(sondeproj()$precip)
+      if(include_precip){
+        choices_r <- c("None" = "none", "Precipitation" = "precip", choices_r)
+      }else{
+        choices_r <- c("None" = "none", choices_r)
+      }
     }
 
       updateSelectInput(
