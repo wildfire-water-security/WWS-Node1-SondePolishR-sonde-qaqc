@@ -80,8 +80,7 @@ check_data_server <- function(id, sondeproj, data_ver, y_var){
       df <- switch(
         input$table_opt,
         "Duplicates" = sondeproj()$duplicates,
-        "Gaps"       = sondeproj()$data_gaps
-      )
+        "Gaps"       = sondeproj()$data_gaps)
 
     })
 
@@ -106,13 +105,29 @@ check_data_server <- function(id, sondeproj, data_ver, y_var){
             list(targets = "_all", className = "dt-center"),
             list(targets = c(7), width = "250px", className = "dt-nowrap"),
             list(targets = c(1, 2, 3, 7), width = "120px"),
-            list(targets = c(4,5,6), width = "60px"),
+            list(targets = c(4), width = "80px"),
+            list(targets = c(6), width = "90px"),
+            list(targets = c(5), width = "60px"),
             list(targets = c(8), width = "350px")),
           "Gaps"       = list(
             list(targets = "_all", className = "dt-center"),
             list(targets = c(1, 2), width = "120px"),
-            list(targets = c(3), width = "60px"),
-            list(targets = c(4), width = "350px"))
+            list(targets = c(3), width = "95px"),
+            list(targets = c(4), width = "350px")),
+          # "Data Summary" = list(
+          #   list(targets = "_all", className = "dt-center"),
+          #   list(targets = c(1), width = "180px"),
+          #   list(targets = c(2,3,4,5,6,7,8,9), width = "120px"))
+        )
+
+      #column names
+        df_cols <- switch(
+          input$table_opt,
+          "Duplicates" = c("Start DateTime" = "start", "End DateTime" = "end", "Duplicate Type" = "duptype",
+                           "Different (#)" = "ndif", "Length" = "length", "Difference (%)" = "perc_dif",
+                           "Likely Issue" = "likely_issue", "User Notes" = "user_note"),
+          "Gaps" = c("Start DateTime" = "start", "End DateTime" = "end", "Gap Length (#)" = "gap_length",
+                     "User Notes" = "user_note")
         )
 
         DT::datatable(
@@ -124,7 +139,8 @@ check_data_server <- function(id, sondeproj, data_ver, y_var){
             autoWidth = TRUE,
             scrollX = TRUE,
             columnDefs = colopt
-            )
+            ),
+          colnames = df_cols
         )
       })
 
@@ -181,7 +197,7 @@ check_data_server <- function(id, sondeproj, data_ver, y_var){
                xaxis = list(title = "<b>Date</b>"),
                yaxis=list(gridcolor = "#3c4d5a", zeroline = FALSE,title = paste0("<b>", y_var_nice, "</b>"))) %>%
                  add_trace(data = dat, x = ~DateTime_rd,y = as.formula(paste0("~`", y, "`")),
-                           mode="lines+markers", type="scatter", color = ~color_labs)
+                           mode="lines+markers", type="scatter", color = ~color_labs, inherit = FALSE)
 
     })
 

@@ -4,7 +4,7 @@
 \alias{weekly_range_sidebar_UI}
 \alias{weekly_range_buttons_UI}
 \alias{weekly_range_server}
-\title{Return weekly date ranges}
+\title{View data by a specified time length}
 \usage{
 weekly_range_sidebar_UI(id)
 
@@ -23,6 +23,6 @@ weekly_range_server(id, min_date, max_date)
 a reactive of length two with the min and max dates.
 }
 \description{
-Used to adjust plotting to show weekly periods to better examine details.
+Used to adjust plotting to show periods to better examine details.
 }
 \keyword{internal}

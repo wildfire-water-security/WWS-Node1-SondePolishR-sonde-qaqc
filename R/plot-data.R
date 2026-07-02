@@ -74,24 +74,24 @@ plot_sonde <- function(data, y_var, y2_var=NULL,
           #add second axis
           p <- p %>% add_trace(data= precip, x=~DateTime, y=~Precip_mm_hr, type="scatter", yaxis="y2", mode="lines",
                                name = y2_var_nice,
-                               line = list(color = "#1d3040"))
+                               line = list(color = "#1d3040"), inherit = FALSE)
         }else{
           p <- p %>% add_trace(data= data, x=~DateTime_rd, y=as.formula(paste0("~`", y2_var, "`")),
                                type="scatter", yaxis="y2", mode="lines",
                                name = y2_var_nice,
-                               line = list(color = "#1d3040"))
+                               line = list(color = "#1d3040"), inherit = FALSE)
         }
       }
 
       if(!opts$files){
         p <- p %>% add_trace(data = data, x = ~DateTime_rd,y =as.formula(paste0("~`", y_var, "`")),
-                             mode=mode, type="scatter", name=y_var_nice, yaxis="y")
+                             mode=mode, type="scatter", name=y_var_nice, yaxis="y", inherit = FALSE)
 
           if(opts$line){p <- p %>% style(line = list(color = "#ebebeb"), traces =ifelse(!is.null(y2_var), 2,1))}
           if(opts$points){p <- p %>% style(marker = list(color = "#ebebeb"), traces =ifelse(!is.null(y2_var), 2,1))}
       }else{
         p <- p %>% add_trace(data = data, x = ~DateTime_rd,y = as.formula(paste0("~`", y_var, "`")),
-                     mode=mode, type="scatter", color = ~FileName, yaxis="y")
+                     mode=mode, type="scatter", color = ~FileName, yaxis="y", inherit = FALSE)
       }
 
 
@@ -118,7 +118,7 @@ plot_sonde <- function(data, y_var, y2_var=NULL,
       #plot one at at time because color scales are a poop
       p <- p %>% add_trace(data = cal_data_clip, x = ~Est_Time,y = ~value,
                            mode="markers", type="scatter", color = ~type, symbol = I("triangle-up"), yaxis="y",
-                           inherit = FALSE, marker = list(size = 12))
+                           inherit = FALSE, marker = list(size = 12), inherit = FALSE)
     }
 
     }

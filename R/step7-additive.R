@@ -224,7 +224,7 @@ additive_server <- function(id, sondeproj, data_ver, y_var){
 
         if(nrow(dat) > 0){
           p <- p %>% add_trace(data= dat, x=~DateTime_rd, y=as.formula(paste0("~`", y, "`")), type="scatter", mode="lines",
-                                   name = "Changed", line = list(color = "darkred"), yaxis="y")
+                                   name = "Changed", line = list(color = "darkred"), yaxis="y", inherit = FALSE)
 
         }
 

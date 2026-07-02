@@ -76,5 +76,4 @@ test_that("{shinytest2} recording: checking-module3", {
     app$expect_screenshot(name="removing_rows") #make sure table prints
 
 
-
 })

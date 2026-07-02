@@ -33,7 +33,7 @@ explore_data_UI <- function(id){
         selectInput(
           ns("table_opt"),
           "Select Table to View:",
-          choices = c("Change Log", "Field Form", "Calibration Check")
+          choices = c("Change Log", "Field Form", "Calibration Check", "Data Summary")
         )
 
 
@@ -94,10 +94,31 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var){
       sondeproj()$calcheck %>%
         dplyr::select(-c("Resident_Probe_Serial","Check_Probe_Serial", "Site_Code")) %>%
         filter(.data$Parameter == y_var())
+    }else if(input$table_opt == "Data Summary"){
+      data <- sondeproj()$data %>% dplyr::filter(.data$Date >= dates()[1], .data$Date <= dates()[2])
+      describe_data(data)
     }
   })
 
+
+
     output$log_table <- DT::renderDT({
+      #column names
+      df_cols <- switch(
+        input$table_opt,
+        "Change Log" = c("DateTime" = "datetime", "Parameter"= "parameter", "Step" = "step",
+                         "Values Changed (#)" = "n_changed", "Note" = "note", "User" = "user", "Version Name" =  "diff_name"),
+        "Calibration Check" = c("Date" = "Date", "Parameter" = "Parameter", "Resident Value" = "Resident_Value",
+                                "Check Value" = "Check_Value", "Notes" ="Notes", "Probe Switched?" =  "Probe_Switch",
+                                "Estimated Switch Time"  ="Est_Time"),
+        "Field Form" = c("Date" = "Date", "Removal Time" = "Removal_Time_PST","Return Time" =  "Return_Time_PST",
+                          "Remove OOW Period?" = "Remove_Period", "Notes" ="Notes"),
+        "Data Summary" = c("Parameter" = "Parameter", "Mean" = "Mean", "Median" = "Median", "Maximum" = "Maximum",
+                           "Minimum" = "Minimum", "Std. Deviation" = "Std_Deviation", "1st Quantile" = "Quantile_1st",
+                           "3rd Quantile" = "Quantile_3rd", "Number of NA's" = "Number_NAs")
+      )
+
+
        df <- tab()
       #making datetime nice
       if(input$table_opt == "Change Log"){
@@ -109,7 +130,8 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var){
       DT::datatable(
        df,
        selection = list(mode = "single"),
-       filter = "top"
+       filter = "top",
+       colnames = df_cols
       )})
 
   #get what to plot via user options

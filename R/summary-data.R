@@ -69,6 +69,36 @@ combine_flags <- function(sondeproj){
   return(export_data)
 }
 
+#' Gets summary statistics for Sonde data
+#'
+#' @param data Sonde dataset
+#'
+#' @returns a `data.frame`
+#' @noRd
+#'
 describe_data <- function(data){
+  parms <- get_parms(data)
 
+  #get summaries per each variable
+  sum_parm <- function(var){
+    data.frame("Mean" = mean(var, na.rm=TRUE),
+               "Median" = median(var, na.rm=TRUE),
+               "Maximum" = max(var, na.rm=TRUE),
+               "Minimum" = min(var, na.rm=TRUE),
+               "Std_Deviation" = sd(var, na.rm=TRUE),
+               "Quantile_1st" = quantile(var, 0.25, na.rm = TRUE, names=FALSE),
+               "Quantile_3rd" = quantile(var, 0.75, na.rm =TRUE, names=FALSE),
+               "Number_NAs" = sum(is.na(var)))
+  }
+
+  #get nice row names
+  summary_names <- names(nice_yvar(data))
+
+  sum_df <- lapply(data[parms], sum_parm) %>% bind_rows()
+
+  sum_df <- cbind(Parameter = summary_names, sum_df, row.names = NULL) %>%
+    mutate(across("Mean":"Quantile_3rd", ~round(.x, 3)))
+
+  return(sum_df)
 }
+
