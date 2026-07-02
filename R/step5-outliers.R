@@ -229,7 +229,7 @@ outlier_server <- function(id, sondeproj, data_ver, y_var){
       p <- plot_obj() %>%
         plotly::event_register("plotly_selected") %>%
         plotly::layout(dragmode = "select")
-      p <- toWebGL(p)
+      #p <- toWebGL(p)
 
       plot_exist(TRUE)
 

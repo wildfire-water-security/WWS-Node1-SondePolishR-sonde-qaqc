@@ -202,7 +202,7 @@ check_data_server <- function(id, sondeproj, data_ver, y_var){
     })
 
     output$dup_plot <- renderPlotly({
-      toWebGL(plot_obj())
+      plot_obj()
     })
 
   #update options for which version to keep

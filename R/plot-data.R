@@ -62,9 +62,10 @@ plot_sonde <- function(data, y_var, y2_var=NULL,
       p <- plot_ly(source = source) %>%
         layout(paper_bgcolor = "#3c4d5a", plot_bgcolor = "#475763", font = list(color = "#ebebeb", family="sans-serif"),
                xaxis = list(title = "<b>Date</b>"),
-               yaxis=list(gridcolor = "#3c4d5a", zeroline = FALSE,title = paste0("<b>", y_var_nice, "</b>")),
+               yaxis=list(gridcolor = "#3c4d5a", zeroline = FALSE,title = paste0("<b>", y_var_nice, "</b>"),
+                          overlaying = "y2"),
                yaxis2=list(gridcolor = "#3c4d5a",zeroline = FALSE,side = "right",
-                           overlaying = "y", title = paste0("<b>", y2_var_nice, "</b>")))
+                            title = paste0("<b>", y2_var_nice, "</b>")))
       #add second axis
       if(!is.null(y2_var)){
         if(y2_var == "precip"){
@@ -74,24 +75,24 @@ plot_sonde <- function(data, y_var, y2_var=NULL,
           #add second axis
           p <- p %>% add_trace(data= precip, x=~DateTime, y=~Precip_mm_hr, type="scatter", yaxis="y2", mode="lines",
                                name = y2_var_nice,
-                               line = list(color = "#1d3040"), inherit = FALSE)
+                               line = list(color = "#1d3040"))
         }else{
           p <- p %>% add_trace(data= data, x=~DateTime_rd, y=as.formula(paste0("~`", y2_var, "`")),
                                type="scatter", yaxis="y2", mode="lines",
                                name = y2_var_nice,
-                               line = list(color = "#1d3040"), inherit = FALSE)
+                               line = list(color = "#1d3040"))
         }
       }
 
       if(!opts$files){
         p <- p %>% add_trace(data = data, x = ~DateTime_rd,y =as.formula(paste0("~`", y_var, "`")),
-                             mode=mode, type="scatter", name=y_var_nice, yaxis="y", inherit = FALSE)
+                             mode=mode, type="scatter", name=y_var_nice, yaxis="y")
 
           if(opts$line){p <- p %>% style(line = list(color = "#ebebeb"), traces =ifelse(!is.null(y2_var), 2,1))}
           if(opts$points){p <- p %>% style(marker = list(color = "#ebebeb"), traces =ifelse(!is.null(y2_var), 2,1))}
       }else{
         p <- p %>% add_trace(data = data, x = ~DateTime_rd,y = as.formula(paste0("~`", y_var, "`")),
-                     mode=mode, type="scatter", color = ~FileName, yaxis="y", inherit = FALSE)
+                     mode=mode, type="scatter", color = ~FileName, yaxis="y")
       }
 
 
@@ -118,7 +119,7 @@ plot_sonde <- function(data, y_var, y2_var=NULL,
       #plot one at at time because color scales are a poop
       p <- p %>% add_trace(data = cal_data_clip, x = ~Est_Time,y = ~value,
                            mode="markers", type="scatter", color = ~type, symbol = I("triangle-up"), yaxis="y",
-                           inherit = FALSE, marker = list(size = 12), inherit = FALSE)
+                           inherit = FALSE, marker = list(size = 12))
     }
 
     }

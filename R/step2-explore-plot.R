@@ -233,7 +233,7 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var){
 
       # convert to plotly
       p <- plot_obj()
-      toWebGL(p)
+      #toWebGL(p)
     })
 
     #export plot so we can check it

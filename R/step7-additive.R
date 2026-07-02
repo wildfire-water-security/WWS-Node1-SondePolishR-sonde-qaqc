@@ -248,7 +248,7 @@ additive_server <- function(id, sondeproj, data_ver, y_var){
       # convert to plotly
       p <- plot_obj() %>%
         plotly::event_register("plotly_selected")
-      p <- toWebGL(p)
+      #p <- toWebGL(p)
 
       #set to dragmode select as default for input
       if(input$edit_type == "additive"){

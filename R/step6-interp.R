@@ -146,7 +146,7 @@ interp_server <- function(id, sondeproj, data_ver, y_var){
 
       # convert to plotly
       p <- plot_obj()
-      toWebGL(p)
+      #toWebGL(p)
     })
 
   #create edit object

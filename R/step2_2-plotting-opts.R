@@ -39,10 +39,8 @@ plot_options_UI <- function(id){
                  checkboxInput(ns("oow"),"Show out-of-water periods",value = FALSE)),
 
              div(style = "margin-bottom:-10px;",
-                 checkboxInput(ns("calcheck"),"Show calibration checks",value = FALSE)),
-
-             div(style = "margin-bottom:-10px;",
-                 checkboxInput(ns("precip"),"Show precipitation data",value = FALSE))))
+                 checkboxInput(ns("calcheck"),"Show calibration checks",value = FALSE))),
+)
 
 )
   )}
@@ -60,8 +58,7 @@ plot_options_server <- function(id){
         line = input$line,
         files = input$files,
         oow = input$oow,
-        calcheck = input$calcheck,
-        precip = input$precip
+        calcheck = input$calcheck
       )
 
     })
