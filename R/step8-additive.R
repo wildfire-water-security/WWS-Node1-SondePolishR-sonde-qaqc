@@ -205,8 +205,7 @@ additive_server <- function(id, sondeproj, data_ver, y_var){
       y <- y_var()
 
      #use function to plot sonde data
-      p <- plot_sonde(data = plot_data(), y_var=y_var(), y2_var= y2, opts=plot_opts(),fieldform=sondeproj()$fieldform,
-                      calcheck =sondeproj()$calcheck, precip=sondeproj()$precip, source="shift_plot")
+      p <- plot_sonde(data = plot_data(), y_var=y_var(), y2_var= y2, proj = sondeproj(), opts=plot_opts(), source="shift_plot")
 
      #if points are selected color those
       if(input$edit_type == "additive" &&

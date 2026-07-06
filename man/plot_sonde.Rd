@@ -8,10 +8,9 @@ plot_sonde(
   data,
   y_var,
   y2_var = NULL,
-  opts = list(points = TRUE, line = TRUE, files = FALSE, oow = FALSE, calcheck = FALSE),
-  fieldform = NULL,
-  calcheck = NULL,
-  precip = NULL,
+  proj = NULL,
+  opts = list(points = TRUE, line = TRUE, files = FALSE, oow = FALSE, calcheck = FALSE,
+    qualflag = FALSE),
   source = "plot"
 )
 }
@@ -22,18 +21,16 @@ plot_sonde(
 
 \item{y2_var}{A second, optional y-variable to plot on a second axis.}
 
+\item{proj}{A `sondeproj` object with additional metadata to plot,
+only required if opts includes oow, calcheck, quality_flag or `y2_var` is "precip" or "raw".}
+
 \item{opts}{A list of options for plotting:
 - points: should points be plotted?
 - line: should line be plotted?
 -files: should points be colored by file?
 -oow: should out of water periods be plotted?
--calcheck: should cal check be plotted?}
-
-\item{fieldform}{Field form from the `sondeproj`.}
-
-\item{calcheck}{Calibration check from the `sondeproj`.}
-
-\item{precip}{Precip data from the `sondeproj`.}
+-calcheck: should cal check be plotted?
+-quality_flag: should questionable points be plotted?}
 
 \item{source}{A character specifying the plot name for shiny reactivity.}
 }
@@ -45,7 +42,8 @@ Allows options for interative plotting sonde project data for different variable
 used within modules to simplify code for plotting.
 }
 \examples{
-plot_sonde(example_data, "Temp_C")
-plot_sonde(example_data, "Temp_C", "ODO_mg_L") #adding a second axis
-plot_sonde(example_data, "Temp_C", "precip", precip = example_precip)
+plot_sonde(example_data, y_var = "Temp_C")
+plot_sonde(example_data, y_var = "Temp_C", y2_var = "ODO_mg_L") #adding a second axis
+plot_sonde(example_data, proj = example_sondeproj,
+y_var ="Temp_C", y2_var = "precip")
 }

@@ -21,9 +21,15 @@ outlier_UI <- function(id){
                         selected = "none"),
               radioButtons(ns("selection_mode"),"Manual Selection Method",
                                      choices = c("Add" = "add","Remove" = "remove"))),
-                  fluidRow(
+            bslib::layout_columns(
+                  col_widths = c(3,3,1,5),
                     numericInput(ns("k"),"Window Size",value =5,step=2),
-                    numericInput(ns("t"),"Threshold",value = 2,step=0.1))
+                    numericInput(ns("t"),"Threshold",value = 2, step=0.1),
+                    tags$div(
+                    style = "width: 1px; height: 85px; background-color: #6c7881; display: inline-block; margin: 0 30px; vertical-align: middle;"),
+                    div(class = "d-flex justify-content-center align-items-center",
+                        style = "height: 85px;",
+                        actionButton(ns("clear_sel"), "Clear Selection")))
                 ,
                 input_switch(ns("rm_flags"), "Hide Flagged Data"),
 
@@ -80,12 +86,10 @@ outlier_server <- function(id, sondeproj, data_ver, y_var){
     traces <- reactiveVal() #tracks which traces hold our points to track
 
   #clearing manual indices if y_var or data updates
-    observeEvent(list(y_var(), data_ver()),{
+    observeEvent(list(y_var(), data_ver(), sondeproj(), input$clear_sel),{
       manual_add(NULL)
       manual_rm(NULL)
       })
-
-
 
   #get column names after file upload (dynamic)
     update_parms_server("update_parms", sondeproj, data_ver, y_var, choices_fun = nice_yvar)
@@ -129,7 +133,7 @@ outlier_server <- function(id, sondeproj, data_ver, y_var){
       }
 
       if(input$filter_type == "questionable"){
-        outlier <- get_qual_flags(sondeproj())
+        outlier <- get_qual_flags(sondeproj()$flags$flag_qual, y_var())
       }
 
       #return flagged indices
@@ -205,8 +209,8 @@ outlier_server <- function(id, sondeproj, data_ver, y_var){
       }
 
       #use function to plot sonde data
-      p <- plot_sonde(data = filter_data, y_var=y_var(), y2_var= y2, opts=plot_opts(),fieldform=sondeproj()$fieldform,
-                      calcheck =sondeproj()$calcheck, precip=sondeproj()$precip, source="outlier_plot")
+      p <- plot_sonde(data = filter_data, y_var=y_var(), y2_var= y2, proj = sondeproj(), opts=plot_opts(),
+                      source="outlier_plot")
 
       #color points outside limits as red
       if(!input$rm_flags){
@@ -277,7 +281,7 @@ outlier_server <- function(id, sondeproj, data_ver, y_var){
     })
 
   #flagging module
-    apply_edit_server("apply_limits", sondeproj, edit)
+     apply_edit_server("apply_limits", sondeproj, edit)
 
   #export plot so we can check it
     exportTestValues(

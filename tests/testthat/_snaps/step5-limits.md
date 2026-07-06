@@ -1750,11 +1750,6 @@
                   "attributes": {},
                   "value": ["summaryDefault", "POSIXct", "POSIXt"]
                 },
-                "NAs": {
-                  "type": "integer",
-                  "attributes": {},
-                  "value": [5]
-                },
                 "tzone": {
                   "type": "character",
                   "attributes": {},
@@ -1791,7 +1786,7 @@
                 "names": {
                   "type": "character",
                   "attributes": {},
-                  "value": ["Min.", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max.", "NAs"]
+                  "value": ["Min.", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max."]
                 },
                 "class": {
                   "type": "character",
@@ -1799,7 +1794,7 @@
                   "value": ["summaryDefault", "table"]
                 }
               },
-              "value": [3.783, 7.717, 8.768, 9.24287994, 11.57025, 14.998, 5]
+              "value": [3.783, 7.717, 8.768, 9.24287994, 11.57025, 14.998]
             },
             {
               "type": "integer",

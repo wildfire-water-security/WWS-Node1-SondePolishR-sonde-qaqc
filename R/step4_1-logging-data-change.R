@@ -66,6 +66,7 @@ apply_edit_server <- function(id, sondeproj, edit){
     #clear user note
       updateTextInput(session,"flag_notes",value = "")
 
+   # return(apply = reactive(input$apply_flags))
 
       })
 

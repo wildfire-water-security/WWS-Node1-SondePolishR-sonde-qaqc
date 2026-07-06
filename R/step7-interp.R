@@ -124,8 +124,7 @@ interp_server <- function(id, sondeproj, data_ver, y_var){
       if(y2_var() == "none"){y2 <- NULL}else{y2 <- y2_var()}
 
       #use function to plot sonde data
-      p <- plot_sonde(data = plot_data()%>% filter(!.data$fill_flag), y_var=y_var(), y2_var= y2, opts=plot_opts(),fieldform=sondeproj()$fieldform,
-                      calcheck =sondeproj()$calcheck, precip=sondeproj()$precip)
+      p <- plot_sonde(data = plot_data()%>% filter(!.data$fill_flag), y_var=y_var(), y2_var= y2, proj = sondeproj(), opts=plot_opts())
       #add interpolated data (show as green points)
       interp_points <- plot_data() %>% filter(.data$fill_flag) %>% filter(!is.na(.data[[y_var()]]))
       if(nrow(interp_points) > 0){

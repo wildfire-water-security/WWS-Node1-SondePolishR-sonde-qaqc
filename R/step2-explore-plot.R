@@ -221,8 +221,7 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var){
       if(y2_var() == "none"){y2 <- NULL}else{y2 <- y2_var()}
 
       #use function to plot sonde data
-      plot_sonde(data = plot_data(), y_var=y_var(), y2_var= y2, opts=plot_opts(),fieldform=sondeproj()$fieldform,
-                 calcheck =sondeproj()$calcheck, precip=sondeproj()$precip)
+      plot_sonde(data = plot_data(), y_var=y_var(), y2_var= y2, proj = sondeproj(), opts=plot_opts())
     })
 
     #save to export

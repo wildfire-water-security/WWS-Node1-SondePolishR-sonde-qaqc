@@ -42,7 +42,7 @@ plot_options_UI <- function(id){
                  checkboxInput(ns("calcheck"),"Show calibration checks",value = FALSE)),
 
              div(style = "margin-bottom:-10px;",
-                 checkboxInput(ns("quality_flag"),"Show questionable points",value = FALSE))),
+                 checkboxInput(ns("qualflag"),"Show questionable points",value = FALSE))),
 )
 
 )
@@ -62,7 +62,7 @@ plot_options_server <- function(id){
         files = input$files,
         oow = input$oow,
         calcheck = input$calcheck,
-        quality_flag = input$quality_flag
+        qualflag = input$qualflag
       )
 
     })

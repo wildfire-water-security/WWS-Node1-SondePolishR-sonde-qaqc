@@ -226,3 +226,20 @@ apply_diff <- function(data, diff, id = "DateTime", invert = FALSE, skip_merge=T
   return(all(has_diff) && all(sapply(diff, "[[", 1) == "data_added") | all(sapply(diff, "[[", 1) == "data_merge"))
 }
 
+#' Get raw data from sonde project
+#'
+#' Includes any raw data merges and returns the raw data without any changes. Useful for viewing data before changes were made.
+#'
+#' @param proj A `sondeproj` object.
+#'
+#' @noRd
+get_raw_data <- function(proj){
+  curr_data <- proj$data
+  diff <- proj$diffs
+
+  if(length(diff) >0){
+    raw_data <- apply_diff(curr_data, diff, invert=TRUE, skip_merge = TRUE, id=c("DateTime_rd", "DupNum"))
+    return(raw_data)
+  }else{return(curr_data)}
+
+}

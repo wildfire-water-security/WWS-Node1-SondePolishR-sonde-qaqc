@@ -17,7 +17,7 @@ quality_UI <- function(id){
               selectInput(ns("quality_flag"),
                         "Select Quality Flag:",
                         choices = c("Questionable" = "questionable")),
-              radioButtons(ns("selection_mode"),"Manual Selection Method",
+              radioButtons(ns("selection_mode"),"Selection Method",
                                      choices = c("Add" = "add","Remove" = "remove"))),
 
         HTML("<hr>"),
@@ -71,7 +71,7 @@ quality_server <- function(id, sondeproj, data_ver, y_var){
     traces <- reactiveVal() #tracks which traces hold our points to track
 
   #clearing manual indices if y_var or data updates
-    observeEvent(list(y_var(), data_ver()),{
+    observeEvent(list(y_var(), data_ver(), sondeproj()),{
       manual_add(NULL)
       manual_rm(NULL)
       })
@@ -93,12 +93,12 @@ quality_server <- function(id, sondeproj, data_ver, y_var){
 
   #track selected data
     observeEvent(
-      req(plot_exist(), event_data("plotly_selected", source = "outlier_plot")),{
+      req(plot_exist(), event_data("plotly_selected", source = "quality_plot")),{
         req(sondeproj(), y_var())
 
         data <- sondeproj()$data
 
-        sel <- event_data("plotly_selected", source = "outlier_plot")
+        sel <- event_data("plotly_selected", source = "quality_plot")
 
         if(is.data.frame(sel)){
           sel <- sel %>% filter(.data$curveNumber %in% traces()) %>%
@@ -145,8 +145,7 @@ quality_server <- function(id, sondeproj, data_ver, y_var){
         flag_data <- plot_data() %>% filter(.data$Index %in% manual_add() & !is.na(.data[[y_var()]]))
 
       #use function to plot sonde data
-      p <- plot_sonde(data = filter_data, y_var=y_var(), y2_var= y2, opts=plot_opts(),fieldform=sondeproj()$fieldform,
-                      calcheck =sondeproj()$calcheck, precip=sondeproj()$precip, source="outlier_plot")
+      p <- plot_sonde(data = filter_data, y_var=y_var(), y2_var= y2, proj = sondeproj(), opts=plot_opts(), source="quality_plot")
 
       #color points outside limits as red
         y <- y_var()
@@ -181,20 +180,19 @@ quality_server <- function(id, sondeproj, data_ver, y_var){
     })
 
     #redraw when back on module to prevent weird drawing issues
-    # observeEvent(input$modules, {
-    #   req(input$modules == "step-5")
-    #
-    #   plotlyProxy("quality_plot", session) %>%
-    #     plotlyProxyInvoke("resize")
-    # })
+    observeEvent(input$modules, {
+      req(input$modules == "step-4")
+
+      plotlyProxy("quality_plot", session) %>%
+        plotlyProxyInvoke("resize")
+    })
 
   #create edit object
     edit <- reactive({
       newdata <- sondeproj()$data
 
-      #get filtered data
+      #get flags
       setna <- newdata$Index %in% manual_add()
-      newdata[[y_var()]][setna] <- NA
 
       flag_info <- switch(input$quality_flag,
                            "questionable" = list(
@@ -216,6 +214,7 @@ quality_server <- function(id, sondeproj, data_ver, y_var){
 
   #flagging module
     apply_edit_server("apply_limits", sondeproj, edit)
+
 
   #export plot so we can check it
     exportTestValues(
