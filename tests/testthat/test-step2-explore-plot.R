@@ -13,12 +13,14 @@ test_that("{shinytest2} recording: checking-module2", {
 
   #check initial plot is made
   app$set_inputs(modules = "step-2")
+  app$wait_for_idle()
   plot_obj <- app$get_value(export = "data2-plot_obj")
   expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
   app$expect_screenshot(name = "intial_plot")
 
   #check putting in week view
   app$set_inputs(`data2-weekly_range-period_view` = TRUE)
+  app$wait_for_idle()
   plot_obj <- app$get_value(export = "data2-plot_obj")
   expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
   app$expect_screenshot(name = "weekly_view")

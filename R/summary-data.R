@@ -34,7 +34,8 @@ summarize_data <- function(data, frequency, sum_method){
     vals <- vals[vals != ""]
     if(length(vals) == 0){return(NA_character_)}else{paste(vals, collapse = ";")}
   }
-  sum_data <- data %>% mutate(DateTime_rd = round_date(.data$DateTime_rd, frequency)) %>%
+
+  sum_data <- data %>% mutate(DateTime_rd = floor_date(.data$DateTime_rd, frequency)) %>%
     group_by(.data$DateTime_rd) %>% summarise(across(all_of(parms), ~ifelse(all(is.na(.x)), NA, sum_fun(.x, na.rm=TRUE))),
                                               across(all_of(flags), ~comb_unique_flags(.x)))
   sum_data <- sum_data[, c("DateTime_rd", sort(setdiff(names(sum_data), "DateTime_rd")))]
