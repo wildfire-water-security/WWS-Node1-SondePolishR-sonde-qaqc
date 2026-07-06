@@ -49,3 +49,18 @@ add_flags <- function(proj, data){
   return(proj)
   }
 
+
+#' Extract quality flags from sonde project
+#'
+#' @param proj a `sondeproj` object with quality flags added
+#'
+#' @returns a logical vector the same length as rows in the dataset where TRUE means it has a quality flag.
+#' @noRd
+qet_qual_flag <- function(proj){
+  stopifnot(inherits(proj, "sondeproj"))
+
+  qual_flags <- proj$flags$flag_qual
+
+  return(grepl("QUAL01", qual_flags))
+
+}

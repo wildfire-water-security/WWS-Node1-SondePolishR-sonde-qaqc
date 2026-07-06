@@ -12,6 +12,7 @@
 #' -files: should points be colored by file?
 #' -oow: should out of water periods be plotted?
 #' -calcheck: should cal check be plotted?
+#' -quality_flag: should questionable points be plotted?
 #' @param fieldform Field form from the `sondeproj`.
 #' @param calcheck Calibration check from the `sondeproj`.
 #' @param precip Precip data from the `sondeproj`.
@@ -29,7 +30,8 @@ plot_sonde <- function(data, y_var, y2_var=NULL,
                                  line=TRUE,
                                  files=FALSE,
                                  oow=FALSE,
-                                 calcheck=FALSE),
+                                 calcheck=FALSE,
+                                 quality_flag=FALSE),
                        fieldform=NULL,
                        calcheck=NULL,
                        precip = NULL,

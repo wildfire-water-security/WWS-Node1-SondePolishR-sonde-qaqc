@@ -24,41 +24,45 @@ ui <-  page_fillable(
     navset_card_pill(
       id = "modules",
       #step 1: load data
-      nav_panel("1. Load Data",
+      nav_panel("Load Data",
                 value = "step-1",
                 SondePolishR::load_data_UI("data1"),
                 ),
-      nav_panel("2. Visualize",
+      nav_panel("Visualize",
                 value = "step-2",
                 SondePolishR::explore_data_UI("data2")
                 ),
-      nav_panel("3. Data Checks",
+      nav_panel("Data Checks",
                 value = "step-3",
                 SondePolishR::check_data_UI("data3")
                 ),
-      nav_panel("4. Physical Limits",
+      nav_panel("Quality Flags",
                 value = "step-4",
-                SondePolishR::limits_UI("data4")
-                ),
-      nav_panel("5. Outlier Removal",
+                SondePolishR::quality_UI("data4")
+      ),
+      nav_panel("Physical Limits",
                 value = "step-5",
-                SondePolishR::outlier_UI("data5")
-      ),
-      nav_panel("6. Interpolation",
-                value = "step-6",
-                SondePolishR::interp_UI("data6")
-      ),
-      nav_panel("7. Shift Corrections",
-                value = "step-7",
-                SondePolishR::additive_UI("data7")
+                SondePolishR::limits_UI("data5")
                 ),
-      nav_panel("8. fDOM Corrections",
-                value = "step-8",
-                SondePolishR::fdom_UI("data8")
+      nav_panel("Outlier Removal",
+                value = "step-6",
+                SondePolishR::outlier_UI("data6")
       ),
-      nav_panel("9. Download Data",
+      nav_panel("Interpolation",
+                value = "step-7",
+                SondePolishR::interp_UI("data7")
+      ),
+      nav_panel("Shift Corrections",
+                value = "step-8",
+                SondePolishR::additive_UI("data8")
+                ),
+      nav_panel("fDOM Corrections",
                 value = "step-9",
-                SondePolishR::export_UI("data9"))
+                SondePolishR::fdom_UI("data9")
+      ),
+      nav_panel("Download Data",
+                value = "step-10",
+                SondePolishR::export_UI("data10"))
 
   ))
 
@@ -88,26 +92,29 @@ server <- function(input, output, session) {
   #step 2: plot data
    SondePolishR::explore_data_server("data2", sondeproj, data_ver, y_var)
 
-  #step 2: plot data
+  #step 3: check data
    SondePolishR::check_data_server("data3", sondeproj, data_ver, y_var)
 
-  #step 4: physical limits
-   SondePolishR::limits_server("data4", sondeproj, data_ver, y_var)
+  #step 4: quality checks
+   SondePolishR::quality_server("data4", sondeproj, data_ver, y_var)
 
-  #step 5: outlier corrections
-   SondePolishR::outlier_server("data5", sondeproj, data_ver, y_var)
+  #step 5: physical limits
+   SondePolishR::limits_server("data5", sondeproj, data_ver, y_var)
 
-  #step 6: data interpolation
-   SondePolishR::interp_server("data6", sondeproj, data_ver, y_var)
+  #step 6: outlier corrections
+   SondePolishR::outlier_server("data6", sondeproj, data_ver, y_var)
 
-  #step 7: additive shift
-   SondePolishR::additive_server("data7", sondeproj, data_ver, y_var)
+  #step 7: data interpolation
+   SondePolishR::interp_server("data7", sondeproj, data_ver, y_var)
 
-  #step 8: fdom corrections
-   SondePolishR::fdom_server("data8", sondeproj, data_ver, y_var)
+  #step 8: additive shift
+   SondePolishR::additive_server("data8", sondeproj, data_ver, y_var)
 
-  #step 9: export data
-   SondePolishR::export_server("data9", sondeproj, data_ver, y_var)
+  #step 9: fdom corrections
+   SondePolishR::fdom_server("data9", sondeproj, data_ver, y_var)
+
+  #step 10: export data
+   SondePolishR::export_server("data10", sondeproj, data_ver, y_var)
 
 
 }
