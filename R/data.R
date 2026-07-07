@@ -28,8 +28,14 @@
 #'
 #' @md
 #' @format An object of class `sondeproj` with the following elements:
+#' - **meta**: A list of length three:
+#'  - **site**: A character with the sonde site name.
+#'  - **tz**: A character with the site timezone.
+#'  - **coords**: A vector of length two with the latitude and longitude of the site.
 #' - **data**: A `data.frame` of the dataset, updated with any changes.
-#' - **flags**: A list of length three:
+#' - **flags**: A list of length four:
+#'  - **flag_rm**: A `data.frame` with the same measurement columns with _flag appended to the name and the same number of rows.
+#'    Used to store flag values for values that were marked as questionable.
 #'  - **flag_rm**: A `data.frame` with the same measurement columns with _flag appended to the name and the same number of rows.
 #'    Used to store flag values for values that were removed.
 #'  - **flag_chg**: A `data.frame` with the same measurement columns with _flag appended to the name and the same number of rows.
