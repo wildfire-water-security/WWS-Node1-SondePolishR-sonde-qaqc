@@ -1,11 +1,11 @@
 test_that("field form is read in nicely", {
   #should error if wrong data is added
     wrongfile <- file.path(testthat::test_path(), "testdata/example-calcheck.csv")
-    expect_warning(expect_error(read_ff(wrongfile), "Unexpected column names"))
+    expect_warning(expect_error(read_ff(wrongfile, tz="Etc/GMT+8"), "Unexpected column names"))
 
   #reading in correct file
     rightfile <- file.path(testthat::test_path(), "testdata/example-fieldform.csv")
-    ff <- read_ff(rightfile)
+    ff <- read_ff(rightfile, tz="Etc/GMT+8")
 
     #expect the columns to look at certain way
     expect_equal(dim(ff), c(4,16))
@@ -18,11 +18,11 @@ test_that("field form is read in nicely", {
 test_that("calibration check is read in nicely", {
   #should error if wrong data is added
   wrongfile <- file.path(testthat::test_path(), "testdata/example-fieldform.csv")
-  expect_error(read_cal(wrongfile), "Unexpected column names")
+  expect_error(read_cal(wrongfile, tz="Etc/GMT+8"), "Unexpected column names")
 
   #reading in correct file
   rightfile <- file.path(testthat::test_path(), "testdata/example-calcheck.csv")
-  cal <- read_cal(rightfile)
+  cal <- read_cal(rightfile, tz="Etc/GMT+8")
 
   #expect the columns to look at certain way
   expect_equal(dim(cal), c(18, 10))

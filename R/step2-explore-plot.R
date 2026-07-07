@@ -83,8 +83,8 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var){
 
     if(input$table_opt == "Field Form"){
       req(sondeproj()$fieldform)
-      sondeproj()$fieldform %>% dplyr::select("Date", "Removal_Time_PST",
-                                                     "Return_Time_PST",
+      sondeproj()$fieldform %>% dplyr::select("Date", "Removal_Time",
+                                                     "Return_Time",
                                                      "Remove_Period", "Notes")
     }else if(input$table_opt == "Change Log"){
       req(sondeproj()$changelog)
@@ -111,7 +111,7 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var){
         "Calibration Check" = c("Date" = "Date", "Parameter" = "Parameter", "Resident Value" = "Resident_Value",
                                 "Check Value" = "Check_Value", "Notes" ="Notes", "Probe Switched?" =  "Probe_Switch",
                                 "Estimated Switch Time"  ="Est_Time"),
-        "Field Form" = c("Date" = "Date", "Removal Time" = "Removal_Time_PST","Return Time" =  "Return_Time_PST",
+        "Field Form" = c("Date" = "Date", "Removal Time" = "Removal_Time","Return Time" =  "Return_Time",
                           "Remove OOW Period?" = "Remove_Period", "Notes" ="Notes"),
         "Data Summary" = c("Parameter" = "Parameter", "Mean" = "Mean", "Median" = "Median", "Maximum" = "Maximum",
                            "Minimum" = "Minimum", "Std. Deviation" = "Std_Deviation", "1st Quantile" = "Quantile_1st",
@@ -148,7 +148,7 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var){
 
       data <- sondeproj()$data
       #get OOW periods
-      oow <- get_oow(sondeproj()$fieldform)
+      oow <- get_oow(sondeproj()$fieldform, tz=sondeproj()$meta$tz,interval=get_interval(data))
 
       #remove those periods from data
       rm_index <- data %>%

@@ -6,7 +6,7 @@ test_that("project is loaded and merged correctly", {
     ff_path <- file.path(test_path(), "testdata", "example-fieldform.csv")
     cc_path <- file.path(test_path(), "testdata", "example-calcheck.csv")
 
-    proj <- load_project(csv_path, csv_files, prj_path,ff_path, cc_path)
+    proj <- load_project(csv_path, csv_files, prj_path,ff_path, cc_path, site="test")
 
       #make sure things look as expected
       expect_s3_class(proj, "sondeproj")
@@ -16,6 +16,7 @@ test_that("project is loaded and merged correctly", {
       expect_s3_class(proj$calcheck, "data.frame")
       expect_type(proj$diffs, "list")
       expect_s3_class(proj$changelog, "data.frame")
+      expect_equal(proj$meta, list(site="FAL", tz="Etc/GMT+8", coords=c(43.96, -122.63))) #should maintain from example
 
       #make sure data merged
       expect_equal(nrow(proj$data), 14528)
@@ -29,7 +30,7 @@ test_that("project is loaded and merged correctly", {
       ff_path <- file.path(test_path(), "testdata", "example-fieldform.csv")
       cc_path <- file.path(test_path(), "testdata", "example-calcheck.csv")
 
-      proj <- load_project(csv_path, csv_files, prj_path,ff_path, cc_path)
+      proj <- load_project(csv_path, csv_files, prj_path,ff_path, cc_path, site="test")
 
       #make sure things look as expected
       expect_s3_class(proj, "sondeproj")
@@ -39,6 +40,7 @@ test_that("project is loaded and merged correctly", {
       expect_s3_class(proj$calcheck, "data.frame")
       expect_type(proj$diffs, "list")
       expect_s3_class(proj$changelog, "data.frame")
+      expect_equal(proj$meta, list(site="test", tz="Etc/GMT+8", coords=c(NA, NA))) #should write new
 
       #make sure data merged
       expect_equal(nrow(proj$data), 8071) #expect csv1 + csv2 rows
@@ -85,4 +87,23 @@ test_that("project is loaded and merged correctly", {
       expect_true(is.null(proj$calcheck))
       expect_type(proj$diffs, "list")
       expect_s3_class(proj$changelog, "data.frame")
+
+  #TEST 5: see if precip gets updated when data is added
+    proj <- example_sondeproj
+    proj$data <- proj$data %>% filter(Date < "2024-08-05")
+    proj$flags <- lapply(proj$flags, function(x){x %>% filter(DateTime_rd  %in% proj$data$DateTime_rd)})
+    proj$precip <- get_precip(proj$data, proj$meta$coords[1],proj$meta$coords[2])
+
+    test_dir <- withr::local_tempdir()
+    prj_path <- file.path(test_dir, "test_proj.RDS")
+    saveRDS(proj, prj_path)
+
+    csv_files <- c("example-csv-data1.csv", "example-csv-data2.csv")
+    csv_path <- file.path(test_path(), "testdata", csv_files)
+
+    #load project
+    newproj <- load_project(csv_path, csv_files, prj_path)
+
+    #check precip
+    expect_true(nrow(proj$precip) < nrow(newproj$precip))
 })

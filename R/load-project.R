@@ -10,6 +10,7 @@
 #' @param ff_path character vector with the filepath to a field form file.
 #' @param cc_path character vector with the filepath to a calibration check file.
 #' @param tz the timezone for the sonde data
+#' @param site the site name or site code.
 #' @param update_pb takes a function used to update a progress bar in a shiny
 #' interface.
 #'
@@ -22,6 +23,7 @@
 #' proj <- load_project(csv_path = file, csv_files = "example_file1")
 load_project <- function(csv_path=NULL, csv_files=NULL, prj_path=NULL,
                          ff_path=NULL, cc_path=NULL, tz="Etc/GMT+8",
+                         site = NULL,
                          update_pb = NULL){
   #set csv merge as NULL if not loaded to prevent errors in creating obj
     csv_merge <- NULL
@@ -52,7 +54,8 @@ load_project <- function(csv_path=NULL, csv_files=NULL, prj_path=NULL,
       changelog <- write_log(NULL, "all", "initial load", n = nrow(csv_merge), diff_name = "raw")
 
       #create sonde object
-      obj <- list(data = csv_merge,
+      obj <- list(meta = list(site = site, tz= tz, coords = c(NA, NA)),
+                  data = csv_merge,
                   flags = NULL,
                   precip = NULL,
                   fieldform = NULL,
@@ -68,12 +71,12 @@ load_project <- function(csv_path=NULL, csv_files=NULL, prj_path=NULL,
     }
   #read in ff and cal file (these cover the entire period and we don't need to merge, just update)
     if(!is.null(ff_path)){
-      fieldform <- read_ff(ff_path)
+      fieldform <- read_ff(ff_path, tz)
       obj$fieldform <- fieldform
     }
 
     if(!is.null(cc_path)){
-      calcheck <- read_cal(cc_path)
+      calcheck <- read_cal(cc_path, tz)
 
       #link with serial records to know when probes were changed (only if new data is added)
       if(!is.null(csv_path)){
@@ -88,7 +91,7 @@ load_project <- function(csv_path=NULL, csv_files=NULL, prj_path=NULL,
 
       if(!is.null(ff_path)){
         #use ff data to determine when cal data likely was
-        mean_visit <- get_oow(fieldform) %>% rowwise() %>%
+        mean_visit <- get_oow(fieldform, tz, get_interval(obj$data)) %>% rowwise() %>%
           mutate(Est_Time = mean(c(.data$start, .data$end)),
                  Date = as.Date(.data$Est_Time))
 
@@ -126,6 +129,12 @@ load_project <- function(csv_path=NULL, csv_files=NULL, prj_path=NULL,
         diff <- list(get_diff(obj$data, data_merge))
         names(diff) <- diff_version(obj)
         obj$diffs <- append(obj$diffs, diff)
+
+        #update precip if lat and long available
+        if(all(!is.na(obj$meta$coords))){
+          new_precip <- get_precip(data_merge, obj$meta$coords[1], obj$meta$coords[2])
+          obj$precip <- new_precip
+        }
 
       }
       obj$data <- data_merge

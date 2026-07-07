@@ -11,6 +11,7 @@ load_project(
   ff_path = NULL,
   cc_path = NULL,
   tz = "Etc/GMT+8",
+  site = NULL,
   update_pb = NULL
 )
 }
@@ -28,6 +29,8 @@ doesn't store filenames with paths.}
 \item{cc_path}{character vector with the filepath to a calibration check file.}
 
 \item{tz}{the timezone for the sonde data}
+
+\item{site}{the site name or site code.}
 
 \item{update_pb}{takes a function used to update a progress bar in a shiny
 interface.}

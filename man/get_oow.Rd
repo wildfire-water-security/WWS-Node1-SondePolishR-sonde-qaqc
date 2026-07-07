@@ -4,10 +4,14 @@
 \alias{get_oow}
 \title{Convert field form data to out of water periods}
 \usage{
-get_oow(ff)
+get_oow(ff, tz, interval)
 }
 \arguments{
 \item{ff}{Field form `data.frame`.}
+
+\item{tz}{Timezone for the times in the form.}
+
+\item{interval}{Time (in minutes) between measurements, removes the measurement before and after OOW period for safety.}
 }
 \value{
 A `data.frame`with three columns:
@@ -22,5 +26,5 @@ of when the sonde was out of the water. If a time is missing it will try to gues
 or when no other options will remove the full day. If `Remove_Period` is FALSE it will ignore that period as an OOW period.
 }
 \examples{
-get_oow(example_sondeproj$fieldform)
+get_oow(example_sondeproj$fieldform, tz="Etc/GMT+8", interval=15)
 }

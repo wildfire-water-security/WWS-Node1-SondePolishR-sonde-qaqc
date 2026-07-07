@@ -11,6 +11,10 @@ test_that("{shinytest2} recording: checking-module1", {
   #upload files
   app$upload_file(`data1-csv_files` = file.path(test_path(), "testdata", c("example-csv-data1.csv", "example-csv-data2.csv")))
 
+  #set site name
+  app$set_inputs(`data1-site` = "TEST")
+  app$set_inputs(`data1-tz` = "Etc/GMT+4")
+
   #click to load files and create project
   app$click("data1-load_prj", timeout_=20000)
 
@@ -26,5 +30,7 @@ test_that("{shinytest2} recording: checking-module1", {
   expect_s3_class(proj, "sondeproj")
   expect_true(is.data.frame(precip))
   expect_equal(ncol(precip), 2)
+  expect_equal(proj$meta$site, "TEST")
+  expect_equal(proj$meta$tz, "Etc/GMT+4")
 
 })

@@ -17,40 +17,41 @@ load_data_UI <- function(id){
         font-weight:600;
         margin-bottom:0.5rem;}
 
-      .selectize-input{color: white;}")),
+      .selectize-input{color: white;}
+
+      .bslib-card, .tab-content, .tab-pane, .card-body {
+      overflow: visible !important;")),
 
     shinyjs::useShinyjs(),
 
     bslib::page_fluid(
       bslib::layout_columns(
-        col_widths = c(6,6),
+        col_widths = c(5,5,2),
         bslib::card(
           class = "upload-card",
-          bslib::card_header("1. Load Sonde Data"),
-            fileInput(ns("pj_file"),"Existing Sonde Project (.RDS)",accept = ".RDS", width = "80%"),
-            tags$hr(),
-            fluidRow(
-              style = "align-items: start; margin-bottom: 1rem;",
-                column(
-                  width = 8,
-                  fileInput(inputId = ns("csv_files"),label = "Raw Sonde Data (.csv)",
+          bslib::card_header("1. Sonde Data"),
+            fileInput(ns("pj_file"),"Existing Sonde Project (.RDS)",accept = ".RDS", width = "100%"),
+            fileInput(inputId = ns("csv_files"),label = "Raw Sonde Data (.csv)",
                             multiple = TRUE, width = "100%",accept = ".csv")),
-                column(
-                  width = 4,
-                  selectInput(inputId = ns("tz"),label = "Timezone",choices = nice_tz(),
-                              selected = "Etc/GMT+8",selectize = TRUE))
-          )),
         bslib::card(
           class = "upload-card",
-          bslib::card_header("2. Load Metadata"),
-            fileInput(ns("ff_file"),"Field Form (.csv)",accept = ".csv", width = "80%"),
-            fileInput(ns("cc_file"),"Calibration Checks (.csv)",accept = ".csv", width = "80%")
+          bslib::card_header("2. Metadata"),
+            fileInput(ns("ff_file"),"Field Form (.csv)",accept = ".csv", width = "100%"),
+            fileInput(ns("cc_file"),"Calibration Checks (.csv)",accept = ".csv", width = "100%")
+        ),
+      bslib::card(
+        bslib::card_header("3. Specify Site Info"),
+          textInput(ns("site"), label="Site Name/Code"),
+          selectInput(inputId = ns("tz"),label = "Timezone",choices = nice_tz(),
+                      selected = "Etc/GMT+8",selectize = TRUE),
+          div(style="margin-top: -3px; margin-bottom: -3px;font-size:12px",
+            "Note: Only needed for new sonde projects.")
         )),
 
       bslib::layout_columns(
         col_widths = c(4,8),
         bslib::card(
-          bslib::card_header("3. Load Data"),
+          bslib::card_header("4. Load Data"),
           div(
             class = "d-flex flex-column justify-content-center align-items-center gap-3 h-100",
             actionButton(ns("load_prj"),"Load Sonde Data",width = "60%"),
@@ -58,7 +59,7 @@ load_data_UI <- function(id){
             )),
 
         bslib::card(
-          bslib::card_header("4. Add Precipitation"),
+          bslib::card_header("5. Add Precipitation"),
             radioButtons(ns("precip_source"),NULL,
               choices = c("Download from NASA POWER" = "nasa",
                 "Upload Precipitation" = "upload"),
@@ -72,8 +73,12 @@ load_data_UI <- function(id){
             bslib::layout_columns(
               col_widths = c(6,6),
                   numericInput(ns("lat"),"Latitude",value = NA, width="100%"),
-                  numericInput(ns("long"),"Longitude",value = NA, width="100%")
-            )))),
+                  numericInput(ns("long"),"Longitude",value = NA, width="100%"),
+
+            ),
+            div(style="margin-top: -3px; margin-bottom: -3px;font-size:12px",
+                "Note: If coordinates have been previously supplied precip will update on project load.")
+            ))),
           conditionalPanel(
             condition = sprintf("input['%s'] == 'upload'", ns("precip_source")),
             div(
@@ -151,7 +156,7 @@ load_data_server <- function(id, sondeproj, data_ver){
     if(any(c(!is.null(input$pj_file), !is.null(input$csv_files)))){
       withProgress(message = "loading sonde files...", min=0,max=length(csv_path()), {
           obj <- load_project(csv_path(), csv_files=input$csv_files$name, prj_path=prj_path(),
-                   ff_path=ff_path(), cc_path=cc_path(), tz=input$tz,
+                   ff_path=ff_path(), cc_path=cc_path(), tz=input$tz, site=input$site,
                    update_pb = function(amount){incProgress(amount)})
         })
 
@@ -198,11 +203,13 @@ load_data_server <- function(id, sondeproj, data_ver){
       #otherwise get
       if(input$precip_source == "nasa"){
         precip <- get_precip(proj$data, input$lat, input$long)
+
+        proj$meta$coords <- c(input$lat, input$long)
       }else{
         req(precip_path())
         precip <- read.csv(precip_path())
         colnames(precip) <- c("DateTime", "Precip_mm_hr")
-        precip$DateTime <- as.POSIXct(precip$DateTime, tz=tz(proj$data$DateTime_rd))
+        precip$DateTime <- as.POSIXct(precip$DateTime, tz=proj$meta$tz)
       }
 
       proj$precip <- precip

@@ -4,10 +4,12 @@
 \alias{read_cal}
 \title{Read sonde calibration check file}
 \usage{
-read_cal(file)
+read_cal(file, tz)
 }
 \arguments{
 \item{file}{File path to calibration check data (.csv).}
+
+\item{tz}{Timezone for the times in the form.}
 }
 \value{
 a \code{data.frame} with the following columns. The \code{file} to read in should have the same structure:

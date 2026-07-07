@@ -4,18 +4,19 @@
 #' extra notes.
 #'
 #' @param file File path to field form data (.csv).
+#' @param tz Timezone for the times in the form.
 #'
 #' @returns a `data.frame` with the following columns. The `file` to read in should have the same structure:
 #' - **Date**: The date of the site visit.
 #' - **Site_Code**: The site name or site code.
-#' - **Time_PST**: The start time of the field visit (used to guess out of water periods when data is missing).
+#' - **Time**: The start time of the field visit (used to guess out of water periods when data is missing).
 #' - **Start_Sonde_Serial**: The serial number for the sonde in the water at the start of the visit.
 #' - **Start_Sonde_Name**: The sonde name for the sonde in the water at the start of the visit.
 #' - **End_Sonde_Serial**: The serial number for the sonde in the water at the end of the visit.
 #' - **End_Sonde_Name**: The sonde name for the sonde in the water at the end of the visit.
-#' - **Removal_Time_PST**: The time the sonde was removed from the water.
-#' - **Return_Time_PST**: The time the sonde was returned to the water.
-#' - **Next_Timepoint_PST**: The next timepoint that data will be collected.
+#' - **Removal_Time**: The time the sonde was removed from the water.
+#' - **Return_Time**: The time the sonde was returned to the water.
+#' - **Next_Timepoint**: The next timepoint that data will be collected.
 #'  This should be the next "good" time point after the sonde has been returned to the water, but is sometimes the timepoint
 #'  when the wiper is checked and the sonde is out of the water.
 #' - **Data_Download**: Logical, was data downloaded at this visit?
@@ -33,7 +34,7 @@
 #' file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "example-fieldform.csv")
 #' fieldform <- read_ff(file)
 
-read_ff <- function(file){
+read_ff <- function(file, tz){
   stopifnot(tools::file_ext(file) == "csv")
 
   #read in csv
@@ -41,16 +42,19 @@ read_ff <- function(file){
                                     End_Sonde_Serial = "character"))
 
   #check that file looks correct
-  if(!(all(c("Date", "Time_PST", "Removal_Time_PST", "Return_Time_PST", "Next_Timepoint_PST", "Remove_Period") %in% colnames(df)))){
+    #rename cols with PST (OSU specific)
+    df <- df %>% rename_with(~ gsub("_PST", "", .x))
+
+  if(!(all(c("Date", "Time", "Removal_Time", "Return_Time", "Next_Timepoint", "Remove_Period") %in% colnames(df)))){
     stop("Unexpected column names. Please see help(example_fieldform) for details on structure.")
   }
 
   #get correct date format
-  dateform <- lubridate::parse_date_time(df$Date, orders = c("mdY", "mdy", "Ymd")) %>% as.Date()
+  dateform <- lubridate::parse_date_time(df$Date, orders = c("mdY", "mdy", "Ymd"), tz=tz) %>% as.Date()
 
   #ensure things have the right class
   df <- df %>% dplyr::mutate(Date = dateform,
-                      dplyr::across(c("Site_Code":"Next_Timepoint_PST", "Download_Device", "Crew":"Notes"), ~as.character(.x)),
+                      dplyr::across(c("Site_Code":"Next_Timepoint", "Download_Device", "Crew":"Notes"), ~as.character(.x)),
                       dplyr::across(c("Data_Download", "Remove_Period"), ~as.logical(.x)))
 
   #rename extra notes
@@ -76,6 +80,7 @@ read_ff <- function(file){
 #' Ensures correct column classes and converts NA to R recognized NA values.
 #'
 #' @param file File path to calibration check data (.csv).
+#' @param tz Timezone for the times in the form.
 #'
 #' @returns a `data.frame` with the following columns. The `file` to read in should have the same structure:
 #' - **Date**: The date of the site visit.
@@ -93,7 +98,7 @@ read_ff <- function(file){
 #' file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "example-calcheck.csv")
 #' calcheck <- read_cal(file)
 
-read_cal <- function(file){
+read_cal <- function(file, tz){
   stopifnot(tools::file_ext(file) == "csv")
 
   #read in csv
@@ -121,7 +126,7 @@ read_cal <- function(file){
   df <- df[rowSums(is.na(df)) < ncol(df), ]
 
   #get correct date format
-    dateform <- lubridate::parse_date_time(df$Date, orders = c("mdY", "mdy", "Ymd")) %>% as.Date()
+    dateform <- lubridate::parse_date_time(df$Date, orders = c("mdY", "mdy", "Ymd"), tz=tz) %>% as.Date()
 
   #ensure things have the right class
   df <- df %>% dplyr::mutate(Date = dateform,
@@ -145,6 +150,8 @@ read_cal <- function(file){
 #'
 #'
 #' @param ff Field form `data.frame`.
+#' @param tz Timezone for the times in the form.
+#' @param interval Time (in minutes) between measurements, removes the measurement before and after OOW period for safety.
 #'
 #' @returns
 #' A `data.frame`with three columns:
@@ -154,29 +161,29 @@ read_cal <- function(file){
 #' @export
 #'
 #' @examples
-#' get_oow(example_sondeproj$fieldform)
-get_oow <- function(ff){
-  stopifnot(all(c("Site_Code", "Date", "Time_PST", "Removal_Time_PST", "Return_Time_PST", "Next_Timepoint_PST", "Remove_Period") %in% colnames(ff)))
+#' get_oow(example_sondeproj$fieldform, tz="Etc/GMT+8", interval=15)
+get_oow <- function(ff, tz, interval){
+  stopifnot(all(c("Site_Code", "Date", "Time", "Removal_Time", "Return_Time", "Next_Timepoint", "Remove_Period") %in% colnames(ff)))
 
   #make some new columns to manipulate
-  ff_adj <- ff %>% dplyr::select("Site_Code", "Date", "Time_PST", "Removal_Time_PST", "Return_Time_PST", "Next_Timepoint_PST",
+  ff_adj <- ff %>% dplyr::select("Site_Code", "Date", "Time", "Removal_Time", "Return_Time", "Next_Timepoint",
                                  "Data_Download", "Remove_Period") %>%
-    dplyr::mutate(Remove_Period = ifelse(is.na(.data$Removal_Time_PST) & is.na(.data$Return_Time_PST) &
-                                           is.na(.data$Next_Timepoint_PST) & (is.na(.data$Data_Download) |
+    dplyr::mutate(Remove_Period = ifelse(is.na(.data$Removal_Time) & is.na(.data$Return_Time) &
+                                           is.na(.data$Next_Timepoint) & (is.na(.data$Data_Download) |
                                                                                 !.data$Data_Download), FALSE, .data$Remove_Period)) %>%
     dplyr::filter(.data$Remove_Period) %>%
-    dplyr::mutate(Date = as.Date(.data$Date, format = "%m/%d/%Y", tz="Etc/GMT+8"),
+    dplyr::mutate(Date = as.Date(.data$Date, format = "%m/%d/%Y", tz=tz),
            remove_date = .data$Date,
-           remove_time = ifelse(is.na(.data$Removal_Time_PST),
-                                ifelse(is.na(.data$Time_PST), "00:00", .data$Time_PST), .data$Removal_Time_PST),
+           remove_time = ifelse(is.na(.data$Removal_Time),
+                                ifelse(is.na(.data$Time), "00:00", .data$Time), .data$Removal_Time),
            return_date = .data$Date,
-           return_time = ifelse(is.na(.data$Return_Time_PST),
-                                ifelse(is.na(.data$Next_Timepoint_PST), "23:59", .data$Next_Timepoint_PST), .data$Return_Time_PST))
+           return_time = ifelse(is.na(.data$Return_Time),
+                                ifelse(is.na(.data$Next_Timepoint), "23:59", .data$Next_Timepoint), .data$Return_Time))
 
 
   #update dates/times if sonde removed and not returned till later
-  long_oow <- which(!is.na(ff_adj$Removal_Time_PST) & is.na(ff_adj$Return_Time_PST) &
-                      is.na(lead(ff_adj$Removal_Time_PST)) & !is.na(lead(ff_adj$Return_Time_PST)))
+  long_oow <- which(!is.na(ff_adj$Removal_Time) & is.na(ff_adj$Return_Time) &
+                      is.na(lead(ff_adj$Removal_Time)) & !is.na(lead(ff_adj$Return_Time)))
 
   if(length(long_oow) >0){
     ff_adj$return_date[long_oow] <- ff_adj$return_date[long_oow + 1]
@@ -187,9 +194,9 @@ get_oow <- function(ff){
   #convert to date times, give 15 minute buffer on either side to ensure we've cut enough
   #sometimes the next_timepoint is used to check the wiper and is bad, so we ideally want to use the return_time for the next good point
   ff_adj <- ff_adj %>%  dplyr::mutate(start = lubridate::floor_date(as.POSIXct(paste(.data$remove_date, .data$remove_time),
-                                                                               tz="Etc/GMT+8"), "15 mins") - lubridate::minutes("15"),
+                                                                               tz=tz), paste(interval, "mins")) - lubridate::minutes(interval),
                                end = lubridate::ceiling_date(as.POSIXct(paste(.data$return_date, .data$return_time),
-                                                                        tz="Etc/GMT+8"), "15 mins") + lubridate::minutes("15"))
+                                                                        tz=tz), paste(interval, "mins")) + lubridate::minutes(interval))
 
   #return the site code and data/time of OOW
   oow <- ff_adj %>% dplyr::select("Site_Code", "start", "end") %>% dplyr::rename("site_code" = "Site_Code")

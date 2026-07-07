@@ -24,7 +24,7 @@ prep_interp <- function(proj){
   interval <- get_interval(data)
 
   #stuff to fill in missing correctly
-  tz <- tz(data$DateTime_rd)
+  tz <- proj$meta$tz
   name <- unique(data$Site_Name)
   par_names <- get_parms(data)
 

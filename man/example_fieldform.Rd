@@ -9,14 +9,14 @@ A \code{data.frame} with the following columns:
 \itemize{
 \item \strong{Date}: The date of the site visit.
 \item \strong{Site_Code}: The site name or site code.
-\item \strong{Time_PST}: The start time of the field visit (used to guess out of water periods when data is missing).
+\item \strong{Time}: The start time of the field visit (used to guess out of water periods when data is missing).
 \item \strong{Start_Sonde_Serial}: The serial number for the sonde in the water at the start of the visit.
 \item \strong{Start_Sonde_Name}: The sonde name for the sonde in the water at the start of the visit.
 \item \strong{End_Sonde_Serial}: The serial number for the sonde in the water at the end of the visit.
 \item \strong{End_Sonde_Name}: The sonde name for the sonde in the water at the end of the visit.
-\item \strong{Removal_Time_PST}: The time the sonde was removed from the water.
-\item \strong{Return_Time_PST}: The time the sonde was returned to the water.
-\item \strong{Next_Timepoint_PST}: The next timepoint that data will be collected.
+\item \strong{Removal_Time}: The time the sonde was removed from the water.
+\item \strong{Return_Time}: The time the sonde was returned to the water.
+\item \strong{Next_Timepoint}: The next timepoint that data will be collected.
 This should be the next "good" time point after the sonde has been returned to the water, but is sometimes the timepoint
 when the wiper is checked and the sonde is out of the water.
 \item \strong{Data_Download}: Logical, was data downloaded at this visit?

@@ -73,11 +73,12 @@ combine_flags <- function(sondeproj){
 #' Gets summary statistics for Sonde data
 #'
 #' @param data Sonde dataset
+#' @param precip Optional precipitation dataset.
 #'
 #' @returns a `data.frame`
 #' @noRd
 #'
-describe_data <- function(data){
+describe_data <- function(data, precip=NULL){
   parms <- get_parms(data)
 
   #get summaries per each variable
@@ -93,9 +94,17 @@ describe_data <- function(data){
   }
 
   #get nice row names
-  summary_names <- names(nice_yvar(data))
+  summary_names <- c(names(nice_yvar(data)), "Precipitation (mm hr\U207B\U00B9)")
 
   sum_df <- lapply(data[parms], sum_parm) %>% bind_rows()
+  if(!is.null(precip)){
+    precip_sum <- sum_parm(precip$Precip_mm_hr)
+  }else{
+    precip_sum <- sum_parm(1)
+    precip_sum <- precip_sum[1,] <- NA
+  }
+
+  sum_df <- sum_df %>% bind_rows(sum_parm(precip$Precip_mm_hr))
 
   sum_df <- cbind(Parameter = summary_names, sum_df, row.names = NULL) %>%
     mutate(across("Mean":"Quantile_3rd", ~round(.x, 3)))

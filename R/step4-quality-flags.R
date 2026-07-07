@@ -102,7 +102,7 @@ quality_server <- function(id, sondeproj, data_ver, y_var){
 
         if(is.data.frame(sel)){
           sel <- sel %>% filter(.data$curveNumber %in% traces()) %>%
-            mutate(x = parse_date_time(.data$x, tz=tz(data$DateTime_rd), orders = "Ymd HMS", truncated =3))
+            mutate(x = parse_date_time(.data$x, tz= sondeproj()$meta$tz, orders = "Ymd HMS", truncated =3))
           #get points based on x and y
           full_index <- data %>%
             mutate(value = .data[[y_var()]],

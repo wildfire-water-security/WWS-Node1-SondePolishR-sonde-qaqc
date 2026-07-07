@@ -7,10 +7,11 @@
     cal <- list.files("../WWS-Node1-SONDE-postfire-sonde-network/data/01_site-visit-metadata/Fall-Creek", pattern = "Calibration", full.names = TRUE)
 
     proj <- load_project(csv_path = raw_files, csv_files = paste0("example-csv-data", 1:3, ".csv"),
-                       ff_path = ff, cc_path = cal, tz = "Etc/GMT+8")
+                       ff_path = ff, cc_path = cal, tz = "Etc/GMT+8", site="FAL")
 
     #add precip
-    proj$precip <- get_precip(proj$data, 43.96775, -122.63012)
+    proj$precip <- get_precip(proj$data, 43.96, -122.63)
+    proj$meta$coords <- c(43.96,-122.63)
 
     #clip data down for a smaller example and clear some actual data
      proj$fieldform <- proj$fieldform %>% filter(Date >= min(proj$data$Date) & Date <= max(proj$data$Date)) %>%
@@ -18,6 +19,7 @@
                Notes = c("Replacing previously removed sonde.", NA, NA, NA),
                Start_Sonde_Serial = "23K139551",
                End_Sonde_Serial = c(NA, NA, "23K597634", "23K597634"))
+
 
      proj$calcheck <- proj$calcheck %>% filter(Date > min(proj$data$Date) & Date <= max(proj$data$Date)) %>% mutate(Notes=NA)
 

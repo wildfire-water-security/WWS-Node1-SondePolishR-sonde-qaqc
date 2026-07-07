@@ -141,7 +141,7 @@ additive_server <- function(id, sondeproj, data_ver, y_var){
 
         if(!is.null(sel) && length(sel) && nrow(sel) > 0) {
           sel <- sel %>%  filter(.data$curveNumber %in% traces()) %>%
-            mutate(x = parse_date_time(.data$x, tz=tz(data$DateTime_rd), orders = "Ymd HMS", truncated =3))
+            mutate(x = parse_date_time(.data$x, tz=sondeproj()$meta$tz, orders = "Ymd HMS", truncated =3))
           full_index <- data %>%
             mutate(value = .data[[y_var()]],
                    DateTime_rd = .data$DateTime_rd) %>%

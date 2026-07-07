@@ -121,7 +121,7 @@ plot_sonde <- function(data, y_var, y2_var=NULL,
     #plot oow periods
     if(opts$oow && !is.null(fieldform)){
       #get data from field form for determining cal check (oow periods)
-      if(!is.null(fieldform)){oow_data <- get_oow(fieldform)}
+      if(!is.null(fieldform)){oow_data <- get_oow(fieldform, tz=proj$meta$tz,interval=get_interval(proj$data))}
 
       oow_data_clip <- oow_data %>% filter(as.Date(.data$end) >= min(date_rg) & as.Date(.data$start) <= max(date_rg))
       if(nrow(oow_data_clip) > 0){

@@ -61,14 +61,14 @@
 #' @format A `data.frame` with the following columns:
 #' - **Date**: The date of the site visit.
 #' - **Site_Code**: The site name or site code.
-#' - **Time_PST**: The start time of the field visit (used to guess out of water periods when data is missing).
+#' - **Time**: The start time of the field visit (used to guess out of water periods when data is missing).
 #' - **Start_Sonde_Serial**: The serial number for the sonde in the water at the start of the visit.
 #' - **Start_Sonde_Name**: The sonde name for the sonde in the water at the start of the visit.
 #' - **End_Sonde_Serial**: The serial number for the sonde in the water at the end of the visit.
 #' - **End_Sonde_Name**: The sonde name for the sonde in the water at the end of the visit.
-#' - **Removal_Time_PST**: The time the sonde was removed from the water.
-#' - **Return_Time_PST**: The time the sonde was returned to the water.
-#' - **Next_Timepoint_PST**: The next timepoint that data will be collected.
+#' - **Removal_Time**: The time the sonde was removed from the water.
+#' - **Return_Time**: The time the sonde was returned to the water.
+#' - **Next_Timepoint**: The next timepoint that data will be collected.
 #'  This should be the next "good" time point after the sonde has been returned to the water, but is sometimes the timepoint
 #'  when the wiper is checked and the sonde is out of the water.
 #' - **Data_Download**: Logical, was data downloaded at this visit?
