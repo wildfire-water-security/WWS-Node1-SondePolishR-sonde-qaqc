@@ -1,158 +1,247 @@
 ##step 1 of the app: load data into the app
 
 # UI Function
+#' @rdname load-data
+#' @export
+
 load_data_UI <- function(id){
-
-  ns <- NS(id) #line to make module work
-
+  ns <- NS(id)
   tagList(
-  #change button color
-    tags$style(
-      HTML("
-           .btn-default {
-           background-color: #E3795E !important;
-           border-color: #E3795E !important;
-           color: white !important;
-          }")),
+    tags$style(HTML("
+      .btn-default{
+        background-color:#E3795E!important;
+        border-color:#E3795E!important;
+        color:white;}
 
-    #select either new data or load data
-        fluidRow(
-          #load csv
-          column(8,
-                 fileInput(
-                   inputId = NS(id, "file"),
-                   label = span(style = "font-size:20px; white-space: nowrap;",
-                                "Choose New or Existing Sonde Data File"),
-                   accept = c(".csv", ".qs")  # restrict to CSV
-                 )),
-          column(4,
-                 #have user pick the timezone
-                 selectInput(
-                   inputId=NS(id, "tz"),
-                   label = "Data Timezone:",
-                   choices = nice_tz(),
-                   selected = "Etc/GMT-8",
-                   selectize=TRUE))
+      .section-label{
+        font-weight:600;
+        margin-bottom:0.5rem;}
+
+      .selectize-input{color: white;}
+
+      .load-data-module .bslib-card,
+      .load-data-module .tab-content,
+      .load-data-module .tab-pane,
+      .load-data-module .card-body {
+        overflow: visible !important;
+      }
+
+      ")),
+
+    shinyjs::useShinyjs(),
+
+    bslib::page_fluid(
+      div( class = "load-data-module",
+
+      bslib::layout_columns(
+        col_widths = c(5,5,2),
+        bslib::card(
+          class = "upload-card",
+          bslib::card_header("1. Sonde Data"),
+            fileInput(ns("pj_file"),"Existing Sonde Project (.RDS)",accept = ".RDS", width = "100%"),
+            fileInput(inputId = ns("csv_files"),label = "Raw Sonde Data (.csv)",
+                            multiple = TRUE, width = "100%",accept = ".csv")),
+        bslib::card(
+          class = "upload-card",
+          bslib::card_header("2. Metadata"),
+            fileInput(ns("ff_file"),"Field Form (.csv)",accept = ".csv", width = "100%"),
+            fileInput(ns("cc_file"),"Calibration Checks (.csv)",accept = ".csv", width = "100%")
         ),
+      bslib::card(
+        bslib::card_header("3. Specify Site Info"),
+          textInput(ns("site"), label="Site Name/Code"),
+          selectInput(inputId = ns("tz"),label = "Timezone",choices = nice_tz(),
+                      selected = "Etc/GMT+8",selectize = TRUE),
+          div(style="margin-top: -3px; margin-bottom: -3px;font-size:12px",
+            "Note: Only needed for new sonde projects.")
+        )),
 
-        fluidRow(
-          column(12,
-                 div(
-                 class = "d-flex align-items-center gap-2",  # Bootstrap flex classes
-                 shinyFiles::shinyDirButton(NS(id, "save_file"),
-                                label = "Processed Data Save Location",
-                                style="font-size:16px",
-                                title= "Select location to save processed data", multiple=FALSE),
-                 uiOutput(NS(id, "path_text_box"))
+      bslib::layout_columns(
+        col_widths = c(4,8),
+        bslib::card(
+          bslib::card_header("4. Load Data"),
+          div(
+            class = "d-flex flex-column justify-content-center align-items-center gap-3 h-100",
+            actionButton(ns("load_prj"),"Load Sonde Data",width = "60%"),
+            actionButton(ns("reset"),"Clear Uploads",width = "60%")
+            )),
 
-                      )
-          ))
+        bslib::card(
+          bslib::card_header("5. Add Precipitation"),
+            radioButtons(ns("precip_source"),NULL,
+              choices = c("Download from NASA POWER" = "nasa",
+                "Upload Precipitation" = "upload"),
+              selected = "nasa"),
+          conditionalPanel(
+            condition = sprintf("input['%s'] == 'nasa'", ns("precip_source")),
+            div(
+              class = "d-flex justify-content-center",
+              div(
+                style = "width: 60%;",
+            bslib::layout_columns(
+              col_widths = c(6,6),
+                  numericInput(ns("lat"),"Latitude",value = NA, width="100%"),
+                  numericInput(ns("long"),"Longitude",value = NA, width="100%"),
 
-       )
-
-}
+            ),
+            div(style="margin-top: -3px; margin-bottom: -3px;font-size:12px",
+                "Note: If coordinates have been previously supplied precip will update on project load.")
+            ))),
+          conditionalPanel(
+            condition = sprintf("input['%s'] == 'upload'", ns("precip_source")),
+            div(
+              style = "margin-bottom: -15px;",
+              fileInput( ns("precip_file"),"Precipitation File (.csv)",
+                accept = ".csv",width = "80%")),
+            div(
+              style = "margin-top: -15px; margin-bottom: -5px; font-size:12px",
+              "Note: Data must have two columns: DateTime and Precip_mm_hr")),
+          div(class = "d-flex flex-column align-items-center",
+            actionButton(ns("load_precip"),"Load Precipitation",width = "45%"))
+        )
+        ))))}
 
 # Server Function
-load_data_server <- function(id){
+#' Read in the dataset or project and set save path
+#'
+#' Takes in a dataset as a `.csv` or a sonde project as an `.RDS` file via file selection.
+#' If the data is a sonde project the save path will default it it's existing path, otherwise
+#' the user will need to select a save path with the file name based on the name of the data file.
+#'
+#' @param id An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.
+#' @param sondeproj A `reactiveVal` holding the current dataset.
+#' @param data_ver A `reactiveVal` holding a number used to track when new data is added to trigger resets.
+#' @md
+#' @export
+#' @keywords internal
+#' @returns The loaded data as a reactive object.
+#' @rdname load-data
+load_data_server <- function(id, sondeproj, data_ver){
   moduleServer(id, function(input, output, session){
+    #store paths as reactive value so we can clean on reset
+      csv_path <- reactiveVal()
+      prj_path <- reactiveVal()
+      ff_path <- reactiveVal()
+      cc_path <- reactiveVal()
+      precip_path <- reactiveVal()
 
-  #NEW PROJECT
-    #load data
-      type <- reactive({
-        req(input$file)
-        type <- tools::file_ext(input$file$datapath)
+    #keep track of paths
+      observe({
+        req(input$csv_files)
+        csv_path(input$csv_files$datapath)})
+      observe({
+        req(input$pj_file)
+        prj_path(input$pj_file$datapath)})
+      observe({
+        req(input$ff_file)
+        ff_path(input$ff_file$datapath)})
+      observe({
+        req(input$cc_file)
+        cc_path(input$cc_file$datapath)})
+      observe({
+        req(input$precip_file)
+        precip_path(input$precip_file$datapath)})
+
+    #reset when requested which should prevent files from being uploaded
+      observeEvent(input$reset, {
+        csv_path(NULL)
+        prj_path(NULL)
+        ff_path(NULL)
+        cc_path(NULL)
+        sondeproj(NULL)
+        precip_path(NULL)
+
+        reset('csv_files')
+        reset('pj_file')
+        reset('ff_file')
+        reset('cc_file')
+        reset('precip_file')
+
       })
 
-      df <- reactive({
-        req(input$file)
+  #when button to load project is clicked, read in everything and merge together
+    observeEvent(input$load_prj, {
+    if(any(c(!is.null(input$pj_file), !is.null(input$csv_files)))){
+      withProgress(message = "loading sonde files...", min=0,max=length(csv_path()), {
+          obj <- load_project(csv_path(), csv_files=input$csv_files$name, prj_path=prj_path(),
+                   ff_path=ff_path(), cc_path=cc_path(), tz=input$tz, site=input$site,
+                   update_pb = function(amount){incProgress(amount)})
+        })
 
-        if(type() == "csv"){
-          data <- read_sonde(input$file$datapath, tz=input$tz)  # read into R
+      #save object as reactive
+      sondeproj(obj)
 
-          #clear the log and dataframe
-          clear_log()
-          clear_data()
-
-          #write raw data
-          write_data(data, "raw")
-
-          return(data)
-        }
-
-        if(type() == "qs"){
-          read_project(input$file$datapath)  # read into R
-
-          #get data
-          prj <- get_data()
-
-          return(prj[[length(prj)]])
-        }
-
-      })
-
-      #update timezone if it's a project
-        observeEvent(df(), {
-          req(df(), type())
-
-          if(type() == "qs"){
-            tz <- lubridate::tz(df()$DateTime)
-            nice_tz <- nice_tz()
-            tz <- nice_tz[nice_tz == tz]
-            updateSelectInput(
-              session,
-              "tz",
-              selected = tz)}
-            })
-
-    #select save path for sonde project or show it
-      roots <- c(
-        wd        = getwd(),
-        C_drive   = "C:/",
-        Z_drive   = "Z:/",
-        documents = file.path(fs::path_home(), "Documents"))
-
-
-      #get file name and save path to save as project file
-      shinyFiles::shinyDirChoose(input,"save_file", roots = roots, session = session,
-                     defaultRoot = "documents")
-
-    #specify prj_path so it exists
-    prj_path <- reactive({
-      # Return NULL if no directory or file is provided
-      if (is.null(input$save_file) || is.null(input$file)) {
-        return(NULL)
+      #print a message so you know data loaded
+      if (interactive()) {
+        shinyalert::shinyalert(
+          title = "Data Loaded",
+          text = "Selected data has been loaded and any new data has been merge into existing project.",
+          type = "success"
+        )
       }
-        path <- shinyFiles::parseDirPath(roots, input$save_file)
-        file <- tools::file_path_sans_ext(input$file$name)
-        file.path(path, paste0(file, ".qs"))
+
+      #track that new data was uploaded
+      data_ver(data_ver() + 1)
+    }else{
+      if(interactive()){
+        shinyalert::shinyalert(
+          title = "No Data Specified",
+          text = "Please specify the path to either a sonde project or a data .csv file.",
+          type = "warning"
+        )
+      }
+    }
+
+
     })
 
+  #deal with precipitation
+    observeEvent(input$load_precip, {
+      proj <- sondeproj()
 
-    #show file path in UI
-      output$path_text_box <- renderUI({
-        tags$span(
-          paste(prj_path()),
-          style = "background-color: #fff;border: 1px solid #ddd;padding: 6px 12px;
-            border-radius: 6px; display: inline-block;min-width: 120px;color: #343a40")
-      })
+      #provide message if data isn't loaded first
+        if(is.null(proj)){
+          if(interactive()){
+            shinyalert::shinyalert(
+              title = "No Data Specified",
+              text = "Please load sonde data first.",
+              type = "warning")}
+        }
 
-    # return the dataframe and file path as the module's "output"
-    return(list(data=df, prj_path = prj_path))
+      #otherwise get
+      if(input$precip_source == "nasa"){
+        precip <- get_precip(proj$data, input$lat, input$long)
+
+        proj$meta$coords <- c(input$lat, input$long)
+      }else{
+        req(precip_path())
+        precip <- read.csv(precip_path())
+        colnames(precip) <- c("DateTime", "Precip_mm_hr")
+        precip$DateTime <- as.POSIXct(precip$DateTime, tz=proj$meta$tz)
+      }
+
+      proj$precip <- precip
+
+      sondeproj(proj)
+
+      if (interactive()) {
+        shinyalert::shinyalert(
+          title = "Precipitation Data Loaded",
+          text = "Precipitation data has been added to existing project.",
+          type = "success"
+        )
+      }
+    })
+  #export values so we can check them
+    #save values we want to check as their own reactive
+    exportTestValues(
+      proj = {
+        req(sondeproj())
+        sondeproj()
+      }
+    )
+
   })
 }
 
-# ui <- page_fillable(
-#   #set theme
-#   theme = bs_theme(preset = "superhero",
-#                    primary = "#E3795E"),
-#
-#   load_data_UI("data1")
-# )
-#
-# server <- function(input, output, session) {
-#   #step 1: load data
-#   mod1 <- load_data_server("data1")
-# }
-#
-# shinyApp(ui = ui, server = server)
 

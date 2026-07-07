@@ -1,0 +1,58 @@
+library(shinytest2)
+library(shiny)
+
+test_that("{shinytest2} recording: checking-module5", {
+  app_dir <- system.file("app", package = "SondePolishR")
+  local_app_support(app_dir)
+  app <- AppDriver$new(app_dir, variant = platform_variant(),
+                       name = "m5", height = 911, width = 1619,
+                       expect_values_screenshot_args = FALSE)
+  app$upload_file(`data1-pj_file` = file.path(test_path(), "testdata", "example-sonde-project.RDS"))
+
+  #click to load files and create project
+  app$click("data1-load_prj")
+
+  app$set_inputs(modules = "step-5")
+
+  #check range when df is first added
+    rng <- c(app$get_value(input = "data5-min"), app$get_value(input = "data5-max"))
+    expect_equal(rng, c(0,300))
+
+  #check initial plot
+    plot_obj <- app$get_value(export = "data5-plot_obj")
+    expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
+    app$expect_screenshot(name = "intial_plot")
+
+  #make sure limits update when y var changes
+    app$set_inputs(`data5-update_parms-y_var` = "Temp_C")
+    rng <- c(app$get_value(input = "data5-min"), app$get_value(input = "data5-max"))
+    expect_equal(rng, c(-5,50))
+
+  #update limits to see plot/table
+    app$set_inputs(`data5-max` = 15)
+    plot_obj <- app$get_value(export = "data5-plot_obj")
+    expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
+    app$expect_screenshot(name = "manually_change_limits")
+
+  #hide flagged values
+    app$set_inputs(`data5-rm_flags` = TRUE)
+    app$wait_for_idle()
+    plot_obj <- app$get_value(export = "data5-plot_obj")
+    expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
+    app$expect_screenshot(name = "hiding_flagged_points")
+
+  #flag values
+    app$click("data5-apply_limits-apply_flags")
+    app$set_inputs(`data5-rm_flags` = FALSE)
+    plot_obj <- app$get_value(export = "data5-plot_obj")
+    expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
+    app$expect_screenshot(name = "after_flagging")
+
+
+    tab <- app$get_value(export = "data5-changelog")
+    expect_true(nrow(tab) > nrow(example_sondeproj$changelog))
+    expect_equal(tab$parameter[nrow(tab)], "Temp_C")
+    expect_equal(tab$note[nrow(tab)], paste0("Data removed based on absolute limits of ", -5, " and ", 15))
+
+})
+

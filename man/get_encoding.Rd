@@ -17,6 +17,6 @@ Turns out it's actually quite challenging to load in \code{.csv} file when it ha
 first to see if it can figure it out, if not, it will test the two likely encoding: UTF-16LE or Windows-1252.
 }
 \examples{
-file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "sonde-example.csv")
+file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "example-csv-data1.csv")
 get_encoding(file)
 }

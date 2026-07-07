@@ -2,25 +2,25 @@
 
 #' Update numeric input with limits from sonde data
 #'
-#' @param df data.frame with sonde data
+#' @param data data.frame with sonde data
 #' @param y_var parameter to plot
 #' @param session the environment that can be used to access information and functionality relating to the session
 #' @export
-update_limits <- function(df, y_var, session){
-  observeEvent(y_var(), {
-    req(df())               # make sure df is available
+update_limits <- function(data, y_var, session){
+  observeEvent(list(y_var(), data()), {
+    req(data())               # make sure data is available
     req(y_var())        # make sure the input exists
-    req(y_var() %in% names(df()))  # make sure column exists
+    req(y_var() %in% names(data()))  # make sure column exists
 
     updateNumericInput(
       session,
       "min",
-      value = min(df()[[y_var()]], na.rm=TRUE))
+      value = min(data()[[y_var()]], na.rm=TRUE))
 
     updateNumericInput(
       session,
       "max",
-      value = max(df()[[y_var()]], na.rm=TRUE))
+      value = max(data()[[y_var()]], na.rm=TRUE))
   })
 }
 
@@ -30,7 +30,6 @@ update_limits <- function(df, y_var, session){
 #' Natively, when plotly redraws, it will remove any user interactions like zooming. This function
 #' will capture the zoom level and apply it when redrawing.
 #'
-#' @param df the data.frame with the sonde data
 #' @param y_var the y_var
 #' @param plot_id the plot_id of the plot to keep zoom steady
 #'
@@ -39,46 +38,60 @@ update_limits <- function(df, y_var, session){
 #' -  yaxis$range with the start and end values for the y-axis range
 #' @export
 #' @md
-preserve_zoom <- function(df, y_var, plot_id) {
-  d <- reactiveVal()
+preserve_zoom <- function(y_var, plot_id) {
   plot_lyout <- reactiveValues(xaxis = list(), yaxis = list())
 
-  observeEvent(event_data("plotly_relayout", source = "shift_plot"), {
+  observeEvent(plotly::event_data("plotly_relayout", source = plot_id), {
 
     relayout <- tryCatch(
-      event_data("plotly_relayout", source = "shift_plot"),
+      plotly::event_data("plotly_relayout", source = plot_id),
       error = function(e) NULL
     )
 
-    if (is.null(relayout)) return()
+    req(relayout)
 
-    # X axis
-    if (!is.null(relayout$`xaxis.autorange`)) {
+    # x
+    if(!is.null(relayout$`xaxis.autorange`)){
       plot_lyout$xaxis <- list()
     }
-    if (!is.null(relayout$`xaxis.range[0]`)) {
+
+    if(!is.null(relayout$`xaxis.range[0]`)){
+
       plot_lyout$xaxis <- list(
-        range = c(relayout$`xaxis.range[0]`, relayout$`xaxis.range[1]`)
+        range = c(
+          relayout$`xaxis.range[0]`,
+          relayout$`xaxis.range[1]`
+        )
       )
+
     }
 
-    # Y axis
-    if (!is.null(relayout$`yaxis.autorange`)) {
+    # y
+    if(!is.null(relayout$`yaxis.autorange`)){
       plot_lyout$yaxis <- list()
     }
-    if (!is.null(relayout$`yaxis.range[0]`)) {
+
+    if(!is.null(relayout$`yaxis.range[0]`)){
+
       plot_lyout$yaxis <- list(
-        range = c(relayout$`yaxis.range[0]`, relayout$`yaxis.range[1]`)
+        range = c(
+          relayout$`yaxis.range[0]`,
+          relayout$`yaxis.range[1]`
+        )
       )
+
     }
 
   })
 
-  # reset zoom whenever y_var changes, [not triggering]
+  # reset when variable changes
   observeEvent(y_var(), {
+
     plot_lyout$xaxis <- list()
     plot_lyout$yaxis <- list()
+
   })
 
-  return(plot_lyout)
+  plot_lyout
+
 }

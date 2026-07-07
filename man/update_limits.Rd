@@ -4,10 +4,10 @@
 \alias{update_limits}
 \title{Update numeric input with limits from sonde data}
 \usage{
-update_limits(df, y_var, session)
+update_limits(data, y_var, session)
 }
 \arguments{
-\item{df}{data.frame with sonde data}
+\item{data}{data.frame with sonde data}
 
 \item{y_var}{parameter to plot}
 

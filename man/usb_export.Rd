@@ -17,7 +17,7 @@ Sonde data files differ based on how the data is downloaded, this is used to det
 data can be processed correctly.
 }
 \examples{
-file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "sonde-example.csv")
+file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "example-csv-data1.csv")
 usb_export(file)
 
 file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "sonde-usb-example.csv")

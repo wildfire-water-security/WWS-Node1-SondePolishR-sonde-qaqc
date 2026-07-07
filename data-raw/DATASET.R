@@ -1,152 +1,146 @@
-## code to prepare `DATASET` dataset goes here
+# Includes sourcing of the raw-data and included data in the package so I know where it came from
 
-#save EPA ecoregions for use -----
-  ecoregions <- sf::st_read("data-raw/epa-ecoregions-lvl3/us_eco_l3_state_boundaries.shp")
+#create an example project with example objects ------
+  ## testing the logic when files are uploaded
+    raw_files <- list.files("../WWS-Node1-SONDE-postfire-sonde-network/data/02_raw-downloads/Fall-Creek", full.names=TRUE)[3:5]
+    ff <- list.files("../WWS-Node1-SONDE-postfire-sonde-network/data/01_site-visit-metadata/Fall-Creek", pattern = "Field-Form", full.names = TRUE)
+    cal <- list.files("../WWS-Node1-SONDE-postfire-sonde-network/data/01_site-visit-metadata/Fall-Creek", pattern = "Calibration", full.names = TRUE)
 
-  ecoregions$NA_L2NAME <- gsub(" (?)", "",ecoregions$NA_L2NAME, fixed=TRUE)
+    proj <- load_project(csv_path = raw_files, csv_files = paste0("example-csv-data", 1:3, ".csv"),
+                       ff_path = ff, cc_path = cal, tz = "Etc/GMT+8", site="FAL")
 
-  #merge into each ecoregion
-  ecoregions <-  ecoregions %>% dplyr::group_by(across(-c(geometry, STATE_NAME, EPA_REGION, L3_KEY, L2_KEY, L1_KEY))) %>%
-    dplyr::summarise(do_union=TRUE)
+    #add precip
+    proj$precip <- get_precip(proj$data, 43.96, -122.63)
+    proj$meta$coords <- c(43.96,-122.63)
 
-  usethis::use_data(ecoregions, overwrite = TRUE, compress="xz")
-
-
-#check parameter codes (don't need to rerun) -----
-  eco <- get_ecoregion(site)
-  eco <- sf::st_transform(eco, crs="EPSG:4326") #transform to corret crs
-
-  bbox <- terra::ext(eco)
-  bbox <- c(bbox[1], bbox[3], bbox[2], bbox[4])
-
-  #identify stations in ecoregion
-  stats <- dataRetrieval::read_waterdata_monitoring_location(
-    agency_code = "USGS",
-    site_type = "Stream",
-    bbox = bbox,
-    skipGeometry = TRUE,
-    properties = c("monitoring_location_id",
-                   "site_type", "state_name"))
+    #clip data down for a smaller example and clear some actual data
+     proj$fieldform <- proj$fieldform %>% filter(Date >= min(proj$data$Date) & Date <= max(proj$data$Date)) %>%
+        mutate(Crew = "JS", Weather = "Cloudy with a chance of meatballs",
+               Notes = c("Replacing previously removed sonde.", NA, NA, NA),
+               Start_Sonde_Serial = "23K139551",
+               End_Sonde_Serial = c(NA, NA, "23K597634", "23K597634"))
 
 
-  #get stations with data
-  #split to not exceed limits on API
-  chunk_size <- 300
-  group_factor <- ceiling(seq_len(nrow(stats)) / chunk_size)
-  stats_split <- split(stats, group_factor)
-
-  params <- vector()
-  for(x in 1:length(stats_split)){
-    stats_useful <- dataRetrieval::read_waterdata_ts_meta(monitoring_location_id = stats_split[[x]]$monitoring_location_id,
-                                                          statistic_id = c("00001", "00002"),
-                                                          properties = c("monitoring_location_id",
-                                                                         "parameter_code",
-                                                                         "begin",
-                                                                         "end",
-                                                                         "time_series_id",
-                                                                         "statistic_id"),
-                                                          skipGeometry = TRUE)
-    params <- c(params, unique(stats_useful$parameter_code))
-
-  }
-
-  params <- unique(params)
-
-#get data for stations in ecoregion with data -------
-  ecos <- c("Cascades", "Klamath Mountains","North Cascades", "Blue Mountains", "Columbia Plateau")
-  parms <- c("00010","00095", "00300", "00301", "00400", "00480", "32295","32322","63680","72147","99409")
-
-for(x in ecos){
-  cat("working on ecoregion ", x , "\n")
-  for(y in parms){
-  cat("working on parameter ", y , "\n")
-  df <- get_eco_limits(x,y)
-
-  if(!any(is.na(df))){
-    write.csv(df,
-              file.path("data-raw/usgs-limits", paste0("usgs-limit-", y,
-                                            "-", gsub(" ", "-", x), ".csv")),
-              quote=FALSE, row.names=FALSE)
-  }}}
-
-#pull together
-  files <- list.files("data-raw/usgs-limits", pattern = "usgs-limit", full.names = TRUE)
-
-  #use 0.999 for max of max of min if higher
-    for(x in files){
-      df <- read.csv(x)
-
-      min <- df$min[df$statistic_id == 2]
-      max <- ifelse(df$max[df$statistic_id == 2] > df$q999[df$statistic_id ==1], df$max[df$statistic_id == 2],df$q999[df$statistic_id ==1])
-      par <- stringr::str_split_i(basename(x), "-",3)
-      eco <- gsub("-", " ", gsub(".csv$", "", gsub("usgs-limit-[0-9]{5}-", "", basename(x))))
-
-      #replace missing values with NA
-      min <- ifelse(length(min) ==0 , NA, min)
-      max <- ifelse(length(max) ==0 , NA, max)
-
-      lim <- data.frame(ecoregion = eco, parameter = par, max = max, min=min)
-
-      if(x == files[1]){
-        limits <- lim
-      }else{limits <- rbind(limits, lim)}
-    }
-
-  #input into physical limits
-  codes <- read.csv("data-raw/usgs-sonde-codes.csv")
-  codes$usgs_code <- stringr::str_pad(codes$usgs_code, 5, side="left", pad="0") #ensure codes are formatted correctly
-
-  #merge together
-  phys_limits <- merge(limits, codes, by.x="parameter", by.y="usgs_code")
-
-  usethis::use_data(phys_limits, overwrite = TRUE)
+     proj$calcheck <- proj$calcheck %>% filter(Date > min(proj$data$Date) & Date <= max(proj$data$Date)) %>% mutate(Notes=NA)
 
 
-#save copy of sonde data for use in examples without needing to load
-  file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "sonde-example.csv")
-  raw_sonde <- read_sonde(file, flags = FALSE, tz="Etc/GMT-8")
+  #create log if not read in from existing project
+    proj$changelog$user <- "smith"
+
+  data <- proj$data #save unedited for later
+
+  #add some changes
+    #make some changes and save
+    data2 <- proj$data
+    data2$fDOM_QSU[1:4] <- NA
+    dd1 <- list(get_diff(proj$data, data2, id=c("DateTime_rd", "DupNum"))) #commit difference
+    names(dd1) <- "dd1"
+    proj$flags$flag_rm$fDOM_QSU[1:4] <- "RM01" #add flag
+    proj <- write_log(proj, "fDOM_QSU", "removing first four points", n = 4, diff_name = "dd1", return = "sondeproj") #write log
+    proj$diffs <- append(proj$diffs, dd1)
+    proj$data <- data2
+
+    #make more changes
+    data2 <- proj$data
+    data2$ODO_mg_L[5:7] <- data2$ODO_mg_L[5:7] * 0.8
+    dd2 <- list(get_diff(proj$data, data2,id=c("DateTime_rd", "DupNum"))) #commit difference
+    names(dd2) <- "dd2"
+    proj$flags$flag_chg$ODO_mg_L[5:7] <- "CH01" #add flag
+    proj <- write_log(proj, "ODO_mg_L", "applying shift correction", n = 3, diff_name = "dd2", return = "sondeproj") #write log
+    proj$diffs <- append(proj$diffs, dd2)
+    proj$data <- data2
+
+    #make more changes
+    data2 <- proj$data
+    data2$Temp_C[52:90] <- NA
+    dd3 <- list(get_diff(proj$data, data2, id=c("DateTime_rd", "DupNum"))) #commit difference
+    names(dd3) <- "dd3"
+    proj$flags$flag_rm$Temp_C[52:90] <- "RM02" #add flag
+    proj <- write_log(proj, "Temp_C", "removing a bunch of points", n = 39, diff_name = "dd3", return = "sondeproj") #write log
+    proj$diffs <- append(proj$diffs, dd3)
+    proj$data <- data2
+
+    #make more changes
+    data2 <- proj$data
+    data2$Temp_C[52:90] <- mean(c(data2$Temp_C[51],data2$Temp_C[91]))
+    dd4 <- list(get_diff(proj$data, data2, id=c("DateTime_rd", "DupNum"))) #commit difference
+    names(dd4) <- "dd4"
+    proj$flags$flag_add$Temp_C[52:60] <- "AD02" #add flag
+    proj <- write_log(proj, "Temp_C", "linear interpolation", n = 39, diff_name = "dd4", return = "sondeproj") #write log
+    proj$diffs <- append(proj$diffs, dd4)
+    proj$data <- data2
 
 
-  use_data(raw_sonde, overwrite = TRUE)
+  #remove my username from log
+    proj$changelog$user <- "smith"
 
-# create example versioning
-  clear_log()
-  clear_data()
+  #save as an example
+    saveRDS(proj, "inst/extdata/example-sonde-project.RDS")
 
-  data <- raw_sonde
-  write_data(data, "raw")
+    #also copy over the example csv's for testing
+    file.copy(raw_files, c("inst/extdata/example-csv-data1.csv",
+                           "inst/extdata/example-csv-data2.csv","inst/extdata/example-csv-data3.csv"), overwrite = TRUE)
 
-  #a change
-  row_change <- 1:4
-  data$Cond_S_cm[row_change] <- NA
+    #and ff and cal file
+    write.csv(proj$fieldform, "inst/extdata/example-fieldform.csv", row.names = FALSE)
+    write.csv(proj$calcheck, "inst/extdata/example-calcheck.csv", row.names = FALSE)
+    write.csv(proj$precip, "inst/extdata/example-precip.csv", row.names = FALSE)
 
-  #log change and save value
-  version <- digest::digest(data)
-  change <- write_log("Cond_S_cm", "test step", length(row_change), version, user="smith")
-  write_data(data, version)
+#write objects for example data
+  example_sondeproj <- proj
+  use_data(example_sondeproj, overwrite = TRUE)
 
-  #make another change
-  row_change <- 500:600
-  data$Cond_S_cm[row_change] <- NA
+  example_data <- data
+  use_data(example_data, overwrite = TRUE)
 
-  version <- digest::digest(data)
-  change <- write_log("Cond_S_cm", "test step", length(row_change), version, user="smith")
-  write_data(data, version)
+  example_fieldform <- proj$fieldform
+  use_data(example_fieldform, overwrite= TRUE)
 
-  #get vals
-  log <- get_log()
-  data_ver <- get_data()
+  example_calcheck <- proj$calcheck
+  use_data(example_calcheck, overwrite= TRUE)
 
-  #save
-  save_project(data_ver, log, "inst/extdata/example-sonde-project.qs")
+  example_precip <- proj$precip
+  use_data(example_precip, overwrite= TRUE)
 
-  #save as data objects
-  example_log <- log
-  example_data_ver <- data_ver
-  example_project <- append(list(log), data_ver)
-  names(example_project)[1] <- "log"
+#move files from ext data to testdata for testing too
+  testfiles <- list.files("inst/extdata")
+  file.copy(file.path("inst/extdata", testfiles), file.path("tests/testthat/testdata", testfiles), overwrite = TRUE)
+
+#make a "messy" project with dups and gaps for testing (may move to main example??)
+ #two types of duplicates
+  data_messy <- rbind(data, data[1:14,]) #single file dup
+  data_messy <- rbind(data_messy, data[251:264,] %>% mutate(FileName = "dupfile2.csv"))
+  data_messy[data_messy$FileName == "dupfile2.csv", 10:15] <- data_messy[data_messy$FileName == "dupfile2.csv", 10:15] * 1.1
 
 
-  use_data(example_log, overwrite = TRUE)
-  use_data(example_data_ver, overwrite = TRUE)
-  use_data(example_project, overwrite= TRUE)
+ #add a gap (missing observations)
+  data_messy <- data_messy[-(500:580),]
+
+  data_messy <- data_messy %>% dplyr::mutate(Index = 1:n()) %>% group_by(.data$DateTime_rd) %>%
+    mutate(DupNum = row_number(), .after="Index") %>% ungroup() #redo index and dupnum
+
+  #create log if not read in from existing project
+  changelog <- write_log(NULL, "all", "initial load", n = nrow(data_messy), diff_name = "raw")
+  changelog$user <- "smith"
+
+  #create sonde object
+  proj_messy <- list(meta = proj$meta,
+                    data = data_messy,
+                    flags = NULL,
+                    precip = proj$precip,
+                    fieldform = proj$fieldform,
+                    calcheck = proj$calcheck,
+                    diffs = list(),
+                    changelog = changelog,
+                    duplicates = NULL,
+                    data_gaps = NULL)
+
+  class(proj_messy) <- "sondeproj"
+
+  proj_messy <- add_flags(proj_messy, data_messy)
+
+  #remove my username from log
+  proj_messy$changelog$user <- "smith"
+
+  saveRDS(proj_messy, "tests/testthat/testdata/example-sondeproj-messy.RDS")
+  saveRDS(proj_messy, "inst/extdata/example-sondeproj-messy.RDS")

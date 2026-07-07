@@ -9,14 +9,12 @@ library(DT)
 ## TODO:
   #just marking bad points
 
-
-#ensure plots inherit theme
-  thematic::thematic_shiny()
-
 #getting timezones and making nice
   tz <- SondePolishR:::nice_tz()
 
 #front end
+#' @export
+#' @rdname SondePolishR-app
 ui <-  page_fillable(
   #set theme
   theme = bs_theme(preset = "superhero",
@@ -24,52 +22,52 @@ ui <-  page_fillable(
 
   #set menu and navigation
     navset_card_pill(
+      id = "modules",
       #step 1: load data
-      nav_panel("1. Load Data",
-                load_data_UI("data1"),
+      nav_panel("Load Data",
+                value = "step-1",
+                SondePolishR::load_data_UI("data1"),
                 ),
-      nav_panel("2. Visualize",
-                explore_data_UI("data2")
+      nav_panel("Visualize",
+                value = "step-2",
+                SondePolishR::explore_data_UI("data2")
                 ),
-      nav_panel("3. Physical Limits",
-                phys_limits_UI("data3")
+      nav_panel("Data Checks",
+                value = "step-3",
+                SondePolishR::check_data_UI("data3")
                 ),
-      nav_panel("4. Shift Correction",
-                sidebarLayout(
-                  sidebarPanel(
-                    update_parms_UI("update_parms"), #get parameters to view
-                    accordion(
-                      accordion_panel(
-                        title= "Shift Value",
-                        #get value to shift points
-                        numericInput(
-                          "shift_val",
-                          "Enter the value to shift selected data",
-                          value = 0,
-                          step=0.1)
-                      ),
-                      accordion_panel(
-                        title="Flag Points",
-                        confirm_changes_UI("flag2")
-                      )
-                    )
-
-                     ),
-                  mainPanel(
-                     plotlyOutput("shift_plot"),
-                  ))
-
+      nav_panel("Quality Flags",
+                value = "step-4",
+                SondePolishR::quality_UI("data4")
+      ),
+      nav_panel("Physical Limits",
+                value = "step-5",
+                SondePolishR::limits_UI("data5")
                 ),
-      nav_panel("5. Manual Removal", "Remove points manually"),
-      nav_panel("6. Interpolation", "Interpolate Missing Data"),
-      nav_panel("7. fDOM Corrections", "fDOM Corrections"),
-      nav_panel("8. Download Data", "Download Processed Data"),
-      nav_panel("9. View versions", "View Sonde Data Corrections"),
+      nav_panel("Outlier Removal",
+                value = "step-6",
+                SondePolishR::outlier_UI("data6")
+      ),
+      nav_panel("Interpolation",
+                value = "step-7",
+                SondePolishR::interp_UI("data7")
+      ),
+      nav_panel("Shift Corrections",
+                value = "step-8",
+                SondePolishR::additive_UI("data8")
+                ),
+      nav_panel("fDOM Corrections",
+                value = "step-9",
+                SondePolishR::fdom_UI("data9")
+      ),
+      nav_panel("Download Data",
+                value = "step-10",
+                SondePolishR::export_UI("data10"))
 
   ))
 
 #backend
-#' Title
+#' Main SondePolishR app
 #'
 #' @param input
 #' @param output
@@ -77,132 +75,48 @@ ui <-  page_fillable(
 #'
 #' @returns
 #' @export
-#'
+#' @rdname SondePolishR-app
+#' @keywords internal
 #' @examples
 server <- function(input, output, session) {
+  #allow upload of larger files
+  options(shiny.maxRequestSize=50*1024^2)
+
+  #define things that get passed around
+    sondeproj <- reactiveVal(NULL) #the sonde project
+    data_ver <- reactiveVal(0) #keeping track of when new data is uploaded
+    y_var <- reactiveVal(NULL) #the y-variable being looked at
   #step 1: load data
-   mod1 <- load_data_server("data1")
-   df <- mod1$data
-   prj_path <- mod1$prj_path
+   SondePolishR::load_data_server("data1", sondeproj, data_ver)
 
   #step 2: plot data
-   explore_data_server("data2", df)
+   SondePolishR::explore_data_server("data2", sondeproj, data_ver, y_var)
 
-  #step 3: physical limits
-   df2 <- phys_limits_server("data3", df, prj_path)
+  #step 3: check data
+   SondePolishR::check_data_server("data3", sondeproj, data_ver, y_var)
 
-  #step 4: shift points up
-     #make a copy of file for this step
-       df_shift <- reactive({
-         df()})
+  #step 4: quality checks
+   SondePolishR::quality_server("data4", sondeproj, data_ver, y_var)
 
-     #make a version to plot
-       df_plot <- reactive({df_shift()})
+  #step 5: physical limits
+   SondePolishR::limits_server("data5", sondeproj, data_ver, y_var)
 
-     #get y_vars
-       y_var <- update_parms_server("update_parms", df, choices_fun = nice_yvar)
+  #step 6: outlier corrections
+   SondePolishR::outlier_server("data6", sondeproj, data_ver, y_var)
 
-     #select values via hover
-       hover_reactive <- reactiveVal()                 ## initialize
-       observe({
-         req(df_shift(), y_var())
+  #step 7: data interpolation
+   SondePolishR::interp_server("data7", sondeproj, data_ver, y_var)
 
-         hover_data <- tryCatch(
-           event_data("plotly_selected", source = "shift_plot"),
-           error = function(e) NULL
-         )
+  #step 8: additive shift
+   SondePolishR::additive_server("data8", sondeproj, data_ver, y_var)
 
-         if (!is.null(hover_data))
-           hover_reactive(hover_data)                  ## set
-       })
+  #step 9: fdom corrections
+   SondePolishR::fdom_server("data9", sondeproj, data_ver, y_var)
+
+  #step 10: export data
+   SondePolishR::export_server("data10", sondeproj, data_ver, y_var)
 
 
-    #select data (gets the rows selected by user)
-      rows <- reactive({
-        if (is.null(hover_reactive()) || nrow(hover_reactive()) == 0) {
-          return(NULL)   # no selection
-        }
-
-        x <- as.POSIXct(hover_reactive()$x, tz=tz(df_shift()$DateTime))
-        y <- hover_reactive()$y
-
-        rows <- numeric()
-        for(i in 1:length(x)){
-          row <- df_shift()$Index[df_shift()$DateTime == x[i] & df_shift()[y_var()] == y[i]]
-          rows <- c(rows, row)
-        }
-
-        rows
-
-      })
-
-      #update shift val
-        observeEvent(hover_reactive(),{
-          updateNumericInput(
-            session,
-            "shift_val",
-            value = guess_shift(df_shift(), y_var(), rows())
-          )
-        })
-
-      #update shift_val to 0
-        observeEvent(y_var(),{
-          updateNumericInput(
-            session,
-            "shift_val",
-            value = 0
-          )
-
-          plot_lyout <- reactiveValues(xaxis = list(), yaxis = list())
-        })
-
-      #take selected points and move
-        df_plot <- reactive({
-          req(df_shift(), y_var())
-
-          if (is.null(rows())) {
-            df_shift()  # return unchanged data if no rows selected
-          } else {
-            shift_points(df_shift(), y_var(), rows(), input$shift_val)
-          }
-        })
-
-      #preserve zoom
-        plot_lyout <- preserve_zoom(df_plot, y_var, "shift_plot")
-
-      #make plot
-        output$shift_plot <- renderPlotly({
-          req(df_plot(), y_var())
-          if(is.null(hover_reactive())){
-            p <- ggplot(df_plot(), aes(x=.data$DateTime, y=.data[[y_var()]])) + geom_point()
-          }else{
-            base <- df_plot()[!(df_plot()$Index %in% rows()),]
-            adj <- df_plot()[df_plot()$Index %in% rows(),]
-            p <- ggplot() + geom_point(data=base, aes(x=.data$DateTime, y=.data[[y_var()]])) +
-             geom_point(data=adj, aes(x=.data$DateTime, y=.data[[y_var()]]), color="red")
-          }
-          p <- p  %>% ggplotly(source = "shift_plot") %>% event_register("plotly_selected") %>% event_register("plotly_relayout")
-
-          #adjust axis if needed
-          if (length(plot_lyout$xaxis) > 0 || length(plot_lyout$yaxis) > 0) {
-            p <- layout(p,
-                        xaxis = plot_lyout$xaxis,
-                        yaxis = plot_lyout$yaxis
-            )}
-          p
-
-        })
-
-       #output$text <- renderPrint({plot_lyout$yaxis$range})  ## get [remove later on]
-  #confirm changes
-    confirm_changes_server(
-          id = "flag2",
-          df = df_plot,
-          index = rows,
-          par = y_var,
-          flag_name = "abs_shift",
-          prj_path = prj_path
-        )
 }
 
 #create app

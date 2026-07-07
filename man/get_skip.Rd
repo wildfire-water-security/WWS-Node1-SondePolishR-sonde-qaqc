@@ -18,7 +18,7 @@ a numeric indicating the number of rows to skip
 Guess the number of rows to skip to get correct headers
 }
 \examples{
-file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "sonde-example.csv")
+file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "example-csv-data1.csv")
 get_skip(file)
 
 file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "sonde-usb-example.csv")

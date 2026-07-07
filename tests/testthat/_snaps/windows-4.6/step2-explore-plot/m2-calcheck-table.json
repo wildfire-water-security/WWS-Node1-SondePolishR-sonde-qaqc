@@ -1,0 +1,41 @@
+{
+  "export": {
+    "data2-table": {
+      "Date": [
+        "2024-08-20",
+        "2024-10-23",
+        "2024-12-18"
+      ],
+      "Parameter": [
+        "Temp_C",
+        "Temp_C",
+        "Temp_C"
+      ],
+      "Resident_Value": [
+        18.988,
+        11.33,
+        null
+      ],
+      "Check_Value": [
+        19.16,
+        11.335,
+        null
+      ],
+      "Notes": [
+        null,
+        null,
+        null
+      ],
+      "Probe_Switch": [
+        false,
+        true,
+        null
+      ],
+      "Est_Time": [
+        "2024-08-20T19:00:00Z",
+        "2024-10-23T22:15:00Z",
+        null
+      ]
+    }
+  }
+}

@@ -10,13 +10,17 @@ Authors@R: c(
       role = c("aut", "cre")
     )
   )
-Description: More about what it does (maybe more than one line).
-    Continuation lines should be indented.
+Description: Provides an interactive workflow for quality assurance and quality 
+    control (QA/QC) of water quality sonde data. The package enables users to 
+    import raw sonde datasets, review and correct observations, apply quality flags, 
+    visualize time-series data alongside associated metadata, summarize observations, 
+    and export cleaned datasets and metadata while maintaining a reproducible record 
+    of all edits.
 License: AGPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 LazyDataCompression: xz
-RoxygenNote: 7.3.3
+RoxygenNote: 8.0.0
 Imports: 
     dplyr,
     fs,
@@ -26,30 +30,33 @@ Imports:
     tools,
     utils,
     rlang,
-    stringi,
     anytime,
     DT,
     shiny,
-    sf,
-    terra,
-    dataRetrieval (>= 2.7.21),
-    purrr,
     stats,
     tidyr,
     plotly,
     ggplot2,
     lubridate,
-    qs,
     shinyFiles,
     shinyalert,
-    withr,
     bslib,
-    digest,
     htmltools,
     utf8,
-    stringr
+    stringr,
+    shinyjs,
+    vctrs,
+    timeplyr,
+    pracma,
+    zoo,
+    forecast,
+    missForest,
+    nasapower,
+    grDevices
 Suggests: 
-    testthat (>= 3.0.0)
-Config/testthat/edition: 3
+    shinytest2,
+    testthat (>= 3.0.0),
+    withr
 Depends: 
     R (>= 3.5)
+Config/testthat/edition: 3

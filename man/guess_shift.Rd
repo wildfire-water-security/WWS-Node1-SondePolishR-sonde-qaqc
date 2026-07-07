@@ -4,10 +4,10 @@
 \alias{guess_shift}
 \title{Guess the amount to shift observations}
 \usage{
-guess_shift(df, par, index)
+guess_shift(data, par, index)
 }
 \arguments{
-\item{df}{a data.frame with sonde data}
+\item{data}{a data.frame with sonde data}
 
 \item{par}{the parameter being corrected}
 
@@ -21,5 +21,5 @@ Sometimes a continuous sonde signal will be shifted up or down by a consistent v
 data before and after the selected observations to guess the appropriate value to correct the data by
 }
 \examples{
-guess_shift(raw_sonde, "Cond_S_cm", 1591:1630)
+guess_shift(example_sondeproj$data, "ODO_mg_L", 5:7)
 }

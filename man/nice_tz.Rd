@@ -12,3 +12,6 @@ a vector of time zones with names that are human readable
 \description{
 Uses \link[base]{OlsonNames} to extract potential timezones for the .csv file.
 }
+\examples{
+head(nice_tz())
+}

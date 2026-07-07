@@ -4,16 +4,16 @@
 \alias{shift_points}
 \title{Correct points via an absolute shift}
 \usage{
-shift_points(df, par, index, shift_val = NULL)
+shift_points(data, par, index, shift_val = NULL)
 }
 \arguments{
-\item{df}{a data.frame with sonde data}
+\item{data}{a data.frame with sonde data}
 
 \item{par}{the parameter being corrected}
 
 \item{index}{the index values of the rows that need to be shifted}
 
-\item{shift_val}{the value to shift the selected data by, if \code{NULL}, it will be guessed using \link[SondePolishR]{guess_shift}}
+\item{shift_val}{a list of the slope and int (intercept) to use to shift the data by, if \code{NULL}, it will be guessed using \link[SondePolishR]{guess_shift}}
 }
 \value{
 a data.frame with the values adjusted
@@ -23,7 +23,7 @@ Sometimes a continuous sonde signal will be shifted up or down by a consistent v
 dataset for those values by that set amount.
 }
 \examples{
-raw_sonde$Cond_S_cm[1591:1600]
-df <- shift_points(raw_sonde, "Cond_S_cm", 1591:1630)
-df$Cond_S_cm[1591:1600]
+example_sondeproj$data$ODO_mg_L[5:7]
+data <- shift_points(example_sondeproj$data, "ODO_mg_L", 5:7)
+data$ODO_mg_L[5:7]
 }

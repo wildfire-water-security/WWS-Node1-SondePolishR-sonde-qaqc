@@ -10,12 +10,12 @@
 #' @export
 #'
 #' @examples
-#' file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "sonde-example.csv")
+#' file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "example-csv-data1.csv")
 #' get_encoding(file)
 get_encoding <- function(file){
-  #check if df looks right
-  file_check <- function(df){
-    if(ncol(df) > 2){
+  #check if data looks right
+  file_check <- function(data){
+    if(ncol(data) > 2){
       return(TRUE)
     }else{return(FALSE)}
   }
@@ -25,20 +25,20 @@ get_encoding <- function(file){
 
   #if encoding guess is good, use that
   if(nrow(enc_guess) > 0){
-    df <- read.csv(file, fileEncoding = enc_guess$encoding[1], header = FALSE, skip=9)
+    data <- read.csv(file, fileEncoding = enc_guess$encoding[1], header = FALSE, skip=9)
 
-    if(file_check(df)){
+    if(file_check(data)){
       return(enc_guess$encoding[1])
     }
   }
 
   #otherwise check Windows-1252
-  df <- read.csv(file, fileEncoding = "Windows-1252")
-  if(file_check(df)){return("Windows-1252")}
+  data <- read.csv(file, fileEncoding = "Windows-1252")
+  if(file_check(data)){return("Windows-1252")}
 
   #then check UTF-16LE
-  df <- read.csv(file, fileEncoding = "UTF-16LE")
-  if(file_check(df)){return("UTF-16LE")}
+  data <- read.csv(file, fileEncoding = "UTF-16LE")
+  if(file_check(data)){return("UTF-16LE")}
 
   #otherwise print message
   stop("Could not identify file encoding, please put in Notepad++ and look in bottom right corner to identify encoding")
@@ -55,7 +55,7 @@ get_encoding <- function(file){
 #' @export
 #'
 #' @examples
-#' file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "sonde-example.csv")
+#' file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "example-csv-data1.csv")
 #' get_skip(file)
 #'
 #' file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "sonde-usb-example.csv")
@@ -63,15 +63,15 @@ get_encoding <- function(file){
 get_skip <- function(file, encoding=NULL){
   if(usb_export(file)){
     if(is.null(encoding)){encoding <- get_encoding(file)}
-    df <- suppressWarnings(readr::read_csv(file,
+    data <- suppressWarnings(readr::read_csv(file,
                                            locale = readr::locale(encoding = "UTF-16LE"),
                           col_names=FALSE,show_col_types = FALSE))
-    skip <- grep("^Date", df[[1]]) + 5
+    skip <- grep("^Date", data[[1]]) + 5
 
   }else{
     if(is.null(encoding)){encoding <- get_encoding(file)}
-    df <- read.csv(file, fileEncoding = encoding, header=FALSE)
-    skip <- grep("^Date", df[,1]) -1
+    data <- read.csv(file, fileEncoding = encoding, header=FALSE)
+    skip <- grep("^Date", data[,1]) -1
     if(encoding == "UTF-16LE"){skip <- skip + 3}
   }
 
@@ -90,16 +90,16 @@ get_skip <- function(file, encoding=NULL){
 #' @export
 #'
 #' @examples
-#' file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "sonde-example.csv")
+#' file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "example-csv-data1.csv")
 #' usb_export(file)
 #'
 #' file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "sonde-usb-example.csv")
 #' usb_export(file)
 usb_export <- function(file){
   encoding <- get_encoding(file)
-  df <- readLines(file, encoding = encoding, skipNul = TRUE)
+  data <- readLines(file, encoding = encoding, skipNul = TRUE)
 
-  if(any(grepl("Model, Submodel", df[2:6], fixed=TRUE))){
+  if(any(grepl("Model, Submodel", data[2:6], fixed=TRUE))){
     return(TRUE)
   }else{
     return(FALSE)
@@ -111,14 +111,24 @@ usb_export <- function(file){
 #' Make nice timezones for selecting
 #'
 #' Uses \link[base]{OlsonNames} to extract potential timezones for the .csv file.
+#'
 #' @export
+#'
 #' @returns
 #' a vector of time zones with names that are human readable
+#'
+#' @examples
+#' head(nice_tz())
 
 nice_tz <- function(){
   #getting timezones and making nice
   tz <- OlsonNames()[grepl("America|GMT", OlsonNames())]
   tz_nice <- gsub("GMT", "UTC", gsub("Etc/", "", gsub("[_]", " ", tz)))
+  plus_flip <- grepl("\\+", tz_nice)
+  minus_flip <- grepl("\\-", tz_nice)
+  tz_nice[plus_flip] <- gsub("\\+", "\\-", tz_nice[plus_flip])
+  tz_nice[minus_flip] <- gsub("\\-", "\\+", tz_nice[minus_flip])
+
   names(tz) <- tz_nice
   tz <- tz[!(names(tz) %in% c("UTC-0", "UTC0", "UTC"))]
   tz <- tz[order(tz, decreasing=TRUE)]
@@ -128,13 +138,13 @@ nice_tz <- function(){
 
 #' Reformats column names to be human readable
 #'
-#' @param df the dataframe you want to column names from
+#' @param data the dataframe you want to column names from
 #'
 #' @returns a named vector where the names are the human readable names and the values are the column names
 #'
-nice_yvar <- function(df){
+nice_yvar <- function(data){
   #remove any variables that are totally 0 or NA
-  empty <- sapply(df, function(x){
+  empty <- sapply(data, function(x){
     if(is.list(x)){
       return(FALSE)
     }else{
@@ -143,25 +153,25 @@ nice_yvar <- function(df){
   })
 
   if(sum(empty) > 0){
-    df <- df[-empty]
+    data <- data[-empty]
   }
 
   #remove non numeric
-  y_var <- colnames(df)[sapply(df, is.numeric)]
+  y_var <- colnames(data)[sapply(data, is.numeric)]
 
   #remove variables that aren't needed
-  y_var <- y_var[!(y_var %in% c("Index", "Time_Fract_Sec", "Wiper_Position_volt", "Cable_Pwr_V", "Battery_V"))]
+  y_var <- y_var[!(y_var %in% c("Index", "Time_Fract_Sec", "Wiper_Position_volt", "Cable_Pwr_V", "Battery_V", "DupNum"))]
 
   #give nice names
-  nice_names <- c("Cond_S_cm"= "Conductivity (\u03BCS/cm)",
+  nice_names <- c("Cond_uS_cm"= "Conductivity (\u03BCS/cm)",
                   "fDOM_QSU" = "fDOM (QSU)",
                   "fDOM_RFU" = "fDOM (RFU)",
-                  "nLF_Cond_S_cm" = "nLF Conductivity (\u03BCS/cm)",
-                  "ODO_sat"  = "Dissolved Oxygen (% Saturation)",
-                  "ODO_CB" = "Dissolved Oxygen (% Calibrated Barometer)",
+                  "nLF_Cond_uS_cm" = "nLF Conductivity (\u03BCS/cm)",
+                  "ODO_%_sat"  = "Dissolved Oxygen (% Saturation)",
+                  "ODO_%_CB" = "Dissolved Oxygen (% Calibrated Barometer)",
                   "ODO_mg_L" = "Dissolved Oyxgen (mg/L)",
                   "Sal_psu"= "Salinity (ppm)",
-                  "SpCond_S_cm" = "Specific Conductance (\u03BCS/cm)",
+                  "SpCond_uS_cm" = "Specific Conductance (\u03BCS/cm)",
                   "TDS_mg_L" = "Total Dissolved Solids (mg/L)",
                   "Turbidity_FNU" = "Turbidity (FNU)",
                   "TSS_mg_L" = "Total Suspended Solids (mg/L)",
@@ -176,33 +186,142 @@ nice_yvar <- function(df){
     y_var %in% names(nice_names),
     nice_names[y_var],
     y_var)
-
   return(y_var)
 }
 
-#' Set flagged values to missing
-#'
-#' @param df the `data.frame` to remove flagged values from
-#' @param flag_names the flag names to set to `NA` if the flag is `TRUE`
-#'
-#' @returns a `data.frame` with the flagged values removed
-#' @export
-#'
-remove_flagged <- function(df, flag_names){
-  flags <- grep("_flag$", colnames(df))
+#used to get the next dd number to keep them unique
+diff_version <- function(sondeproj){
+  log <- sondeproj$changelog
 
-  #for one column
-  for(f in flags){
-    flag_val <- df[,f]
+  diff_names <- log$diff_name[grepl("^dd", log$diff_name)]
 
-    #determine values with flag
-    rm <- sapply(flag_val, function(x){
-      flag <- x[names(x) %in% flag_names]
-      return(any(flag))
-    })
-
-    #make values NA
-    df[rm,f-1] <- NA
+  if(length(diff_names) > 0){diff_num <- max(as.numeric(gsub("dd", "", diff_names)))}else{
+    diff_num <- 0
   }
- return(df)
+
+  return(paste0("dd", diff_num+1))
+
+}
+
+#' Convert a vector of dates to continuous periods
+#'
+#' @param x vector datetimes
+#' @param exact logical, is the data exactly the same (used for duplicates)
+#' @param interval the time in minutes between data observations
+#' @param ignore a filter used to filter out small gaps or duplicates, in minutes
+#'
+#' @noRd
+
+summarise_date_ranges <- function(x, exact=NULL, interval=15, ignore=24*60) {
+  if(is.null(exact)){
+    dat <- data.frame(dates = x) %>% arrange(.data$dates)
+  }else{
+    dat <- data.frame(dates = x, exact=exact) %>% arrange(.data$dates)
+  }
+
+  if(nrow(dat) == 0){
+    return(data.frame(start=NA, end=NA))
+  }
+  # Identify breaks between groups
+  breaks <- c(TRUE, diff(dat$dates, units="mins") > interval)
+
+  # Indices of group starts and ends
+  start_idx <- which(breaks)
+  end_idx   <- c(start_idx[-1] - 1L, length(x))
+
+  missing_dat <- data.frame(
+    start = dat$dates[start_idx],
+    end   = dat$dates[end_idx])
+
+  if(!is.null(exact)){
+    missing_dat$n_dif <- sapply(1:nrow(missing_dat), function(x){
+      subdat <- dat %>% filter(.data$dates >= missing_dat$start[x] & .data$dates <= missing_dat$end[x])
+      return(sum(!subdat$exact))
+    })
+  }
+
+
+  missing_dat <- missing_dat %>% mutate(gap_min =as.numeric(.data$end-.data$start, units = "mins")+interval) %>% filter(.data$gap_min > ignore)
+  return(missing_dat)
+}
+
+#' Used to prevent warnings when using toWebGL
+#'
+#' @param p a ggplotly object
+#'
+#' @returns a ggplotly object with "hoveron" attribute removed to prevent warnings
+#' @noRd
+#'
+strip_hoveron <- function(p){
+  for (i in seq_along(p$x$data)) {
+    if (!is.null(p$x$data[[i]]$hoveron)) {
+      p$x$data[[i]]$hoveron <- NULL
+    }
+  }
+
+  p
+}
+
+
+#' Identifies the parameters contained within the data
+#'
+#' @param data Sonde dataset
+#'
+#' @returns a vector of parameter names in the dataset
+#' @noRd
+get_parms <- function(data){
+  pars <- paste(c("Cond", "fDOM", "ODO", "Sal", "TDS", "Turbidity","TSS","pH","Temp", "Depth"), collapse="|")
+  par_names <- grep(pars, names(data), value = TRUE)
+
+  return(par_names)
+}
+
+#' Guess the data interval length of the data
+#'
+#' @param data Sonde dataset
+#'
+#' @returns the interval length as a number
+#' @noRd
+#'
+get_interval <- function(data){
+  get_mode <- function(x) {
+    ux <- unique(x)
+    ux[which.max(tabulate(match(x, ux)))]
+  }
+
+  interval <- get_mode(as.numeric(difftime(data$DateTime, lag(data$DateTime), units="mins")))
+
+  if(is.na(interval)){interval <- 15} #default to 15 minutes if it doesn't know
+  return(interval)
+}
+
+
+#' Get the nice name of a y-var for plotting
+#'
+#' @param y_var Y-variable to get name name of.
+#'
+#' @returns a character.
+#' @noRd
+get_yvar <- function(y_var){
+  nice_names <- c("fDOM_QSU" = "fDOM (QSU)",
+                  "ODO_mg_L" = "Dissolved Oyxgen (mg/L)",
+                  "SpCond_uS_cm" = "Specific Conductance (\u03BCS/cm)",
+                  "Turbidity_FNU" = "Turbidity (FNU)",
+                  "pH"  = "pH",
+                  "Temp_C" = "Temperature (\u00B0C)",
+                  "precip" = "Precipitation (mm hr\U207B\U00B9)")
+
+  y_var_nice <- ifelse(y_var %in% names(nice_names),nice_names[y_var],y_var)
+  return(y_var_nice)
+}
+
+make_filename <- function(site, interval, method=NA){
+  name <- case_when(
+    (is.null(site) || is.na(site)) & (is.null(method) || is.na(method)) ~ paste0("export_", interval),
+    is.null(site) || is.na(site) ~ paste0("export_", interval, "_", method) ,
+    is.null(method) || is.na(method) ~ paste0(site, "_", interval),
+    TRUE ~ paste0(site, "_", interval, "_", method)
+  )
+
+  return(name)
 }

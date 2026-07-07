@@ -4,11 +4,9 @@
 \alias{preserve_zoom}
 \title{Store user zoom info from plotly to maintain zoom while updating data}
 \usage{
-preserve_zoom(df, y_var, plot_id)
+preserve_zoom(y_var, plot_id)
 }
 \arguments{
-\item{df}{the data.frame with the sonde data}
-
 \item{y_var}{the y_var}
 
 \item{plot_id}{the plot_id of the plot to keep zoom steady}
