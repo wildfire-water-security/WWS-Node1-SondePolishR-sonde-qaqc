@@ -96,7 +96,8 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var){
         filter(.data$Parameter == y_var())
     }else if(input$table_opt == "Data Summary"){
       data <- sondeproj()$data %>% dplyr::filter(.data$Date >= dates()[1], .data$Date <= dates()[2])
-      describe_data(data)
+      precip <- sondeproj()$precip %>% dplyr::filter(.data$DateTime >= dates()[1], .data$DateTime <= dates()[2])
+      describe_data(data, precip)
     }
   })
 

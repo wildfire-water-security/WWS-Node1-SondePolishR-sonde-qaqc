@@ -104,7 +104,7 @@ describe_data <- function(data, precip=NULL){
     precip_sum <- precip_sum[1,] <- NA
   }
 
-  sum_df <- sum_df %>% bind_rows(sum_parm(precip$Precip_mm_hr))
+  sum_df <- sum_df %>% bind_rows(precip_sum)
 
   sum_df <- cbind(Parameter = summary_names, sum_df, row.names = NULL) %>%
     mutate(across("Mean":"Quantile_3rd", ~round(.x, 3)))

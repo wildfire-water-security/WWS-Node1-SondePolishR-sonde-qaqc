@@ -36,6 +36,7 @@ test_that("{shinytest2} recording: checking-module5", {
 
   #hide flagged values
     app$set_inputs(`data5-rm_flags` = TRUE)
+    app$wait_for_idle()
     plot_obj <- app$get_value(export = "data5-plot_obj")
     expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
     app$expect_screenshot(name = "hiding_flagged_points")

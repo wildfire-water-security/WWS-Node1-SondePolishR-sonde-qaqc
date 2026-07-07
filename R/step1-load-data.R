@@ -19,12 +19,20 @@ load_data_UI <- function(id){
 
       .selectize-input{color: white;}
 
-      .bslib-card, .tab-content, .tab-pane, .card-body {
-      overflow: visible !important;")),
+      .load-data-module .bslib-card,
+      .load-data-module .tab-content,
+      .load-data-module .tab-pane,
+      .load-data-module .card-body {
+        overflow: visible !important;
+      }
+
+      ")),
 
     shinyjs::useShinyjs(),
 
     bslib::page_fluid(
+      div( class = "load-data-module",
+
       bslib::layout_columns(
         col_widths = c(5,5,2),
         bslib::card(
@@ -91,7 +99,7 @@ load_data_UI <- function(id){
           div(class = "d-flex flex-column align-items-center",
             actionButton(ns("load_precip"),"Load Precipitation",width = "45%"))
         )
-        )))}
+        ))))}
 
 # Server Function
 #' Read in the dataset or project and set save path

@@ -124,7 +124,8 @@
   changelog$user <- "smith"
 
   #create sonde object
-  proj_messy <- list(data = data_messy,
+  proj_messy <- list(meta = proj$meta,
+                    data = data_messy,
                     flags = NULL,
                     precip = proj$precip,
                     fieldform = proj$fieldform,
