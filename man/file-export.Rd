@@ -5,26 +5,29 @@
 \alias{save_path_server}
 \title{File save selector UI}
 \usage{
-save_path_UI(
+save_path_UI(id, button_label = "Export")
+
+save_path_server(
   id,
+  data,
+  startname = "sonde_export",
   label = "Choose Location",
   title = "Select save path",
-  filetype = ".csv",
-  button_label = "Export"
+  filetype = ".csv"
 )
-
-save_path_server(id, data)
 }
 \arguments{
 \item{id}{module id}
+
+\item{data}{data to save to specified file on click}
+
+\item{startname}{the default name for the file}
 
 \item{label}{button label}
 
 \item{title}{dialog title}
 
 \item{filetype}{file extension}
-
-\item{data}{data to save to specified file on click}
 }
 \description{
 File save selector UI

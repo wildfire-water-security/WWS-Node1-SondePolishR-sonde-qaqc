@@ -5,23 +5,20 @@
 #' @param title dialog title
 #' @param filetype file extension
 #' @param data data to save to specified file on click
+#' @param startname the default name for the file
 #'
 #' @rdname file-export
 #' @export
 #' @md
 #' @keywords internal
 save_path_UI <- function(id,
-                         label = "Choose Location",
-                         title = "Select save path",
-                         filetype = ".csv",
                          button_label = "Export") {
   ns <- NS(id)
 
   tagList(
       div(
         class = "d-flex align-items-start gap-2",
-        shinyFiles::shinySaveButton(ns("save"),label = label,
-                                    title = title,filetype = filetype),
+        uiOutput(ns("save")),
         div(style = "flex-grow:1; min-width:0;",
             uiOutput(ns("path_text")))),
         div(
@@ -32,8 +29,14 @@ save_path_UI <- function(id,
 }
 
 #' @rdname file-export
-save_path_server <- function(id, data) {
+save_path_server <- function(id, data,
+                             startname = "sonde_export",
+                             label = "Choose Location",
+                             title = "Select save path",
+                             filetype = ".csv") {
   moduleServer(id, function(input, output, session) {
+
+    ns = session$ns #needed to make updating UI work
 
   parsed_path <- reactiveVal() #initialize so box always shows
 
@@ -53,6 +56,11 @@ save_path_server <- function(id, data) {
       parsed_path(shinyFiles::parseSavePath(roots,input$save))
     })
 
+    output$save <- renderUI({
+      shinyFiles::shinySaveButton(ns("save"),label = label,
+                                  title = title,filetype = filetype,
+                                  filename = startname())
+    })
     output$path_text <- renderUI({
       fileinfo <- parsed_path()
 

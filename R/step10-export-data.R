@@ -27,7 +27,7 @@ export_UI <- function(id){
                                 ),
                                 plotlyOutput(ns("export_plot"))),
           tags$br(),
-          save_path_UI(ns("save_data"),filetype = ".csv", button_label = "Export Data")
+          save_path_UI(ns("save_data"), button_label = "Export Data")
         ),
 
       #side part with metadata and exporting
@@ -45,14 +45,14 @@ export_UI <- function(id){
                 "Change Log" = "changelog",
                 "Precipitation" = "precip")),
 
-            save_path_UI(ns("save_meta"),filetype = ".csv", button_label = "Export Metadata"))
+            save_path_UI(ns("save_meta"),button_label = "Export Metadata"))
 
           ),
           bslib::card(
             bslib::card_header("Save Sonde Project"),
             bslib::card_body(
               class = "d-flex flex-column justify-content-center",
-              save_path_UI(ns("save_proj"),filetype = ".RDS", button_label = "Export Project"))
+              save_path_UI(ns("save_proj"), button_label = "Export Project"))
           )
         )
       )
@@ -84,6 +84,29 @@ export_server <- function(id, sondeproj, data_ver, y_var){
     observeEvent(sondeproj(), {
       updateDateRangeInput(session, "dates", start = min(sondeproj()$data$Date, na.rm = TRUE),
                            end = max(sondeproj()$data$Date, na.rm = TRUE))})
+
+  #starting filenames for export file
+    datastartname <- reactive({
+      if(input$frequency == "interval"){
+        make_filename(sondeproj()$meta$site, paste0(get_interval(sondeproj()$data), "min"))
+      }else{
+        make_filename(sondeproj()$meta$site, input$frequency, input$summary_method)
+      }
+    })
+    projstartname <- reactive({
+      if(is.na(sondeproj()$meta$site)){
+        "sondeproj"
+      }else{
+        paste0(sondeproj()$meta$site, "_sondeproj")
+      }
+    })
+    metastartname <- reactive({
+      if(is.na(sondeproj()$meta$site)){
+        paste0("sonde_", input$meta_opts)
+      }else{
+        paste0(sondeproj()$meta$site,"_", input$meta_opts)
+      }
+    })
 
   ## EXPORTING DATA TO CSV -----
     #create plot
@@ -151,7 +174,7 @@ export_server <- function(id, sondeproj, data_ver, y_var){
       })
 
     #data save path and saving data
-      data_path <- save_path_server("save_data", sum_data)
+      data_path <- save_path_server("save_data", sum_data, startname=datastartname)
 
 
  ## EXPORTING METADATA ------
@@ -165,10 +188,10 @@ export_server <- function(id, sondeproj, data_ver, y_var){
              "precip" = sondeproj()$precip)
     })
 
-    meta_path <- save_path_server("save_meta", metadata)
+    meta_path <- save_path_server("save_meta", metadata, startname = metastartname, filetype = ".csv")
 
 ## EXPORTING PROJECT -----
-    proj_path <- save_path_server("save_proj", sondeproj)
+    proj_path <- save_path_server("save_proj", sondeproj, startname=projstartname, filetype = ".RDS")
 
  ## STUFF FOR TESTING ------
 

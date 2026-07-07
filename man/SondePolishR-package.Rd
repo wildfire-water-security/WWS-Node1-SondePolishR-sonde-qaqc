@@ -6,7 +6,7 @@
 \alias{SondePolishR-package}
 \title{SondePolishR: Perform Quality Assurance and Data Corrections on Sonde Data}
 \description{
-More about what it does (maybe more than one line). Continuation lines should be indented.
+Provides an interactive workflow for quality assurance and quality control (QA/QC) of water quality sonde data. The package enables users to import raw sonde datasets, review and correct observations, apply quality flags, visualize time-series data alongside associated metadata, summarize observations, and export cleaned datasets and metadata while maintaining a reproducible record of all edits.
 }
 \author{
 \strong{Maintainer}: Katie Wampler \email{katie.wampler@oregonstate.edu} (\href{https://orcid.org/0000-0002-5584-7554}{ORCID})

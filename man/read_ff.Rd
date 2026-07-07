@@ -42,5 +42,5 @@ extra notes.
 }
 \examples{
 file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "example-fieldform.csv")
-fieldform <- read_ff(file)
+fieldform <- read_ff(file, tz="Etc/GMT+8")
 }

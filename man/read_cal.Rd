@@ -30,5 +30,5 @@ Ensures correct column classes and converts NA to R recognized NA values.
 }
 \examples{
 file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "example-calcheck.csv")
-calcheck <- read_cal(file)
+calcheck <- read_cal(file, tz="Etc/GMT+8")
 }

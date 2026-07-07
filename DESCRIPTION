@@ -10,8 +10,12 @@ Authors@R: c(
       role = c("aut", "cre")
     )
   )
-Description: More about what it does (maybe more than one line).
-    Continuation lines should be indented.
+Description: Provides an interactive workflow for quality assurance and quality 
+    control (QA/QC) of water quality sonde data. The package enables users to 
+    import raw sonde datasets, review and correct observations, apply quality flags, 
+    visualize time-series data alongside associated metadata, summarize observations, 
+    and export cleaned datasets and metadata while maintaining a reproducible record 
+    of all edits.
 License: AGPL (>= 3)
 Encoding: UTF-8
 LazyData: true
@@ -36,7 +40,6 @@ Imports:
     lubridate,
     shinyFiles,
     shinyalert,
-    withr,
     bslib,
     htmltools,
     utf8,

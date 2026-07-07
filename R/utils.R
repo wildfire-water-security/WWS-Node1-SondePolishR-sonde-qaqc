@@ -314,3 +314,14 @@ get_yvar <- function(y_var){
   y_var_nice <- ifelse(y_var %in% names(nice_names),nice_names[y_var],y_var)
   return(y_var_nice)
 }
+
+make_filename <- function(site, interval, method=NA){
+  name <- case_when(
+    (is.null(site) || is.na(site)) & (is.null(method) || is.na(method)) ~ paste0("export_", interval),
+    is.null(site) || is.na(site) ~ paste0("export_", interval, "_", method) ,
+    is.null(method) || is.na(method) ~ paste0(site, "_", interval),
+    TRUE ~ paste0(site, "_", interval, "_", method)
+  )
+
+  return(name)
+}

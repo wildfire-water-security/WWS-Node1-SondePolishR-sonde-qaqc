@@ -125,7 +125,6 @@
 #' @importFrom utils read.csv
 #' @importFrom utils write.csv
 #' @importFrom vctrs vec_compare
-#' @importFrom withr local_tempdir
 #' @importFrom zoo na.approx
 #' @importFrom zoo na.locf
 #' @importFrom zoo rollmedian

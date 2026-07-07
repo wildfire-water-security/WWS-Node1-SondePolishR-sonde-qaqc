@@ -32,7 +32,7 @@
 #' @md
 #' @examples
 #' file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "example-fieldform.csv")
-#' fieldform <- read_ff(file)
+#' fieldform <- read_ff(file, tz="Etc/GMT+8")
 
 read_ff <- function(file, tz){
   stopifnot(tools::file_ext(file) == "csv")
@@ -96,7 +96,7 @@ read_ff <- function(file, tz){
 #' @md
 #' @examples
 #' file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "example-calcheck.csv")
-#' calcheck <- read_cal(file)
+#' calcheck <- read_cal(file, tz="Etc/GMT+8")
 
 read_cal <- function(file, tz){
   stopifnot(tools::file_ext(file) == "csv")
