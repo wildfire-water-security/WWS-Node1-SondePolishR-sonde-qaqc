@@ -52,8 +52,6 @@ library(SondePolishR)
 run_app()
 ```
 
-------------------------------------------------------------------------
-
 ## App Overview
 
 The app works by creating and modifying a sonde project (`sondeproj`)
@@ -111,7 +109,7 @@ Most modules include an interactive plot created via
 points. These plots have a number of options that can be used to explore
 the dataset and make decisions about corrections.
 
-<!--figure showing plotting and options here-->
+![](images/plotting-opts.png)
 
 - **Plotted parameter:** Select the primary data being shown and control
   which parameter is being corrected.
@@ -147,11 +145,11 @@ In addition to the options provided by `SondePolishR`, `plotly` plots
 also natively have some built in tools like plot export and drag to zoom
 features located in the top right corner of the plot.
 
-<!--figure showing tools in box here -->
+![](images/plotly-opts.png)
 
 ### Correcting and Flagging Data
 
-<!--figure showing flagging section here -->
+![](images/flagging.png)
 
 One of the other main workflows included throughout the app is modifying
 and flagging data.
@@ -198,7 +196,7 @@ changes and go from the cleaned data to the raw data.
 
 ### Data Export
 
-<!--figure showing mod 10 here -->
+![](images/export-data.png)
 
 The sonde project itself is stored as an `.RDS` object which is easily
 useable by R. However it is not the most user friendly.
@@ -217,6 +215,7 @@ within the project including:
 
 - Duplicate and gap tables with added user notes
 
-- Hourly precipitation data (download from NASA power)
+- Hourly precipitation data (download from [NASA
+  power](https://power.larc.nasa.gov/) via the `nasapower` package)
 
 - Change log
