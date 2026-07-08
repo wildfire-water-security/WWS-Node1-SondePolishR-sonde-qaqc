@@ -3,6 +3,7 @@ library(hexSticker)
 library(ggplot2)
 library(colordistance)
 library(SondePolishR)
+library(dplyr)
 
 #functions from hexSticker, but need to pull out due to bug that hasn't been fixed yet -------
 theme_sticker <- function(size=1.2, ...) {
@@ -64,13 +65,15 @@ sticker <- function (subplot, s_x = 0.8, s_y = 0.75, s_width = 0.4, s_height = 0
                              sum_method="median") %>%
    mutate(color = "normal")
 
-plot_dat$color[23] <- "flag"
+plot_dat$fDOM_QSU[11] <- max(plot_dat$fDOM_QSU) * 1.3
+plot_dat$color[11] <- "flag"
 
 p <- ggplot(plot_dat, aes(x=DateTime_rd, y=fDOM_QSU)) +
     geom_line(color= "#ebebeb", linewidth=1) +
     geom_point(aes(color=color), size=1.5) +
     scale_color_manual(values=c("darkred","#ebebeb")) +
     theme_void() + theme(legend.position = "none") +
+    geom_hline(color="darkred", linetype="dashed", aes(yintercept = max(fDOM_QSU) * 0.9)) +
     theme(plot.background = element_rect(fill="#3c4d5a")) + theme_transparent()
 
 #make with white border

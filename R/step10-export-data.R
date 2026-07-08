@@ -7,7 +7,7 @@ export_UI <- function(id){
     shinyjs::useShinyjs(),
     bslib::page_fluid(
       bslib::layout_columns(
-        col_widths = c(7, 5),
+        col_widths = c(8, 4),
        #exporting data
         bslib::card(
           height = "700px",
@@ -94,14 +94,14 @@ export_server <- function(id, sondeproj, data_ver, y_var){
       }
     })
     projstartname <- reactive({
-      if(is.na(sondeproj()$meta$site)){
+      if(is.null(sondeproj()) || is.na(sondeproj()$meta$site)){
         "sondeproj"
       }else{
         paste0(sondeproj()$meta$site, "_sondeproj")
       }
     })
     metastartname <- reactive({
-      if(is.na(sondeproj()$meta$site)){
+      if(is.null(sondeproj()) || is.na(sondeproj()$meta$site)){
         paste0("sonde_", input$meta_opts)
       }else{
         paste0(sondeproj()$meta$site,"_", input$meta_opts)
