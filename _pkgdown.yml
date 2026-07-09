@@ -1,5 +1,4 @@
 url: ~
-
 template:
   bootstrap: 5
   bootswatch: superhero
@@ -7,7 +6,11 @@ template:
     primary: "#E3795E"
     bg: "#475763"
     fg: "#ebebeb"
-
+    border-radius: 0
+    btn-border-radius: 3px
+    grid-gutter-width: 3rem
+    pkgdown-nav-height: 78px
 navbar:
   bg: primary
   type: dark
+
