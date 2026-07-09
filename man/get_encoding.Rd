@@ -20,3 +20,4 @@ first to see if it can figure it out, if not, it will test the two likely encodi
 file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "example-csv-data1.csv")
 get_encoding(file)
 }
+\keyword{internal}

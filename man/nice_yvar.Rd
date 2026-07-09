@@ -15,3 +15,6 @@ a named vector where the names are the human readable names and the values are t
 \description{
 Reformats column names to be human readable
 }
+\examples{
+nice_yvar(example_data)
+}

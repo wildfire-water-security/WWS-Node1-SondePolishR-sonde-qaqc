@@ -14,7 +14,21 @@
 #' - changetype: character specifying where to add flag, either "flag_rm", "flag_chg", or "flag_add"
 #'
 #' @returns A `sondeproj` object with edits made.
-#' @noRd
+#' @export
+#'
+#' @examples
+#' data <- example_data
+#' data$fDOM_QSU[1:4] <- NA
+#' rows <- rep(FALSE, nrow(data))
+#' rows[1:4] <- TRUE
+#' edit <- list(data = example_data,
+#'              rows = rows,
+#'              y_var = "fDOM_QSU",
+#'              step = "outlier removal",
+#'              note = "example edit",
+#'              flag = "RM07",
+#'              changetype = "flag_rm")
+#' updated_proj <- apply_edit(example_sondeproj, edit)
 #'
 apply_edit <- function(proj, edit){
   stopifnot(is.list(edit))

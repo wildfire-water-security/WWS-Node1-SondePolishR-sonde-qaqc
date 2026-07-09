@@ -8,7 +8,8 @@
 #' @returns
 #' A character with the file encoding
 #' @export
-#'
+#' @keywords internal
+
 #' @examples
 #' file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "example-csv-data1.csv")
 #' get_encoding(file)
@@ -53,6 +54,7 @@ get_encoding <- function(file){
 #' @returns
 #' a numeric indicating the number of rows to skip
 #' @export
+#' @keywords internal
 #'
 #' @examples
 #' file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "example-csv-data1.csv")
@@ -87,8 +89,8 @@ get_skip <- function(file, encoding=NULL){
 #'
 #' @returns
 #' Logical, if TRUE file has USB download structure, if FALSE file does not.
-#' @export
-#'
+#' @keywords internal
+#' @noRd
 #' @examples
 #' file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "example-csv-data1.csv")
 #' usb_export(file)
@@ -112,8 +114,9 @@ usb_export <- function(file){
 #'
 #' Uses \link[base]{OlsonNames} to extract potential timezones for the .csv file.
 #'
-#' @export
-#'
+#' @noRd
+#' @keywords internal
+
 #' @returns
 #' a vector of time zones with names that are human readable
 #'
@@ -141,7 +144,9 @@ nice_tz <- function(){
 #' @param data the dataframe you want to column names from
 #'
 #' @returns a named vector where the names are the human readable names and the values are the column names
-#'
+#' @export
+#' @examples
+#' nice_yvar(example_data)
 nice_yvar <- function(data){
   #remove any variables that are totally 0 or NA
   empty <- sapply(data, function(x){
@@ -243,23 +248,6 @@ summarise_date_ranges <- function(x, exact=NULL, interval=15, ignore=24*60) {
 
   missing_dat <- missing_dat %>% mutate(gap_min =as.numeric(.data$end-.data$start, units = "mins")+interval) %>% filter(.data$gap_min > ignore)
   return(missing_dat)
-}
-
-#' Used to prevent warnings when using toWebGL
-#'
-#' @param p a ggplotly object
-#'
-#' @returns a ggplotly object with "hoveron" attribute removed to prevent warnings
-#' @noRd
-#'
-strip_hoveron <- function(p){
-  for (i in seq_along(p$x$data)) {
-    if (!is.null(p$x$data[[i]]$hoveron)) {
-      p$x$data[[i]]$hoveron <- NULL
-    }
-  }
-
-  p
 }
 
 

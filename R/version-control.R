@@ -229,10 +229,13 @@ apply_diff <- function(data, diff, id = "DateTime", invert = FALSE, skip_merge=T
 #' Get raw data from sonde project
 #'
 #' Includes any raw data merges and returns the raw data without any changes. Useful for viewing data before changes were made.
+#' Will include all raw data, even if additional datasets were merged partway through cleaning.
 #'
 #' @param proj A `sondeproj` object.
-#'
-#' @noRd
+#' @returns a `data.frame` with raw data.
+#' @export
+#' @examples
+#' raw <- get_raw_data(example_sondeproj)
 get_raw_data <- function(proj){
   curr_data <- proj$data
   diff <- proj$diffs

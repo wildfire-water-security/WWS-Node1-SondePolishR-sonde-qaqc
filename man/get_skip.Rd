@@ -24,3 +24,4 @@ get_skip(file)
 file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "sonde-usb-example.csv")
 get_skip(file)
 }
+\keyword{internal}

@@ -17,6 +17,8 @@ Description: Provides an interactive workflow for quality assurance and quality
     and export cleaned datasets and metadata while maintaining a reproducible record 
     of all edits.
 License: AGPL (>= 3)
+URL: https:/wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/, https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/
+BugReports: https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues
 Encoding: UTF-8
 LazyData: true
 LazyDataCompression: xz

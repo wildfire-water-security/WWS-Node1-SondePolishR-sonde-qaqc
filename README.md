@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# SondePolishR <img src="man/figures/logo.png" align="right" />
+# SondePolishR <img src="man/figures/logo.png" width="149">
 
 Provides an interactive workflow for quality assurance and quality
 control (QA/QC) of water quality sonde data. The package and associated

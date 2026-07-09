@@ -12,7 +12,6 @@ HH
 Hampel
 LaRC
 MERRA
-Natively
 Nephelometric
 ODM
 ODO
@@ -33,6 +32,7 @@ al
 analyte
 calcheck
 changelog
+changetype
 coords
 csv
 datetimme
@@ -74,7 +74,5 @@ turbidities
 tz
 uS
 useable
-xaxis
 xlsx
-yaxis
 µS

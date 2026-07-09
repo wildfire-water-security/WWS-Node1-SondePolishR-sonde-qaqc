@@ -72,12 +72,16 @@ combine_flags <- function(sondeproj){
 
 #' Gets summary statistics for Sonde data
 #'
-#' @param data Sonde dataset
+#' Used to quickly generate summary statistics about each parameter for a given dataset.
+#'
+#' @param data a `data.frame` with sonde dataset.
 #' @param precip Optional precipitation dataset.
-#'
+#' @md
 #' @returns a `data.frame`
-#' @noRd
+#' @export
 #'
+#' @examples
+#' describe_data(example_data)
 describe_data <- function(data, precip=NULL){
   parms <- get_parms(data)
 
@@ -101,7 +105,7 @@ describe_data <- function(data, precip=NULL){
     precip_sum <- sum_parm(precip$Precip_mm_hr)
   }else{
     precip_sum <- sum_parm(1)
-    precip_sum <- precip_sum[1,] <- NA
+    precip_sum[1,] <- NA
   }
 
   sum_df <- sum_df %>% bind_rows(precip_sum)

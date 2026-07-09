@@ -1,5 +1,5 @@
 
-#' Get and Write to Change Log
+#' Write to Change Log
 #'
 #' The change log is a component of a `sondeproj` object used to keep track of the changes
 #' made to the initial raw sonde data.
@@ -15,20 +15,13 @@
 #' @param return either `df` or `sondeproj` to specify if the changelog only should be returned or the `sondeproj` with
 #' the change log updated.
 #'
-#' @returns a `data.frame` with the log from `sondeproj`
+#' @returns If `return` is `df` returns the changelog as a `data.frame`.
+#' If `return` is `sondeproj` the `sondeproj` is returned with the change log updated.
 #' @export
-#' @rdname change-log
 #' @md
 #'
 #' @examples
 #' write_log(NULL, "Cond_S_cm", "physical limits", 5, "making an example", "diff1")
-
-  get_log <- function(sondeproj) {
-     sondeproj$changelog
-  }
-
-#' @export
-#' @rdname change-log
   write_log <- function(sondeproj, par, step, n, note="", diff_name=NULL, datetime = Sys.time(), user=Sys.info()[["user"]],
                         return="df"){
     stopifnot(is.null(sondeproj) || inherits(sondeproj, "sondeproj"))
@@ -43,7 +36,7 @@
                             user = character(),
                             diff_name = character())
     }else{
-     old_log <- get_log(sondeproj)
+     old_log <- sondeproj$changelog
     }
 
     log_row <- data.frame(datetime=datetime, parameter=par,
