@@ -36,7 +36,7 @@ get_equation <- function(method){
   if(method == "1p_exponential"){
     info <- list(
       equation = "\\(fDOM_{T,t} = \\frac{fDOM_T}{e^{\\alpha t}}\\)",
-      source = "Downing et al. 2011; Akie et al. 2024",
+      source = "Downing et al. 2012; Akie et al. 2024",
       params = list(
         a = list(value = -0.003, step = 0.001)),
       fun = function(fdom_tc, turb, parms){

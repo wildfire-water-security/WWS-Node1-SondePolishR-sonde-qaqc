@@ -22,7 +22,7 @@
 #' - **Data_Download**: Logical, was data downloaded at this visit?
 #' - **Download_Device**: The name of the device data was downloaded to.
 #' - **Remove_Period**: Logical, is there a data disruption that merits removing data during the out of water period. Used to skip periods
-#' where we have coarse out of water periods (missing times), but the data appears uninterupted to prevent removing excess data.
+#' where we have coarse out of water periods (missing times), but the data appears uninterrupted to prevent removing excess data.
 #' - **Crew**: The names or initials of the people performing the field visit.
 #' - **Weather**: A description of the weather during the field visit.
 #' - **Notes**: Notes associated with the field visit.

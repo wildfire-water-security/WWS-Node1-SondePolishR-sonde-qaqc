@@ -31,10 +31,10 @@ Currently the follow interpolation options are supported:
 \item \code{linear}: Uses the zoo::na.approx() function to linearly fill gaps.
 \item \code{spline}: Uses the zoo::na.spline() function to fill gaps via spline interpolation (makes smoother curves).
 \item \code{random_forest}: Depending on how much data is in the project, this option can be a little slow. Uses missForest::missForest() to
-fill gaps. uses responses accross all the available parameters to try and fill in the missing parameter.
+fill gaps. uses responses across all the available parameters to try and fill in the missing parameter.
 \item \code{ts_interp}: Uses forecast::na.interp() which treats the data as a time series and make predictions based on the natural seasonal
 patterns within the data. The seasonality is determined by \code{freq}. For instance, if set to 1, it will account for daily fluctuations.
-If set to 365 it wil look at annual fluctuations.
+If set to 365 it will look at annual fluctuations.
 }
 }
 \examples{

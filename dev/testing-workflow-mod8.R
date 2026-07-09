@@ -17,7 +17,7 @@ fdom_temp <- function(fdom, temp, rho=-0.0115){
    return(fdom_corr)
   }
 
-  #does poorly at higher turbidities
+  #does poorly at higher turbidity values
   fdom_2p_exponential <- function(fdom_tc, turb, b=0.995, c=-0.0062){
     fdom_corr <- b * exp(c*turb)
     return(fdom_corr)

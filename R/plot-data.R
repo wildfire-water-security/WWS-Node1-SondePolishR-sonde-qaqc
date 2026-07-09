@@ -1,6 +1,6 @@
 #' Create plotly object of requested sonde data
 #'
-#' Allows options for interative plotting sonde project data for different variables,
+#' Allows options for iterative plotting sonde project data for different variables,
 #' used within modules to simplify code for plotting.
 #'
 #' @param data A `data.frame` with the sonde data to plot.

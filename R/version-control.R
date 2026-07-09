@@ -6,7 +6,7 @@
 #'
 #' @param olddata a `data.frame` with the original data.
 #' @param newdata a `data.frame` with the revised data.
-#' @param id name of the column name used to match observations between `olddata` and `newdata`. Must be convertable to a number.
+#' @param id name of the column name used to match observations between `olddata` and `newdata`. Must be convertible to a number.
 #' @param ignore a character vector including any column names to not track.
 #'
 #' @returns A `diff` object with a named list item for each column being tracked.

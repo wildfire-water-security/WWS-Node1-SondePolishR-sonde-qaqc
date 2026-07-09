@@ -56,3 +56,7 @@ $RECYCLE.BIN/
 # End of https://www.toptal.com/developers/gitignore/api/microsoftoffice,windows
 # {shinytest2}: Ignore new debug snapshots for `$expect_values()`
 *_.new.png
+inst/doc
+/doc/
+/Meta/
+docs

@@ -38,7 +38,7 @@ only required if opts includes oow, calcheck, quality_flag or `y2_var` is "preci
 a `plotly` object
 }
 \description{
-Allows options for interative plotting sonde project data for different variables,
+Allows options for iterative plotting sonde project data for different variables,
 used within modules to simplify code for plotting.
 }
 \examples{

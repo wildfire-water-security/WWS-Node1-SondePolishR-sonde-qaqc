@@ -4,3 +4,8 @@
 ^README\.Rmd$
 _\.new\.png$
 ^dev$
+^doc$
+^Meta$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$

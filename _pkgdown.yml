@@ -1,0 +1,13 @@
+url: ~
+
+template:
+  bootstrap: 5
+  bootswatch: superhero
+  bslib:
+    primary: "#E3795E"
+    bg: "#475763"
+    fg: "#ebebeb"
+
+navbar:
+  bg: primary
+  type: dark

@@ -109,7 +109,7 @@ Most modules include an interactive plot created via
 points. These plots have a number of options that can be used to explore
 the dataset and make decisions about corrections.
 
-![](images/plotting-opts.png)
+![](man/figures/plotting-opts.png)
 
 - **Plotted parameter:** Select the primary data being shown and control
   which parameter is being corrected.
@@ -145,11 +145,11 @@ In addition to the options provided by `SondePolishR`, `plotly` plots
 also natively have some built in tools like plot export and drag to zoom
 features located in the top right corner of the plot.
 
-![](images/plotly-opts.png)
+![](man/figures/plotly-opts.png)
 
 ### Correcting and Flagging Data
 
-![](images/flagging.png)
+![](man/figures/flagging.png)
 
 One of the other main workflows included throughout the app is modifying
 and flagging data.
@@ -196,7 +196,7 @@ changes and go from the cleaned data to the raw data.
 
 ### Data Export
 
-![](images/export-data.png)
+![](man/figures/export-data.png)
 
 The sonde project itself is stored as an `.RDS` object which is easily
 useable by R. However it is not the most user friendly.

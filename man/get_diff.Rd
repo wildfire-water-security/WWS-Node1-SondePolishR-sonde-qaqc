@@ -11,7 +11,7 @@ get_diff(olddata, newdata, id = "DateTime", ignore = NA)
 
 \item{newdata}{a `data.frame` with the revised data.}
 
-\item{id}{name of the column name used to match observations between `olddata` and `newdata`. Must be convertable to a number.}
+\item{id}{name of the column name used to match observations between `olddata` and `newdata`. Must be convertible to a number.}
 
 \item{ignore}{a character vector including any column names to not track.}
 }

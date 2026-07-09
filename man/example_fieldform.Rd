@@ -22,7 +22,7 @@ when the wiper is checked and the sonde is out of the water.
 \item \strong{Data_Download}: Logical, was data downloaded at this visit?
 \item \strong{Download_Device}: The name of the device data was downloaded to.
 \item \strong{Remove_Period}: Logical, is there a data disruption that merits removing data during the out of water period. Used to skip periods
-where we have coarse out of water periods (missing times), but the data appears uninterupted to prevent removing excess data.
+where we have coarse out of water periods (missing times), but the data appears uninterrupted to prevent removing excess data.
 \item \strong{Crew}: The names or initials of the people performing the field visit.
 \item \strong{Weather}: A description of the weather during the field visit.
 \item \strong{Notes}: Notes associated with the field visit.

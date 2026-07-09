@@ -13,8 +13,9 @@ additive_UI <- function(id){
         HTML("<hr>"),
 
         tags$h5("Shift Type"),
-        radioButtons(ns("edit_type"),"",
-                     choices = c("Additive" = "additive","Drift" = "drift")),
+        div(style = "margin-top: -15px;",
+            radioButtons(ns("edit_type"),"",
+                     choices = c("Additive" = "additive","Drift" = "drift"))),
         uiOutput(ns('edit_options')),
 
         HTML("<hr>"),
