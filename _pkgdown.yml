@@ -1,70 +1,69 @@
 url: https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/
-  template:
+template:
   bootstrap: 5
-bootswatch: superhero
-bslib:
-  primary: "#E3795E"
-bg: "#475763"
-fg: "#ebebeb"
+  bootswatch: superhero
+  bslib:
+    primary: "#E3795E"
+    bg: "#475763"
+    fg: "#ebebeb"
+    code-bg: "#475763"
 navbar:
   bg: primary
-type: dark
-
+  type: dark
 reference:
   - title: Run Shiny App
-  desc: |
-    Function for running the interactive shiny app.
-  contents:
-    - run_app
+    desc: |
+      Function for running the interactive shiny app.
+    contents:
+      - run_app
   - title: Reading and Loading Data
-  desc: |
-    Functions for loading sonde data and metadata.
-  contents:
-    - get_oow
-    - get_precip
-    - get_skip
-    - load_project
-    - read_cal
-    - read_ff
-    - read_sonde
+    desc: |
+      Functions for loading sonde data and metadata.
+    contents:
+      - get_oow
+      - get_precip
+      - get_skip
+      - load_project
+      - read_cal
+      - read_ff
+      - read_sonde
   - title: QA/QC Functions
-  desc: |
-    Functions for tracking data quality and performing corrections.
-  contents:
-    - add_flags
-    - apply_drift_shift
-    - apply_dup_edits
-    - apply_edit
-    - apply_interp
-    - guess_shift
-    - identify_dups
-    - identify_gaps
-    - prep_interp
-    - run_interp
-    - shift_points
+    desc: |
+      Functions for tracking data quality and performing corrections.
+    contents:
+      - add_flags
+      - apply_drift_shift
+      - apply_dup_edits
+      - apply_edit
+      - apply_interp
+      - guess_shift
+      - identify_dups
+      - identify_gaps
+      - prep_interp
+      - run_interp
+      - shift_points
   - title: Version Control Functions
-  desc: |
-    Functions for tracking changes to data.
-  contents:
-    - apply_diff
-    - get_diff
-    - get_raw_data
-    - write_log
+    desc: |
+      Functions for tracking changes to data.
+    contents:
+      - apply_diff
+      - get_diff
+      - get_raw_data
+      - write_log
   - title: Data Export
-  desc: |
-    Functions for plotting and exporting data.
-  contents:
-    - describe_data
-    - nice_yvar
-    - plot_sonde
-    - summarize_data
+    desc: |
+      Functions for plotting and exporting data.
+    contents:
+      - describe_data
+      - nice_yvar
+      - plot_sonde
+      - summarize_data
   - title: Example Data
-  desc: |
-    Example datasets and metadata.
-  contents:
-    - example_calcheck
-    - example_data
-    - example_fieldform
-    - example_precip
-    - example_sondeproj
-
+    desc: |
+      Example datasets and metadata.
+    contents:
+      - example_calcheck
+      - example_data
+      - example_fieldform
+      - example_precip
+      - example_sondeproj
