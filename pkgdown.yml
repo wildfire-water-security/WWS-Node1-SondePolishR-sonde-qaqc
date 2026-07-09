@@ -1,0 +1,9 @@
+pandoc: 3.8.3
+pkgdown: 2.2.1
+pkgdown_sha: ~
+articles:
+  app-manual: app-manual.html
+last_built: 2026-07-09T22:33Z
+urls:
+  reference: https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference
+  article: https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/articles

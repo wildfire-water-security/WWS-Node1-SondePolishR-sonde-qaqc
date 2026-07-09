@@ -1,0 +1,603 @@
+# App User Guide
+
+## App Overview
+
+While the package contains a number of functions that are useful for
+correcting sonde data, the main part of this package is the Shiny app
+which allows the user to interactively load, view, correct, and export
+sonde data. The app works by creating and modifying a sonde project
+(`sondeproj`) object which is a list containing sonde data, flags, and
+metadata. See
+[`help(example_sondeproj)`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/example_sondeproj.md)
+for more details on project structure.
+
+The app consists of ten modules or pages. *While they are put in an
+order that represent a typical correction workflow, the steps do not
+need to be performed in order.*
+
+1.  **Load Data:** Load either an existing sonde project, load raw data
+    and metadata to create a sonde project, or amend an existing sonde
+    project with new data. Can also load or download precipitation data
+    to include with the project.
+
+2.  **Visualize:** Explore the loaded data via an interactive plot, view
+    metadata or data summary statistics. Can also view data versions and
+    remove periods where the sonde was out of the water.
+
+3.  **Data Checks:** View summaries of data gaps and duplicates. Resolve
+    duplicates and add notes about duplicate/missing data.
+
+4.  **Quality Flags:** Flag data points as being questionable. These
+    flags can be visualized in other plots across modules and used to
+    automatically select points in outlier removal.
+
+5.  **Physical Limits:** Removes data points outside a specified range.
+    Limits default to common sensor measurement limits.
+
+6.  **Outlier Removal:** Remove outlier data points. Removal can be done
+    via a combination of automatic outlier detection and manual addition
+    or removal of points.
+
+7.  **Interpolation:** Fill in missing data points using interpolation.
+    User can select between several different interpolation methods and
+    can control how big of a gap is filled via interpolation.
+
+8.  **Shift Corrections:** Perform a shift correction for a selected set
+    of points or apply a linear drift correction to a specific file.
+    Drift corrections are based on calibration checks when provided.
+
+9.  **fDOM Corrections:** Apply temperature and turbidity corrections to
+    fDOM data using one of several methods. Methods default to published
+    coefficient values but can be set to custom values.
+
+10. **Download Data:** Generate and view time summarized data; export
+    data and metadata; and save the sonde project.
+
+### Loading the App
+
+To use the app run:
+
+``` r
+
+library(SondePolishR)
+run_app()
+```
+
+------------------------------------------------------------------------
+
+## Module Directions
+
+### 1 Load Data
+
+This module is used to load data into the app and is separated into five
+sections:
+
+#### 1.1 Sonde Project
+
+This step is used to locate the datasets you want to use.
+
+Use the **Browse** button to select:
+
+- An existing sonde project you have previously saved (`.RDS`).
+
+- One or more raw sonde data files (`.csv`). Note that currently only
+  raw files from YSI EXO sondes are supported. For support of a
+  different raw data format please submit an [issue
+  request](https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues).
+
+You can also load both an existing sonde project as well as new data you
+want to add to the project. In this case, any new data will be appended
+to the dataset.
+
+#### 1.2 Metadata
+
+This step is used to locate the metadata you want to use.
+
+Use the **Browse** button to select:
+
+- A field form file (`.csv`). This file is used to determine when the
+  sonde was out of the water for maintenance or data downloads and view
+  field notes during corrections. For details on the structure of the
+  file see
+  [`help(example_fieldform)`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/example_fieldform.md).
+
+- A calibration check file (`.csv`). This file is used to visualize
+  differences in the calibrations for the resident sonde and a freshly
+  calibrated sonde. For details on the structure of the file see
+  [`help(example_calcheck)`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/example_calcheck.md).
+
+#### 1.3 Specify Site Info
+
+This step is used to provide additional metadata about the sonde site.
+
+- **Enter a name or code for the site.** This will be used in the
+  default file names when exporting the data.
+
+- **Specify the site time zone.** This will be used as the timezone for
+  any DateTimes across the data and metadata.
+
+Note that these are stored within the `sondeproj` so they only need to
+be input once per project.
+
+#### 1.4 Load Data
+
+This step uses the `load_project` function to read in data and format as
+a `sondeproj`. Use once you’re specified the file paths to all
+applicable data and metadata.
+
+To load a new project, use the **clear uploads** button to remove all
+previous file paths.
+
+#### 1.5 Add Precipitation
+
+This step is used to add precipitation data to the project.
+Precipitation data is particularly helpful when correcting turbidity and
+fDOM data to determine if peaks are real or not. To add precipitation
+data there are two options:
+
+1.  Provide a site latitude and longitude and download hourly
+    precipitation data from [NASA power](https://power.larc.nasa.gov/)
+    (uses the `get_precip` function).
+
+2.  Provide your own precipitation data as a `.csv` file. See
+    [`help(example_precip)`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/example_precip.md)
+    for the structure user input precipitation needs to have.
+
+Once you’ve either input the site coordinates or specified the path to a
+precipitation file. Click **load precipitation** to add the data to the
+`sondeproj`.
+
+------------------------------------------------------------------------
+
+### 2 Visualize
+
+This step is used to explore your dataset and offers a number of options
+to explore the data itself and it’s associated metadata.
+
+#### 2.1 Explore Plot
+
+**X-Axis**
+
+You can control the x-axis (time) in the **Set Date Range** section. You
+can either use the **date range** selector to specify a specific date
+range, or you can click through periods of the data by setting the
+**period length** and toggling the **View data by period** button. Once
+you’ve turned on viewing by period, the buttons below the plot can be
+used to move between periods.
+
+**Y-Axis**
+
+In the top left of the page, you can select which variable you want to
+view as the primary variable. Changing this will change the variable
+shown in the plot on the right. You can also choose to show a secondary
+axis. Options for a secondary axis include:
+
+- **Raw Data:** The primary variable before any data corrections were
+  made.
+
+- **Precipitation:** The hourly (or user supplied interval)
+  precipitation. Only available if it was added to the project in **Load
+  Data**.
+
+- **Other sonde variables:** You can also plot any of the other
+  variables within the dataset.
+
+**Plot Options**
+
+In addition to adjusting the axes, there are also options to include
+addition items on the plot or adjust coloring of the points:
+
+- **Plot points:** Displays data points.
+
+- **Plot lines:** Displays data as a line.
+
+- **Color points by file:** Color the data points by their file name.
+
+- **Show out-of-water periods:** Displays the out-out-water periods as
+  shaded rectangles if metadata is provided.
+
+- **Show calibration checks:** Displays calibration check measurements
+  if metadata is provided.
+
+- **Show questionable points:** Colors points marked as questionable in
+  orange.
+
+#### 2.2 Explore Metadata
+
+**Change Log**
+
+This is the default table shown. Which is used to visualize the changes
+made to the data. As changes are made to the data, this table will get
+longer. The table can be filtered by values by clicking the while “All”
+box in each column. For example, you could view only the changes to
+fDOM. This is particularly useful as you can view changes to the data in
+the plot by clicking a row within the change log.
+
+**Field Form**
+
+This table shows the date of field visits with went the sonde was
+removed from the water. It also shows any field notes associated with
+the visit which can be useful when making decisions about corrections.
+
+**Calibration Check**
+
+This table shows the calibration checks performed for the parameter
+being plotted. Used serial numbers when the data was loaded, it
+determines if the probe was switched during the visit and estimates when
+the switch was made which is useful for drift corrections.
+
+**Data Summary**
+
+This table provides a summary of the data. The table is dynamic, and
+will summarize only the data being displayed in the above plot (note
+that it will not adjust when you use plotly’s zoom tool, only the date
+range tools). This tool can be useful to get quick summary statistics
+about a period of interest like a storm event.
+
+#### 2.3 Correct Out of Water Periods
+
+Out of water periods are periods where the sonde is still collecting
+measurements, but is not actively in the water due to maintenance or
+data downloads. These are clear periods where the data is not accurate
+and should be removed. This can be easily done using the **Flag OOW
+Periods** button which uses the `get_oow` function to identify periods
+where the sonde was out of the water and remove those points. Note that
+this function uses a 15-minute buffer on either side of the period to
+account for wiper test, inaccurate time reporting, and equilibration.
+
+------------------------------------------------------------------------
+
+### 3 Data Checks
+
+This step is used to check, document, and resolve gaps and duplicated
+data within the dataset.
+
+#### 3.1 Gaps
+
+Gaps are sections where no measurements were collected. These periods
+are identified using the `identify_gaps` function. Data gaps often occur
+when:
+
+- sonde batteries die during deployment
+
+- a sonde malfunctions
+
+- a sonde is temporarily removed for maintenance
+
+If there are gaps within the dataset they will appear as a table showing
+the start, end, and length of the gap. The table is editable, so you can
+make a note of why there was a gap by double clicking the correct row in
+**User Notes**. This table is stored within the `sondeproj` and can be
+exported in the **Download Data** module.
+
+#### 3.2 Duplicates
+
+Duplicates are periods where there is more than one observation at a
+given date and time. These periods are identified using the
+`identify_dups` function. Duplicates often occur when:
+
+- a sonde is switched out and deployment isn’t immediately stopped
+
+- a sonde malfunctions
+
+- data is downloaded more than one time
+
+Similar to gaps, this table is editable and will be saved within the
+project for export. However, duplicates can be particularly problematic
+particularly when interpolating. Additionally in the case of sonde
+switching, one set of data is known to be incorrect.
+
+These duplicates can be resolved by clicking the row of the duplicate
+you want to view. It will pull up a plot of the duplicated region
+showing the duplicated values with the surrounding data. There are then
+options for resolving the duplicates:
+
+- **Use Mean:** This will average the values and replace the first
+  duplicate with the averaged values.
+
+- **Remove Both:** When the correct dataset can’t be determined, it may
+  be best to remove the duplicated region and remove both sets.
+
+- **Use a specific set or file:** Sometime duplicated values are within
+  the same file, in this case you can select which set to keep. Other
+  times duplicated values are across different files, in this case you
+  can select which file’s values you want to keep. The values not
+  selected are removed.
+
+When resolving duplicates you can add a note which is stored within the
+change log (viewable in [2.2 Explore Metadata](#explore-metadata)) about
+why the duplicate was resolved the way it was. *Once the duplicate is
+resolved the table will refresh with the resolved duplicate removed.*
+
+------------------------------------------------------------------------
+
+### 4 Quality Flags
+
+This step is used to mark regions or points that are questionable. This
+uses the `apply_edit` function to add a quality flag. This flag can be
+visualized as a plotting option and will be exported with the other data
+flags. Additionally, these points can be used as a starting point for
+removing outlier points in [6 Outlier Removal](#outlier-removal).
+
+> Note this is currently the only option but in the future there may be
+> an option to select between several different quality flags. If this
+> feature is of interest please make note of that in the following
+> [feature
+> request](https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/34).
+
+This module is very similar to **Visualize** except it has a new section
+**Apply Quality Flags**. To select points use the plotly Box Select or
+Lasso Select options in the top right of the plot (Box Select is used as
+a default) to select points that are questionable. These points will be
+colored orange.
+
+To remove points once highlighted, switch the **selection method** to
+“Remove”. To view data points in more detail, use the Date Range options
+described in [2.1 Explore Plot](#explore-plot). Once you’re happy with
+the points selected, you can use the **Flag Points** section to apply
+flags to the highlighted points. Use the text box to enter any
+additional notes you might have about the flagging. This step can be
+performed as many times as you would like.
+
+Once points have been marked as questionable, they will no longer be
+highlighted, but can be viewed by toggling the “Show questionable
+points” **plot option**.
+
+------------------------------------------------------------------------
+
+### 5 Physical Limits
+
+This step is used to remove points that are outside a set minimum and
+maximum. As it’s name suggests, this is often used to remove points
+outside physical or measurement limits (i.e., a fDOM value below 0). The
+default values are based on reported measurement limits for YSI EXO
+probes. These can be manually adjusted in the **Set Physical Limits**
+section based on expert knowledge about your system. The limits are
+shown a red dashed lines within the plot and points falling outside the
+limits are colored red.
+
+To save the limits and remove highlighted points outside the specified
+range, use the **Flag Points** section to add an optional note that will
+be saved in the change log and save the changes using the **Flag
+Points** button. The note in the change log by default will include the
+lower and upper limit ranges.
+
+------------------------------------------------------------------------
+
+### 6 Outlier Removal
+
+This step is used to remove “bad” or erroneous data points. It works
+similarly to [4 Quality Flags](#quality-flags) except instead of just
+flagging the points, the points are removed from the dataset. There are
+several methods that can be used to select points for removal:
+
+- **None or manual selection only**: This will start with no points
+  highlighted, use the selection tools with plotly to select and remove
+  points to remove.
+
+- **Questionable points:** Automatically selects any points marked as
+  questionable in [4 Quality Flags](#quality-flags)
+
+- **Hampel filter:** Uses a [hampel
+  filter](https://search.r-project.org/CRAN/refmans/pracma/html/hampel.html)
+  to select outliers which is based on median absolute deviation across
+  points. The selected points can be adjusted using the **k** parameter
+  with controls how many points to include in the median calculation and
+  **t** parameter which controls the threshold for selecting.
+
+- **Relative change:** Uses a relative percent difference across a
+  median of **k** points. The **t** parameter controls the threshold for
+  selecting.
+
+All automatic selection methods can be used in combination with manual
+selection to adjust the selected points.
+
+To remove the highlighted points, use the **Flag Points** section to add
+an optional note that will be saved in the change log and save the
+changes using the **Flag Points** button. The note in the change log by
+default will include the method used to select outliers. This step can
+be performed iteratively using different methods or including different
+user notes.
+
+------------------------------------------------------------------------
+
+### 7 Interpolation
+
+This step is used to fill in missing data points either from data gaps
+or from data removals during corrections. You can set the maximum gap
+size that will be interpolated (max fill window) which prevent
+interpolating gaps that are too big. There are several methods available
+for interpolation which use the function `run_interp`:
+
+- **Linear:** Fills gaps using linear interpolation using the
+  [`na.approx`](https://www.rdocumentation.org/packages/zoo/versions/1.8-15/topics/na.approx)
+  function.
+
+- **Linear (seasonally adjusted):** Fills gaps using
+  [`na.interp`](https://www.rdocumentation.org/packages/forecast/versions/9.0.1/topics/na.interp)
+  function. This fills in gap using linear interpolation after adjusting
+  for a seasonal temporal signal. The seasonal period can be adjusted
+  using **season period** to adjust for different kinds of trends (i.e.,
+  daily fluxes, annual changes)
+
+- **Spline:** Fills gaps using cubic spline interpolation using the
+  [`na.spline`](https://www.rdocumentation.org/packages/zoo/versions/1.8-15/topics/na.approx)
+  function.
+
+- **Random Forest:** Uses the
+  [`missForest`](https://www.rdocumentation.org/packages/missForest/versions/1.5/topics/missForest)
+  function to fill gaps using a random forest model. The model Uses all
+  available parameter values to fit a predictive model. Because of this,
+  this method will likely not work well for regions where all parameters
+  are missing.
+
+To add the highlighted points, use the **Flag Points** section to add an
+optional note that will be saved in the change log and save the changes
+using the **Flag Points** button. The note in the change log by default
+will include the method used to interpolate with the fill window used.
+This step can be performed iteratively using different methods or
+including different user notes.
+
+------------------------------------------------------------------------
+
+### 8 Shift Corrections
+
+This step is used to apply shifts to sections of data. There are two
+types of shifts that can be applied. To switch between the two methods
+change the selection under **Select Type**.
+
+#### 8.1 Additive
+
+This method is meant to correct groups of points that are shifted due to
+instrument issues (i.e., sensor interference). It works similarly to [6
+Outlier Removal](#outlier-removal) where you use the plotly selection
+tools to select a group of points within the plot. Once you select a
+group of points, it will guess the slope and intercept needed apply a
+linear shift correction to fit the start and end points of the data. You
+can manually adjust these values using the **slope** and **intercept**
+inputs. For a absolute shift, you can set slope to 0 and adjust the
+intercept.
+
+#### 8.2 Drift
+
+This method is used to correct for drift in sensors over time. While not
+required, it works best when a calibration check file has been uploaded.
+The method works by file. When you select a file it will either use the
+calibration check data to determine the uncorrected (drifted) value and
+the corrected (freshly calibrated) value or guess based on the gap
+between the file and the next. The difference in values is used to apply
+a linear drift correction to the data and the corrected data is shown as
+a red line on the plot.
+
+For both methods, and similar to the other modules, when you want to
+save a change use the **Flag points** section. To add an optional note
+and save the updated values.
+
+------------------------------------------------------------------------
+
+### 9 fDOM Corrections
+
+This step is used to correct fDOM data. fDOM is measured using an
+optical sensor that is affected by quenching due to temperature
+differences and turbidity interference. To determine the “true” fDOM
+value without these interferences, the data must be corrected. The
+corrected fDOM signal is shown as the red line on top of the data.
+
+#### 9.1 Temperature Corrections
+
+[Watras et
+al. 2011](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/articles/doi.org/10.4319/lom.2011.9.296)
+proposed a temperature correction equation of:
+
+``` math
+ fDOM_{T} = \frac{fDOM}{1 + \rho (T - 25)} 
+```
+
+where $`fDOM_T`$ is the temperature corrected fDOM, $`\rho`$ is the
+correction factor and $`T`$ is the water temperature. The correction
+factor is known to vary somewhat by site. The default is 0.011 suggested
+by [Akie et
+al. 2024](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/articles/doi.org/10.1002/hyp.70023).
+
+#### 9.2 Turbidity Corrections
+
+Turbidity corrections can be quite complex and there have been a number
+of attempts at devising equations to correct for turbidity. The module
+currently supports five different correction options:
+
+- **None:** Skip turbidity corrections, more than temperature, turbidity
+  corrections are thought to be site specific, particularly at high
+  turbidities.
+
+- **Inverse Polynomial:** A equation suggested by [Fleck et
+  al. 2026](https://doi.org/10.3133/ofr20261063) which applies a
+  correction factor based on a quadratic equation with turbidity. This
+  was found to fit similarly to more complex, five parameter models.
+  Default values are the values reported by Fleck et al. 2026.
+
+- **Exponential (1-parameter):** One of the initial correction equations
+  proposed by [Downing et
+  al. 2012](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/articles/doi.org/10.4319/lom.2012.10.767)
+  which uses a single correction factor. The default correction factor
+  comes from [Akie et
+  al. 2024](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/articles/doi.org/10.1002/hyp.70023)
+  as the value for generic Elliot silt loam which was suggested to be
+  appropriate to use for turbidity values *below* 300 FNU.
+
+- **Exponential (2-parameter):** A slightly modified version of the
+  original 1-parameter model proposed by [Fleck et
+  al. 2026](https://doi.org/10.3133/ofr20261063). This model works well
+  for lower turbidity values but can have a poor fit at higher turbidity
+  values (\>100-200 FNU). Default correction values come from [Fleck et
+  al. 2026](https://doi.org/10.3133/ofr20261063).
+
+- **Exponential (5-parameter):** As an approach that would work across
+  the full turbidity range, [Fleck et
+  al. 2026](https://doi.org/10.3133/ofr20261063) proposed a 5-parameter
+  model which fit high turbidity data well, but was complex to fit.
+  Default correction values come from [Fleck et
+  al. 2026](https://doi.org/10.3133/ofr20261063).
+
+Similar to the other modules, when you want to save the fDOM correction
+use the **Flag points** section. To add an optional note and save the
+updated values.
+
+------------------------------------------------------------------------
+
+### 10 Download Data
+
+This step is used to export cleaned data including data summaries and
+metadata and save the `sondeproj`. Similar to [1 Load Data](#load-data),
+this step is separated into several sections.
+
+#### 10.1 Export Data
+
+This section is used to view and export summaries of the data as `.csv`
+files. You have several options to control the data that is exported:
+
+- **Date Range:** Use the date selectors to only export data within the
+  specified range.
+
+- **Export Frequency:** Aggregate the values into larger windows (e.g.,
+  hourly or daily values)
+
+- **Summary Method:** Available if **export frequency** is larger than
+  the data interval. Used to specify the method used to summarize the
+  data.
+
+> While there is an option to select a parameter, this only controls the
+> data being shown in the plot. All of the parameters are exported to
+> the file.
+
+Once you’ve selected your data options, click **Choose Location** to set
+the file name and save location. Click **Export Data** to save the data
+to the file.
+
+#### 10.2 Export Metadata
+
+This section is used to export metadata stored within the project to a
+`.csv` file. There are four different files that can be saved:
+
+- **Duplicate Notes:** Exports the table describing the data duplicates
+  with any user added notes (see [3.2 Duplicates](#duplicates)).
+
+- **Missing Data Notes:** Exports the table describing the data gaps
+  with any user added notes (see [3.1 Gaps](#gaps)).
+
+- **Change Log:** Exports the change log describing all the changes made
+  to the data.
+
+- **Precipitation:** Exports the hourly precipitation data downloaded
+  from NASA power (see [1.5 Add Precipitation](#add-precipitation)).
+
+#### 10.3 Save Sonde Project
+
+This section is used to save the `sondeproj` to a `.RDS` file (an R
+readable file). Similar to the other steps, use the **choose location**
+button to select the file location and name, then click **Export
+Project** to save the project to the file. This file can be reloaded
+into the app via [1.1 Sonde Project](#sonde-project).
+
+> Especially when doing more time intensive corrections it’s highly
+> recommended to save the project frequently to prevent loss of work if
+> the app were to crash or bug out.
