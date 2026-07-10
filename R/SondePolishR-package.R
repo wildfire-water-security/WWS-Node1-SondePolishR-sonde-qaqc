@@ -14,6 +14,7 @@
 #' @importFrom bslib input_switch
 #' @importFrom bslib layout_columns
 #' @importFrom bslib page_fluid
+#' @importFrom bslib update_switch
 #' @importFrom dplyr across
 #' @importFrom dplyr anti_join
 #' @importFrom dplyr any_of

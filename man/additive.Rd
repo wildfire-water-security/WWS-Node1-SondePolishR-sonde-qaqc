@@ -7,7 +7,7 @@
 \usage{
 additive_UI(id)
 
-additive_server(id, sondeproj, data_ver, y_var)
+additive_server(id, sondeproj, data_ver, y_var, period_view, dates, p_length)
 }
 \arguments{
 \item{id}{An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.}
@@ -17,6 +17,12 @@ additive_server(id, sondeproj, data_ver, y_var)
 \item{data_ver}{A \code{reactiveVal} holding a number used to track when new data is added to trigger resets.}
 
 \item{y_var}{Y-variable to plot on the y-axis.}
+
+\item{period_view}{Should data be viewed by period?}
+
+\item{dates}{The date range to view the data.}
+
+\item{p_length}{The length of the period to view.}
 }
 \value{
 Invisible NULL

@@ -19,31 +19,45 @@ test_that("{shinytest2} recording: checking-module2", {
   app$expect_screenshot(name = "intial_plot")
 
   #check putting in week view
-  app$set_inputs(`data2-weekly_range-period_view` = TRUE)
+  app$set_inputs(`data2-date_nav-period_view` = TRUE)
   app$wait_for_idle()
   plot_obj <- app$get_value(export = "data2-plot_obj")
   expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
   app$expect_screenshot(name = "weekly_view")
 
   #clicking next week
-  app$click("data2-weekly_range-next_period")
-  rng <- app$get_value(input= "data2-weekly_range-dates")
-  expect_equal(rng, as.Date(c("2024-08-07", "2024-08-13")))
+  app$click("data2-date_nav-next_period")
+  rng <- app$get_value(input= "data2-date_nav-dates")
+  expect_equal(rng, as.Date(c("2024-07-31", "2024-12-29"))) #range shouldn't change
+  plot_obj <- app$get_value(export = "data2-plot_obj")
+  expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
+  app$expect_screenshot(name = "next_week")
 
   #click previous week
-  app$click("data2-weekly_range-prev_period")
-  rng <- app$get_value(input= "data2-weekly_range-dates")
-  expect_equal(rng, as.Date(c("2024-07-31", "2024-08-06")))
+  app$click("data2-date_nav-prev_period")
+  plot_obj <- app$get_value(export = "data2-plot_obj")
+  expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
+  app$expect_screenshot(name = "prev_week")
 
   #unclick weekly and make sure we get the full plot again
-  app$set_inputs(`data2-weekly_range-period_view` = FALSE)
+  app$set_inputs(`data2-date_nav-period_view` = FALSE)
   app$wait_for_idle()
   plot_obj <- app$get_value(export = "data2-plot_obj")
   expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
   app$expect_screenshot(name = "removing_weekly_view")
 
-  rng <- app$get_value(input= "data2-weekly_range-dates")
-  expect_equal(rng, as.Date(c("2024-07-31", "2024-12-29")))
+  #test changing the date range and setting weekly view
+  app$set_inputs(`data2-date_nav-dates` = c("2024-09-01", "2024-12-29"))
+  app$wait_for_idle()
+  plot_obj <- app$get_value(export = "data2-plot_obj")
+  expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
+  app$expect_screenshot(name = "changing_date_range")
+
+  app$set_inputs(`data2-date_nav-period_view` = TRUE)
+  app$wait_for_idle()
+  plot_obj <- app$get_value(export = "data2-plot_obj")
+  expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
+  app$expect_screenshot(name = "weekly_view_adjstart")
 
   #check changing variable to plot
   app$set_inputs(`data2-update_parms-y_var` = "Temp_C")
@@ -65,7 +79,7 @@ test_that("{shinytest2} recording: checking-module2", {
   app$set_inputs(`data2-table_opt` = "Data Summary")
   app$expect_values(export = "data2-table", name="datasum-table") #cal check
 
-  app$set_inputs(`data2-weekly_range-period_view` = TRUE)
+  app$set_inputs(`data2-date_nav-period_view` = TRUE)
   app$expect_values(export = "data2-table", name="datasum-table-weekly") #cal check
 
 

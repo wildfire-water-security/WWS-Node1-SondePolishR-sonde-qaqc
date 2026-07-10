@@ -50,15 +50,16 @@ quality_UI <- function(id){
 #' used to auto-select as an outlier.
 #'
 #' @keywords internal
-#'
 #' @param id An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.
 #' @param sondeproj A `reactiveVal` holding the current dataset.
 #' @param data_ver A `reactiveVal` holding a number used to track when new data is added to trigger resets.
 #' @param y_var Y-variable to plot on the y-axis.
-#'
+#' @param dates The date range to view the data.
+#' @param period_view Should data be viewed by period?
+#' @param p_length The length of the period to view.
 #' @export
 #' @rdname quality-flags
-quality_server <- function(id, sondeproj, data_ver, y_var){
+quality_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_length){
   moduleServer(id, function(input, output, session){
 
   #keep track of second y_variable
@@ -84,12 +85,7 @@ quality_server <- function(id, sondeproj, data_ver, y_var){
     plot_opts <- plot_options_server("plot_opts")
 
   #keep track of dates
-    dates <- weekly_range_server(
-      "date_nav",
-      min_date = reactive({req(sondeproj())
-        min(sondeproj()$data$Date, na.rm = TRUE)}),
-      max_date = reactive({req(sondeproj())
-        max(sondeproj()$data$Date, na.rm = TRUE)}))
+    plot_dates <- weekly_range_server("date_nav", sondeproj, period_view, dates, p_length, data_ver)
 
   #track selected data
     observeEvent(
@@ -127,9 +123,9 @@ quality_server <- function(id, sondeproj, data_ver, y_var){
 
   #filter data to plot
     plot_data <- reactive({
-      req(sondeproj(), dates())
+      req(sondeproj(), plot_dates())
 
-      sondeproj()$data %>% dplyr::filter(.data$Date >= dates()[1], .data$Date <= dates()[2])
+      sondeproj()$data %>% dplyr::filter(.data$Date >= plot_dates()[1], .data$Date <= plot_dates()[2])
 
     })
 

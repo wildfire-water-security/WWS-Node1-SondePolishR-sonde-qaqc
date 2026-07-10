@@ -20,7 +20,7 @@ explore_data_UI <- function(id){
         HTML("<hr>"),
 
         #date options
-        weekly_range_sidebar_UI(ns("weekly_range")),
+        weekly_range_sidebar_UI(ns("date_nav")),
 
         HTML("<hr>"),
 
@@ -44,7 +44,7 @@ explore_data_UI <- function(id){
         #add plot
         plotlyOutput(NS(id,"plot")),
         #add buttons to navigate date
-        weekly_range_buttons_UI(ns("weekly_range")),
+        weekly_range_buttons_UI(ns("date_nav")),
         #adding some space after buttons
         HTML("<br><br>"),
         #visualize data log
@@ -64,6 +64,9 @@ explore_data_UI <- function(id){
 #' @param sondeproj A `reactiveVal` holding the current dataset.
 #' @param data_ver A `reactiveVal` holding a number used to track when new data is added to trigger resets.
 #' @param y_var Y-variable to plot on the y-axis.
+#' @param dates The date range to view the data.
+#' @param period_view Should data be viewed by period?
+#' @param p_length The length of the period to view.
 
 #' @md
 #' @keywords internal
@@ -71,7 +74,7 @@ explore_data_UI <- function(id){
 #' @rdname explore-data
 #' @returns Invisible NULL
 #'
-explore_data_server <- function(id, sondeproj, data_ver, y_var){
+explore_data_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_length){
   moduleServer(id, function(input, output, session){
 
   #keep track of second y_variable
@@ -182,16 +185,11 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var){
     })
 
   #keep track of dates
-    dates <- weekly_range_server(
-      "weekly_range",
-      min_date = reactive({req(sondeproj())
-                          min(sondeproj()$data$Date, na.rm = TRUE)}),
-      max_date = reactive({req(sondeproj())
-                          max(sondeproj()$data$Date, na.rm = TRUE)}))
+    plot_dates <- weekly_range_server("date_nav", sondeproj, period_view, dates, p_length, data_ver)
 
     #filter data
     plot_data <- reactive({
-      req(sondeproj(), dates())
+      req(sondeproj(), plot_dates())
 
       #alter data if change log rows are selected
       if(!is.null(input$log_table_rows_selected)){
@@ -213,7 +211,7 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var){
         data_ver <- sondeproj()$data
       }
 
-       data_ver %>% dplyr::filter(.data$Date >= dates()[1], .data$Date <= dates()[2])
+       data_ver %>% dplyr::filter(.data$Date >= plot_dates()[1], .data$Date <= plot_dates()[2])
     })
 
     #create plotly plot

@@ -56,10 +56,12 @@ interp_UI <- function(id){
 #' @param sondeproj A `reactiveVal` holding the current dataset.
 #' @param data_ver A `reactiveVal` holding a number used to track when new data is added to trigger resets.
 #' @param y_var Y-variable to plot on the y-axis.
-#'
+#' @param dates The date range to view the data.
+#' @param period_view Should data be viewed by period?
+#' @param p_length The length of the period to view.
 #' @export
 #' @rdname interp
-interp_server <- function(id, sondeproj, data_ver, y_var){
+interp_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_length){
   moduleServer(id, function(input, output, session){
   #keep track of second y_variable
     y2_var <- reactiveVal()
@@ -80,12 +82,7 @@ interp_server <- function(id, sondeproj, data_ver, y_var){
   # })
 
   #keep track of dates
-    dates <- weekly_range_server(
-      "date_nav",
-      min_date = reactive({req(sondeproj())
-        min(sondeproj()$data$Date, na.rm = TRUE)}),
-      max_date = reactive({req(sondeproj())
-        max(sondeproj()$data$Date, na.rm = TRUE)}))
+    plot_dates <- weekly_range_server("date_nav", sondeproj, period_view, dates, p_length, data_ver)
 
   #get data to fill and interpolation df as list
    data_fill_list <- reactive({
@@ -112,9 +109,9 @@ interp_server <- function(id, sondeproj, data_ver, y_var){
 
   #filter data to plot
     plot_data <- reactive({
-      req(sondeproj(), dates(), data_fill())
+      req(sondeproj(), plot_dates(), data_fill())
 
-      data_fill() %>% dplyr::filter(.data$Date >= dates()[1], .data$Date <= dates()[2])
+      data_fill() %>% dplyr::filter(.data$Date >= plot_dates()[1], .data$Date <= plot_dates()[2])
 
     })
 

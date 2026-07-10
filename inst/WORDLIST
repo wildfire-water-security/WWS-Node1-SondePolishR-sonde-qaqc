@@ -25,6 +25,7 @@ Reformats
 Sonde
 SpCond
 UI
+WWS
 Watras
 YSI
 YYYY
@@ -44,11 +45,13 @@ et
 fDOM
 fieldform
 frac
+github
 hampel
 hh
 https
 interferences
 interp
+io
 larc
 missForest
 na
@@ -64,6 +67,7 @@ perc
 plotly
 plotly's
 precip
+qaqc
 reactiveVal
 sonde
 sondeproj

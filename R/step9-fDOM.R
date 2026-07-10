@@ -67,10 +67,12 @@ fdom_UI <- function(id){
 #' @param sondeproj A `reactiveVal` holding the current dataset.
 #' @param data_ver A `reactiveVal` holding a number used to track when new data is added to trigger resets.
 #' @param y_var Y-variable to plot on the y-axis.
-#'
+#' @param dates The date range to view the data.
+#' @param period_view Should data be viewed by period?
+#' @param p_length The length of the period to view.
 #' @export
 #' @rdname fdom
-fdom_server <- function(id, sondeproj, data_ver, y_var){
+fdom_server <- function(id, sondeproj, data_ver, y_var, period_view, dates, p_length){
   moduleServer(id, function(input, output, session){
 
   #get info on equation
@@ -121,25 +123,19 @@ fdom_server <- function(id, sondeproj, data_ver, y_var){
     plot_opts <- plot_options_server("plot_opts")
 
   #keep track of dates
-    dates <- weekly_range_server(
-      "date_nav",
-      min_date = reactive({req(sondeproj())
-        min(sondeproj()$data$Date, na.rm = TRUE)}),
-      max_date = reactive({req(sondeproj())
-        max(sondeproj()$data$Date, na.rm = TRUE)}))
-
+    plot_dates <- weekly_range_server("date_nav", sondeproj, period_view, dates, p_length, data_ver)
 
   #filter data to plot
     plot_data <- reactive({
-      req(sondeproj(), dates())
-      sondeproj()$data %>% dplyr::filter(.data$Date >= dates()[1], .data$Date <= dates()[2])
+      req(sondeproj(), plot_dates())
+      sondeproj()$data %>% dplyr::filter(.data$Date >= plot_dates()[1], .data$Date <= plot_dates()[2])
     })
 
     corr_data <- reactive({
-      req(sondeproj(), dates(), eq_info(), coef_vals())
+      req(sondeproj(), plot_dates(), eq_info(), coef_vals())
       corr_fun <- eq_info()$fun
 
-      sondeproj()$data %>% dplyr::filter(.data$Date >= dates()[1], .data$Date <= dates()[2]) %>%
+      sondeproj()$data %>% dplyr::filter(.data$Date >= plot_dates()[1], .data$Date <= plot_dates()[2]) %>%
         mutate(fDOM_QSU_T = .data$fDOM_QSU / (1 + input$rho*(.data$Temp_C - 25)),
                fDOM_QSU_Tt = corr_fun(.data$fDOM_QSU_T, .data$Turbidity_FNU, coef_vals()))
     })

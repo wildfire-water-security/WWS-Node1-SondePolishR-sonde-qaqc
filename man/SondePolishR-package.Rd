@@ -10,6 +10,15 @@
 
 Provides an interactive workflow for quality assurance and quality control (QA/QC) of water quality sonde data. The package enables users to import raw sonde datasets, review and correct observations, apply quality flags, visualize time-series data alongside associated metadata, summarize observations, and export cleaned datasets and metadata while maintaining a reproducible record of all edits.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item https:/wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/
+  \item \url{https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/}
+  \item Report bugs at \url{https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Katie Wampler \email{katie.wampler@oregonstate.edu} (\href{https://orcid.org/0000-0002-5584-7554}{ORCID})
 

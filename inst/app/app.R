@@ -86,32 +86,36 @@ server <- function(input, output, session) {
     sondeproj <- reactiveVal(NULL) #the sonde project
     data_ver <- reactiveVal(0) #keeping track of when new data is uploaded
     y_var <- reactiveVal(NULL) #the y-variable being looked at
+    dates <- reactiveVal(NULL) #the date range to view the data
+    period_view <- reactiveVal(FALSE) #should you use period view?
+    p_length <- reactiveVal(7) #length of period view
+
   #step 1: load data
    SondePolishR::load_data_server("data1", sondeproj, data_ver)
 
   #step 2: plot data
-   SondePolishR::explore_data_server("data2", sondeproj, data_ver, y_var)
+   SondePolishR::explore_data_server("data2", sondeproj, data_ver, y_var, period_view, dates, p_length)
 
   #step 3: check data
    SondePolishR::check_data_server("data3", sondeproj, data_ver, y_var)
 
   #step 4: quality checks
-   SondePolishR::quality_server("data4", sondeproj, data_ver, y_var)
+   SondePolishR::quality_server("data4", sondeproj, data_ver, y_var, period_view, dates, p_length)
 
   #step 5: physical limits
-   SondePolishR::limits_server("data5", sondeproj, data_ver, y_var)
+   SondePolishR::limits_server("data5", sondeproj, data_ver, y_var, period_view, dates, p_length)
 
   #step 6: outlier corrections
-   SondePolishR::outlier_server("data6", sondeproj, data_ver, y_var)
+   SondePolishR::outlier_server("data6", sondeproj, data_ver, y_var, period_view, dates, p_length)
 
   #step 7: data interpolation
-   SondePolishR::interp_server("data7", sondeproj, data_ver, y_var)
+   SondePolishR::interp_server("data7", sondeproj, data_ver, y_var, period_view, dates, p_length)
 
   #step 8: additive shift
-   SondePolishR::additive_server("data8", sondeproj, data_ver, y_var)
+   SondePolishR::additive_server("data8", sondeproj, data_ver, y_var, period_view, dates, p_length)
 
   #step 9: fdom corrections
-   SondePolishR::fdom_server("data9", sondeproj, data_ver, y_var)
+   SondePolishR::fdom_server("data9", sondeproj, data_ver, y_var, period_view, dates, p_length)
 
   #step 10: export data
    SondePolishR::export_server("data10", sondeproj, data_ver, y_var)
