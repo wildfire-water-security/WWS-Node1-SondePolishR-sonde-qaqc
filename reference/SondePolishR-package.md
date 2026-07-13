@@ -7,6 +7,17 @@ quality flags, visualize time-series data alongside associated metadata,
 summarize observations, and export cleaned datasets and metadata while
 maintaining a reproducible record of all edits.
 
+## See also
+
+Useful links:
+
+- https:/wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/
+
+- <https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/>
+
+- Report bugs at
+  <https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues>
+
 ## Author
 
 **Maintainer**: Katie Wampler <katie.wampler@oregonstate.edu>

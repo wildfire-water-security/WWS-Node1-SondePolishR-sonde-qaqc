@@ -69,7 +69,7 @@ is `sondeproj` the `sondeproj` is returned with the change log updated.
 ``` r
 write_log(NULL, "Cond_S_cm", "physical limits", 5, "making an example", "diff1")
 #>              datetime parameter            step n_changed              note
-#> 1 2026-07-09 22:34:21 Cond_S_cm physical limits         5 making an example
+#> 1 2026-07-13 20:03:01 Cond_S_cm physical limits         5 making an example
 #>     user diff_name
 #> 1 runner     diff1
 ```

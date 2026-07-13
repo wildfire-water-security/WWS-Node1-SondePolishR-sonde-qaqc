@@ -264,6 +264,8 @@ Functions for tracking data quality and performing corrections.
   : Log edits to a \`sondeproj\`
 - [`apply_interp()`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/apply_interp.md)
   : Map interpolated data back to dataset
+- [`correct_fdom()`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/correct_fdom.md)
+  : Apply fDOM temperature and turbidity corrections
 - [`guess_shift()`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/guess_shift.md)
   : Guess the amount to shift observations
 - [`identify_dups()`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/identify_dups.md)
@@ -324,3 +326,5 @@ Example datasets and metadata.
 
 - [App User
   Guide](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/articles/app-manual.md):
+- [QAQC
+  Flags](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/articles/QAQC-flags.md):

@@ -9,7 +9,7 @@ weekly_range_sidebar_UI(id)
 
 weekly_range_buttons_UI(id)
 
-weekly_range_server(id, min_date, max_date)
+weekly_range_server(id, sondeproj, period_view, dates, p_length, data_ver)
 ```
 
 ## Arguments
@@ -18,13 +18,26 @@ weekly_range_server(id, min_date, max_date)
 
   the shiny ID of the module
 
-- min_date:
+- sondeproj:
 
-  Minimum date in the \`sondeproj\`.
+  A \`reactiveVal\` holding the current dataset.
 
-- max_date:
+- period_view:
 
-  Maximum date in the \`sondeproj\`.
+  Should data be viewed by period?
+
+- dates:
+
+  The date range to view the data.
+
+- p_length:
+
+  The length of the period to view.
+
+- data_ver:
+
+  A \`reactiveVal\` holding a number used to track when new data is
+  added to trigger resets.
 
 ## Value
 

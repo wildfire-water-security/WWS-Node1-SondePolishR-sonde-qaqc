@@ -158,12 +158,17 @@ to explore the data itself and it’s associated metadata.
 
 **X-Axis**
 
-You can control the x-axis (time) in the **Set Date Range** section. You
-can either use the **date range** selector to specify a specific date
-range, or you can click through periods of the data by setting the
-**period length** and toggling the **View data by period** button. Once
-you’ve turned on viewing by period, the buttons below the plot can be
-used to move between periods.
+You can control the x-axis (time) in the **Set Date Range** section.
+
+- Use the **date range** selector to specify a specific date range to
+  view data
+
+- Toggle the **View data by period** button to click through periods of
+  the data. Data periods will be based on the values of **date range**.
+  Once you’ve turned on viewing by period, the buttons below the plot
+  can be used to move between periods.
+
+- Adjust the **period length** to view different period lengths.
 
 **Y-Axis**
 

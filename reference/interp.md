@@ -8,7 +8,7 @@ interpolation method.
 ``` r
 interp_UI(id)
 
-interp_server(id, sondeproj, data_ver, y_var)
+interp_server(id, sondeproj, data_ver, y_var, period_view, dates, p_length)
 ```
 
 ## Arguments
@@ -30,3 +30,15 @@ interp_server(id, sondeproj, data_ver, y_var)
 - y_var:
 
   Y-variable to plot on the y-axis.
+
+- period_view:
+
+  Should data be viewed by period?
+
+- dates:
+
+  The date range to view the data.
+
+- p_length:
+
+  The length of the period to view.

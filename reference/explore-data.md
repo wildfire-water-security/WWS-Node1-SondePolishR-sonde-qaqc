@@ -10,7 +10,15 @@ dataset versions via row selection in a table via the `log`.
 ``` r
 explore_data_UI(id)
 
-explore_data_server(id, sondeproj, data_ver, y_var)
+explore_data_server(
+  id,
+  sondeproj,
+  data_ver,
+  y_var,
+  period_view,
+  dates,
+  p_length
+)
 ```
 
 ## Arguments
@@ -32,6 +40,18 @@ explore_data_server(id, sondeproj, data_ver, y_var)
 - y_var:
 
   Y-variable to plot on the y-axis.
+
+- period_view:
+
+  Should data be viewed by period?
+
+- dates:
+
+  The date range to view the data.
+
+- p_length:
+
+  The length of the period to view.
 
 ## Value
 
