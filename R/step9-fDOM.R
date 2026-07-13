@@ -9,27 +9,19 @@ fdom_UI <- function(id){
     sidebarLayout(
       sidebarPanel(
 
-      #temperature correction
-      tags$h5("Temperature Corrections"),
-      fluidRow(column(width = 6,p("\\[fDOM_{T} = \\frac{fDOM}{1 + \\rho (T - 25)}\\]")),
-               column(width = 6,numericInput(ns("rho"), tags$span("\U03C1", style = "font-size: 20px;"), value = -0.011, step=0.001))),
-      tags$small("Source: Watras et al. 2011"),
-
-
-      HTML("<hr>"),
-
       #turbidity correction
-        tags$h5("Turbidity Corrections"),
+        tags$h5("Correction Method"),
         selectInput(ns("method"),
                   "Select Correction Equation:",
-                  choices = c("None" = "none", "Inverse Polynomial" = "inverse_poly", "Exponential (1-parameter)" = "1p_exponential",
-                              "Exponential (2-parameter)" = "2p_exponential","Exponential (5-parameter)" = "5p_exponential"),
-                  selected = "inverse_poly",
+                  choices = c("Temperature" = "temperature", "Turbidity - Inverse Polynomial" = "inverse_poly",
+                              "Turbidity - Exponential (1-parameter)" = "1p_exponential",
+                              "Turbidity - Exponential (2-parameter)" = "2p_exponential",
+                              "Turbidity - Exponential (5-parameter)" = "5p_exponential"),
+                  selected = "temp",
                   multiple = FALSE),
         uiOutput(ns("equation")),
         tags$small(textOutput(ns("source"))),
         uiOutput(ns("coef_inputs")),
-
 
         HTML("<hr>"),
 
@@ -97,27 +89,27 @@ fdom_server <- function(id, sondeproj, data_ver, y_var, period_view, dates, p_le
   output$coef_inputs <- renderUI({
       req(input$method)
       params <- eq_info()$params
-
       tagList(
         fluidRow(
         lapply(names(params), function(par) {
           column(width = floor(12 / length(params)),
           numericInput(session$ns(par),
-                       label = tags$span(par, style = "font-size: 20px;"),
+                       label = tags$span(gsub("rho", "\U03C1", par), style = "font-size: 20px;"),
                        value = params[[par]]$value,
                        step = params[[par]]$step %||% 0.01))})
       ))
     })
 
-  #keep track of user parameter values to pass to corr_fun
-  coef_vals <- reactive({
-    req(input$method)
+
+  #keep track of correction function/values to pass to corrections
+  corr_info <- reactive({
     params <- names(eq_info()$params)
-    vals <- setNames(lapply(params, function(x) input[[x]]),params)
-    # wait until new UI inputs exist
-    req(all(vapply(vals, Negate(is.null), logical(1))))
-    vals
-  })
+    req(all(vapply(params, function(x) !is.null(input[[x]]), logical(1))))
+    vals <- setNames(lapply(params, function(x) input[[x]]), params)
+    list(
+      fun = eq_info()$fun,
+      params = vals)
+    })
 
   #get what to plot via user options
     plot_opts <- plot_options_server("plot_opts")
@@ -125,30 +117,45 @@ fdom_server <- function(id, sondeproj, data_ver, y_var, period_view, dates, p_le
   #keep track of dates
     plot_dates <- weekly_range_server("date_nav", sondeproj, period_view, dates, p_length, data_ver)
 
-  #filter data to plot
+  #give warning if data isn't temp corrected
+   observeEvent(input$method, {
+     temp_corr <- is_corrected(sondeproj(), "temp")
+     if(input$method != "temperature" & sum(temp_corr) == 0){
+       if(interactive()){
+         shinyalert::shinyalert(
+           title = "fDOM Not Temperature Corrected",
+           text = "Please correct fDOM data for temperature before correcting for turbidity.",
+           type = "warning"
+         )
+       }}
+   })
+
+  #get corrected data for plotting/saving
+    corr_data <- reactive({
+      req(sondeproj(), input$method, corr_info())
+      proj <- sondeproj()
+      if(input$method == "temperature"){
+        correct_fdom(proj, temp=corr_info(), turb = NULL)
+      }else{
+        correct_fdom(proj, temp=NULL, turb = corr_info())
+      }
+    })
+
+  #filter data to plot (data not corrected)
     plot_data <- reactive({
       req(sondeproj(), plot_dates())
       sondeproj()$data %>% dplyr::filter(.data$Date >= plot_dates()[1], .data$Date <= plot_dates()[2])
     })
 
-    corr_data <- reactive({
-      req(sondeproj(), plot_dates(), eq_info(), coef_vals())
-      corr_fun <- eq_info()$fun
-
-      sondeproj()$data %>% dplyr::filter(.data$Date >= plot_dates()[1], .data$Date <= plot_dates()[2]) %>%
-        mutate(fDOM_QSU_T = .data$fDOM_QSU / (1 + input$rho*(.data$Temp_C - 25)),
-               fDOM_QSU_Tt = corr_fun(.data$fDOM_QSU_T, .data$Turbidity_FNU, coef_vals()))
-    })
-
   #create plotly plot
     plot_obj <- reactive({
-      req(plot_data())
+      req(plot_data(),plot_dates())
 
       #use function to plot sonde data
       p <- plot_sonde(data = plot_data(), y_var="fDOM_QSU", proj = sondeproj(), opts=plot_opts())
       #add corrected fDOM
-      dat <- corr_data() %>% arrange(.data$DateTime_rd)
-      p <- p %>% add_trace(data= dat, x=~DateTime_rd, y=~fDOM_QSU_Tt, type="scatter", mode="lines",
+      dat <- corr_data() %>% arrange(.data$DateTime_rd) %>% dplyr::filter(.data$Date >= plot_dates()[1], .data$Date <= plot_dates()[2])
+      p <- p %>% add_trace(data= dat, x=~DateTime_rd, y=~fDOM_QSU, type="scatter", mode="lines",
                                name = "Changed", line = list(color = "darkred"), yaxis="y", inherit = FALSE)
 
       #return plot
@@ -175,33 +182,46 @@ fdom_server <- function(id, sondeproj, data_ver, y_var, period_view, dates, p_le
 
   #create edit object
     edit <- reactive({
-      newdata <- sondeproj()$data
+      newdata <- corr_data()
+      proj <- sondeproj()
 
-      #replace with fDOM corrected data
-      corr_fun <- eq_info()$fun
+      #determine which changes made
+      rows <- switch(input$method,
+                       "temperature" = !is_corrected(proj, "temp"),
+                       is_corrected(proj, "temp") & !is_corrected(proj, "turb"))
 
-      newdata <- newdata %>%
-        mutate(fDOM_QSU_T = .data$fDOM_QSU / (1 + input$rho*(.data$Temp_C - 25)),
-               fDOM_QSU = corr_fun(.data$fDOM_QSU_T, .data$Turbidity_FNU, coef_vals())) %>%
-          select(-"fDOM_QSU_T")
+      #provide warnings
+      if(sum(rows) == 0){
+        if(interactive()){
+          shinyalert::shinyalert(
+            title = "No New Data to Correct",
+            text = "All fDOM data has already been corrected.",
+            type = "warning"
+          )}}else{
+
+          }
 
       #create note
       nice_method <- switch(input$method,
-                           "inverse_poly" = "Inverse Polynomial",
-                           "1p_exponential" ="Exponential (1-parameter)",
-                           "2p_exponential" = "Exponential (2-parameter)",
-                           "5p_exponential" = "Exponential (5-parameter)")
-      nice_coeff <- paste(paste0(names(coef_vals()), " = ", coef_vals()), collapse = ", ")
-      method_note <- ifelse(input$method == "none", "", paste0(" and turbidity using the ", nice_method, " method (", nice_coeff, ")"))
+                           "temperature" = "temperature",
+                           "inverse_poly" = "turbidity (Inverse Polynomial)",
+                           "1p_exponential" ="turbidity (Exponential (1-parameter))",
+                           "2p_exponential" = "turbidity (Exponential (2-parameter))",
+                           "5p_exponential" = "turbidity (Exponential (5-parameter))")
+
+      nice_coeff <- gsub("rho", "\U03C1", paste(paste0(names(corr_info()$params), " = ", corr_info()$params), collapse = ", "))
+      method_note <- paste0("fDOM corrected for ", nice_method, " (", nice_coeff, ")")
+
+      flag <- ifelse(input$method == "temperature", "CHG03", "CHG04")
 
       #make edit list
       list(
         data = newdata,
-        rows = rep(TRUE, nrow(newdata)),
+        rows = rows,
         y_var = "fDOM_QSU",
         step = "fDOM correction",
-        note = paste0("fDOM corrected for temperature (\U03C1 = ", input$rho, ")", method_note),
-        flag = "CHG03",
+        note = method_note,
+        flag = flag,
         changetype = "flag_chg"
       )
 
@@ -213,6 +233,8 @@ fdom_server <- function(id, sondeproj, data_ver, y_var, period_view, dates, p_le
   #export plot so we can check it
     exportTestValues(
       plot_obj = plot_obj(),
-      changelog = sondeproj()$changelog)
+      changelog = sondeproj()$changelog,
+      fdom_val = sondeproj()$data$fDOM_QSU,
+      corr_fdom_val = corr_data()$fDOM_QSU)
 
   })}

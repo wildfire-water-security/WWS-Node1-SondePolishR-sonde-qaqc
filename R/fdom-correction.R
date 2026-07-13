@@ -21,6 +21,17 @@ get_equation <- function(method){
     )
   }
 
+  if(method == "temperature"){
+    info <- list(
+      equation = "\\(fDOM_{T} = \\frac{fDOM}{1 + \\rho (T - 25)}\\)",
+      source = "Watras et al. 2011",
+      params = list(
+        rho = list(value = -0.011, step=0.001)),
+      fun = function(fdom, temp, parms){
+        fdom / (1 + parms$rho*(temp - 25))}
+    )
+  }
+
   if(method == "inverse_poly"){
     info <- list(
     equation = "\\(fDOM_{T,t} = (x + yt + zt^2)fDOM_T\\)",
@@ -69,4 +80,71 @@ get_equation <- function(method){
     )}
 
   return(info)
+}
+
+#' Determine which fDOM observations have already been corrected
+#'
+#' @param proj A `sondeproj` object.
+#' @param type Which change are you looking for? Choices are "temp" or "turb".
+#'
+#' @noRd
+is_corrected <- function(proj, type){
+  stopifnot(type %in% c("temp", "turb"))
+
+  flag <- ifelse(type == "temp", "CHG03", "CHG04")
+  grepl(flag, proj$flags$flag_chg$fDOM_QSU)}
+
+
+#' Apply fDOM temperature and turbidity corrections
+#'
+#' Takes functions and coefficient values and applies them to fDOM data within a sonde project to apply fDOM corrections.
+#' Uses flags stored within the project to only correct data that hasn't previously been corrected. Additionally,
+#' turbidity corrections will only be applied to temperature corrected data.
+#'
+#' @details
+#' To apply a correction you must supply a list object with the following structure:
+#' - params: a named list with parameter values where the names match the arguments within the function
+#' - fun: a function to apply to the fDOM data where the first argument is fDOM, the second is either
+#' temperature or turbidity, and the third is parameters within the function, pulled from `params`.
+#'
+#'
+#' @param proj A `sondeproj` object.
+#' @param temp Either `NULL` or a list object (see details) for temperature correction.
+#' @param turb Either `NULL` or a list object (see details) for turbidity correction.
+#'
+#' @returns A `data.frame` object with fDOM updated with the corrections.
+#' @export
+#' @md
+#' @examples
+#' temp <- list(params = list(rho = -0.011),
+#'              fun = function(fdom, temp, parms){fdom / (1 + parms$rho*(temp - 25))})
+#' corr_data <- correct_fdom(example_sondeproj, temp=temp, turb=NULL)
+#'
+correct_fdom <- function(proj, temp=NULL, turb=NULL){
+  stopifnot(inherits(proj, "sondeproj"), is.data.frame(proj$data),
+            is.null(temp) || is.list(temp) & is.function(temp$fun),
+            is.null(turb) || is.list(turb) & is.function(turb$fun))
+
+  data <- proj$data
+
+  #correct for temperature (only if not previously corrected)
+  if(!is.null(temp)){
+    data <- data %>%
+      mutate(fDOM_QSU_corr = temp$fun(.data$fDOM_QSU, .data$Temp_C, temp$params),
+             past_corr = is_corrected(proj, "temp"),
+             fDOM_QSU = ifelse(!.data$past_corr, .data$fDOM_QSU_corr,.data$fDOM_QSU)) %>%
+      select(-c("fDOM_QSU_corr", "past_corr"))
+  }
+
+  #correct for turbidity (only if temp corrected and not previously corrected)
+  if(!is.null(turb)){
+    data <- data %>%
+      mutate(fDOM_QSU_corr = turb$fun(.data$fDOM_QSU, .data$Turbidity_FNU, turb$params),
+             past_Tcorr = is_corrected(proj, "temp"),
+             past_tcorr = is_corrected(proj, "turb"),
+             fDOM_QSU = ifelse(.data$past_Tcorr & !.data$past_tcorr, .data$fDOM_QSU_corr, .data$fDOM_QSU)) %>%
+      select(-c("fDOM_QSU_corr", "past_Tcorr", "past_tcorr"))
+  }
+
+  return(data)
 }

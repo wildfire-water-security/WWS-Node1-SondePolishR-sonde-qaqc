@@ -171,6 +171,12 @@ load_data_server <- function(id, sondeproj, data_ver){
       #save object as reactive
       sondeproj(obj)
 
+      #update UI inputs with project values
+      updateTextInput(session, "site", value=ifelse(is.null(obj$meta$site), "", obj$meta$site))
+      updateSelectInput(session, "tz", selected=ifelse(is.null(obj$meta$tz), "", obj$meta$tz))
+      updateTextInput(session, "lat", value=ifelse(is.null(obj$meta$coords[1]), "", obj$meta$coords[1]))
+      updateTextInput(session, "long", value=ifelse(is.null(obj$meta$coords[2]), "", obj$meta$coords[2]))
+
       #print a message so you know data loaded
       if (interactive()) {
         shinyalert::shinyalert(

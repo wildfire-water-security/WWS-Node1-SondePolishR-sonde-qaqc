@@ -51,11 +51,18 @@ proj <- example_sondeproj
 
 #' Determine which fDOM observations have already been corrected
 #'
-#' @param proj
+#' @param proj A `sondeproj` object.
+#' @param type Which change are you looking for? Choices are "temp" or "turb".
 #'
 #' @returns
 #' @export
 #'
 #' @examples
 is_corrected <- function(proj, type){
-  grepl("CHG03", proj$flags$flag_chg$fDOM_QSU)}
+  stopifnot(type %in% c("temp", "turb"))
+
+  flag <- ifelse(type == "temp", "CHG03", "CHG04")
+  grepl(flag, proj$flags$flag_chg$fDOM_QSU)}
+
+
+

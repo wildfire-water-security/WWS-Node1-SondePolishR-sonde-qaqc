@@ -33,6 +33,11 @@
 apply_edit <- function(proj, edit){
   stopifnot(is.list(edit))
 
+  #skip applying edit if no rows changed
+  if(sum(edit$rows) == 0){
+    return(proj)
+  }
+
   #extract data
     olddata <- proj$data
     newdata <- edit$data
@@ -47,7 +52,17 @@ apply_edit <- function(proj, edit){
       proj <- add_flags(proj, edit$data)
     }
 
-    proj$flags[[edit$changetype]][[edit$y_var]][edit$rows] <- edit$flag
+  #add flags preserving any existing flags
+    old_flags <- proj$flags[[edit$changetype]][[edit$y_var]]
+    new_flags <- rep(edit$flag, length(old_flags))
+    new_flags[!edit$rows] <- NA
+
+    apply_flag <- function(old, new){
+      old_flags <- unlist(strsplit(old, ";"))
+      new_flags <- na.omit(unique(c(old_flags, new)))
+      ifelse(length(new_flags) >0, paste(new_flags, collapse = ";"), NA)
+    }
+    proj$flags[[edit$changetype]][[edit$y_var]] <- sapply(1:length(old_flags), function(x) apply_flag(old_flags[x], new_flags[x]))
 
   #update log entry
     proj <- write_log(proj, edit$y_var, edit$step, n=sum(edit$rows, na.rm=TRUE),

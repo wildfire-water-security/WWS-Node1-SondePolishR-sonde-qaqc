@@ -20,6 +20,7 @@ ORCID
 POSIXct
 PRECTOTCORR
 Precip
+QAQC
 QSU
 Reformats
 Sonde
@@ -63,6 +64,7 @@ ndif
 newdata
 olddata
 oow
+params
 perc
 plotly
 plotly's

@@ -1,12 +1,13 @@
 url: https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/
 template:
+  light-switch: true
   bootstrap: 5
   bootswatch: superhero
   bslib:
     primary: "#E3795E"
     bg: "#3c4d5a"
     fg: "#ebebeb"
-    code-bg: "#475763"
+
 navbar:
   bg: primary
   type: dark
@@ -36,6 +37,7 @@ reference:
       - apply_dup_edits
       - apply_edit
       - apply_interp
+      - correct_fdom
       - guess_shift
       - identify_dups
       - identify_gaps
