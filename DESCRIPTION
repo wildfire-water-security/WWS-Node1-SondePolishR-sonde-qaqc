@@ -61,7 +61,8 @@ Suggests:
     shinytest2,
     spelling,
     testthat (>= 3.0.0),
-    withr
+    withr,
+    kableExtra
 Depends: 
     R (>= 3.5)
 Config/testthat/edition: 3

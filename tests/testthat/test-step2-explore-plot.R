@@ -27,6 +27,7 @@ test_that("{shinytest2} recording: checking-module2", {
 
   #clicking next week
   app$click("data2-date_nav-next_period")
+  app$wait_for_idle()
   rng <- app$get_value(input= "data2-date_nav-dates")
   expect_equal(rng, as.Date(c("2024-07-31", "2024-12-29"))) #range shouldn't change
   plot_obj <- app$get_value(export = "data2-plot_obj")
@@ -35,6 +36,7 @@ test_that("{shinytest2} recording: checking-module2", {
 
   #click previous week
   app$click("data2-date_nav-prev_period")
+  app$wait_for_idle()
   plot_obj <- app$get_value(export = "data2-plot_obj")
   expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
   app$expect_screenshot(name = "prev_week")
@@ -58,29 +60,31 @@ test_that("{shinytest2} recording: checking-module2", {
   plot_obj <- app$get_value(export = "data2-plot_obj")
   expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
   app$expect_screenshot(name = "weekly_view_adjstart")
+  app$set_inputs(`data2-date_nav-period_view` = FALSE)
 
   #check changing variable to plot
   app$set_inputs(`data2-update_parms-y_var` = "Temp_C")
+  app$wait_for_idle()
   plot_obj <- app$get_value(export = "data2-plot_obj")
   expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
   app$expect_screenshot(name = "change_variable")
 
   #check on the table
-  app$expect_values(export = "data2-table", name="changelog-table")
+  app$expect_values(export = "data2-table", name="changelog-table",screenshot_args = FALSE)
 
   #change to get other tables
   app$set_inputs(`data2-table_opt` = "Field Form")
-  app$expect_values(export = "data2-table", name="fieldform-table") #fieldform
+  app$expect_values(export = "data2-table", name="fieldform-table",screenshot_args = FALSE) #fieldform
 
   app$set_inputs(`data2-table_opt` = "Calibration Check")
-  app$expect_values(export = "data2-table", name="calcheck-table") #cal check
+  app$expect_values(export = "data2-table", name="calcheck-table",screenshot_args = FALSE) #cal check
 
 
   app$set_inputs(`data2-table_opt` = "Data Summary")
-  app$expect_values(export = "data2-table", name="datasum-table") #cal check
+  app$expect_values(export = "data2-table", name="datasum-table",screenshot_args = FALSE) #cal check
 
   app$set_inputs(`data2-date_nav-period_view` = TRUE)
-  app$expect_values(export = "data2-table", name="datasum-table-weekly") #cal check
+  app$expect_values(export = "data2-table", name="datasum-table-weekly",screenshot_args = FALSE) #cal check
 
 
 })

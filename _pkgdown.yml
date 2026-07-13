@@ -4,7 +4,7 @@ template:
   bootswatch: superhero
   bslib:
     primary: "#E3795E"
-    bg: "#475763"
+    bg: "#3c4d5a"
     fg: "#ebebeb"
     code-bg: "#475763"
 navbar:

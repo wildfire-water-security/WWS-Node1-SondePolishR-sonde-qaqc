@@ -43,3 +43,19 @@ fdom_temp <- function(fdom, temp, rho=-0.0115){
 
   #update data
   #flagging
+
+#testing function to determine which points have been flagged.
+#FDOM correction flag is CHG03
+
+proj <- example_sondeproj
+
+#' Determine which fDOM observations have already been corrected
+#'
+#' @param proj
+#'
+#' @returns
+#' @export
+#'
+#' @examples
+is_corrected <- function(proj, type){
+  grepl("CHG03", proj$flags$flag_chg$fDOM_QSU)}

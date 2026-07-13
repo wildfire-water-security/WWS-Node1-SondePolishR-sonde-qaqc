@@ -1,0 +1,28 @@
+---
+title: "QAQC Flags"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{QAQC Flags}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+library(dplyr)
+```
+
+When data is exported, each analyte will have an associated flag column which is used to determine what changes were made to the data. 
+
+**The flag meanings are as follows:** 
+
+```{r echo=FALSE, include=TRUE}
+file <- system.file("extdata", "data-flags.csv", package = "SondePolishR")
+flags <- read.csv(file)
+colnames(flags) <- c("App Module", "Flag Code", "Flag Meaning")
+knitr::kable(flags) %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped","bordered")) 
+```

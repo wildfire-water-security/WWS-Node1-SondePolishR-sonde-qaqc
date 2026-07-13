@@ -7,7 +7,7 @@
 #' @param data_ver A `reactiveVal` holding a number used to track when new data is added to trigger resets.
 #' @param dates The date range to view the data.
 #' @param period_view Should data be viewed by period?
-#' @param n_length The length of the period to view.
+#' @param p_length The length of the period to view.
 #'
 #' @returns a reactive of length two with the min and max dates.
 #' @rdname weekly-range

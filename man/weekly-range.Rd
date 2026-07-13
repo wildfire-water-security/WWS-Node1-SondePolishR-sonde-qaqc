@@ -21,9 +21,9 @@ weekly_range_server(id, sondeproj, period_view, dates, p_length, data_ver)
 
 \item{dates}{The date range to view the data.}
 
-\item{data_ver}{A `reactiveVal` holding a number used to track when new data is added to trigger resets.}
+\item{p_length}{The length of the period to view.}
 
-\item{n_length}{The length of the period to view.}
+\item{data_ver}{A `reactiveVal` holding a number used to track when new data is added to trigger resets.}
 }
 \value{
 a reactive of length two with the min and max dates.
