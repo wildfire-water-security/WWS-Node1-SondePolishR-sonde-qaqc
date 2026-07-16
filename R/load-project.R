@@ -130,11 +130,11 @@ load_project <- function(csv_path=NULL, csv_files=NULL, prj_path=NULL,
         names(diff) <- diff_version(obj)
         obj$diffs <- append(obj$diffs, diff)
 
-        #update precip if lat and long available
-        if(all(!is.na(obj$meta$coords))){
-          new_precip <- get_precip(data_merge, obj$meta$coords[1], obj$meta$coords[2])
-          obj$precip <- new_precip
-        }
+        # #update precip if lat and long available
+        # if(all(!is.na(obj$meta$coords))){
+        #   new_precip <- get_precip(data_merge, obj$meta$coords[1], obj$meta$coords[2])
+        #   obj$precip <- new_precip
+        # }
 
       }
       obj$data <- data_merge

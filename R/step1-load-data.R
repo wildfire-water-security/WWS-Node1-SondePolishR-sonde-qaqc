@@ -69,24 +69,37 @@ load_data_UI <- function(id){
         bslib::card(
           bslib::card_header("5. Add Precipitation"),
             radioButtons(ns("precip_source"),NULL,
-              choices = c("Download from NASA POWER" = "nasa",
+              choices = c("Download from NASA POWER (Global)" = "merra-2",
+                          "Download from NLDAS (North America)" = "nldas",
                 "Upload Precipitation" = "upload"),
-              selected = "nasa"),
+              selected = "merra-2"),
           conditionalPanel(
-            condition = sprintf("input['%s'] == 'nasa'", ns("precip_source")),
+            condition = sprintf("input['%s'] == 'merra-2' || input['%s'] == 'nldas'", ns("precip_source"),ns("precip_source")),
             div(
               class = "d-flex justify-content-center",
               div(
                 style = "width: 60%;",
-            bslib::layout_columns(
-              col_widths = c(6,6),
+                bslib::layout_columns(
+                  col_widths = c(6,6),
                   numericInput(ns("lat"),"Latitude",value = NA, width="100%"),
                   numericInput(ns("long"),"Longitude",value = NA, width="100%"),
-
-            ),
-            div(style="margin-top: -3px; margin-bottom: -3px;font-size:12px",
-                "Note: If coordinates have been previously supplied precip will update on project load.")
+                ),
             ))),
+          conditionalPanel(
+            condition = sprintf("input['%s'] == 'nldas'", ns("precip_source")),
+            div(
+              class = "d-flex justify-content-center",
+                textInput(ns("token"), "Earth Data Token", value=NA)),
+                div(class = "d-flex justify-content-center",
+                    style="margin-top: -10px; margin-bottom: -3px;font-size:12px",
+                    "See ",
+                    HTML("&nbsp;"),
+                    tags$a(
+                      href = "https://urs.earthdata.nasa.gov/documentation/for_users/user_token",
+                      " here ", target = "_blank"),
+                    HTML("&nbsp;"),
+                    " for instructions on obtaining an Earthdata token.")
+              ),
           conditionalPanel(
             condition = sprintf("input['%s'] == 'upload'", ns("precip_source")),
             div(
@@ -150,6 +163,11 @@ load_data_server <- function(id, sondeproj, data_ver){
         cc_path(NULL)
         sondeproj(NULL)
         precip_path(NULL)
+        data_ver(0)
+        updateTextInput(session, "site", value="")
+        updateTextInput(session, "lat", value="")
+        updateTextInput(session, "long", value="")
+
 
         reset('csv_files')
         reset('pj_file')
@@ -215,15 +233,16 @@ load_data_server <- function(id, sondeproj, data_ver){
         }
 
       #otherwise get
-      if(input$precip_source == "nasa"){
-        precip <- get_precip(proj$data, input$lat, input$long)
+      if(input$precip_source %in% c("merra-2", "nldas")){
+        precip <- get_precip(proj$data, input$lat, input$long, input$precip_source, input$token)
 
         proj$meta$coords <- c(input$lat, input$long)
       }else{
         req(precip_path())
         precip <- read.csv(precip_path())
+        browser()
         colnames(precip) <- c("DateTime", "Precip_mm_hr")
-        precip$DateTime <- as.POSIXct(precip$DateTime, tz=proj$meta$tz)
+        precip$DateTime <- lubridate::parse_date_time(precip$DateTime, tz=proj$meta$tz, orders = c("ymd HMS", "mdy HMS","ymd"))
       }
 
       proj$precip <- precip

@@ -35,8 +35,10 @@ update_parms_UI <- function(id, input_id = "y_var", text="Select Parameter to Pl
 update_parms_server <- function(id, sondeproj, data_ver, y_var,input_id = "y_var",choices_fun = NULL) {
   moduleServer(id, function(input, output, session) {
 
+  precip <- reactive({sondeproj()$precip})
+
   #only trigger when new data is added
-  observeEvent(data_ver(), {
+  observeEvent(list(data_ver(), precip()), {
     req(data_ver() > 0)
     data <- sondeproj()$data
 

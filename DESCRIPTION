@@ -54,7 +54,8 @@ Imports:
     forecast,
     missForest,
     nasapower,
-    grDevices
+    grDevices,
+    httr2
 Suggests: 
     knitr,
     rmarkdown,
