@@ -89,6 +89,7 @@ weekly_range_server <- function(id, sondeproj, period_view, dates, p_length, dat
     observeEvent(input$period_view,{
       if(!identical(period_view(), input$period_view)){
         period_view(input$period_view)
+        period_n(1)
       }})
 
   ##sync the period value --

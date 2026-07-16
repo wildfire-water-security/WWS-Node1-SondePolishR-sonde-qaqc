@@ -124,6 +124,11 @@ additive_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p
       dat
     })
 
+    #clearing manual indices if y_var or data updates
+    observeEvent(list(y_var(), data_ver(), sondeproj()),{
+      index(NULL)
+    })
+
     #reset slope and intercept when data updates
     observeEvent(sondeproj(),{
       updateNumericInput(session,"slope", value =0)

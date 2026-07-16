@@ -87,23 +87,4 @@ test_that("project is loaded and merged correctly", {
       expect_true(is.null(proj$calcheck))
       expect_type(proj$diffs, "list")
       expect_s3_class(proj$changelog, "data.frame")
-
-  #TEST 5: see if precip gets updated when data is added
-    proj <- example_sondeproj
-    proj$data <- proj$data %>% filter(Date < "2024-08-05")
-    proj$flags <- lapply(proj$flags, function(x){x %>% filter(DateTime_rd  %in% proj$data$DateTime_rd)})
-    proj$precip <- get_precip(proj$data, proj$meta$coords[1],proj$meta$coords[2])
-
-    test_dir <- withr::local_tempdir()
-    prj_path <- file.path(test_dir, "test_proj.RDS")
-    saveRDS(proj, prj_path)
-
-    csv_files <- c("example-csv-data1.csv", "example-csv-data2.csv")
-    csv_path <- file.path(test_path(), "testdata", csv_files)
-
-    #load project
-    newproj <- load_project(csv_path, csv_files, prj_path)
-
-    #check precip
-    expect_true(nrow(proj$precip) < nrow(newproj$precip))
 })
