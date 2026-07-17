@@ -254,8 +254,6 @@ get_precip <- function(token=token, lat=43.15, long=-123.36, start=start, end = 
     stop("Fetching precipitation failed: ", txt)
   }
 
-  browser()
-
   dat <- txt %>%
     I() %>%
     textConnection() %>%

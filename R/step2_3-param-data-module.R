@@ -35,10 +35,8 @@ update_parms_UI <- function(id, input_id = "y_var", text="Select Parameter to Pl
 update_parms_server <- function(id, sondeproj, data_ver, y_var,input_id = "y_var",choices_fun = NULL) {
   moduleServer(id, function(input, output, session) {
 
-  precip <- reactive({sondeproj()$precip})
-
   #only trigger when new data is added
-  observeEvent(list(data_ver(), precip()), {
+  observeEvent(list(data_ver()), {
     req(data_ver() > 0)
     data <- sondeproj()$data
 
@@ -62,8 +60,40 @@ update_parms_server <- function(id, sondeproj, data_ver, y_var,input_id = "y_var
         session,
         input_id,
         choices = choices_r,
-        selected = choices_r[[1]]
+        selected = choices_r[1]
       )
+
+  })
+
+  precip_added <- reactive({sondeproj()$precip})
+  observeEvent(precip_added(),{
+    req(data_ver() > 0)
+    data <- sondeproj()$data
+
+    if(input_id == "y2_var"){
+      include_precip <- !is.null(sondeproj()$precip)
+
+      if(!is.null(choices_fun)) {
+        choices_r <- choices_fun(data)
+      }else {
+        choices_r <- names(data)
+      }
+
+
+      if(include_precip){
+        choices_r <- c("None" = "none", "Raw Data" = "raw", "Precipitation" = "precip", choices_r)
+      }else{
+        choices_r <- c("None" = "none","Raw Data" = "raw", choices_r)
+      }
+
+      updateSelectInput(
+        session,
+        input_id,
+        choices = choices_r,
+        selected = choices_r[1]
+      )
+    }
+
 
   })
 

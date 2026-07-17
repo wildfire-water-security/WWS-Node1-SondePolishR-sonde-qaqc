@@ -203,7 +203,6 @@ check_data_server <- function(id, sondeproj, data_ver, y_var){
 
   #update options for which version to keep
     output$keep_ui <- renderUI({
-     # browser()
       dat <- dup_plot_data() %>% filter(.data$color_labs != "non-duplicated data")
       opts <- c(unique(dat$color_labs), "use_mean", "remove_both")
 

@@ -1129,7 +1129,7 @@
                   "value": ["plotly_default", "logical"]
                 }
               },
-              "value": [true]
+              "value": [false]
             }
           ]
         },
@@ -1139,15 +1139,15 @@
             "dim": {
               "type": "integer",
               "attributes": {},
-              "value": [12, 2]
+              "value": [12, 1]
             }
           },
-          "value": ["x", "y", "mode", "type", "name", "yaxis", "marker", "error_y", "error_x", "line", "xaxis", "frame", "x", "y", "type", "mode", "name", "marker", "yaxis", "error_y", "error_x", "line", "xaxis", "frame"]
+          "value": ["x", "y", "mode", "type", "name", "yaxis", "marker", "error_y", "error_x", "line", "xaxis", "frame"]
         },
         {
           "type": "integer",
           "attributes": {},
-          "value": [2]
+          "value": [1]
         },
         {
           "type": "list",
@@ -1173,27 +1173,6 @@
                 }
               },
               "value": [1722459600, 1725728175, 1728995850, 1728996592.60534, 1732265325, 1735540200]
-            },
-            {
-              "type": "double",
-              "attributes": {
-                "names": {
-                  "type": "character",
-                  "attributes": {},
-                  "value": ["Min.", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max."]
-                },
-                "class": {
-                  "type": "character",
-                  "attributes": {},
-                  "value": ["summaryDefault", "AsIs", "POSIXct", "POSIXt"]
-                },
-                "tzone": {
-                  "type": "character",
-                  "attributes": {},
-                  "value": ["Etc/GMT+8"]
-                }
-              },
-              "value": [1724372100, 1724372100, 1724372100, 1724372100, 1724372100, 1724372100]
             }
           ]
         },
@@ -1216,22 +1195,6 @@
                 }
               },
               "value": [-2.56, 9.63, 10.74, 12.85540932, 14.4925, 34.39]
-            },
-            {
-              "type": "double",
-              "attributes": {
-                "names": {
-                  "type": "character",
-                  "attributes": {},
-                  "value": ["Min.", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max."]
-                },
-                "class": {
-                  "type": "character",
-                  "attributes": {},
-                  "value": ["summaryDefault", "table"]
-                }
-              },
-              "value": [10.165, 10.165, 10.165, 10.165, 10.165, 10.165]
             }
           ]
         }

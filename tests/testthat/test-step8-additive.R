@@ -78,7 +78,7 @@ test_that("{shinytest2} recording: checking-module8", {
 
   #at weekly scale
     app$set_inputs(`data8-date_nav-period_view` = TRUE)
-    for(x in 1:9){
+    for(x in 1:12){
       app$click("data8-date_nav-next_period")
     }
 

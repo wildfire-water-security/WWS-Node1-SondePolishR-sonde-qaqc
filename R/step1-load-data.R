@@ -240,7 +240,6 @@ load_data_server <- function(id, sondeproj, data_ver){
       }else{
         req(precip_path())
         precip <- read.csv(precip_path())
-        browser()
         colnames(precip) <- c("DateTime", "Precip_mm_hr")
         precip$DateTime <- lubridate::parse_date_time(precip$DateTime, tz=proj$meta$tz, orders = c("ymd HMS", "mdy HMS","ymd"))
       }

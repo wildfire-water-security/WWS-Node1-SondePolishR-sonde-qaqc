@@ -4,7 +4,7 @@
 \alias{get_precip}
 \title{Get hourly precipitation at data site}
 \usage{
-get_precip(data, lat, long)
+get_precip(data, lat, long, method, token = NULL)
 }
 \arguments{
 \item{data}{the data to get matching precipitation data for}
@@ -12,12 +12,16 @@ get_precip(data, lat, long)
 \item{lat}{the latitude to get precipitation data at}
 
 \item{long}{the longitude to get precipitation data at}
+
+\item{method}{method used to get data either "merra-2" or "nldas"}
+
+\item{token}{only required for nldas method. see details for how to obtain this token.}
 }
 \value{
 a data.frame with two columns:
 \itemize{
 \item DateTime: The datetime (\code{POSIXct}) in the same timezone as the data, at an hourly resolution.
-\item Precip_mm_hr: Average MERRA-2 bias corrected total precipitation at the surface of the earth in mm per hour.
+\item Precip_mm_hr: Average precipitation at the requested point in mm per hour.
 }
 }
 \description{
@@ -25,6 +29,6 @@ Precipitation is downloaded from \href{https://power.larc.nasa.gov/}{NASA Power}
 coordinates.
 }
 \examples{
-data <- example_data[example_data$Date == "2024-08-01",]
-get_precip(data, 43.96775, -122.63012)
+data <- example_data[example_data$Date == "2024-11-13",]
+precip <- get_precip(data, 43.96775, -122.63012, "merra-2")
 }

@@ -16,7 +16,7 @@
 #'
 #' @examples
 #' data <- example_data[example_data$Date == "2024-11-13",]
-#' precip <- get_precip(data, 43.96775, -122.63012)
+#' precip <- get_precip(data, 43.96775, -122.63012, "merra-2")
 get_precip <- function(data, lat, long, method, token=NULL){
   stopifnot("DateTime_rd" %in% colnames(data), is.numeric(lat), is.numeric(long), method %in% c("merra-2", "nldas"))
 
