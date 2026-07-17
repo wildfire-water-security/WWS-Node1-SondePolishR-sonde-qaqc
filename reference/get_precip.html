@@ -52,7 +52,7 @@ coordinates.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_precip</span><span class="op">(</span><span class="va">data</span>, <span class="va">lat</span>, <span class="va">long</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_precip</span><span class="op">(</span><span class="va">data</span>, <span class="va">lat</span>, <span class="va">long</span>, <span class="va">method</span>, token <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -70,49 +70,29 @@ coordinates.</p>
 <dt id="arg-long">long<a class="anchor" aria-label="anchor" href="#arg-long"></a></dt>
 <dd><p>the longitude to get precipitation data at</p></dd>
 
+
+<dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
+<dd><p>method used to get data either "merra-2" or "nldas"</p></dd>
+
+
+<dt id="arg-token">token<a class="anchor" aria-label="anchor" href="#arg-token"></a></dt>
+<dd><p>only required for nldas method. see details for how to obtain this token.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>a data.frame with two columns:</p><ul><li><p>DateTime: The datetime (<code>POSIXct</code>) in the same timezone as the data, at an hourly resolution.</p></li>
-<li><p>Precip_mm_hr: Average MERRA-2 bias corrected total precipitation at the surface of the earth in mm per hour.</p></li>
+<li><p>Precip_mm_hr: Average precipitation at the requested point in mm per hour.</p></li>
 </ul></div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="va">example_data</span><span class="op">[</span><span class="va">example_data</span><span class="op">$</span><span class="va">Date</span> <span class="op">==</span> <span class="st">"2024-08-01"</span>,<span class="op">]</span></span></span>
-<span class="r-in"><span><span class="fu">get_precip</span><span class="op">(</span><span class="va">data</span>, <span class="fl">43.96775</span>, <span class="op">-</span><span class="fl">122.63012</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="va">example_data</span><span class="op">[</span><span class="va">example_data</span><span class="op">$</span><span class="va">Date</span> <span class="op">==</span> <span class="st">"2024-11-13"</span>,<span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">precip</span> <span class="op">&lt;-</span> <span class="fu">get_precip</span><span class="op">(</span><span class="va">data</span>, <span class="fl">43.96775</span>, <span class="op">-</span><span class="fl">122.63012</span>, <span class="st">"merra-2"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Registered S3 methods overwritten by 'bit64':</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   method               from  </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   as.double.integer64  cheapr</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   as.integer.integer64 cheapr</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ────────────────────────────────────────────────────────────────────────────────</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">NASA/POWER Source Native Resolution Hourly Data </span> <span style="color: #00BBBB;">────────────────────────────</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Dates (month/day/year): 08/01/2024 through 08/02/2024 in UTC</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Location: Latitude 43.9678 Longitude -122.6301</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Elevation from MERRA-2: Average for 0.5 x 0.625 degree lat/lon region = 799.16</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> meters</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The value for missing source data that cannot be computed or is outside of the</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> sources availability range: NA</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Parameter(s):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ────────────────────────────────────────────────────────────────────────────────</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Parameters:</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> PRECTOTCORR MERRA-2 Precipitation Corrected (mm/day)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ────────────────────────────────────────────────────────────────────────────────</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 24 × 2</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    DateTime            Precip_mm_hr</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>                     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> 2024-08-01 <span style="color: #949494;">00:00:00</span>            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> 2024-08-01 <span style="color: #949494;">01:00:00</span>            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> 2024-08-01 <span style="color: #949494;">02:00:00</span>            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> 2024-08-01 <span style="color: #949494;">03:00:00</span>            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> 2024-08-01 <span style="color: #949494;">04:00:00</span>            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> 2024-08-01 <span style="color: #949494;">05:00:00</span>            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> 2024-08-01 <span style="color: #949494;">06:00:00</span>            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> 2024-08-01 <span style="color: #949494;">07:00:00</span>            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> 2024-08-01 <span style="color: #949494;">08:00:00</span>            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> 2024-08-01 <span style="color: #949494;">09:00:00</span>            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 14 more rows</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
