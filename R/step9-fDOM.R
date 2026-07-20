@@ -8,39 +8,37 @@ fdom_UI <- function(id){
 
     sidebarLayout(
       sidebarPanel(
-
-      #turbidity correction
-        tags$h5("Correction Method"),
-        selectInput(ns("method"),
-                  "Select Correction Equation:",
-                  choices = c("Temperature" = "temperature", "Turbidity - Inverse Polynomial" = "inverse_poly",
-                              "Turbidity - Exponential (1-parameter)" = "1p_exponential",
-                              "Turbidity - Exponential (2-parameter)" = "2p_exponential",
-                              "Turbidity - Exponential (5-parameter)" = "5p_exponential"),
-                  selected = "temp",
-                  multiple = FALSE),
-        uiOutput(ns("equation")),
-        tags$small(textOutput(ns("source"))),
-        uiOutput(ns("coef_inputs")),
-
-        HTML("<hr>"),
-
-        apply_edit_UI(ns("apply_limits"), note=""),
-        HTML("<hr>"),
-
-        #date options
-        weekly_range_sidebar_UI(ns("date_nav")),
-
-        HTML("<hr>"),
-
-      #plotting options
-        plot_options_UI(ns("plot_opts")),
-
-
-
-      ),
+        accordion(
+          open = c("fDOM Corrections"),
+          accordion_panel(
+            "fDOM Corrections",
+            selectInput(ns("method"),
+                        "Select Correction Equation:",
+                        choices = c("Temperature" = "temperature", "Turbidity - Inverse Polynomial" = "inverse_poly",
+                                    "Turbidity - Exponential (1-parameter)" = "1p_exponential",
+                                    "Turbidity - Exponential (2-parameter)" = "2p_exponential",
+                                    "Turbidity - Exponential (5-parameter)" = "5p_exponential"),
+                        selected = "temp",
+                        multiple = FALSE),
+            uiOutput(ns("equation")),
+            tags$small(textOutput(ns("source"))),
+            uiOutput(ns("coef_inputs"))
+          ),
+          accordion_panel(
+            "Save Edits",
+            apply_edit_UI(ns("apply_limits"), note=""),
+          ),
+          accordion_panel(
+            "Date Ranges",
+            weekly_range_sidebar_UI(ns("date_nav")),
+          ),
+          accordion_panel(
+            "Plotting Options",
+            plot_options_UI(ns("plot_opts"))
+          ))
+        ),
       mainPanel(
-        plotlyOutput(ns("fdom_plot"), height="60%"),
+        plotlyOutput(ns("fdom_plot"), height="400px"),
         #add buttons to navigate date
         weekly_range_buttons_UI(ns("date_nav")),
       ))

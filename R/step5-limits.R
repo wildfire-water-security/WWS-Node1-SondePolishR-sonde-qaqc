@@ -6,40 +6,40 @@ limits_UI <- function(id){
   ns <- NS(id) #line to make module work
   tagList(
     sidebarLayout(
-      sidebarPanel(
-        update_parms_UI(ns("update_parms")),
+        sidebarPanel(
+          accordion(
+            open = c("Select Parameters", "Set Physical Limits"),
+            accordion_panel(
+              "Select Parameters",
+              update_parms_UI(ns("update_parms")),
+              update_parms_UI(ns("update_parms"), input_id = "y2_var", text = "Select Second Parameter to Plot:")
+            ),
+            accordion_panel(
+              "Set Physical Limits",
+              div(style="margin-bottom: 8px; font-size:10px",
+                  "Default Limits based on YSI EXO Ranges"),
+              fluidRow(numericInput(ns("max"),
+                                    HTML("<b>Maximum</b> Physical Limit"), value = NULL),
+                       numericInput(ns("min"),
+                                    HTML("<b>Minimum</b> Physical Limit"),value = NULL)),
 
-        update_parms_UI(ns("update_parms"), input_id = "y2_var", text = "Select Second Parameter to Plot:"),
-        HTML("<hr>"),
-
-      #select physical limits
-        tags$h5("Set Physical Limits"),
-      div(style="margin-bottom: 8px; font-size:10px",
-          "Default Limits based on YSI EXO Ranges"),
-      fluidRow(numericInput(ns("max"),
-              HTML("<b>Maximum</b> Physical Limit"), value = NULL),
-            numericInput(ns("min"),
-                   HTML("<b>Minimum</b> Physical Limit"),value = NULL)),
-
-            input_switch(ns("rm_flags"), "Hide Flagged Data"),
-        HTML("<hr>"),
-
-        apply_edit_UI(ns("apply_limits"), note=""),
-        HTML("<hr>"),
-
-        #date options
-        weekly_range_sidebar_UI(ns("date_nav")),
-
-        HTML("<hr>"),
-
-      #plotting options
-        plot_options_UI(ns("plot_opts")),
-
-
-
+              input_switch(ns("rm_flags"), "Hide Flagged Data")
+            ),
+            accordion_panel(
+              "Save Edits",
+              apply_edit_UI(ns("apply_limits"), note="")
+            ),
+            accordion_panel(
+              "Date Ranges",
+              weekly_range_sidebar_UI(ns("date_nav")),
+            ),
+            accordion_panel(
+              "Plotting Options",
+              plot_options_UI(ns("plot_opts"))
+            ))
       ),
       mainPanel(
-        plotlyOutput(ns("limit_plot"), height="60%"),
+        plotlyOutput(ns("limit_plot"), height="400px"),
         #add buttons to navigate date
         weekly_range_buttons_UI(ns("date_nav")),
       ))

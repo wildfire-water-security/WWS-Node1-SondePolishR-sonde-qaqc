@@ -70,7 +70,7 @@ load_data_UI <- function(id){
           bslib::card_header("5. Add Precipitation"),
             radioButtons(ns("precip_source"),NULL,
               choices = c("Download from NASA POWER (Global)" = "merra-2",
-                          "Download from NLDAS (North America)" = "nldas",
+                          "Download from NLDAS (CONUS)" = "nldas",
                 "Upload Precipitation" = "upload"),
               selected = "merra-2"),
           conditionalPanel(
@@ -98,7 +98,14 @@ load_data_UI <- function(id){
                       href = "https://urs.earthdata.nasa.gov/documentation/for_users/user_token",
                       " here ", target = "_blank"),
                     HTML("&nbsp;"),
-                    " for instructions on obtaining an Earthdata token.")
+                    " for instructions on obtaining an Earthdata token.",
+                    "Click ",
+                    HTML("&nbsp;"),
+                    tags$a(
+                      href = "https://urs.earthdata.nasa.gov",
+                      " here ", target = "_blank"),
+                    HTML("&nbsp;"),
+                    " to obtain Earthdata token.")
               ),
           conditionalPanel(
             condition = sprintf("input['%s'] == 'upload'", ns("precip_source")),

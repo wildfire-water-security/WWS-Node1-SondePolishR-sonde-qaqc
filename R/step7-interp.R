@@ -6,38 +6,41 @@ interp_UI <- function(id){
   tagList(
     sidebarLayout(
       sidebarPanel(
-        update_parms_UI(ns("update_parms")),
-        update_parms_UI(ns("update_parms"), input_id = "y2_var", text = "Select Second Parameter to Plot:"),
-
-        HTML("<hr>"),
-      #select physical limits
-        tags$h5("Fill Missing Observations"),
-                selectInput(ns("method"),
-                  "Select Interpolation Method:",
-                  choices = c("Linear" = "linear",
-                              "Linear (seasonally adjusted)" = "ts_interp",
-                              "Spline" = "spline",
-                              "Random Forest" = "random_forest")),
-                  fluidRow(
-                    numericInput(ns("max_length"),"Max Fill Window (hr)",value =8,step=1, min=0),
-                    conditionalPanel(condition = sprintf("input['%s'] == 'ts_interp'",ns("method")),
-                      numericInput(ns("freq"), "Season Period (days)", value = 1,step = 1, min = 0))),
-        HTML("<hr>"),
-
-        apply_edit_UI(ns("apply_limits"), note=""),
-        HTML("<hr>"),
-
-        #date options
-        weekly_range_sidebar_UI(ns("date_nav")),
-
-        HTML("<hr>"),
-
-      #plotting options
-        plot_options_UI(ns("plot_opts")),
-
+        accordion(
+          open = c("Select Parameters", "Interpolation"),
+          accordion_panel(
+            "Select Parameters",
+            update_parms_UI(ns("update_parms")),
+            update_parms_UI(ns("update_parms"), input_id = "y2_var", text = "Select Second Parameter to Plot:")
+          ),
+          accordion_panel(
+            "Interpolation",
+            selectInput(ns("method"),
+                        "Select Interpolation Method:",
+                        choices = c("Linear" = "linear",
+                                    "Linear (seasonally adjusted)" = "ts_interp",
+                                    "Spline" = "spline",
+                                    "Random Forest" = "random_forest")),
+            fluidRow(
+              numericInput(ns("max_length"),"Max Fill Window (hr)",value =8,step=1, min=0),
+              conditionalPanel(condition = sprintf("input['%s'] == 'ts_interp'",ns("method")),
+                               numericInput(ns("freq"), "Season Period (days)", value = 1,step = 1, min = 0)))
+          ),
+          accordion_panel(
+            "Save Edits",
+            apply_edit_UI(ns("apply_limits"), note=""),
+          ),
+          accordion_panel(
+            "Date Ranges",
+            weekly_range_sidebar_UI(ns("date_nav")),
+          ),
+          accordion_panel(
+            "Plotting Options",
+            plot_options_UI(ns("plot_opts"))
+          ))
       ),
       mainPanel(
-        plotlyOutput(ns("interp_plot"), height="60%"),
+        plotlyOutput(ns("interp_plot"), height="400px"),
         #add buttons to navigate date
         weekly_range_buttons_UI(ns("date_nav")),
       ))

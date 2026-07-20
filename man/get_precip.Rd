@@ -25,8 +25,19 @@ a data.frame with two columns:
 }
 }
 \description{
-Precipitation is downloaded from \href{https://power.larc.nasa.gov/}{NASA Power} at an hourly scale based on the provided
+Precipitation is downloaded at an hourly scale based on the provided
 coordinates.
+}
+\details{
+There are two different datasets that can be downloaded via this function:
+\itemize{
+\item \href{https://gmao.gsfc.nasa.gov/gmao-products/merra-2/}{Merra-2}: Available from NASA power. This dataset is available
+across a global scale at a resolution of 0.5 x 0.625 degrees available from 1981 to near real time
+\item \href{https://ldas.gsfc.nasa.gov/nldas}{NLDAS}: Available from NASA Earthdata. This dataset is available
+across CONUS at a resolution of 0.125 × 0.125 degrees available from 1981 to near real time. This data requires a
+token to access the data. See \href{https://urs.earthdata.nasa.gov/documentation/for_users/user_token}{here} for
+directions on creating a token. Note that this token should be kept secret.
+}
 }
 \examples{
 data <- example_data[example_data$Date == "2024-11-13",]

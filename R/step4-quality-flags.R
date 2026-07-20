@@ -6,36 +6,38 @@ quality_UI <- function(id){
   tagList(
     sidebarLayout(
       sidebarPanel(
-        update_parms_UI(ns("update_parms")),
-        update_parms_UI(ns("update_parms"), input_id = "y2_var", text = "Select Second Parameter to Plot:"),
-
-        HTML("<hr>"),
-      #select physical limits
-        tags$h5("Apply Quality Flags"),
-            bslib::layout_columns(
-              col_widths = c(7, 5),
-              selectInput(ns("quality_flag"),
-                        "Select Quality Flag:",
-                        choices = c("Questionable" = "questionable")),
-              radioButtons(ns("selection_mode"),"Selection Method",
-                                     choices = c("Add" = "add","Remove" = "remove"))),
-
-        HTML("<hr>"),
-
-        apply_edit_UI(ns("apply_limits"), note=""),
-        HTML("<hr>"),
-
-        #date options
-        weekly_range_sidebar_UI(ns("date_nav")),
-
-        HTML("<hr>"),
-
-      #plotting options
-        plot_options_UI(ns("plot_opts")),
-
+        accordion(
+          open = c("Select Parameters", "Apply Quality Flags"),
+          accordion_panel(
+            "Select Parameters",
+            update_parms_UI(ns("update_parms")),
+            update_parms_UI(ns("update_parms"), input_id = "y2_var", text = "Select Second Parameter to Plot:")
+          ),
+          accordion_panel(
+            "Apply Quality Flags",
+              bslib::layout_columns(
+                col_widths = c(7, 5),
+                selectInput(ns("quality_flag"),
+                          "Select Quality Flag:",
+                          choices = c("Questionable" = "questionable", "Bad" = "bad")),
+                radioButtons(ns("selection_mode"),"Selection Method",
+                                       choices = c("Add" = "add","Remove" = "remove")))
+          ),
+          accordion_panel(
+            "Save Edits",
+            apply_edit_UI(ns("apply_limits"), note=""),
+          ),
+          accordion_panel(
+            "Date Ranges",
+            weekly_range_sidebar_UI(ns("date_nav")),
+          ),
+          accordion_panel(
+            "Plotting Options",
+            plot_options_UI(ns("plot_opts"))
+          ))
       ),
       mainPanel(
-        plotlyOutput(ns("quality_plot"), height="60%"),
+        plotlyOutput(ns("quality_plot"), height="400px"),
         #add buttons to navigate date
         weekly_range_buttons_UI(ns("date_nav")),
       ))
@@ -72,7 +74,7 @@ quality_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_
     traces <- reactiveVal() #tracks which traces hold our points to track
 
   #clearing manual indices if y_var or data updates
-    observeEvent(list(y_var(), data_ver(), sondeproj()),{
+    observeEvent(list(y_var(), data_ver(), sondeproj(), input$quality_flag),{
       manual_add(NULL)
       manual_rm(NULL)
       })
@@ -95,7 +97,6 @@ quality_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_
         data <- sondeproj()$data
 
         sel <- event_data("plotly_selected", source = "quality_plot")
-
         if(is.data.frame(sel)){
           sel <- sel %>% filter(.data$curveNumber %in% traces()) %>%
             mutate(x = parse_date_time(.data$x, tz= sondeproj()$meta$tz, orders = "Ymd HMS", truncated =3))
@@ -145,13 +146,21 @@ quality_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_
 
       #color points outside limits as red
         y <- y_var()
+
+        plot_opts <- switch(input$quality_flag,
+                            "questionable" = list(
+                              nicename = "Questionable",
+                              color = "orange"),
+                            "bad" = list(
+                              nicename = "Bad",
+                              color = "darkred"))
         p <- p %>% add_trace(data= flag_data, x=~DateTime_rd, y=as.formula(paste0("~`", y, "`")), type="scatter", mode="markers",
-                                 name = "Questionable", marker = list(color = "orange"), yaxis="y", inherit = FALSE)
+                                 name = plot_opts$nicename, marker = list(color = plot_opts$color), yaxis="y", inherit = FALSE)
 
       #set which traces hold points
       built_p <- plotly_build(p)
       names <- sapply(built_p$x$data, function(x){x$name})
-      traces((which(names != "Questionable")-1))
+      traces(which(!(names %in% c("Bad", "Questionable", "qual_flags")))-1)
 
       #return plot
       p
@@ -193,14 +202,18 @@ quality_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_
       flag_info <- switch(input$quality_flag,
                            "questionable" = list(
                              nicename = "questionable",
-                             flag = "QUAL01"))
+                             flag = "QUAL02"),
+                          "bad" = list(
+                            nicename = "bad",
+                            flag = "QUAL01")
+                          )
 
       #make edit list
       list(
         data = newdata,
         rows = setna,
         y_var = y_var(),
-        step = "questionable data",
+        step = "quality flags",
         note = paste0("Data flagged as ", flag_info$nicename),
         flag = flag_info$flag,
         changetype = "flag_qual"

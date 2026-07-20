@@ -27,6 +27,8 @@ blockquote {
 
 While the package contains a number of functions that are useful for correcting sonde data, the main part of this package is the Shiny app which allows the user to interactively load, view, correct, and export sonde data. The app works by creating and modifying a sonde project (`sondeproj`) object which is a list containing sonde data, flags, and metadata. See `help(example_sondeproj)` for more details on project structure.
 
+**Note: This app will not modify any raw data files. It is only able to read raw files and save to specified location.**
+
 The app consists of ten modules or pages. *While they are put in an order that represent a typical correction workflow, the steps do not need to be performed in order.*
 
 1.  **Load Data:** Load either an existing sonde project, load raw data and metadata to create a sonde project, or amend an existing sonde project with new data. Can also load or download precipitation data to include with the project.
@@ -106,11 +108,22 @@ To load a new project, use the **clear uploads** button to remove all previous f
 
 ### 1.5 Add Precipitation
 
-This step is used to add precipitation data to the project. Precipitation data is particularly helpful when correcting turbidity and fDOM data to determine if peaks are real or not. To add precipitation data there are two options:
+This step is used to add precipitation data to the project. Precipitation data is particularly helpful when correcting turbidity and fDOM data to determine if peaks are real or not. To add precipitation data there are three options:
 
-1.  Provide a site latitude and longitude and download hourly precipitation data from [NASA power](https://power.larc.nasa.gov/) (uses the `get_precip` function).
+- [Merra-2](https://gmao.gsfc.nasa.gov/gmao-products/merra-2/): Available from NASA power. This dataset is available
+across a global scale at a resolution of 0.5 x 0.625 degrees available from 1981 to near real time
+- [NLDAS](https://ldas.gsfc.nasa.gov/nldas): Available from NASA Earthdata. This dataset is available
+across CONUS at a resolution of 0.125 × 0.125 degrees available from 1981 to near real time. This data requires a
+token to access the data. See [here](https://urs.earthdata.nasa.gov/documentation/for_users/user_token) for
+directions on creating a token. Note that this token should be kept secret.
 
-2.  Provide your own precipitation data as a `.csv` file. See `help(example_precip)` for the structure user input precipitation needs to have.
+
+1.  Provide a site latitude and longitude and download hourly precipitation data from [Merra-2](https://gmao.gsfc.nasa.gov/gmao-products/merra-2/) (uses the `get_precip` function).This dataset is available
+across a global scale at a resolution of 0.5 x 0.625 degrees available from 1981 to near real time.
+
+2.  Provide a site latitude and longitude and download hourly precipitation data from [NLDAS](https://ldas.gsfc.nasa.gov/nldas) (uses the `get_precip` function). This dataset is available across CONUS at a resolution of 0.125 × 0.125 degrees available from 1981 to near real time. This data requires a token to access the data. See [here](https://urs.earthdata.nasa.gov/documentation/for_users/user_token) for directions on creating a token. Note that this token should be kept secret.
+
+3.  Provide your own precipitation data as a `.csv` file. See `help(example_precip)` for the structure user input precipitation needs to have.
 
 Once you've either input the site coordinates or specified the path to a precipitation file. Click **load precipitation** to add the data to the `sondeproj`.
 
@@ -224,9 +237,11 @@ When resolving duplicates you can add a note which is stored within the change l
 
 ## 4 Quality Flags
 
-This step is used to mark regions or points that are questionable. This uses the `apply_edit` function to add a quality flag. This flag can be visualized as a plotting option and will be exported with the other data flags. Additionally, these points can be used as a starting point for removing outlier points in [6 Outlier Removal].
+This step is used to mark regions or points that are questionable or bad. This uses the `apply_edit` function to add a quality flag. This flag can be visualized as a plotting option and will be exported with the other data flags. Additionally, these points can be used as a starting point for removing outlier points in [6 Outlier Removal].
 
-> Note this is currently the only option but in the future there may be an option to select between several different quality flags. If this feature is of interest please make note of that in the following [feature request](https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/34).
+You can select and flag points as either "bad" or "questionable" which will be colored and flagged separately. 
+
+> If there are additional flags of interest please make note of that in the following [feature request](https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/34).
 
 This module is very similar to **Visualize** except it has a new section **Apply Quality Flags**. To select points use the plotly Box Select or Lasso Select options in the top right of the plot (Box Select is used as a default) to select points that are questionable. These points will be colored orange.
 
@@ -284,7 +299,7 @@ This step is used to apply shifts to sections of data. There are two types of sh
 
 ### 8.1 Additive
 
-This method is meant to correct groups of points that are shifted due to instrument issues (i.e., sensor interference). It works similarly to [6 Outlier Removal] where you use the plotly selection tools to select a group of points within the plot. Once you select a group of points, it will guess the slope and intercept needed apply a linear shift correction to fit the start and end points of the data. You can manually adjust these values using the **slope** and **intercept** inputs. For a absolute shift, you can set slope to 0 and adjust the intercept.
+This method is meant to correct groups of points that are shifted due to instrument issues (i.e., sensor interference). It works similarly to [6 Outlier Removal] where you use the plotly selection tools to select a group of points within the plot. Once you select a group of points, it will guess the slope and intercept needed apply a linear shift correction to fit the start and end points of the data. You can manually adjust these values using the **slope** and **intercept** inputs. For a absolute shift, you can set slope to 0 and adjust the intercept. **To clear the selected points, simply select a region of the plot with no points.**
 
 ### 8.2 Drift
 

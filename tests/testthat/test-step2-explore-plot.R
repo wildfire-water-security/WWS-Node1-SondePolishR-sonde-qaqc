@@ -11,7 +11,7 @@ test_that("{shinytest2} recording: checking-module2", {
   #click to load files and create project
   app$click("data1-load_prj")
 
-  #check initial plot is made
+  #check initial plot is made (cmd fails here)
   app$set_inputs(modules = "step-2")
   app$wait_for_idle()
   plot_obj <- app$get_value(export = "data2-plot_obj")
@@ -79,13 +79,20 @@ test_that("{shinytest2} recording: checking-module2", {
   app$set_inputs(`data2-table_opt` = "Calibration Check")
   app$expect_values(export = "data2-table", name="calcheck-table",screenshot_args = FALSE) #cal check
 
-
   app$set_inputs(`data2-table_opt` = "Data Summary")
   app$expect_values(export = "data2-table", name="datasum-table",screenshot_args = FALSE) #cal check
 
   app$set_inputs(`data2-date_nav-period_view` = TRUE)
   app$expect_values(export = "data2-table", name="datasum-table-weekly",screenshot_args = FALSE) #cal check
 
+  #test reverting changes
+  app$set_inputs(`data2-log_table_rows_selected` = 4, allow_no_input_binding_ = TRUE)
+  app$set_inputs(`data2-conf` = TRUE, allow_no_input_binding_ = TRUE, priority_ = "event")
+  app$set_inputs(`data2-table_opt` = "Change Log")
+  app$expect_values(export = "data2-table", name="changelog-table-undo",screenshot_args = FALSE)
 
+  plot_obj <- app$get_value(export = "data2-plot_obj") #cmd fails here
+  expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
+  app$expect_screenshot(name = "undo_change")
 })
 

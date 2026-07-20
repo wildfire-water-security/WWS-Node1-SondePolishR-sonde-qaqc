@@ -1,10 +1,12 @@
 Akie
+CONUS
 ContDataQC
 DataEntry
 DateTime
 DateTimes
 DupNum
 EXO
+Earthdata
 Ecohydrology
 FNU
 Formazin
@@ -12,6 +14,8 @@ HH
 Hampel
 LaRC
 MERRA
+Merra
+NLDAS
 Nephelometric
 ODM
 ODO
@@ -54,6 +58,7 @@ interferences
 interp
 io
 larc
+merra
 missForest
 na
 namespacing
@@ -62,6 +67,7 @@ natively
 nchanged
 ndif
 newdata
+nldas
 olddata
 oow
 params

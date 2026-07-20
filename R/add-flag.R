@@ -55,12 +55,14 @@ add_flags <- function(proj, data){
 #' @param qual_flags A `data.frame` containing the quality flags.
 #' @param y_var Parameter being plotted.
 #'
-#' @returns a logical vector the same length as rows in the dataset where TRUE means it has a quality flag.
+#' @returns a vector the same length as rows in the dataset with the nice name of the quality flag.
 #' @noRd
 get_qual_flags <- function(qual_flags, y_var){
-
   qual_flags <- qual_flags[[y_var]]
 
-  return(grepl("QUAL01", qual_flags))
+  qual_flags <- ifelse(qual_flags == "QUAL01", "Bad", qual_flags)
+  qual_flags <- ifelse(qual_flags == "QUAL02", "Questionable", qual_flags)
+
+  return(qual_flags)
 
 }

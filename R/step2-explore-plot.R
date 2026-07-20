@@ -8,37 +8,38 @@ explore_data_UI <- function(id){
   tagList(
     sidebarLayout(
       sidebarPanel(
+        accordion(
+          open = c("Select Parameters", "Remove Out of Water Periods", "Undo Data Edits", "Table Options"),
 
-        update_parms_UI(ns("update_parms")),
-
-        update_parms_UI(ns("update_parms"), input_id = "y2_var", text = "Select Second Parameter to Plot:"),
-
-        HTML("<hr>"),
-
-        tags$h5("Remove Out of Water Periods"),
-        actionButton(ns("remove_oow"), "Flag OOW Periods"),
-        HTML("<hr>"),
-
-        #date options
-        weekly_range_sidebar_UI(ns("date_nav")),
-
-        HTML("<hr>"),
-
-        #plotting options
-        plot_options_UI(ns("plot_opts")),
-
-        HTML("<hr>"),
-        tags$h5("Table Options"),
-
-        selectInput(
-          ns("table_opt"),
-          "Select Table to View:",
-          choices = c("Change Log", "Field Form", "Calibration Check", "Data Summary")
-        )
-
-
-
-      ),
+          accordion_panel(
+            "Select Parameters",
+            update_parms_UI(ns("update_parms")),
+            update_parms_UI(ns("update_parms"), input_id = "y2_var", text = "Select Second Parameter to Plot:")
+          ),
+          accordion_panel(
+            "Remove Out of Water Periods",
+            actionButton(ns("remove_oow"), "Flag OOW Periods"),
+          ),
+          accordion_panel(
+            "Undo Data Edits",
+            actionButton(ns("undo_changes"), "Restore Selected Version"),
+          ),
+          accordion_panel(
+            "Table Options",
+            selectInput(
+              ns("table_opt"),
+              "Select Table to View:",
+              choices = c("Change Log", "Field Form", "Calibration Check", "Data Summary"))
+          ),
+          accordion_panel(
+            "Date Ranges",
+            weekly_range_sidebar_UI(ns("date_nav")),
+          ),
+          accordion_panel(
+            "Plotting Options",
+            plot_options_UI(ns("plot_opts"))
+          )
+        )),
 
       mainPanel(
         #add plot
@@ -76,9 +77,11 @@ explore_data_UI <- function(id){
 #'
 explore_data_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_length){
   moduleServer(id, function(input, output, session){
+    ns <- NS(id) #line to make module work
 
   #keep track of second y_variable
     y2_var <- reactiveVal()
+    undo_ver <- reactiveVal() #keep track of data version
 
   #create log table
   tab <- reactive({
@@ -103,9 +106,6 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var,period_view, date
       describe_data(data, precip)
     }
   })
-
-
-
     output$log_table <- DT::renderDT({
       #column names
       df_cols <- switch(
@@ -187,31 +187,81 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var,period_view, date
   #keep track of dates
     plot_dates <- weekly_range_server("date_nav", sondeproj, period_view, dates, p_length, data_ver)
 
+  #keep track of selected data version
+    undo_ver <- reactive({
+      req(sondeproj())
+
+      row <- input$log_table_rows_selected
+
+      if (is.null(row)) {
+        return(NULL)
+      }
+
+      if (row == nrow(sondeproj()$changelog)) {
+        return(sondeproj()$data)
+      }
+
+      diff_list <- sondeproj()$changelog$diff_name[(row + 1):nrow(sondeproj()$changelog)]
+      diff_list <- diff_list[grepl("^dd", diff_list)]
+      diffs <- sondeproj()$diffs[names(sondeproj()$diffs) %in% diff_list]
+
+      apply_diff(sondeproj()$data, diffs,
+                 id = c("DateTime_rd", "DupNum"),
+                 invert = TRUE)
+    })
+
+  #keep track of if we are okay restoring changes
+   observeEvent(input$undo_changes,{
+     #only undo changes if something is selected
+     if(!is.null(input$log_table_rows_selected)){
+       ##confirmation here
+       shinyalert::shinyalert(title = "Confirm restoring past data version",
+                              text = "If you continue you will lose any edits made after the selected version.",
+                              type = "warning",
+                              showCancelButton = TRUE,
+                              inputId = "conf")
+     }else{
+       shinyalert::shinyalert(title = "Select a Version to Restore",
+                              text = "Select a row in the table to restore to.",
+                              type = "info")}
+       })
+
+  #reset version selected when project
+  #restore a version
+   observeEvent(input$conf,{
+     if(input$conf == TRUE){
+       proj <- sondeproj()
+
+       #update dataset
+       proj$data <- undo_ver()
+
+       #remove extra diffs
+       #get the diffs to apply
+       row <- input$log_table_rows_selected
+       #only get diffs if not current data
+       if(row < nrow(sondeproj()$changelog)){
+         diff_list <- sondeproj()$changelog$diff_name[1:row]
+         diff_list <- diff_list[grepl("^dd", diff_list)]
+         diffs <- sondeproj()$diffs[names(sondeproj()$diffs) %in% diff_list]}
+       proj$diffs <- diffs
+
+       #roll back changelog
+       proj$changelog <- proj$changelog[1:row,]
+
+       #set as sondeproj
+       sondeproj(proj)
+     }
+   })
+
     #filter data
     plot_data <- reactive({
       req(sondeproj(), plot_dates())
-
-      #alter data if change log rows are selected
-      if(!is.null(input$log_table_rows_selected)){
-        #get the diffs to apply
-          row <- input$log_table_rows_selected
-          #only get diffs if not current data
-          if(row < nrow(sondeproj()$changelog)){
-            diff_list <- sondeproj()$changelog$diff_name[(row+1):nrow(sondeproj()$changelog)]
-            diff_list <- diff_list[grepl("^dd", diff_list)]
-            diffs <- sondeproj()$diffs[names(sondeproj()$diffs) %in% diff_list]
-
-            data_ver <- apply_diff(sondeproj()$data, diffs, id=c("DateTime_rd", "DupNum"), invert=TRUE)
-          }else{
-            data_ver <- sondeproj()$data
-
-          }
-
+      if(is.null(undo_ver())){
+        data <- sondeproj()$data
       }else{
-        data_ver <- sondeproj()$data
+        data <- undo_ver()
       }
-
-       data_ver %>% dplyr::filter(.data$Date >= plot_dates()[1], .data$Date <= plot_dates()[2])
+      data %>% dplyr::filter(.data$Date >= plot_dates()[1], .data$Date <= plot_dates()[2])
     })
 
     #create plotly plot

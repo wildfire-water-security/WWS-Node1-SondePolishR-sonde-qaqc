@@ -149,13 +149,15 @@ plot_sonde <- function(data, y_var, y2_var=NULL,
 
   #plot questionable points
   if(opts$qualflag){
-    plot_flags <- proj$flags$flag_qual %>% filter(.data$Index %in% data$Index)
-    plot_flags <- get_qual_flags(plot_flags, y_var)
+    plot_flags <- proj$flags$flag_qual %>% filter(.data$Index %in% data$Index) %>% arrange(.data$Index)
+    questionable <- data %>% arrange(.data$Index) %>% mutate(qual_flags = get_qual_flags(plot_flags, y_var)) %>%
+      filter(!is.na(.data$qual_flags)) %>% arrange(.data$DateTime)
 
-    questionable <- data[plot_flags,]
+    colors <- c("Bad" = "darkred", "Questionable" = "orange")
+
     if(nrow(questionable) > 0){
       p <- p %>%  add_trace(data= questionable, x=~DateTime_rd, y=as.formula(paste0("~`", y_var, "`")), type="scatter", mode="markers",
-                            name = "Questionable", marker = list(color = "orange"), yaxis="y", inherit = FALSE)
+                            color=~qual_flags, yaxis="y", colors= colors, inherit = FALSE)
     }
 
   }

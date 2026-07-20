@@ -6,51 +6,52 @@ outlier_UI <- function(id){
   tagList(
     sidebarLayout(
       sidebarPanel(
-        update_parms_UI(ns("update_parms")),
-        update_parms_UI(ns("update_parms"), input_id = "y2_var", text = "Select Second Parameter to Plot:"),
-
-        HTML("<hr>"),
-      #select physical limits
-        tags$h5("Identify Outliers"),
+        accordion(
+          open = c("Select Parameters", "Identify Outliers"),
+          accordion_panel(
+            "Select Parameters",
+            update_parms_UI(ns("update_parms")),
+            update_parms_UI(ns("update_parms"), input_id = "y2_var", text = "Select Second Parameter to Plot:")
+          ),
+          accordion_panel(
+            "Identify Outliers",
             bslib::layout_columns(
               col_widths = c(7, 5),
               selectInput(ns("filter_type"),
-                        "Select Outlier Detection Method:",
-                        choices = c("None" = "none","Questionable Points" = "questionable",
-                                    "Hampel Filter" = "hampel", "Relative Change" = "rel_change"),
-                        selected = "none"),
+                          "Select Outlier Detection Method:",
+                          choices = c("None" = "none","Questionable Points" = "questionable",
+                                      "Bad Points" = "bad",
+                                      "Hampel Filter" = "hampel", "Relative Change" = "rel_change"),
+                          selected = "none"),
               radioButtons(ns("selection_mode"),"Manual Selection Method",
-                                     choices = c("Add" = "add","Remove" = "remove"))),
+                           choices = c("Add" = "add","Remove" = "remove"))),
             bslib::layout_columns(
-                  col_widths = c(3,3,1,5),
-                    numericInput(ns("k"),"Window Size",value =5,step=2),
-                    numericInput(ns("t"),"Threshold",value = 2, step=0.1),
-                    tags$div(
-                    style = "width: 1px; height: 85px; background-color: #6c7881; display: inline-block; margin: 0 30px; vertical-align: middle;"),
-                    div(class = "d-flex justify-content-center align-items-center",
-                        style = "height: 85px;",
-                        actionButton(ns("clear_sel"), "Clear Selection")))
-                ,
-                input_switch(ns("rm_flags"), "Hide Flagged Data"),
-
-        HTML("<hr>"),
-
-        apply_edit_UI(ns("apply_limits"), note=""),
-        HTML("<hr>"),
-
-        #date options
-        weekly_range_sidebar_UI(ns("date_nav")),
-
-        HTML("<hr>"),
-
-      #plotting options
-        plot_options_UI(ns("plot_opts")),
-
-
-
-      ),
+              col_widths = c(3,3,1,5),
+              numericInput(ns("k"),"Window Size",value =5,step=2),
+              numericInput(ns("t"),"Threshold",value = 2, step=0.1),
+              tags$div(
+                style = "width: 1px; height: 85px; background-color: #6c7881; display: inline-block; margin: 0 30px; vertical-align: middle;"),
+              div(class = "d-flex justify-content-center align-items-center",
+                  style = "height: 85px;",
+                  actionButton(ns("clear_sel"), "Clear Selection")))
+            ,
+            input_switch(ns("rm_flags"), "Hide Flagged Data")
+          ),
+          accordion_panel(
+            "Save Edits",
+            apply_edit_UI(ns("apply_limits"), note=""),
+          ),
+          accordion_panel(
+            "Date Ranges",
+            weekly_range_sidebar_UI(ns("date_nav")),
+          ),
+          accordion_panel(
+            "Plotting Options",
+            plot_options_UI(ns("plot_opts"))
+          ))
+        ),
       mainPanel(
-        plotlyOutput(ns("outlier_plot"), height="60%"),
+        plotlyOutput(ns("outlier_plot"), height="400px"),
         #add buttons to navigate date
         weekly_range_buttons_UI(ns("date_nav")),
       ))
@@ -134,7 +135,11 @@ outlier_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_
       }
 
       if(input$filter_type == "questionable"){
-        outlier <- get_qual_flags(sondeproj()$flags$flag_qual, y_var())
+        outlier <- get_qual_flags(sondeproj()$flags$flag_qual, y_var()) == "Questionable"
+      }
+
+      if(input$filter_type == "bad"){
+        outlier <- get_qual_flags(sondeproj()$flags$flag_qual, y_var()) == "Bad"
       }
 
       #return flagged indices

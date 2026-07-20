@@ -7,34 +7,36 @@ additive_UI <- function(id){
 
     sidebarLayout(
       sidebarPanel(
-        update_parms_UI(ns("update_parms")),
-        update_parms_UI(ns("update_parms"), input_id = "y2_var", text = "Select Second Parameter to Plot:"),
-
-        HTML("<hr>"),
-
-        tags$h5("Shift Type"),
-        div(style = "margin-top: -15px;",
-            radioButtons(ns("edit_type"),"",
-                     choices = c("Additive" = "additive","Drift" = "drift"))),
-        uiOutput(ns('edit_options')),
-
-        HTML("<hr>"),
-
-        apply_edit_UI(ns("apply_limits"), note=""),
-        HTML("<hr>"),
-
-        #date options
-        weekly_range_sidebar_UI(ns("date_nav")),
-
-        HTML("<hr>"),
-
-        #plotting options
-        plot_options_UI(ns("plot_opts"))
-
+        accordion(
+          open = c("Select Parameters", "Shift Corrections"),
+          accordion_panel(
+            "Select Parameters",
+            update_parms_UI(ns("update_parms")),
+            update_parms_UI(ns("update_parms"), input_id = "y2_var", text = "Select Second Parameter to Plot:")
+          ),
+          accordion_panel(
+            "Shift Corrections",
+            div(style = "margin-top: -15px;",
+                radioButtons(ns("edit_type"),"",
+                             choices = c("Additive" = "additive","Drift" = "drift"))),
+            uiOutput(ns('edit_options'))
+          ),
+          accordion_panel(
+            "Save Edits",
+            apply_edit_UI(ns("apply_limits"), note=""),
+          ),
+          accordion_panel(
+            "Date Ranges",
+            weekly_range_sidebar_UI(ns("date_nav")),
+          ),
+          accordion_panel(
+            "Plotting Options",
+            plot_options_UI(ns("plot_opts"))
+          ))
         ),
 
     mainPanel(
-      plotlyOutput(ns("shift_plot"), height="60%"),
+      plotlyOutput(ns("shift_plot"), height="400px"),
       #add buttons to navigate date
       weekly_range_buttons_UI(ns("date_nav")),
     ))
