@@ -14,6 +14,7 @@ test_that("{shinytest2} recording: checking-module2", {
   #check initial plot is made (cmd fails here)
   app$set_inputs(modules = "step-2")
   app$wait_for_idle()
+  Sys.sleep(1)
   plot_obj <- app$get_value(export = "data2-plot_obj")
   expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
   app$expect_screenshot(name = "intial_plot")
@@ -91,7 +92,9 @@ test_that("{shinytest2} recording: checking-module2", {
   app$set_inputs(`data2-table_opt` = "Change Log")
   app$expect_values(export = "data2-table", name="changelog-table-undo",screenshot_args = FALSE)
 
-  plot_obj <- app$get_value(export = "data2-plot_obj") #cmd fails here
+  app$wait_for_idle()
+  Sys.sleep(2)
+  plot_obj <- app$get_value(export = "data2-plot_obj")
   expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
   app$expect_screenshot(name = "undo_change")
 })
