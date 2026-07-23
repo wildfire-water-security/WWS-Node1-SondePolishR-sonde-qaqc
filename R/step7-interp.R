@@ -160,6 +160,7 @@ interp_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_l
       req(data_fill(), y_var())
       newdata <- data_fill()
       rows <- newdata$fill_flag
+      rows[is.na(newdata[[y_var()]]) & rows] <- !rows[is.na(newdata[[y_var()]]) & rows] # make sure we don't flag if not filled
       newdata <- newdata %>% select(-"fill_flag")
 
       #nice names of methods

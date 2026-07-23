@@ -1,5 +1,17 @@
 # SondePolishR
 
+## SondePolishR 0.0.9003
+
+(2026-07-2x)
+
+### Bug Fixes
+
+-   Error when combing flags when removing out of water periods due to flagging all parameters.
+
+-   Quality flags were erroring when trying to use to select points for outlier selection due to changes to the `get_qual_flags` function.
+
+-   Fixed how the precipitation data was clipped to not remove a data point at the start or end of the dataset.
+
 ## SondePolishR 0.0.9002
 
 (2026-07-20)

@@ -50,8 +50,9 @@ get_precip <- function(data, lat, long, method, token=NULL){
   }
 
   #clean precip to match our data (change back to correct tz, get a datetime)
+  range <- range(data$DateTime_rd)
   precip_clean <- precip %>% mutate(DateTime = lubridate::with_tz(.data$DateTime, tz=tz(data$DateTime_rd))) %>%
-    filter(.data$DateTime %in% data$DateTime_rd)
+    filter(.data$DateTime >= floor_date(range[1], "1 hour") & .data$DateTime <= ceiling_date(range[2], "1 hour"))
 
   return(precip_clean)
 

@@ -53,16 +53,29 @@ apply_edit <- function(proj, edit){
     }
 
   #add flags preserving any existing flags
-    old_flags <- proj$flags[[edit$changetype]][[edit$y_var]]
-    new_flags <- rep(edit$flag, length(old_flags))
-    new_flags[!edit$rows] <- NA
+    comb_flags <- function(proj, y_var){
+      old_flags <- proj$flags[[edit$changetype]][[y_var]]
+      new_flags <- rep(edit$flag, length(old_flags))
+      new_flags[!edit$rows] <- NA
 
-    apply_flag <- function(old, new){
-      old_flags <- unlist(strsplit(old, ";"))
-      new_flags <- na.omit(unique(c(old_flags, new)))
-      ifelse(length(new_flags) >0, paste(new_flags, collapse = ";"), NA)
+      apply_flag <- function(old, new){
+        old_flags <- unlist(strsplit(old, ";"))
+        new_flags <- na.omit(unique(c(old_flags, new)))
+        ifelse(length(new_flags) >0, paste(new_flags, collapse = ";"), NA)
+      }
+      proj$flags[[edit$changetype]][[y_var]] <- sapply(1:length(old_flags), function(x) apply_flag(old_flags[x], new_flags[x]))
+
+      return(proj)
     }
-    proj$flags[[edit$changetype]][[edit$y_var]] <- sapply(1:length(old_flags), function(x) apply_flag(old_flags[x], new_flags[x]))
+   #if all loop through
+    if(edit$y_var == "all"){
+      y_vars <- get_parms(olddata)
+      for(v in y_vars){proj <- comb_flags(proj, v)}
+    }else{
+      proj <- comb_flags(proj, edit$y_var)
+    }
+
+
 
   #update log entry
     proj <- write_log(proj, edit$y_var, edit$step, n=sum(edit$rows, na.rm=TRUE),

@@ -135,11 +135,13 @@ outlier_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_
       }
 
       if(input$filter_type == "questionable"){
-        outlier <- get_qual_flags(sondeproj()$flags$flag_qual, y_var()) == "Questionable"
+        outlier <- get_qual_flags(sondeproj()$flags$flag_qual, y_var())
+        outlier <- ifelse(is.na(outlier), FALSE, ifelse(outlier == "Questionable", TRUE, FALSE))
       }
 
       if(input$filter_type == "bad"){
-        outlier <- get_qual_flags(sondeproj()$flags$flag_qual, y_var()) == "Bad"
+        outlier <- get_qual_flags(sondeproj()$flags$flag_qual, y_var())
+        outlier <- ifelse(is.na(outlier), FALSE, ifelse(outlier == "Bad", TRUE, FALSE))
       }
 
       #return flagged indices
