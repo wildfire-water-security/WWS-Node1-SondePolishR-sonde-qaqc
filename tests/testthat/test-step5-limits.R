@@ -13,6 +13,7 @@ test_that("{shinytest2} recording: checking-module5", {
   app$click("data1-load_prj")
 
   app$set_inputs(modules = "step-5")
+  app$set_inputs(`data5-update_parms-y_var` = "fDOM_QSU")
 
   #check range when df is first added
     rng <- c(app$get_value(input = "data5-min"), app$get_value(input = "data5-max"))

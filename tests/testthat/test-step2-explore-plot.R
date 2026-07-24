@@ -11,8 +11,9 @@ test_that("{shinytest2} recording: checking-module2", {
   #click to load files and create project
   app$click("data1-load_prj")
 
-  #check initial plot is made (cmd fails here)
+  #check initial plot is made
   app$set_inputs(modules = "step-2")
+  app$set_inputs(`data2-update_parms-y_var` = "fDOM_QSU")
   app$wait_for_idle()
   Sys.sleep(1)
   plot_obj <- app$get_value(export = "data2-plot_obj")

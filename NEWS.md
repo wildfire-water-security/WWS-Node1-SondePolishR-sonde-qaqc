@@ -12,6 +12,10 @@
 
 -   Fixed how the precipitation data was clipped to not remove a data point at the start or end of the dataset.
 
+**Updates**
+
+-   Changed `read_sonde` function to also include depth (m) if available in the variables.
+
 ## SondePolishR 0.0.9002
 
 (2026-07-20)

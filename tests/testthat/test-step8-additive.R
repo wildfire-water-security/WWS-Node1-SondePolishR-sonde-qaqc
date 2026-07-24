@@ -12,6 +12,7 @@ test_that("{shinytest2} recording: checking-module8", {
   app$click("data1-load_prj")
 
   app$set_inputs(modules = "step-8") #for screenshots of what is happening
+  app$set_inputs(`data8-update_parms-y_var` = "fDOM_QSU")
 
  #testing additive shift
   app$set_inputs(`data8-edit_type` = "additive")

@@ -73,7 +73,7 @@ get_nldas <- function(token, lat, long, start, end){
   resp <- url %>%
     req_retry(
       max_tries = 10,
-      is_transient = \(resp) resp_status(resp) %in% c(429, 500, 503),
+      is_transient = function(resp){resp_status(resp) %in% c(429, 500, 503)},
       backoff = ~ runif(1, 1, 5)) %>%
     req_perform()
 

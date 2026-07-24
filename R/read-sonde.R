@@ -117,7 +117,7 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NUL
   #some data cleaning
     #remove the not directly measured analytes (this clutters and you can calculate them after the fact)
     data <- data %>% select(any_of(c("Date","Time_HH_mm_ss","Site_Name","SpCond_uS_cm","fDOM_QSU","ODO_mg_L",
-                                   "Turbidity_FNU","pH","Temp_C","Battery_V")))
+                                   "Turbidity_FNU","pH","Temp_C","Battery_V", "Depth_m")))
 
     #remove any duplicated header rows
     extra_header <- c(grep("^Date", as.character(data$Date)), which(as.character(data$Date) == ""))
@@ -184,7 +184,7 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NUL
 
   #organize order and make a regular df to be consistent
     data <- data %>% dplyr::select(dplyr::any_of(c("Index", "FileName", "Date", "Time_HH_mm_ss", "DateTime", "DateTime_rd", "Site_Name", "Battery_V",
-                                   "fDOM_QSU", "ODO_mg_L", "pH", "SpCond_uS_cm", "Temp_C", "Turbidity_FNU"))) %>% as.data.frame() %>%
+                                   "Depth_m", "fDOM_QSU", "ODO_mg_L", "pH", "SpCond_uS_cm", "Temp_C", "Turbidity_FNU"))) %>% as.data.frame() %>%
       arrange(.data$DateTime)
 
  #add flags

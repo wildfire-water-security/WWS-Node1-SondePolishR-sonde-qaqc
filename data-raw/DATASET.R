@@ -10,7 +10,7 @@
                        ff_path = ff, cc_path = cal, tz = "Etc/GMT+8", site="FAL")
 
     #add precip
-    proj$precip <- get_precip(proj$data, 43.96, -122.63)
+    proj$precip <- get_precip(proj$data, 43.96, -122.63, method="merra-2")
     proj$meta$coords <- c(43.96,-122.63)
 
     #clip data down for a smaller example and clear some actual data

@@ -13,6 +13,7 @@ test_that("{shinytest2} recording: checking-module6", {
   app$click("data1-load_prj")
 
   app$set_inputs(modules = "step-6")
+  app$set_inputs(`data6-update_parms-y_var` = "fDOM_QSU")
 
   #check initial plot
   plot_obj <- app$get_value(export = "data6-plot_obj")
