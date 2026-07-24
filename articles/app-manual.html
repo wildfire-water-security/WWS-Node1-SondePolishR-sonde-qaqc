@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SondePolishR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9003</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -96,6 +96,8 @@ sonde data. The app works by creating and modifying a sonde project
 (<code>sondeproj</code>) object which is a list containing sonde data,
 flags, and metadata. See <code><a href="../reference/example_sondeproj.html">help(example_sondeproj)</a></code> for more
 details on project structure.</p>
+<p><strong>Note: This app will not modify any raw data files. It is only
+able to read raw files and save to specified location.</strong></p>
 <p>The app consists of ten modules or pages. <em>While they are put in
 an order that represent a typical correction workflow, the steps do not
 need to be performed in order.</em></p>
@@ -216,11 +218,34 @@ to remove all previous file paths.</p>
 <p>This step is used to add precipitation data to the project.
 Precipitation data is particularly helpful when correcting turbidity and
 fDOM data to determine if peaks are real or not. To add precipitation
-data there are two options:</p>
+data there are three options:</p>
+<ul>
+<li>
+<a href="https://gmao.gsfc.nasa.gov/gmao-products/merra-2/" class="external-link">Merra-2</a>:
+Available from NASA power. This dataset is available across a global
+scale at a resolution of 0.5 x 0.625 degrees available from 1981 to near
+real time</li>
+<li>
+<a href="https://ldas.gsfc.nasa.gov/nldas" class="external-link">NLDAS</a>: Available from
+NASA Earthdata. This dataset is available across CONUS at a resolution
+of 0.125 × 0.125 degrees available from 1981 to near real time. This
+data requires a token to access the data. See <a href="https://urs.earthdata.nasa.gov/documentation/for_users/user_token" class="external-link">here</a>
+for directions on creating a token. Note that this token should be kept
+secret.</li>
+</ul>
 <ol style="list-style-type: decimal">
 <li><p>Provide a site latitude and longitude and download hourly
-precipitation data from <a href="https://power.larc.nasa.gov/" class="external-link">NASA
-power</a> (uses the <code>get_precip</code> function).</p></li>
+precipitation data from <a href="https://gmao.gsfc.nasa.gov/gmao-products/merra-2/" class="external-link">Merra-2</a>
+(uses the <code>get_precip</code> function).This dataset is available
+across a global scale at a resolution of 0.5 x 0.625 degrees available
+from 1981 to near real time.</p></li>
+<li><p>Provide a site latitude and longitude and download hourly
+precipitation data from <a href="https://ldas.gsfc.nasa.gov/nldas" class="external-link">NLDAS</a> (uses the
+<code>get_precip</code> function). This dataset is available across
+CONUS at a resolution of 0.125 × 0.125 degrees available from 1981 to
+near real time. This data requires a token to access the data. See <a href="https://urs.earthdata.nasa.gov/documentation/for_users/user_token" class="external-link">here</a>
+for directions on creating a token. Note that this token should be kept
+secret.</p></li>
 <li><p>Provide your own precipitation data as a <code>.csv</code> file.
 See <code><a href="../reference/example_precip.html">help(example_precip)</a></code> for the structure user input
 precipitation needs to have.</p></li>
@@ -391,15 +416,16 @@ resolved duplicate removed.</em></p>
 <div class="section level3">
 <h3 id="quality-flags">4 Quality Flags<a class="anchor" aria-label="anchor" href="#quality-flags"></a>
 </h3>
-<p>This step is used to mark regions or points that are questionable.
-This uses the <code>apply_edit</code> function to add a quality flag.
-This flag can be visualized as a plotting option and will be exported
-with the other data flags. Additionally, these points can be used as a
-starting point for removing outlier points in <a href="#outlier-removal">6 Outlier Removal</a>.</p>
+<p>This step is used to mark regions or points that are questionable or
+bad. This uses the <code>apply_edit</code> function to add a quality
+flag. This flag can be visualized as a plotting option and will be
+exported with the other data flags. Additionally, these points can be
+used as a starting point for removing outlier points in <a href="#outlier-removal">6 Outlier Removal</a>.</p>
+<p>You can select and flag points as either “bad” or “questionable”
+which will be colored and flagged separately.</p>
 <blockquote>
-<p>Note this is currently the only option but in the future there may be
-an option to select between several different quality flags. If this
-feature is of interest please make note of that in the following <a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/34" class="external-link">feature
+<p>If there are additional flags of interest please make note of that in
+the following <a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/34" class="external-link">feature
 request</a>.</p>
 </blockquote>
 <p>This module is very similar to <strong>Visualize</strong> except it
@@ -527,7 +553,9 @@ you select a group of points, it will guess the slope and intercept
 needed apply a linear shift correction to fit the start and end points
 of the data. You can manually adjust these values using the
 <strong>slope</strong> and <strong>intercept</strong> inputs. For a
-absolute shift, you can set slope to 0 and adjust the intercept.</p>
+absolute shift, you can set slope to 0 and adjust the intercept.
+<strong>To clear the selected points, simply select a region of the plot
+with no points.</strong></p>
 </div>
 <div class="section level4">
 <h4 id="drift">8.2 Drift<a class="anchor" aria-label="anchor" href="#drift"></a>

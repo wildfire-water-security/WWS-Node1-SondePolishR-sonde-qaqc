@@ -1,8 +1,7 @@
 # Get hourly precipitation at data site
 
-Precipitation is downloaded from [NASA
-Power](https://power.larc.nasa.gov/) at an hourly scale based on the
-provided coordinates.
+Precipitation is downloaded at an hourly scale based on the provided
+coordinates.
 
 ## Usage
 
@@ -42,6 +41,24 @@ a data.frame with two columns:
 
 - Precip_mm_hr: Average precipitation at the requested point in mm per
   hour.
+
+## Details
+
+There are two different datasets that can be downloaded via this
+function:
+
+- [Merra-2](https://gmao.gsfc.nasa.gov/gmao-products/merra-2/):
+  Available from NASA power. This dataset is available across a global
+  scale at a resolution of 0.5 x 0.625 degrees available from 1981 to
+  near real time
+
+- [NLDAS](https://ldas.gsfc.nasa.gov/nldas): Available from NASA
+  Earthdata. This dataset is available across CONUS at a resolution of
+  0.125 × 0.125 degrees available from 1981 to near real time. This data
+  requires a token to access the data. See
+  [here](https://urs.earthdata.nasa.gov/documentation/for_users/user_token)
+  for directions on creating a token. Note that this token should be
+  kept secret.
 
 ## Examples
 

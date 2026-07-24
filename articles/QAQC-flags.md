@@ -12,7 +12,8 @@ which is used to determine what changes were made to the data.
 | Shift Corrections | CHG02 | Linear drift correction applied to file. |
 | fDOM Corrections | CHG03 | fDOM corrected for temperature. |
 | fDOM Corrections | CHG04 | fDOM corrected for turbidity. |
-| Quality Flags | QUAL01 | Data flagged as questionable. |
+| Quality Flags | QUAL01 | Data flagged as bad. |
+| Quality Flags | QUAL02 | Data flagged as questionable. |
 | Physical Limits | RM02 | Data removed based on absolute limits. |
 | Outlier Removal | RM03 | Data removed based on outlier selection methods and user input. |
 | Visualize | RM04 | OOW periods removed based on information from the field form. |

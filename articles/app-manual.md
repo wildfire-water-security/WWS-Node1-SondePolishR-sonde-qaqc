@@ -11,6 +11,9 @@ metadata. See
 [`help(example_sondeproj)`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/example_sondeproj.md)
 for more details on project structure.
 
+**Note: This app will not modify any raw data files. It is only able to
+read raw files and save to specified location.**
+
 The app consists of ten modules or pages. *While they are put in an
 order that represent a typical correction workflow, the steps do not
 need to be performed in order.*
@@ -133,13 +136,38 @@ previous file paths.
 This step is used to add precipitation data to the project.
 Precipitation data is particularly helpful when correcting turbidity and
 fDOM data to determine if peaks are real or not. To add precipitation
-data there are two options:
+data there are three options:
+
+- [Merra-2](https://gmao.gsfc.nasa.gov/gmao-products/merra-2/):
+  Available from NASA power. This dataset is available across a global
+  scale at a resolution of 0.5 x 0.625 degrees available from 1981 to
+  near real time
+- [NLDAS](https://ldas.gsfc.nasa.gov/nldas): Available from NASA
+  Earthdata. This dataset is available across CONUS at a resolution of
+  0.125 × 0.125 degrees available from 1981 to near real time. This data
+  requires a token to access the data. See
+  [here](https://urs.earthdata.nasa.gov/documentation/for_users/user_token)
+  for directions on creating a token. Note that this token should be
+  kept secret.
 
 1.  Provide a site latitude and longitude and download hourly
-    precipitation data from [NASA power](https://power.larc.nasa.gov/)
-    (uses the `get_precip` function).
+    precipitation data from
+    [Merra-2](https://gmao.gsfc.nasa.gov/gmao-products/merra-2/) (uses
+    the `get_precip` function).This dataset is available across a global
+    scale at a resolution of 0.5 x 0.625 degrees available from 1981 to
+    near real time.
 
-2.  Provide your own precipitation data as a `.csv` file. See
+2.  Provide a site latitude and longitude and download hourly
+    precipitation data from [NLDAS](https://ldas.gsfc.nasa.gov/nldas)
+    (uses the `get_precip` function). This dataset is available across
+    CONUS at a resolution of 0.125 × 0.125 degrees available from 1981
+    to near real time. This data requires a token to access the data.
+    See
+    [here](https://urs.earthdata.nasa.gov/documentation/for_users/user_token)
+    for directions on creating a token. Note that this token should be
+    kept secret.
+
+3.  Provide your own precipitation data as a `.csv` file. See
     [`help(example_precip)`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/example_precip.md)
     for the structure user input precipitation needs to have.
 
@@ -318,16 +346,18 @@ resolved the table will refresh with the resolved duplicate removed.*
 
 ### 4 Quality Flags
 
-This step is used to mark regions or points that are questionable. This
-uses the `apply_edit` function to add a quality flag. This flag can be
-visualized as a plotting option and will be exported with the other data
-flags. Additionally, these points can be used as a starting point for
-removing outlier points in [6 Outlier Removal](#outlier-removal).
+This step is used to mark regions or points that are questionable or
+bad. This uses the `apply_edit` function to add a quality flag. This
+flag can be visualized as a plotting option and will be exported with
+the other data flags. Additionally, these points can be used as a
+starting point for removing outlier points in [6 Outlier
+Removal](#outlier-removal).
 
-> Note this is currently the only option but in the future there may be
-> an option to select between several different quality flags. If this
-> feature is of interest please make note of that in the following
-> [feature
+You can select and flag points as either “bad” or “questionable” which
+will be colored and flagged separately.
+
+> If there are additional flags of interest please make note of that in
+> the following [feature
 > request](https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/34).
 
 This module is very similar to **Visualize** except it has a new section
@@ -461,7 +491,8 @@ group of points, it will guess the slope and intercept needed apply a
 linear shift correction to fit the start and end points of the data. You
 can manually adjust these values using the **slope** and **intercept**
 inputs. For a absolute shift, you can set slope to 0 and adjust the
-intercept.
+intercept. **To clear the selected points, simply select a region of the
+plot with no points.**
 
 #### 8.2 Drift
 
