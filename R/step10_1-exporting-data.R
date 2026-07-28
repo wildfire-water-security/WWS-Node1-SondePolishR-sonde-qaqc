@@ -84,6 +84,7 @@ save_path_server <- function(id, data,
     })
 
     observeEvent(input$export, {
+      req(parsed_path())
       if(is.null(data())){
         if (interactive()) {
           shinyalert::shinyalert(

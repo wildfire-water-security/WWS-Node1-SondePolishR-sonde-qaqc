@@ -148,39 +148,49 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var,period_view, date
 
   #remove OOW periods
     observeEvent(input$remove_oow, {
-      req(sondeproj(), sondeproj()$fieldform)
+      req(sondeproj())
 
-      data <- sondeproj()$data
-      #get OOW periods
-      oow <- get_oow(sondeproj()$fieldform, tz=sondeproj()$meta$tz,interval=get_interval(data))
+      if(is.null(sondeproj()$fieldform)){
+        if(interactive()){
+          shinyalert::shinyalert(
+            title = "No Field Data Available",
+            text = "Please load field form data to remove out of water periods.",
+            type = "warning"
+          )
+        }
+      }else{
+        data <- sondeproj()$data
+        #get OOW periods
+        oow <- get_oow(sondeproj()$fieldform, tz=sondeproj()$meta$tz,interval=get_interval(data))
 
-      #remove those periods from data
-      rm_index <- data %>%
-        rowwise() %>%
-        filter(any(.data$DateTime_rd >= oow$start & .data$DateTime_rd <= oow$end)) %>% pull(.data$Index) %>% unique()
-      setna <- data$Index %in% rm_index
+        #remove those periods from data
+        rm_index <- data %>%
+          rowwise() %>%
+          filter(any(.data$DateTime_rd >= oow$start & .data$DateTime_rd <= oow$end)) %>% pull(.data$Index) %>% unique()
+        setna <- data$Index %in% rm_index
 
-      data_filter <- data %>% mutate(filter = setna) %>%
-        mutate(across(-("Index":"Battery_V"), ~ if_else(filter, NA, .x))) %>%
-        select(-"filter")
+        data_filter <- data %>% mutate(filter = setna) %>%
+          mutate(across(-("Index":"Battery_V"), ~ if_else(filter, NA, .x))) %>%
+          select(-"filter")
 
-      #flag these changes were made
-      edit <- list(
-        data = data_filter,
-        rows = setna,
-        y_var = "all",
-        step = "removing oow",
-        note = paste0("OOW periods removed based on information from the field form."),
-        flag = "RM04",
-        changetype = "flag_rm"
-      )
+        #flag these changes were made
+        edit <- list(
+          data = data_filter,
+          rows = setna,
+          y_var = "all",
+          step = "removing oow",
+          note = paste0("OOW periods removed based on information from the field form."),
+          flag = "RM04",
+          changetype = "flag_rm"
+        )
 
 
-      #log edits
-      proj <- apply_edit(sondeproj(), edit)
+        #log edits
+        proj <- apply_edit(sondeproj(), edit)
 
-      #update sondeproj
-      sondeproj(proj)
+        #update sondeproj
+        sondeproj(proj)
+      }
 
     })
 

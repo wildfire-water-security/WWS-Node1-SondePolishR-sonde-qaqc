@@ -122,18 +122,24 @@ export_server <- function(id, sondeproj, data_ver, y_var){
         export_data <- sondeproj()$data
 
         #summarize
-        if(input$frequency != "interval"){
           frequency <- switch(input$frequency,
+                              "interval" = lubridate::period(get_interval(export_data), "minute"),
                               "hour" = lubridate::period(1, "hour"),
                               "day" = lubridate::period(1, "day"),
                               "week" = lubridate::period(7, "day"),
                               "month" = lubridate::period(1, "month"),
                               "year" = lubridate::period(1, "year"))
-          summarize_data(export_data, frequency, input$summary_method)
-        }else{
-          export_data
-        }
+          summarize_data(export_data, frequency, input$summary_method) %>%
+            mutate(Site = sondeproj()$meta$site, .after="DateTime_rd")
 
+      })
+
+    #format data little more before exporting
+      export_data <- reactive({
+        req(sum_data())
+
+        sum_data() %>% rename("DateTime" = "DateTime_rd") %>%
+          mutate(DateTime = format(.data$DateTime, "%Y-%m-%d %H:%M:%S"))
       })
 
       #create plot
@@ -173,7 +179,7 @@ export_server <- function(id, sondeproj, data_ver, y_var){
       })
 
     #data save path and saving data
-      data_path <- save_path_server("save_data", sum_data, startname=datastartname)
+      data_path <- save_path_server("save_data", export_data, startname=datastartname)
 
 
  ## EXPORTING METADATA ------

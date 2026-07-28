@@ -40,10 +40,14 @@ load_project <- function(csv_path=NULL, csv_files=NULL, prj_path=NULL,
     }
 
     #combine things from import
+    flags <- grep("_flag$", get_parms(data_merge, flags=TRUE), value=TRUE)
+    fix_flags <- function(x){ifelse(is.null(x), list(c(NA)), x)}
+
     serials <- lapply(data_merge, "[[", 1) %>% bind_rows()
     csv_merge <- lapply(data_merge, "[[", 2)%>% dplyr::bind_rows() %>%
         dplyr::mutate(Index = 1:n()) %>% group_by(.data$DateTime_rd) %>%
-        mutate(DupNum = row_number(), .after="Index") %>% ungroup()
+        mutate(DupNum = row_number(), .after="Index") %>% ungroup() %>%
+      mutate(across(all_of(flags), ~fix_flags(.x)))
   }
 
   #load existing project

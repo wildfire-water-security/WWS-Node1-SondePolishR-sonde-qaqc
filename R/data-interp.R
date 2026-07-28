@@ -28,6 +28,8 @@ prep_interp <- function(proj){
   name <- unique(data$Site_Name)
   par_names <- get_parms(data)
 
+  flags <- grep("_flag$", get_parms(data, flags=TRUE), value=TRUE)
+  fix_flags <- function(x){ifelse(is.null(x), list(c(NA)), x)}
   #get the dataset to interpolate (still may have dupes)
   data_fill <- data %>%
     complete(DateTime_rd = seq(min(.data$DateTime_rd), max(.data$DateTime_rd),
@@ -39,7 +41,8 @@ prep_interp <- function(proj){
            Date = if_else(is.na(.data$Date), as.Date(.data$DateTime_rd, tz = tz), .data$Date),
            Time_HH_mm_ss = if_else(is.na(.data$Time_HH_mm_ss), strftime(.data$DateTime_rd, "%H:%M:%S"), .data$Time_HH_mm_ss),
            DateTime = if_else(is.na(.data$DateTime), .data$DateTime_rd, .data$DateTime),
-           Site_Name = name)
+           Site_Name = name) %>%
+    mutate(across(all_of(flags), ~fix_flags(.x)))
 
 
   #get df with a single stamp per row (conflicting duplicates are set to NA)

@@ -1,5 +1,21 @@
 # SondePolishR
 
+## SondePolishR 0.0.9004
+
+(2026-07-xx)
+
+### Bug Fixes
+
+-   Added a warning when the "remove OOW periods" button is clicked but no field form data is provided so you know why it's not doing anything.
+
+-   Doesn't allow export without a filepath to prevent app from crashing.
+
+-   Now exported datetimes don't drop the time for midnight (this causes issues when trying to read back into R).
+
+### **Updates**
+
+-   Updated formatting on exported data so now raw data will condense duplicates and have the same formatting as other exports. Also added the sitename to the exported data.
+
 ## SondePolishR 0.0.9003
 
 (2026-07-28)
@@ -14,7 +30,7 @@
 
 -   Default directory wasn't using the user's working directory, it was using the package directory, now will capture user's working directory on loading the app.
 
-**Updates**
+### **Updates**
 
 -   Changed `read_sonde` function to also include depth (m) if available in the variables.
 -   Major changes to how flags are stored within the `sondeproj` object. These changes won't affect app user experience at all, but now flags are stored within the dataset itself instead of a separate list so they can also be version controlled so when changes are redone/reverted the flags carry over.
