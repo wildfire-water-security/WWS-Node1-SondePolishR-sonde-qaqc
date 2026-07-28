@@ -254,12 +254,15 @@ summarise_date_ranges <- function(x, exact=NULL, interval=15, ignore=24*60) {
 #' Identifies the parameters contained within the data
 #'
 #' @param data Sonde dataset
+#' @param flags Logical, should flags be returned as well?
 #'
 #' @returns a vector of parameter names in the dataset
 #' @noRd
-get_parms <- function(data){
+get_parms <- function(data, flags=FALSE){
   pars <- paste(c("Cond", "fDOM", "ODO", "Sal", "TDS", "Turbidity","TSS","pH","Temp", "Depth"), collapse="|")
   par_names <- grep(pars, names(data), value = TRUE)
+
+  if(!flags){par_names <- grep("_flag$", par_names, value=TRUE, invert = TRUE)}
 
   return(par_names)
 }
@@ -297,7 +300,8 @@ get_yvar <- function(y_var){
                   "Turbidity_FNU" = "Turbidity (FNU)",
                   "pH"  = "pH",
                   "Temp_C" = "Temperature (\u00B0C)",
-                  "precip" = "Precipitation (mm hr\U207B\U00B9)")
+                  "precip" = "Precipitation (mm hr\U207B\U00B9)",
+                  "Depth_m" = "Depth (m)")
 
   y_var_nice <- ifelse(y_var %in% names(nice_names),nice_names[y_var],y_var)
   return(y_var_nice)
@@ -312,4 +316,18 @@ make_filename <- function(site, interval, method=NA){
   )
 
   return(name)
+}
+
+
+#' Remove flags from dataset
+#'
+#' Used to remove flags when performing functions
+#'
+#' @param data a data.frame with data
+#'
+#' @noRd
+drop_flags <- function(data){
+  flag_names <- grep("_flag$", get_parms(data, flags=TRUE), value=TRUE)
+  data <- data %>% select(-any_of(flag_names))
+  return(data)
 }

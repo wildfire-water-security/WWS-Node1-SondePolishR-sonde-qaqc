@@ -177,8 +177,7 @@ interp_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_l
         y_var = y_var(),
         step = "data interpolation",
         note = paste0("Data interpolated using ", label_name, " with a maximum gap size of ", input$max_length, " hours."),
-        flag = "AD01",
-        changetype = "flag_add")
+        flag = "AD01")
 
       edit
     })

@@ -47,7 +47,6 @@ Imports:
     utf8,
     stringr,
     shinyjs,
-    vctrs,
     timeplyr,
     pracma,
     zoo,

@@ -29,13 +29,14 @@
 
   data <- proj$data #save unedited for later
 
+
   #add some changes
     #make some changes and save
     data2 <- proj$data
     data2$fDOM_QSU[1:4] <- NA
+    data2 <- add_flags(data2, "fDOM_QSU", 1:4, "RM01")
     dd1 <- list(get_diff(proj$data, data2, id=c("DateTime_rd", "DupNum"))) #commit difference
     names(dd1) <- "dd1"
-    proj$flags$flag_rm$fDOM_QSU[1:4] <- "RM01" #add flag
     proj <- write_log(proj, "fDOM_QSU", "removing first four points", n = 4, diff_name = "dd1", return = "sondeproj") #write log
     proj$diffs <- append(proj$diffs, dd1)
     proj$data <- data2
@@ -43,9 +44,9 @@
     #make more changes
     data2 <- proj$data
     data2$ODO_mg_L[5:7] <- data2$ODO_mg_L[5:7] * 0.8
+    data2 <- add_flags(data2, "ODO_mg_L", 5:7, "CH01")
     dd2 <- list(get_diff(proj$data, data2,id=c("DateTime_rd", "DupNum"))) #commit difference
     names(dd2) <- "dd2"
-    proj$flags$flag_chg$ODO_mg_L[5:7] <- "CH01" #add flag
     proj <- write_log(proj, "ODO_mg_L", "applying shift correction", n = 3, diff_name = "dd2", return = "sondeproj") #write log
     proj$diffs <- append(proj$diffs, dd2)
     proj$data <- data2
@@ -53,9 +54,9 @@
     #make more changes
     data2 <- proj$data
     data2$Temp_C[52:90] <- NA
+    data2 <- add_flags(data2, "Temp_C", 52:90, "RM02")
     dd3 <- list(get_diff(proj$data, data2, id=c("DateTime_rd", "DupNum"))) #commit difference
     names(dd3) <- "dd3"
-    proj$flags$flag_rm$Temp_C[52:90] <- "RM02" #add flag
     proj <- write_log(proj, "Temp_C", "removing a bunch of points", n = 39, diff_name = "dd3", return = "sondeproj") #write log
     proj$diffs <- append(proj$diffs, dd3)
     proj$data <- data2
@@ -63,13 +64,12 @@
     #make more changes
     data2 <- proj$data
     data2$Temp_C[52:90] <- mean(c(data2$Temp_C[51],data2$Temp_C[91]))
+    data2 <- add_flags(data2, "Temp_C", 52:60, "AD01")
     dd4 <- list(get_diff(proj$data, data2, id=c("DateTime_rd", "DupNum"))) #commit difference
     names(dd4) <- "dd4"
-    proj$flags$flag_add$Temp_C[52:60] <- "AD02" #add flag
     proj <- write_log(proj, "Temp_C", "linear interpolation", n = 39, diff_name = "dd4", return = "sondeproj") #write log
     proj$diffs <- append(proj$diffs, dd4)
     proj$data <- data2
-
 
   #remove my username from log
     proj$changelog$user <- "smith"
@@ -110,8 +110,10 @@
  #two types of duplicates
   data_messy <- rbind(data, data[1:14,]) #single file dup
   data_messy <- rbind(data_messy, data[251:264,] %>% mutate(FileName = "dupfile2.csv"))
-  data_messy[data_messy$FileName == "dupfile2.csv", 10:15] <- data_messy[data_messy$FileName == "dupfile2.csv", 10:15] * 1.1
 
+  #change parms
+  index <- which(colnames(data_messy) %in% get_parms(data_messy))
+  data_messy[data_messy$FileName == "dupfile2.csv", index] <- data_messy[data_messy$FileName == "dupfile2.csv", index] * 1.1
 
  #add a gap (missing observations)
   data_messy <- data_messy[-(500:580),]
@@ -122,11 +124,11 @@
   #create log if not read in from existing project
   changelog <- write_log(NULL, "all", "initial load", n = nrow(data_messy), diff_name = "raw")
   changelog$user <- "smith"
+  changelog$datetime <- as.POSIXct("2028-07-28 11:00:00") #standardize changelog time so it doesn't cause test failures
 
   #create sonde object
   proj_messy <- list(meta = proj$meta,
                     data = data_messy,
-                    flags = NULL,
                     precip = proj$precip,
                     fieldform = proj$fieldform,
                     calcheck = proj$calcheck,
@@ -136,8 +138,6 @@
                     data_gaps = NULL)
 
   class(proj_messy) <- "sondeproj"
-
-  proj_messy <- add_flags(proj_messy, data_messy)
 
   #remove my username from log
   proj_messy$changelog$user <- "smith"

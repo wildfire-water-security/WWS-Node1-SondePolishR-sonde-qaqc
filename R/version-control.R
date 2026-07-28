@@ -78,7 +78,15 @@ get_diff <- function(olddata, newdata, id="DateTime", ignore=NA){
     dplyr::select(dplyr::all_of(c(id, "source", param))) %>%
     tidyr::pivot_wider(names_from = "source", values_from=dplyr::all_of(param))
 
-  changed <- vctrs::vec_compare(merge$old,merge$new, na_equal=TRUE) != 0
+ #look for changes in flags
+  # flag_change <- function(old, new) {
+  #   flag_rm  <- setdiff(na.omit(old), na.omit(new))
+  #   flag_add <- setdiff(na.omit(new), na.omit(old))
+  #
+  #   length(flag_rm) > 0 || length(flag_add) > 0
+  # }
+
+  changed <- !mapply(identical, merge$old, merge$new)
 
   if(sum(changed) == 0){return(NULL)}
   old <- merge$old[changed]
@@ -99,7 +107,7 @@ get_diff <- function(olddata, newdata, id="DateTime", ignore=NA){
 #' Once changes between `data.frame`s have been saved as a `diff` object, they can be used to move between
 #' the changes made by applying the `diff` to data.
 #'
-#' @param data the data to apply the `diff` to. Must contain all the columns in `diff`.
+#' @param data the data to apply the `diff` to. Must contain all the columns in `diff` or a list of flags.
 #' @param diff a list of `diff` or a single `diff` objects generated using `get_diff`.
 #' @param invert logical. If `TRUE` changes will be reversed.
 #' @param id name of the column name used to match observations between `olddata` and `newdata`.
@@ -167,7 +175,6 @@ apply_diff <- function(data, diff, id = "DateTime", invert = FALSE, skip_merge=T
     return(data)
   }
 
-  #otherwise apply .col_apply across data
   for(x in names(diff)){
     data <- .col_apply(x, data, diff, id, invert)
   }

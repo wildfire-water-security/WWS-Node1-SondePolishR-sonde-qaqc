@@ -20,6 +20,6 @@ a `data.frame.
 Used to take data and aggregate it to a different interval.
 }
 \examples{
-summarize_data(example_data, lubridate::period(1, "month"), "mean")
+summarize_data(example_sondeproj$data, lubridate::period(1, "month"), "mean")
 
 }

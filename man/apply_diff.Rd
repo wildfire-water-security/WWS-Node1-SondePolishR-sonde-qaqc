@@ -7,7 +7,7 @@
 apply_diff(data, diff, id = "DateTime", invert = FALSE, skip_merge = TRUE)
 }
 \arguments{
-\item{data}{the data to apply the `diff` to. Must contain all the columns in `diff`.}
+\item{data}{the data to apply the `diff` to. Must contain all the columns in `diff` or a list of flags.}
 
 \item{diff}{a list of `diff` or a single `diff` objects generated using `get_diff`.}
 

@@ -2,7 +2,7 @@
 
 ## SondePolishR 0.0.9003
 
-(2026-07-2x)
+(2026-07-28)
 
 ### Bug Fixes
 
@@ -12,9 +12,12 @@
 
 -   Fixed how the precipitation data was clipped to not remove a data point at the start or end of the dataset.
 
+-   Default directory wasn't using the user's working directory, it was using the package directory, now will capture user's working directory on loading the app.
+
 **Updates**
 
 -   Changed `read_sonde` function to also include depth (m) if available in the variables.
+-   Major changes to how flags are stored within the `sondeproj` object. These changes won't affect app user experience at all, but now flags are stored within the dataset itself instead of a separate list so they can also be version controlled so when changes are redone/reverted the flags carry over.
 
 ## SondePolishR 0.0.9002
 

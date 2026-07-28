@@ -282,8 +282,7 @@ outlier_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_
         note = paste0("Data removed based on ", nicemethod,
                       " method with a window size of ", input$k, " and threshold of ", input$t,
                       " paired with manual outlier detection."),
-        flag = "RM03",
-        changetype = "flag_rm"
+        flag = "RM03"
       )
 
     })

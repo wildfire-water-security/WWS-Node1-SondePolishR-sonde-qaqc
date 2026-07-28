@@ -36,6 +36,9 @@ identify_dups <- function(data){
   if(nrow(na.omit(dup_rng)) == 0){
     return(NULL)
   }
+
+  data <- data %>% drop_flags() #remove flag columns to prevent errors
+
   #get more information about the duplicates to determine the likely issue
   problems <- data.frame()
   for(r in 1:nrow(dup_rng)){
@@ -103,32 +106,6 @@ identify_dups <- function(data){
   return(dup_check)
 }
 
-
-#' Apply duplicate flags from a duplicate diff
-#'
-#' @param flag_tbl the correct flagging table
-#' @param col_diff the diff by y_var
-#' @param y_var parameter being edited
-#' @param op_type the change being made
-#' @param flag_code the flag to add
-#'
-#' @noRd
-#'
-update_dup_flags <- function(flag_tbl, col_diff, y_var, op_type, flag_code) {
-  rows <- col_diff$op_type == op_type
-
-  if(!any(rows)){return(flag_tbl)} #if none of that type, return unchanged
-
-  flag_tbl %>% left_join(col_diff[rows,], by = join_by("DateTime_rd", "DupNum")) %>%
-    rename("y_var" = !!y_var) %>%
-    mutate(y_var = case_when(
-      is.na(.data$op_type) ~ .data$y_var,
-      is.na(.data$y_var) ~ flag_code,
-      TRUE ~ paste(.data$y_var, flag_code, sep = ";"))) %>%
-    select(-"old":-"op_type") %>% rename(!!y_var := "y_var")
-
-}
-
 #' Deals with duplicates in data and documents changes
 #'
 #' Given a row from `identify_dups` and a `sondeproj`, the user can select which data to keep (or take mean)
@@ -171,9 +148,17 @@ apply_dup_edits <- function(proj, dup_row, keep_opt, flag_notes=""){
       mutate(across(any_of(par_names), ~ if_else(DupNum == 1,mean(.x, na.rm = TRUE),NA_real_))) %>%
       ungroup()
 
+    chgindex <- df_sum$Index[df_sum$DupNum == 1]
+    rmindex <- df_sum$Index[df_sum$DupNum != 1]
+    n_edit <- length(chgindex)
+
   }else if(keep_opt == "remove_both"){
     #set all duplicated values to NA
     df_sum <- df_sum %>% mutate(across(any_of(par_names), ~ NA_real_))
+    chgindex <- NA
+    rmindex <- df_sum$Index
+    n_edit <- length(rmindex)
+
   }else{
    #otherwise just keep the group we're interested in
     #get dup number of file
@@ -181,29 +166,27 @@ apply_dup_edits <- function(proj, dup_row, keep_opt, flag_notes=""){
                         unique(df_sum$DupNum[df_sum$FileName == keep_opt]),
                         as.numeric(gsub("Set ", "", keep_opt)))
     df_sum <- df_sum %>% mutate(across(any_of(par_names), ~ ifelse(dupfilter == DupNum, .x, NA_real_)))
+
+    chgindex <- NA
+    rmindex <- df_sum$Index[df_sum$DupNum != dupfilter]
+    n_edit <- length(rmindex)
+
   }
 
   #recombine and re-sort
     data_nodup <- data_rm %>% bind_rows(df_sum) %>% arrange(.data$Index)
 
+  #apply flags to project
+    #get indices of values changed (DUP01)
+    chgindex <- which(data_nodup$Index %in% chgindex)
+    for(v in par_names){data_nodup <- add_flags(data_nodup, v,chgindex, "DUP01")}
+
+    #get indices of values removed (DUP02)
+    rmindex <- which(data_nodup$Index %in% rmindex)
+    for(v in par_names){data_nodup <- add_flags(data_nodup, v,rmindex, "DUP02")}
+
   #get diff to log
     diff <- get_diff(data, data_nodup, id=c("DateTime_rd", "DupNum"))
-
-  #apply flags to project
-    flag_diff <- diff[names(diff) %in% par_names] #get only diffs we want to flag
-    flag_diff <- flag_diff[!sapply(flag_diff, is.null)] #remove any without changes
-
-    #across parameters apply dup flags
-    for(y_var in names(flag_diff)){
-      col_diff <- flag_diff[[y_var]]
-
-      proj$flags$flag_chg <- update_dup_flags(proj$flags$flag_chg,
-                                              col_diff, y_var,"data_changed","DUP01") #DUP01, changed, vals averaged
-
-      proj$flags$flag_rm  <- update_dup_flags(proj$flags$flag_rm,
-                                              col_diff, y_var,"data_removed","DUP02") #DUP02, removed
-
-    }
 
   #update log entry
     #make note
@@ -217,7 +200,7 @@ apply_dup_edits <- function(proj, dup_row, keep_opt, flag_notes=""){
     diff <- list(diff)
     names(diff) <- diff_version(proj) #give name to list item
 
-    proj <- write_log(proj, "all", "combine duplicates", n=max(sapply(flag_diff, nrow)),
+    proj <- write_log(proj, "all", "combine duplicates", n=n_edit,
                       note = note, diff_name = names(diff), return = "sondeproj")
 
   #add in new df and diff

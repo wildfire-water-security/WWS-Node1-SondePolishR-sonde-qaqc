@@ -354,3 +354,105 @@ apply_diff <- function(data, diff, invert = FALSE){
 
 ## test with our messy project
 
+
+# I added an undo function which I realized means I need to also either track or remove flags-----
+  #test getting a diff
+    data1 <- example_sondeproj$data[1:10,]
+    flags <- lapply(example_sondeproj$flags, function(x){x[1:10,]})
+    data2 <- data1
+    flags2 <- flags
+    data2$fDOM_QSU[6:7] <- NA
+    flags2$flag_rm$fDOM_QSU[6:7] <- "RM01"
+    data2
+    diff <- get_diff(data1, data2, "RM01")
+
+  #test applying a diff
+    apply_diff(data1, diff)
+
+    apply_diff(flags, diff)
+
+
+#testing changing project structure
+  empty_flags <- list(qual="",rm="",chg="",add="")
+  test <- example_data %>% select(Index:fDOM_QSU)
+  test <- test[1:10,]
+
+  test$fDOM_QSU_flag <- NA
+  test$fDOM_QSU_flag <- rep(list(empty_flags), times = nrow(test))
+
+  #adding a flag
+  test$fDOM_QSU_flag[6:7] <- lapply(test$fDOM_QSU_flag[6:7], function(x){x$rm <- "RM01"
+  return(x)})
+  test
+
+  #removing a flag (when undoing)
+  test$fDOM_QSU_flag[6:7] <- lapply(test$fDOM_QSU_flag[6:7], function(x){x$rm <- gsub("RM01;|;RM01|RM01", "", x$rm)
+  return(x)})
+
+  #test logging changes
+  param <- "fDOM_QSU_flag"
+  id <- "Datetime_rd"
+
+  merge <- test %>%
+    dplyr::select(dplyr::all_of(c(id, "source", param))) %>%
+    tidyr::pivot_wider(names_from = "source", values_from=dplyr::all_of(param))
+
+  if(is.list(test[[param]])){
+    #track each flag list
+    lapply(1:4, function(x){
+
+    })
+  }
+
+  merge <- data_merge %>%
+    dplyr::select(dplyr::all_of(c(id, "source", param))) %>%
+    tidyr::pivot_wider(names_from = "source", values_from=dplyr::all_of(param))
+
+  changed <- vctrs::vec_compare(merge$old,merge$new, na_equal=TRUE) != 0
+
+  if(sum(changed) == 0){return(NULL)}
+  old <- merge$old[changed]
+  new <- merge$new[changed]
+
+  op_type <- dplyr::case_when(
+    is.na(old) ~ "data_added",
+    is.na(new) ~ "data_removed",
+    !is.na(old) & !is.na(new) ~ "data_changed")
+
+  col_diff <- merge[changed,] %>%  ungroup() %>% mutate(op_type = op_type)
+
+  return(col_diff)
+
+  #what if we store flags as vector??
+    data1 <- example_sondeproj$data[1:10,]
+    par_names <- get_parms(data1)
+    par_names <- par_names[!grepl("_flag$", par_names)] #remove existing flag columns
+    missing <- par_names[!(paste0(par_names, "_flag") %in% colnames(data1))]
+
+    #add spot for flags for each parameter
+    for(x in missing){
+      data1 <- data1 %>% dplyr::mutate(!!paste0(x, "_flag") := I(list(c(NA))), .after=tidyselect::all_of(x))
+    }
+    data2 <- data1
+
+    #make a change
+    data2$fDOM_QSU[6:7] <- NA
+    data2$fDOM_QSU_flag[6:7] <- I(list(c("RM01")))
+    data2
+    diff1 <- get_diff(data1, data2)
+
+    #make another change
+    data3 <- data2
+    data3$fDOM_QSU[6:7] <- 5
+    data3$fDOM_QSU_flag[6:7] <- I(list(c("RM01", "AD01")))
+    data3
+
+    diff2 <- get_diff(data2, data3)
+
+    #apply changes
+    newdata2 <- apply_diff(data1, diff1)
+    newdata3 <- apply_diff(data2, diff2)
+
+    #go backwards
+    newdata2 <- apply_diff(data3, diff2, invert = TRUE)
+    newdata1 <- apply_diff(data2, diff1, invert = TRUE)

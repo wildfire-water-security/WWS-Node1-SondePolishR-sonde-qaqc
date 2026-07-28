@@ -14,12 +14,12 @@ An data.frame object with 8071 rows and 13 columns:
 \item \strong{DateTime_rd}: Date and time of measurement as a POSIXct rounded to the nearest data interval value.
 \item \strong{Site_Name}: Name of the site.
 \item \strong{Battery_V}: Battery voltage when measurement was collected.
-\item \strong{fDOM_QSU}: Fluorescent dissolved organic matter (fDOM) measured in Quinine Sulfate Units (QSU).
-\item \strong{ODO_mg_L}: Dissolved oxygen measured in mg/L.
-\item \strong{pH}: Dissolved oxygen measured in pH units.
-\item \strong{SpCond_uS_cm}: Specific conductivity measured in µS/cm.
-\item \strong{Temp_C}: Temperature measured in degrees C.
-\item \strong{Turbidity_FNU}: Turbidity measured in Formazin Nephelometric Units (FNU).
+\item \strong{fDOM_QSU}/\strong{fDOM_QSU_flag}: Fluorescent dissolved organic matter (fDOM) measured in Quinine Sulfate Units (QSU) and flags.
+\item \strong{ODO_mg_L}/\strong{ODO_mg_L_flag}: Dissolved oxygen measured in mg/L and flags.
+\item \strong{pH}/\strong{pH_flag}: Dissolved oxygen measured in pH units and flags.
+\item \strong{SpCond_uS_cm}/\strong{SpCond_uS_cm_flag}: Specific conductivity measured in µS/cm and flags.
+\item \strong{Temp_C}/\strong{Temp_C_flag}: Temperature measured in degrees C and flags.
+\item \strong{Turbidity_FNU}/\strong{Turbidity_FNU_flag}: Turbidity measured in Formazin Nephelometric Units (FNU) and flags.
 }
 }
 \source{

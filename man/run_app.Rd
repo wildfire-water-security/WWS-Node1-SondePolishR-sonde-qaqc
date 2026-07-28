@@ -4,7 +4,10 @@
 \alias{run_app}
 \title{Run the SondePolishR App}
 \usage{
-run_app()
+run_app(default_path = getwd())
+}
+\arguments{
+\item{default_path}{Default filepath used for saving data to, defaults to current working directory.}
 }
 \value{
 Shiny App

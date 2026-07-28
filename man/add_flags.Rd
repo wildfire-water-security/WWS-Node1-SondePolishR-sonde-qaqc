@@ -2,28 +2,27 @@
 % Please edit documentation in R/add-flag.R
 \name{add_flags}
 \alias{add_flags}
-\title{Get skeleton flagging dataframe}
+\title{Add new flag to dataset}
 \usage{
-add_flags(proj, data)
+add_flags(data, y_var, index, flag)
 }
 \arguments{
-\item{proj}{a \code{sondeproj} object to add the flags to. If it has existing flags they will be merged
-with the new flags from \code{data} with existing flags.}
+\item{data}{Data.frame with sonde data.}
 
-\item{data}{a data.frame with sonde data}
+\item{y_var}{The column to add flag to.}
+
+\item{index}{Row numbers to add flag to.}
+
+\item{flag}{Flag to add to the data.frame.}
 }
 \value{
-a data.frame
-\itemize{
-\item if \code{par} and \code{flag_name} are \code{NULL} it will return a \code{data.frame} with the same number of rows as \code{data} but
-with a blank column for each parameter in the \code{data.frame} only the index, datetimme, datetime_rd, and DupNum columns.
-}
+a data.frame with the same dimensions as \code{data} with the flags added to the appropriate column.
 }
 \description{
-Works to provide a skeleton for the flag data (if no parameter or flag names are provided).
+Safely adds a flag to a specific parameter without overwriting old flags. Also maintains a consistent order
+so that additional flags can be identified with version control.
 }
 \examples{
-#add flag columns
-updated_proj <- add_flags(example_sondeproj, example_data)
-colnames(updated_proj$flags$flag_rm)
+data <- add_flags(example_sondeproj$data, "fDOM_QSU", 2:7, "TEST01")
+data$fDOM_QSU_flag[1:8]
 }

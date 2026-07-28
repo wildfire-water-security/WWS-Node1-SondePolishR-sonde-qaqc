@@ -92,7 +92,7 @@ is_corrected <- function(proj, type){
   stopifnot(type %in% c("temp", "turb"))
 
   flag <- ifelse(type == "temp", "CHG03", "CHG04")
-  grepl(flag, proj$flags$flag_chg$fDOM_QSU)}
+  grepl(flag, proj$data$fDOM_QSU_flag)}
 
 
 #' Apply fDOM temperature and turbidity corrections

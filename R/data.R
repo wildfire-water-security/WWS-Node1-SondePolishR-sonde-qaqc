@@ -11,12 +11,12 @@
 #'  - **DateTime_rd**: Date and time of measurement as a POSIXct rounded to the nearest data interval value.
 #'  - **Site_Name**: Name of the site.
 #'  - **Battery_V**: Battery voltage when measurement was collected.
-#'  - **fDOM_QSU**: Fluorescent dissolved organic matter (fDOM) measured in Quinine Sulfate Units (QSU).
-#'  - **ODO_mg_L**: Dissolved oxygen measured in mg/L.
-#'  - **pH**: Dissolved oxygen measured in pH units.
-#'  - **SpCond_uS_cm**: Specific conductivity measured in µS/cm.
-#'  - **Temp_C**: Temperature measured in degrees C.
-#'  - **Turbidity_FNU**: Turbidity measured in Formazin Nephelometric Units (FNU).
+#'  - **fDOM_QSU**/**fDOM_QSU_flag**: Fluorescent dissolved organic matter (fDOM) measured in Quinine Sulfate Units (QSU) and flags.
+#'  - **ODO_mg_L**/**ODO_mg_L_flag**: Dissolved oxygen measured in mg/L and flags.
+#'  - **pH**/**pH_flag**: Dissolved oxygen measured in pH units and flags.
+#'  - **SpCond_uS_cm**/**SpCond_uS_cm_flag**: Specific conductivity measured in µS/cm and flags.
+#'  - **Temp_C**/**Temp_C_flag**: Temperature measured in degrees C and flags.
+#'  - **Turbidity_FNU**/**Turbidity_FNU_flag**: Turbidity measured in Formazin Nephelometric Units (FNU) and flags.
 #' @source Forest Ecohydrology and Watershed Science Lab (2024) Fall Creek: 2024-07-31 to 2024-10-23. Data set.
 
 "example_data"
@@ -33,15 +33,6 @@
 #'  - **tz**: A character with the site timezone.
 #'  - **coords**: A vector of length two with the latitude and longitude of the site.
 #' - **data**: A `data.frame` of the dataset, updated with any changes.
-#' - **flags**: A list of length four:
-#'  - **flag_rm**: A `data.frame` with the same measurement columns with _flag appended to the name and the same number of rows.
-#'    Used to store flag values for values that were marked as questionable.
-#'  - **flag_rm**: A `data.frame` with the same measurement columns with _flag appended to the name and the same number of rows.
-#'    Used to store flag values for values that were removed.
-#'  - **flag_chg**: A `data.frame` with the same measurement columns with _flag appended to the name and the same number of rows.
-#'    Used to store flag values for values that were altered.
-#'  - **flag_add**: A `data.frame` with the same measurement columns with _flag appended to the name and the same number of rows.
-#'    Used to store flag values for values that were added (likely through interpolation).
 #' - **precip**: A `data.frame` with  precipitation values.
 #' - **fieldform**: A `data.frame` with the field form data. See `example_fieldform` for details on the structure.
 #' - **calcheck**: A `data.frame` with the calibration check data. See `example_calcheck` for details on the structure.

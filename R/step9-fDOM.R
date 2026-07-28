@@ -219,8 +219,7 @@ fdom_server <- function(id, sondeproj, data_ver, y_var, period_view, dates, p_le
         y_var = "fDOM_QSU",
         step = "fDOM correction",
         note = method_note,
-        flag = flag,
-        changetype = "flag_chg"
+        flag = flag
       )
 
     })

@@ -41,19 +41,21 @@ save_path_server <- function(id, data,
   parsed_path <- reactiveVal() #initialize so box always shows
 
   #define preset roots for file path
-    roots <- c(
-      "Working Directory" = getwd(),
-      Downloads = file.path(fs::path_home(), "Downloads"),
-      Documents = file.path(fs::path_home(), "Documents"),
-      "C Drive" = "C:/")
+    roots <- reactive({
+      c(
+        "Working Directory" = getOption("SondePolishR.default_path"),
+        Downloads = file.path(fs::path_home(), "Downloads"),
+        Documents = file.path(fs::path_home(), "Documents"),
+        "C Drive" = "C:/")
+    })
 
     observe({shinyFiles::shinyFileSave(input,"save",
-        roots = roots,session = session)
+        roots = roots(),session = session)
       })
 
     observe({
       req(input$save)
-      parsed_path(shinyFiles::parseSavePath(roots,input$save))
+      parsed_path(shinyFiles::parseSavePath(roots(),input$save))
     })
 
     output$save <- renderUI({

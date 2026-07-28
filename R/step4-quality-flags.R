@@ -215,9 +215,7 @@ quality_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_
         y_var = y_var(),
         step = "quality flags",
         note = paste0("Data flagged as ", flag_info$nicename),
-        flag = flag_info$flag,
-        changetype = "flag_qual"
-      )
+        flag = flag_info$flag)
 
     })
 

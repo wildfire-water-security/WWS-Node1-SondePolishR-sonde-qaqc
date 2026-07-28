@@ -181,8 +181,7 @@ limits_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_l
         y_var = y_var(),
         step = "absolute limits",
         note = paste0("Data removed based on absolute limits of ", input$min, " and ", input$max),
-        flag = "RM02",
-        changetype = "flag_rm"
+        flag = "RM02"
       )
 
     })

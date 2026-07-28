@@ -12,15 +12,6 @@ An object of class \code{sondeproj} with the following elements:
 \item \strong{tz}: A character with the site timezone.
 \item \strong{coords}: A vector of length two with the latitude and longitude of the site.
 \item \strong{data}: A \code{data.frame} of the dataset, updated with any changes.
-\item \strong{flags}: A list of length four:
-\item \strong{flag_rm}: A \code{data.frame} with the same measurement columns with _flag appended to the name and the same number of rows.
-Used to store flag values for values that were marked as questionable.
-\item \strong{flag_rm}: A \code{data.frame} with the same measurement columns with _flag appended to the name and the same number of rows.
-Used to store flag values for values that were removed.
-\item \strong{flag_chg}: A \code{data.frame} with the same measurement columns with _flag appended to the name and the same number of rows.
-Used to store flag values for values that were altered.
-\item \strong{flag_add}: A \code{data.frame} with the same measurement columns with _flag appended to the name and the same number of rows.
-Used to store flag values for values that were added (likely through interpolation).
 \item \strong{precip}: A \code{data.frame} with  precipitation values.
 \item \strong{fieldform}: A \code{data.frame} with the field form data. See \code{example_fieldform} for details on the structure.
 \item \strong{calcheck}: A \code{data.frame} with the calibration check data. See \code{example_calcheck} for details on the structure.

@@ -76,7 +76,6 @@ check_data_server <- function(id, sondeproj, data_ver, y_var){
   #create log table
     tab <- reactive({
       req(sondeproj(), input$table_opt)
-
       df <- switch(
         input$table_opt,
         "Duplicates" = sondeproj()$duplicates,
@@ -88,7 +87,7 @@ check_data_server <- function(id, sondeproj, data_ver, y_var){
         df <- tab()
 
         validate(
-          need(nrow(df) > 0,
+          need(!is.null(df) || nrow(df) > 0,
                paste("No", tolower(input$table_opt), "found."))
         )
 

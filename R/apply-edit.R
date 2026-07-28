@@ -11,7 +11,6 @@
 #' - step: name of the editing step for the changelog
 #' - note: an optional note to add to the changelog
 #' - flag: character flag to use for edits to the data
-#' - changetype: character specifying where to add flag, either "flag_rm", "flag_chg", or "flag_add"
 #'
 #' @returns A `sondeproj` object with edits made.
 #' @export
@@ -26,12 +25,11 @@
 #'              y_var = "fDOM_QSU",
 #'              step = "outlier removal",
 #'              note = "example edit",
-#'              flag = "RM07",
-#'              changetype = "flag_rm")
+#'              flag = "RM07")
 #' updated_proj <- apply_edit(example_sondeproj, edit)
 #'
 apply_edit <- function(proj, edit){
-  stopifnot(is.list(edit))
+  stopifnot(is.list(edit), inherits(proj, "sondeproj"))
 
   #skip applying edit if no rows changed
   if(sum(edit$rows) == 0){
@@ -42,40 +40,19 @@ apply_edit <- function(proj, edit){
     olddata <- proj$data
     newdata <- edit$data
 
-  #get diff
-    dif <- list(get_diff(olddata, newdata, id=c("DateTime_rd", "DupNum")))
-    names(dif) <- diff_version(proj) #give name to list item
-
-  #apply flags to project
-    #update flags if adding new rows
-    if(nrow(proj$flags$flag_rm) != nrow(edit$data)){
-      proj <- add_flags(proj, edit$data)
-    }
-
-  #add flags preserving any existing flags
-    comb_flags <- function(proj, y_var){
-      old_flags <- proj$flags[[edit$changetype]][[y_var]]
-      new_flags <- rep(edit$flag, length(old_flags))
-      new_flags[!edit$rows] <- NA
-
-      apply_flag <- function(old, new){
-        old_flags <- unlist(strsplit(old, ";"))
-        new_flags <- na.omit(unique(c(old_flags, new)))
-        ifelse(length(new_flags) >0, paste(new_flags, collapse = ";"), NA)
-      }
-      proj$flags[[edit$changetype]][[y_var]] <- sapply(1:length(old_flags), function(x) apply_flag(old_flags[x], new_flags[x]))
-
-      return(proj)
-    }
-   #if all loop through
+  #apply flags to data preserving any existing flags
+    #if all loop through
+    index <- which(edit$rows)
     if(edit$y_var == "all"){
       y_vars <- get_parms(olddata)
-      for(v in y_vars){proj <- comb_flags(proj, v)}
+      for(v in y_vars){newdata <- add_flags(newdata, v,index, edit$flag)}
     }else{
-      proj <- comb_flags(proj, edit$y_var)
+      newdata <- add_flags(newdata, edit$y_var,index, edit$flag)
     }
 
-
+  #get diff (must be after applying flags)
+    dif <- list(get_diff(olddata, newdata, id=c("DateTime_rd", "DupNum")))
+    names(dif) <- diff_version(proj) #give name to list item
 
   #update log entry
     proj <- write_log(proj, edit$y_var, edit$step, n=sum(edit$rows, na.rm=TRUE),

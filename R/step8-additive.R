@@ -195,8 +195,7 @@ additive_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p
           y_var = y_var(),
           step = step,
           note = note,
-          flag = flag,
-          changetype = "flag_chg"
+          flag = flag
         )
 
 

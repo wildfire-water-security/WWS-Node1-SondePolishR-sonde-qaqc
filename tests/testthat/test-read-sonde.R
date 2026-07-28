@@ -30,5 +30,7 @@ test_that("data is loaded", {
   expect_s3_class(sonde$data, "data.frame")
   expect_equal(dim(sonde$data), c(1916, 14))
 
-
+  #Check that flags are added if requested
+  data <- read_sonde(path, flags=TRUE)
+  expect_equal(dim(data), c(1916, 20))
 })

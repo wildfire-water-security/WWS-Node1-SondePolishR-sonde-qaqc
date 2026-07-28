@@ -11,7 +11,6 @@ test_that("project is loaded and merged correctly", {
       #make sure things look as expected
       expect_s3_class(proj, "sondeproj")
       expect_s3_class(proj$data, "data.frame")
-      expect_type(proj$flags, "list")
       expect_s3_class(proj$fieldform, "data.frame")
       expect_s3_class(proj$calcheck, "data.frame")
       expect_type(proj$diffs, "list")
@@ -20,6 +19,7 @@ test_that("project is loaded and merged correctly", {
 
       #make sure data merged
       expect_equal(nrow(proj$data), 14528)
+      expect_equal(length(get_parms(proj$data, flags=TRUE)),12)
       expect_equal(nrow(proj$changelog), 5) #no longer merges in since we have all the data in the original project
       expect_equal(length(proj$diffs), 4)
 
@@ -35,7 +35,6 @@ test_that("project is loaded and merged correctly", {
       #make sure things look as expected
       expect_s3_class(proj, "sondeproj")
       expect_s3_class(proj$data, "data.frame")
-      expect_type(proj$flags, "list")
       expect_s3_class(proj$fieldform, "data.frame")
       expect_s3_class(proj$calcheck, "data.frame")
       expect_type(proj$diffs, "list")
@@ -44,6 +43,7 @@ test_that("project is loaded and merged correctly", {
 
       #make sure data merged
       expect_equal(nrow(proj$data), 8071) #expect csv1 + csv2 rows
+      expect_equal(length(get_parms(proj$data, flags=TRUE)),12)
       expect_equal(nrow(proj$changelog), 1)
       expect_equal(length(proj$diffs), 0)
 
@@ -59,7 +59,6 @@ test_that("project is loaded and merged correctly", {
       #make sure things look as expected
       expect_s3_class(proj, "sondeproj")
       expect_s3_class(proj$data, "data.frame")
-      expect_type(proj$flags, "list")
       expect_s3_class(proj$fieldform, "data.frame")
       expect_s3_class(proj$calcheck, "data.frame")
       expect_type(proj$diffs, "list")
@@ -67,6 +66,7 @@ test_that("project is loaded and merged correctly", {
 
       #make sure data merged
       expect_equal(nrow(proj$data), 14528) #expect csv1 + csv2 +csv3 rows
+      expect_equal(length(get_parms(proj$data, flags=TRUE)),12)
       expect_equal(nrow(proj$changelog), 5)
       expect_equal(length(proj$diffs), 4)
 
@@ -82,7 +82,6 @@ test_that("project is loaded and merged correctly", {
       #make sure things look as expected
       expect_s3_class(proj, "sondeproj")
       expect_s3_class(proj$data, "data.frame")
-      expect_type(proj$flags, "list")
       expect_true(is.null(proj$fieldform))
       expect_true(is.null(proj$calcheck))
       expect_type(proj$diffs, "list")

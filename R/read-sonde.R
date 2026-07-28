@@ -194,7 +194,7 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NUL
 
     #add spot for flags for each parameter
     for(x in par_names){
-      data <- data %>% mutate(!!paste0(x, "_flag") := NA, .after=tidyselect::all_of(x))
+      data <- data %>% mutate(!!paste0(x, "_flag") := I(list(NA)), .after=tidyselect::all_of(x))
     }
   }
 

@@ -1,67 +1,53 @@
 
-#' Get skeleton flagging dataframe
+#' Add new flag to dataset
 #'
-#' Works to provide a skeleton for the flag data (if no parameter or flag names are provided).
+#' Safely adds a flag to a specific parameter without overwriting old flags. Also maintains a consistent order
+#' so that additional flags can be identified with version control.
 #'
-#' @param data a data.frame with sonde data
-#' @param proj a `sondeproj` object to add the flags to. If it has existing flags they will be merged
-#'    with the new flags from `data` with existing flags.
+#' @param data Data.frame with sonde data.
+#' @param y_var The column to add flag to.
+#' @param index Row numbers to add flag to.
+#' @param flag Flag to add to the data.frame.
 #' @md
-#' @returns a data.frame
-#' - if `par` and `flag_name` are `NULL` it will return a `data.frame` with the same number of rows as `data` but
-#'    with a blank column for each parameter in the `data.frame` only the index, datetimme, datetime_rd, and DupNum columns.
+#' @returns a data.frame with the same dimensions as `data` with the flags added to the appropriate column.
 #' @export
 #'
 #' @examples
-#' #add flag columns
-#' updated_proj <- add_flags(example_sondeproj, example_data)
-#' colnames(updated_proj$flags$flag_rm)
-add_flags <- function(proj, data){
-  stopifnot(inherits(data, "data.frame"), inherits(proj, "sondeproj"))
+#' data <- add_flags(example_sondeproj$data, "fDOM_QSU", 2:7, "TEST01")
+#' data$fDOM_QSU_flag[1:8]
+add_flags <- function(data, y_var, index, flag){
+  stopifnot(inherits(data, "data.frame"))
 
-  #get blank flags for data
-    #add flag columns if they don't exist
-     #guess pars
-       par_names <- get_parms(data)
-       par_names <- par_names[!grepl("_flag$", par_names)] #remove existing flag columns
+  if(length(index) > 0 && all(!is.na(index))){
+    #get location of flag column
+    coln <- which(paste0(y_var, "_flag") == colnames(data))
 
-    #get empty flag dataframe
-      flags <- data %>% dplyr::select(-any_of(c("Battery_V", "Date", "Time_HH_mm_ss","Site_Name", "FileName"))) %>%
-        mutate(across(-c("Index", "DupNum", "DateTime", "DateTime_rd"), ~ NA)) %>%
-        mutate(across(-c("Index", "DupNum", "DateTime", "DateTime_rd"), ~ as.character(.x)))
+    #add flag
+    flags <- data[[coln]]
 
- #merge with existing flags if needed, otherwise just add to project
-   if(!is.null(proj$flags)){
-     ext_flags <- proj$flags
-     new_flags <- flags %>% anti_join(ext_flags$flag_rm, by=c("DateTime_rd", "DupNum"))
+    flags[index] <- lapply(flags[index], function(old_flag) {
+      sort(unique(na.omit(c(old_flag, flag))))
+    })
 
-     proj$flags <- lapply(proj$flags, function(x){
-       x %>% dplyr::bind_rows(new_flags) %>%
-         arrange(.data$DateTime, .data$DupNum) %>% mutate(Index = 1:n(), .before="DateTime")})
-   }else{
-     proj$flags <- list(
-       flag_qual=flags,
-       flag_rm = flags,
-       flag_chg = flags,
-       flag_add = flags)
-   }
+    data[[coln]] <- flags
+  }
 
-  return(proj)
+  return(data)
+
   }
 
 
 #' Extract quality flags from sonde project
 #'
-#' @param qual_flags A `data.frame` containing the quality flags.
+#' @param data A `data.frame` containing the data and flags.
 #' @param y_var Parameter being plotted.
 #'
 #' @returns a vector the same length as rows in the dataset with the nice name of the quality flag.
 #' @noRd
-get_qual_flags <- function(qual_flags, y_var){
-  qual_flags <- qual_flags[[y_var]]
+get_qual_flags <- function(data, y_var){
+  flags <- data[[paste0(y_var, "_flag")]]
 
-  qual_flags <- ifelse(qual_flags == "QUAL01", "Bad", qual_flags)
-  qual_flags <- ifelse(qual_flags == "QUAL02", "Questionable", qual_flags)
+  qual_flags <- ifelse(grepl("QUAL01",flags), "Bad", ifelse(grepl("QUAL02",flags), "Questionable", NA))
 
   return(qual_flags)
 

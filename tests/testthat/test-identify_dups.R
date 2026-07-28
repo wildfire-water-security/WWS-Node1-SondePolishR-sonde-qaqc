@@ -28,30 +28,30 @@ test_that("duplicates are dealt with", {
     #average values
       flagged <- apply_dup_edits(messy, messy$duplicates[1,], "use_mean")
 
-      expect_equal(flagged$changelog$n_changed[-1], 14) #only 14 since mean didn't change values
+      expect_equal(flagged$changelog$n_changed[-1], 14)
       expect_equal(flagged$changelog$note[-1], "averaged across duplicate values")
-      flags_rm <- flagged$flags$flag_rm
-      flags_chg <- flagged$flags$flag_chg #shouldn't be any differences here because values are the same exactly
-      expect_equal(flags_chg, messy$flags$flag_chg)
-      expect_true(all(sapply(flags_rm[-(1:4)], function(x){sum(x == "DUP02", na.rm=TRUE)}) == 14))
+
+      #check flags are added in the right spots
+      expect_equal(unlist(flagged$data$fDOM_QSU_flag[1:14]), rep("DUP01", 14))
+      dup_rows <- which(flagged$data$DupNum == 2 & flagged$data$FileName == "example-csv-data1.csv")
+      expect_equal(unlist(flagged$data$fDOM_QSU_flag[dup_rows]), rep("DUP02", 14))
+
 
       flagged <- apply_dup_edits(messy, messy$duplicates[2,], "use_mean")
-
-      expect_equal(flagged$changelog$n_changed[-1], 28)
-      flags_rm <- flagged$flags$flag_rm
-      flags_chg <- flagged$flags$flag_chg
-      expect_true(all(sapply(flags_chg[-(1:4)], function(x){sum(x == "DUP01", na.rm=TRUE)}) == 14))
-      expect_true(all(sapply(flags_rm[-(1:4)], function(x){sum(x == "DUP02", na.rm=TRUE)}) == 14))
+      expect_equal(flagged$changelog$n_changed[-1], 14)
+      expect_equal(unlist(flagged$data$fDOM_QSU_flag[251:264]), rep("DUP01", 14))
+      dup_rows <- which(flagged$data$DupNum == 2 & flagged$data$FileName == "dupfile2.csv")
+      expect_equal(unlist(flagged$data$fDOM_QSU_flag[dup_rows]), rep("DUP02", 14))
 
     #keep a single set
       flagged <- apply_dup_edits(messy, messy$duplicates[2,], "dupfile2.csv")
 
       expect_equal(flagged$changelog$n_changed[-1], 14) #only 14 since we just removed 1 set
       expect_equal(flagged$changelog$note[-1], "kept duplicates from duplicate set dupfile2.csv")
-      flags_rm <- flagged$flags$flag_rm
-      flags_chg <- flagged$flags$flag_chg #shouldn't be any differences here because we didn't change any values
-      expect_equal(flags_chg, messy$flags$flag_chg)
-      expect_true(all(sapply(flags_rm[-(1:4)], function(x){sum(x == "DUP02", na.rm=TRUE)}) == 14))
+      expect_equal(flagged$changelog$n_changed[-1], 14)
+      expect_equal(unlist(flagged$data$fDOM_QSU_flag[251:264]), rep("DUP02", 14))
+      dup_rows <- which(flagged$data$DupNum == 2 & flagged$data$FileName == "dupfile2.csv")
+      expect_equal(unlist(flagged$data$fDOM_QSU_flag[dup_rows]), rep(NA, 14)) #shouldn't be flagged since not changed
 
       #check naming with a single file
       flagged <- apply_dup_edits(messy, messy$duplicates[1,], "1")
@@ -63,10 +63,8 @@ test_that("duplicates are dealt with", {
 
       expect_equal(flagged$changelog$n_changed[-1], 28)
       expect_equal(flagged$changelog$note[-1], "removed all duplicated values")
-      flags_rm <- flagged$flags$flag_rm
-      flags_chg <- flagged$flags$flag_chg
-      expect_equal(flags_chg, messy$flags$flag_chg) #didn't change, just removed
-      expect_true(all(sapply(flags_rm[-(1:4)], function(x){sum(x == "DUP02", na.rm=TRUE)}) == 28)) #28 now because removed both sets
+      dup_rows <- which(flagged$data$DupNum == 2 & flagged$data$FileName == "dupfile2.csv")
+      expect_equal(unlist(flagged$data$fDOM_QSU_flag[c(251:264, dup_rows)]), rep("DUP02", 28))
 
 
 })

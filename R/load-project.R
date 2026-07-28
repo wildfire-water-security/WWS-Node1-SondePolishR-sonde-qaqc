@@ -33,7 +33,7 @@ load_project <- function(csv_path=NULL, csv_files=NULL, prj_path=NULL,
     data_merge <- list()
     for(x in csv_path){
       num <- which(x == csv_path)
-      dat <- read_sonde(x, tz = tz, return="list")
+      dat <- read_sonde(x, tz = tz, return="list", flags=TRUE)
       dat$data$FileName <- basename(csv_files[num]) #in shiny the default filename is nothing
       if(is.function(update_pb)){setProgress(value = num)} #update shiny progress bar
       data_merge <- c(data_merge, list(dat))
@@ -56,7 +56,6 @@ load_project <- function(csv_path=NULL, csv_files=NULL, prj_path=NULL,
       #create sonde object
       obj <- list(meta = list(site = site, tz= tz, coords = c(NA, NA)),
                   data = csv_merge,
-                  flags = NULL,
                   precip = NULL,
                   fieldform = NULL,
                   calcheck = NULL,
@@ -67,7 +66,6 @@ load_project <- function(csv_path=NULL, csv_files=NULL, prj_path=NULL,
 
       class(obj) <- "sondeproj"
 
-      obj <- add_flags(obj, csv_merge)
     }
   #read in ff and cal file (these cover the entire period and we don't need to merge, just update)
     if(!is.null(ff_path)){
@@ -130,20 +128,8 @@ load_project <- function(csv_path=NULL, csv_files=NULL, prj_path=NULL,
         names(diff) <- diff_version(obj)
         obj$diffs <- append(obj$diffs, diff)
 
-        # #update precip if lat and long available
-        # if(all(!is.na(obj$meta$coords))){
-        #   new_precip <- get_precip(data_merge, obj$meta$coords[1], obj$meta$coords[2])
-        #   obj$precip <- new_precip
-        # }
-
       }
       obj$data <- data_merge
-
-      #keep existing flags
-      obj <- add_flags(obj, obj$data)
-
-      #check that flags match data
-      stopifnot(all(sapply(obj$flags, nrow) == nrow(obj$data)))
 
     }
 

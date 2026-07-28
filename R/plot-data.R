@@ -149,8 +149,7 @@ plot_sonde <- function(data, y_var, y2_var=NULL,
 
   #plot questionable points
   if(opts$qualflag){
-    plot_flags <- proj$flags$flag_qual %>% filter(.data$Index %in% data$Index) %>% arrange(.data$Index)
-    questionable <- data %>% arrange(.data$Index) %>% mutate(qual_flags = get_qual_flags(plot_flags, y_var)) %>%
+    questionable <- data %>% arrange(.data$Index) %>% mutate(qual_flags = get_qual_flags(.data, y_var)) %>%
       filter(!is.na(.data$qual_flags)) %>% arrange(.data$DateTime)
 
     colors <- c("Bad" = "darkred", "Questionable" = "orange")

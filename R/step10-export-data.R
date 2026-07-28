@@ -119,8 +119,7 @@ export_server <- function(id, sondeproj, data_ver, y_var){
       #summarized data with flags added for export and plotting
       sum_data <- reactive({
         req(sondeproj())
-
-        export_data <- combine_flags(sondeproj())
+        export_data <- sondeproj()$data
 
         #summarize
         if(input$frequency != "interval"){

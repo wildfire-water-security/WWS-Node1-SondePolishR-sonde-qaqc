@@ -132,7 +132,6 @@
 #' @importFrom utf8 as_utf8
 #' @importFrom utils read.csv
 #' @importFrom utils write.csv
-#' @importFrom vctrs vec_compare
 #' @importFrom zoo na.approx
 #' @importFrom zoo na.locf
 #' @importFrom zoo rollmedian
