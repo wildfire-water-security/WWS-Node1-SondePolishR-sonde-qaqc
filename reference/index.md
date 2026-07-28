@@ -31,7 +31,7 @@ Functions for loading sonde data and metadata.
 Functions for tracking data quality and performing corrections.
 
 - [`add_flags()`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/add_flags.md)
-  : Get skeleton flagging dataframe
+  : Add new flag to dataset
 - [`apply_drift_shift()`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/apply_drift_shift.md)
   : Apply a drift correction to a parameter
 - [`apply_dup_edits()`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/apply_dup_edits.md)

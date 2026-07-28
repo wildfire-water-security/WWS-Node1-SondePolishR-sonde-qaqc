@@ -6,8 +6,15 @@ view, correct, and export sonde data.
 ## Usage
 
 ``` r
-run_app()
+run_app(default_path = getwd())
 ```
+
+## Arguments
+
+- default_path:
+
+  Default filepath used for saving data to, defaults to current working
+  directory.
 
 ## Value
 

@@ -1,42 +1,65 @@
-# Get skeleton flagging dataframe
+# Add new flag to dataset
 
-Works to provide a skeleton for the flag data (if no parameter or flag
-names are provided).
+Safely adds a flag to a specific parameter without overwriting old
+flags. Also maintains a consistent order so that additional flags can be
+identified with version control.
 
 ## Usage
 
 ``` r
-add_flags(proj, data)
+add_flags(data, y_var, index, flag)
 ```
 
 ## Arguments
 
-- proj:
-
-  a `sondeproj` object to add the flags to. If it has existing flags
-  they will be merged with the new flags from `data` with existing
-  flags.
-
 - data:
 
-  a data.frame with sonde data
+  Data.frame with sonde data.
+
+- y_var:
+
+  The column to add flag to.
+
+- index:
+
+  Row numbers to add flag to.
+
+- flag:
+
+  Flag to add to the data.frame.
 
 ## Value
 
-a data.frame
-
-- if `par` and `flag_name` are `NULL` it will return a `data.frame` with
-  the same number of rows as `data` but with a blank column for each
-  parameter in the `data.frame` only the index, datetimme, datetime_rd,
-  and DupNum columns.
+a data.frame with the same dimensions as `data` with the flags added to
+the appropriate column.
 
 ## Examples
 
 ``` r
-#add flag columns
-updated_proj <- add_flags(example_sondeproj, example_data)
-colnames(updated_proj$flags$flag_rm)
-#>  [1] "Index"         "DupNum"        "DateTime"      "DateTime_rd"  
-#>  [5] "fDOM_QSU"      "ODO_mg_L"      "pH"            "SpCond_uS_cm" 
-#>  [9] "Temp_C"        "Turbidity_FNU"
+data <- add_flags(example_sondeproj$data, "fDOM_QSU", 2:7, "TEST01")
+data$fDOM_QSU_flag[1:8]
+#> [[1]]
+#> [1] "RM01"
+#> 
+#> [[2]]
+#> [1] "RM01"   "TEST01"
+#> 
+#> [[3]]
+#> [1] "RM01"   "TEST01"
+#> 
+#> [[4]]
+#> [1] "RM01"   "TEST01"
+#> 
+#> [[5]]
+#> [1] "TEST01"
+#> 
+#> [[6]]
+#> [1] "TEST01"
+#> 
+#> [[7]]
+#> [1] "TEST01"
+#> 
+#> [[8]]
+#> [1] NA
+#> 
 ```

@@ -15,7 +15,7 @@ apply_diff(data, diff, id = "DateTime", invert = FALSE, skip_merge = TRUE)
 - data:
 
   the data to apply the \`diff\` to. Must contain all the columns in
-  \`diff\`.
+  \`diff\` or a list of flags.
 
 - diff:
 

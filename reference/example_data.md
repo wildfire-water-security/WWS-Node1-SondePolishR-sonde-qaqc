@@ -29,19 +29,22 @@ An data.frame object with 8071 rows and 13 columns:
 
 - **Battery_V**: Battery voltage when measurement was collected.
 
-- **fDOM_QSU**: Fluorescent dissolved organic matter (fDOM) measured in
-  Quinine Sulfate Units (QSU).
+- **fDOM_QSU**/**fDOM_QSU_flag**: Fluorescent dissolved organic matter
+  (fDOM) measured in Quinine Sulfate Units (QSU) and flags.
 
-- **ODO_mg_L**: Dissolved oxygen measured in mg/L.
+- **ODO_mg_L**/**ODO_mg_L_flag**: Dissolved oxygen measured in mg/L and
+  flags.
 
-- **pH**: Dissolved oxygen measured in pH units.
+- **pH**/**pH_flag**: Dissolved oxygen measured in pH units and flags.
 
-- **SpCond_uS_cm**: Specific conductivity measured in µS/cm.
+- **SpCond_uS_cm**/**SpCond_uS_cm_flag**: Specific conductivity measured
+  in µS/cm and flags.
 
-- **Temp_C**: Temperature measured in degrees C.
+- **Temp_C**/**Temp_C_flag**: Temperature measured in degrees C and
+  flags.
 
-- **Turbidity_FNU**: Turbidity measured in Formazin Nephelometric Units
-  (FNU).
+- **Turbidity_FNU**/**Turbidity_FNU_flag**: Turbidity measured in
+  Formazin Nephelometric Units (FNU) and flags.
 
 ## Source
 

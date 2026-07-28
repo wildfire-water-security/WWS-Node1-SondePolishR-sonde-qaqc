@@ -24,24 +24,6 @@ An object of class `sondeproj` with the following elements:
 
 - **data**: A `data.frame` of the dataset, updated with any changes.
 
-- **flags**: A list of length four:
-
-- **flag_rm**: A `data.frame` with the same measurement columns with
-  \_flag appended to the name and the same number of rows. Used to store
-  flag values for values that were marked as questionable.
-
-- **flag_rm**: A `data.frame` with the same measurement columns with
-  \_flag appended to the name and the same number of rows. Used to store
-  flag values for values that were removed.
-
-- **flag_chg**: A `data.frame` with the same measurement columns with
-  \_flag appended to the name and the same number of rows. Used to store
-  flag values for values that were altered.
-
-- **flag_add**: A `data.frame` with the same measurement columns with
-  \_flag appended to the name and the same number of rows. Used to store
-  flag values for values that were added (likely through interpolation).
-
 - **precip**: A `data.frame` with precipitation values.
 
 - **fieldform**: A `data.frame` with the field form data. See

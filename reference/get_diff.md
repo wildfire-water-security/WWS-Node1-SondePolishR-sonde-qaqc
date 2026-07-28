@@ -80,19 +80,37 @@ get_diff(data1, data2)
 #> 3 2024-07-31 12:30:00  9.72    NA data_removed
 #> 4 2024-07-31 12:45:00  9.69    NA data_removed
 #> 
+#> $fDOM_QSU_flag
+#> NULL
+#> 
 #> $ODO_mg_L
+#> NULL
+#> 
+#> $ODO_mg_L_flag
 #> NULL
 #> 
 #> $pH
 #> NULL
 #> 
+#> $pH_flag
+#> NULL
+#> 
 #> $SpCond_uS_cm
+#> NULL
+#> 
+#> $SpCond_uS_cm_flag
 #> NULL
 #> 
 #> $Temp_C
 #> NULL
 #> 
+#> $Temp_C_flag
+#> NULL
+#> 
 #> $Turbidity_FNU
+#> NULL
+#> 
+#> $Turbidity_FNU_flag
 #> NULL
 #> 
 #> attr(,"class")

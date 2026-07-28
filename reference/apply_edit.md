@@ -21,9 +21,7 @@ apply_edit(proj, edit)
   rows: logical vector which specifies rows changed as TRUE - y_var:
   parameter being edited - step: name of the editing step for the
   changelog - note: an optional note to add to the changelog - flag:
-  character flag to use for edits to the data - changetype: character
-  specifying where to add flag, either "flag_rm", "flag_chg", or
-  "flag_add"
+  character flag to use for edits to the data
 
 ## Value
 
@@ -41,7 +39,6 @@ edit <- list(data = example_data,
              y_var = "fDOM_QSU",
              step = "outlier removal",
              note = "example edit",
-             flag = "RM07",
-             changetype = "flag_rm")
+             flag = "RM07")
 updated_proj <- apply_edit(example_sondeproj, edit)
 ```
