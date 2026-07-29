@@ -9,7 +9,7 @@ maximum gap lengths to fill and duplicates."><meta property="og:image" content="
 
     <a class="navbar-brand me-2" href="../index.html">SondePolishR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9003</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9004</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,7 +52,7 @@ maximum gap lengths to fill and duplicates.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">apply_interp</span><span class="op">(</span><span class="va">data_fill</span>, <span class="va">data_interp</span>, <span class="va">y_var</span>, <span class="va">max_length</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">apply_interp</span><span class="op">(</span><span class="va">data_fill</span>, <span class="va">data_interp</span>, <span class="va">y_var</span>, <span class="va">max_length</span>, <span class="va">date_range</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -74,6 +74,10 @@ maximum gap lengths to fill and duplicates.</p>
 <dt id="arg-max-length">max_length<a class="anchor" aria-label="anchor" href="#arg-max-length"></a></dt>
 <dd><p>The maximum length in hours to fill via interpolation.</p></dd>
 
+
+<dt id="arg-date-range">date_range<a class="anchor" aria-label="anchor" href="#arg-date-range"></a></dt>
+<dd><p>The date range in which to fill data, used to only fill data within plotted range.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -84,7 +88,8 @@ maximum gap lengths to fill and duplicates.</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">interp_dfs</span> <span class="op">&lt;-</span> <span class="fu"><a href="prep_interp.html">prep_interp</a></span><span class="op">(</span><span class="va">example_sondeproj</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">filled_yvar</span> <span class="op">&lt;-</span> <span class="fu"><a href="run_interp.html">run_interp</a></span><span class="op">(</span><span class="va">interp_dfs</span><span class="op">$</span><span class="va">interp</span>, <span class="st">"fDOM_QSU"</span>, <span class="st">"linear"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">data_filled</span> <span class="op">&lt;-</span> <span class="fu">apply_interp</span><span class="op">(</span><span class="va">interp_dfs</span><span class="op">$</span><span class="va">fill</span>, <span class="va">filled_yvar</span>, <span class="st">"fDOM_QSU"</span>, <span class="fl">8</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">data_filled</span> <span class="op">&lt;-</span> <span class="fu">apply_interp</span><span class="op">(</span><span class="va">interp_dfs</span><span class="op">$</span><span class="va">fill</span>, <span class="va">filled_yvar</span>,</span></span>
+<span class="r-in"><span>                            <span class="st">"fDOM_QSU"</span>, <span class="fl">8</span>, <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">interp_dfs</span><span class="op">$</span><span class="va">fill</span><span class="op">$</span><span class="va">Date</span><span class="op">)</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

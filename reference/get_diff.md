@@ -9,7 +9,7 @@ additions/subtractions are supported.
 ## Usage
 
 ``` r
-get_diff(olddata, newdata, id = "DateTime", ignore = NA)
+get_diff(olddata, newdata, id = c("DateTime_rd", "DupNum"), ignore = NA)
 ```
 
 ## Arguments
@@ -50,9 +50,6 @@ get_diff(data1, data2)
 #> $Index
 #> NULL
 #> 
-#> $DupNum
-#> NULL
-#> 
 #> $FileName
 #> NULL
 #> 
@@ -62,7 +59,7 @@ get_diff(data1, data2)
 #> $Time_HH_mm_ss
 #> NULL
 #> 
-#> $DateTime_rd
+#> $DateTime
 #> NULL
 #> 
 #> $Site_Name
@@ -72,13 +69,13 @@ get_diff(data1, data2)
 #> NULL
 #> 
 #> $fDOM_QSU
-#> # A tibble: 4 × 4
-#>   DateTime              old   new op_type     
-#>   <dttm>              <dbl> <dbl> <chr>       
-#> 1 2024-07-31 12:00:00  9.95    NA data_removed
-#> 2 2024-07-31 12:15:00  9.87    NA data_removed
-#> 3 2024-07-31 12:30:00  9.72    NA data_removed
-#> 4 2024-07-31 12:45:00  9.69    NA data_removed
+#> # A tibble: 4 × 5
+#>   DateTime_rd         DupNum   old   new op_type     
+#>   <dttm>               <int> <dbl> <dbl> <chr>       
+#> 1 2024-07-31 12:00:00      1  9.95    NA data_removed
+#> 2 2024-07-31 12:15:00      1  9.87    NA data_removed
+#> 3 2024-07-31 12:30:00      1  9.72    NA data_removed
+#> 4 2024-07-31 12:45:00      1  9.69    NA data_removed
 #> 
 #> $fDOM_QSU_flag
 #> NULL

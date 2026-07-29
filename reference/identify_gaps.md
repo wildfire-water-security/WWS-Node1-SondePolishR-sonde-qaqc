@@ -6,7 +6,7 @@ identify periods of missing observations.
 ## Usage
 
 ``` r
-identify_gaps(data, ignore = 60 * 5)
+identify_gaps(data, ignore = NULL)
 ```
 
 ## Arguments

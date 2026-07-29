@@ -7,7 +7,13 @@ the \`diff\` to data.
 ## Usage
 
 ``` r
-apply_diff(data, diff, id = "DateTime", invert = FALSE, skip_merge = TRUE)
+apply_diff(
+  data,
+  diff,
+  id = c("DateTime_rd", "DupNum"),
+  invert = FALSE,
+  skip_merge = TRUE
+)
 ```
 
 ## Arguments

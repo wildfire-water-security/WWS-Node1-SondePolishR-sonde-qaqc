@@ -8,7 +8,7 @@ and save the dataset as a new version.
 ## Usage
 
 ``` r
-apply_edit_UI(id, note = NULL)
+apply_edit_UI(id, edit_type = "flag", note = NULL)
 
 apply_edit_server(id, sondeproj, edit)
 ```
@@ -18,6 +18,11 @@ apply_edit_server(id, sondeproj, edit)
 - id:
 
   the shiny ID of the action button
+
+- edit_type:
+
+  A character used to determine button naming options include flag,
+  remove, interpolate, and change.
 
 - sondeproj:
 
