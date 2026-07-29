@@ -37,12 +37,12 @@ prep_interp <- function(proj){
     arrange(.data$DateTime_rd, .data$DupNum) %>% #want to arrange in time order for filling
     mutate(Index = 1:n(),
            DupNum = ifelse(is.na(.data$DupNum), 1, .data$DupNum),
-           FileName = ifelse(is.na(.data$FileName), "interpolated", .data$FileName),
            Date = if_else(is.na(.data$Date), as.Date(.data$DateTime_rd, tz = tz), .data$Date),
            Time_HH_mm_ss = if_else(is.na(.data$Time_HH_mm_ss), strftime(.data$DateTime_rd, "%H:%M:%S"), .data$Time_HH_mm_ss),
            DateTime = if_else(is.na(.data$DateTime), .data$DateTime_rd, .data$DateTime),
            Site_Name = name) %>%
-    mutate(across(all_of(flags), ~fix_flags(.x)))
+    mutate(across(all_of(flags), ~fix_flags(.x))) %>% arrange(.data$Index) %>%
+    fill(.data$FileName, .direction = "down") %>% arrange(.data$DateTime_rd, .data$DupNum)
 
 
   #get df with a single stamp per row (conflicting duplicates are set to NA)
@@ -107,9 +107,10 @@ run_interp <- function(data_interp, y_var, method, freq=1){
     yvar_fill <- zoo::na.spline(data_interp[[y_var]], na.rm=FALSE)}
 
   if(method == "random_forest"){
+    flags <- grep("_flag$", get_parms(data_interp, flags=TRUE), value=TRUE)
     filled <- data_interp %>%
       select(-any_of(c("DateTime_rd", "FileName", "Date", "Time_HH_mm_ss",
-                       "DateTime", "Site_Name", "DupNum", "fill_flag"))) %>%
+                       "DateTime", "Site_Name", "DupNum", "fill_flag", flags))) %>%
       as.data.frame() %>% missForest::missForest()
 
     #only fill to max gap
@@ -138,6 +139,7 @@ run_interp <- function(data_interp, y_var, method, freq=1){
 #' @param data_interp `data.frame` based on `proj$data` with duplicates condensed to a single value and missing values interpolated from `run_interp()`.
 #' @param y_var Variable being interpolated.
 #' @param max_length The maximum length in hours to fill via interpolation.
+#' @param date_range The date range in which to fill data, used to only fill data within plotted range.
 #'
 #' @returns `data_fill` with missing values interpolated.
 #' @export
@@ -146,8 +148,9 @@ run_interp <- function(data_interp, y_var, method, freq=1){
 #' @examples
 #' interp_dfs <- prep_interp(example_sondeproj)
 #' filled_yvar <- run_interp(interp_dfs$interp, "fDOM_QSU", "linear")
-#' data_filled <- apply_interp(interp_dfs$fill, filled_yvar, "fDOM_QSU", 8)
-apply_interp <- function(data_fill, data_interp, y_var, max_length){
+#' data_filled <- apply_interp(interp_dfs$fill, filled_yvar,
+#'                             "fDOM_QSU", 8, range(interp_dfs$fill$Date))
+apply_interp <- function(data_fill, data_interp, y_var, max_length, date_range){
   interval <- get_interval(data_fill)
 
   yvar_fill <- .fill_short_gaps(data_interp[[y_var]],
@@ -160,7 +163,8 @@ apply_interp <- function(data_fill, data_interp, y_var, max_length){
   #track which values we want to fill in (ignoring gap size)
   data_fill <- data_fill %>% group_by(.data$DateTime_rd) %>%
     mutate(n_dup = n(), n_non_na = sum(!is.na(.data[[y_var]]))) %>%
-    mutate(fill_flag = ifelse(is.na(.data[[y_var]]) & (.data$n_dup == 1 | .data$n_non_na == 0 & .data$DupNum == 1), TRUE,FALSE))
+    mutate(fill_flag = ifelse(is.na(.data[[y_var]]) & (.data$n_dup == 1 | .data$n_non_na == 0 & .data$DupNum == 1), TRUE,FALSE)) %>%
+    mutate(fill_flag = ifelse(.data$Date < date_range[1] | .data$Date > date_range[2], FALSE, .data$fill_flag)) #only fill within date range
 
   #map interpolated data back
   data_fill <- data_fill %>% left_join(fill_df, by="DateTime_rd") %>%

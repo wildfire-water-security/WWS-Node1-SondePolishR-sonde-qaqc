@@ -81,6 +81,9 @@
     file.copy(raw_files, c("inst/extdata/example-csv-data1.csv",
                            "inst/extdata/example-csv-data2.csv","inst/extdata/example-csv-data3.csv"), overwrite = TRUE)
 
+    file.copy(raw_files, c("tests/testthat/testdata/example-csv-data1.csv",
+                           "tests/testthat/testdata/example-csv-data2.csv","tests/testthat/testdata/example-csv-data3.csv"), overwrite = TRUE)
+
     #and ff and cal file
     write.csv(proj$fieldform, "inst/extdata/example-fieldform.csv", row.names = FALSE)
     write.csv(proj$calcheck, "inst/extdata/example-calcheck.csv", row.names = FALSE)

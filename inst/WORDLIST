@@ -38,10 +38,8 @@ al
 analyte
 calcheck
 changelog
-changetype
 coords
 csv
-datetimme
 dif
 dups
 duptype
@@ -86,6 +84,7 @@ timezones
 turbidities
 tz
 uS
+unsummarized
 useable
 xlsx
 µS

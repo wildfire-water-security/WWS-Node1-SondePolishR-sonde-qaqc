@@ -23,7 +23,7 @@
 #' data2$fDOM_QSU[1:4] <- NA
 #' get_diff(data1, data2)
 
-get_diff <- function(olddata, newdata, id="DateTime", ignore=NA){
+get_diff <- function(olddata, newdata, id=c("DateTime_rd", "DupNum"), ignore=NA){
   #don't support adding/removing columns right now
   x <- colnames(olddata)
   y <- colnames(newdata)
@@ -42,13 +42,16 @@ get_diff <- function(olddata, newdata, id="DateTime", ignore=NA){
   #across tracked columns get diff
   diff <- lapply(cols, .col_diff, data_merge, id=id)
 
-  #if all columns are added with same number of rows, rename operation to data_merge
-  if(.is_data_merge(diff)){
-    diff <- lapply(diff, function(x){x$op_type <- "data_merge"
-    return(x)})}
-
   #put names of columns for nicer storing
   names(diff) <- cols
+
+  #if all columns are added with same number of rows, rename operation to data_merge
+  if(.is_data_merge(diff)){
+    #skip flags
+    flags <- grep("_flag$", names(diff))
+
+    diff[-flags] <- lapply(diff[-flags], function(x){x$op_type <- "data_merge"
+    return(x)})}
 
   #make class "diff"
   class(diff) <- "diff"
@@ -73,18 +76,16 @@ get_diff <- function(olddata, newdata, id="DateTime", ignore=NA){
 #' - op_type: a character describing the type of change made
 
 #' @noRd
-.col_diff <- function(param, id="DateTime", data_merge){
+.col_diff <- function(param, id=c("DateTime_rd", "DupNum"), data_merge){
   merge <- data_merge %>%
     dplyr::select(dplyr::all_of(c(id, "source", param))) %>%
     tidyr::pivot_wider(names_from = "source", values_from=dplyr::all_of(param))
 
- #look for changes in flags
-  # flag_change <- function(old, new) {
-  #   flag_rm  <- setdiff(na.omit(old), na.omit(new))
-  #   flag_add <- setdiff(na.omit(new), na.omit(old))
-  #
-  #   length(flag_rm) > 0 || length(flag_add) > 0
-  # }
+ #if flag column, set old from NULL to NA
+  if(grepl("_flag$",param)){
+    merge$old[sapply(merge$old, is.null)] <- list(c(NA))
+    merge$new[sapply(merge$new, is.null)] <- list(c(NA))
+  }
 
   changed <- !mapply(identical, merge$old, merge$new)
 
@@ -131,8 +132,7 @@ get_diff <- function(olddata, newdata, id="DateTime", ignore=NA){
 #' newdata1 <- apply_diff(data2, diff, invert=TRUE)
 #' all.equal(data1, newdata1)
 #'
-apply_diff <- function(data, diff, id = "DateTime", invert = FALSE, skip_merge=TRUE){
-
+apply_diff <- function(data, diff, id=c("DateTime_rd", "DupNum"), invert = FALSE, skip_merge=TRUE){
 #apply multiple diffs if provided
   if(inherits(diff, "list")){
     if(invert){diff <- rev(diff)} #need to flip the order we apply in if we're inverting
@@ -147,36 +147,32 @@ apply_diff <- function(data, diff, id = "DateTime", invert = FALSE, skip_merge=T
   }
 
   #if data merge, do all together
-  if(.is_data_merge(diff)){
+  if(.is_data_merge(diff) & !skip_merge){
     if(!invert){
       add_data <- lapply(1:length(diff), function(x){
-        new <- data.frame(val=diff[[x]]$new_data)
+        new <- data.frame(val=diff[[x]]$new)
+        if(nrow(new) == 0){new <- data.frame(list(c(NA)))}
         colnames(new) <- names(diff)[x]
         new }) %>% bind_cols()
 
-    #deal with dates if used as ID
-      if(inherits(data[[id]], "POSIXct")){
-        add_data[[id]] <- as.POSIXct(diff[[1]]$id, tz= tz(data[[id]]))
-      }else{
-        add_data[[id]] <- diff[[1]]$id
-      }
+      #add id cols
+      ids <- diff[[1]] %>% select(any_of(id))
 
+      add_data <- ids %>% bind_cols(add_data)
+
+      #merge with existing data
       data <- data %>% bind_rows(add_data)
+
     }else{
-      istime <- inherits(data[[id]], "POSIXct")
-      if(istime){
-        filter_id <- as.POSIXct(diff[[1]]$id, tz= tz(data[[id]]))
-      }else{
-        filter_id <- diff[[1]]$id
-      }
-      data <- data[!(data[[id]] %in% filter_id),]
+      rm <- diff[[1]] %>% select(any_of(id))
+      data <- data %>% anti_join(rm,by = id)
     }
 
     return(data)
-  }
-
-  for(x in names(diff)){
-    data <- .col_apply(x, data, diff, id, invert)
+  }else if(!.is_data_merge(diff)){
+    for(x in names(diff)){
+      data <- .col_apply(x, data, diff, id, invert)
+    }
   }
 
   return(data)
@@ -221,16 +217,26 @@ apply_diff <- function(data, diff, id = "DateTime", invert = FALSE, skip_merge=T
 
 #' Determine if a diff is a data merge
 #'
-#' Checks if all tracked rows had data added which would indicate a data.frame got added
+#' Checks if all tracked rows had data added which would indicate a data.frame got added,
+#' ignores flag columns
 #'
 #' @param diff a `diff` object generated using `get_diff`.
 #'
 #' @returns TRUE or FALSE
 #' @noRd
 .is_data_merge <- function(diff){
-  has_diff <- sapply(diff, class) == "list"
+  #ignore flags for determining merge
+  flags <- grep("_flag$", names(diff))
+  diff <- diff[-flags]
 
-  return(all(has_diff) && all(sapply(diff, "[[", 1) == "data_added") | all(sapply(diff, "[[", 1) == "data_merge"))
+  #see if change to each col
+  has_diff <- all(sapply(diff, is.data.frame))
+
+  #determine if merged
+  op <- sapply(diff, function(x){unique(x$op_type)})
+
+  merge <- has_diff && (all(op == "data_added") | all(op == "data_merge"))
+  return(merge)
 }
 
 #' Get raw data from sonde project

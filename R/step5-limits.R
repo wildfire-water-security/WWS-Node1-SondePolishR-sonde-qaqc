@@ -27,7 +27,7 @@ limits_UI <- function(id){
             ),
             accordion_panel(
               "Save Edits",
-              apply_edit_UI(ns("apply_limits"), note="")
+              apply_edit_UI(ns("apply_limits"), edit_type = "remove", note="Highlighted points will be removed")
             ),
             accordion_panel(
               "Date Ranges",

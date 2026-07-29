@@ -14,29 +14,33 @@
 #' - step: name of the editing step for the changelog
 #' - note: an optional note to add to the changelog
 #' - flag: character flag to use for edits to the data
+#' @param edit_type A character used to determine button naming options include flag, remove, interpolate, and change.
 #'
 #' @rdname apply-edit
 #' @export
 #' @keywords internal
 #'
-apply_edit_UI <- function(id, note=NULL) {
+apply_edit_UI <- function(id, edit_type ="flag", note=NULL) {
   ns <- NS(id)
 
+  button_name <- switch(edit_type,
+                        "flag" = "Flag Points",
+                        "remove" = "Remove Points",
+                        "interpolate" = "Fill Points",
+                        "change" = "Update Points"
+                        )
+
+
   tagList(
-    tags$h5("Flag Points"),
-
-    div(style="margin-bottom: 8px; font-size:14px",
-        "Points highlighted in the plot will be flagged"),
-
-    if(!is.null(note)){
-      div(style="margin-top: 8px; margin-bottom: 8px;font-size:10px",
+       if(!is.null(note)){
+      div(style="margin-bottom: 8px; font-size:14px",
           note)
     },
     div(style="margin-bottom: 8px",
         textInput(ns("flag_notes"), "Analyst Notes (optional):",
                   value = "",
                   placeholder = "Enter text...")),
-    actionButton(ns("apply_flags"), "Flag Points")
+    actionButton(ns("apply_flags"), button_name)
 
 
   )

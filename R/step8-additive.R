@@ -23,7 +23,7 @@ additive_UI <- function(id){
           ),
           accordion_panel(
             "Save Edits",
-            apply_edit_UI(ns("apply_limits"), note=""),
+            apply_edit_UI(ns("apply_limits"), edit_type = "change", note="Highlighted data will be adjusted"),
           ),
           accordion_panel(
             "Date Ranges",
@@ -150,7 +150,7 @@ additive_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p
           full_index <- data %>%
             mutate(value = .data[[y_var()]],
                    DateTime_rd = .data$DateTime_rd) %>%
-            inner_join(sel, by = c("DateTime_rd" = "x", "value" = "y")) %>%
+            inner_join(sel, by = c("DateTime_rd" = "x")) %>%
             pull(.data$Index)
           index(full_index)
         }else {index(NULL)}
@@ -216,7 +216,7 @@ additive_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p
          !is.null(index()) &&
          !is.null(input$slope) &&
          !is.null(input$int)){
-        flag_data <- plot_data()[plot_data()$Index %in% index(),]
+        flag_data <- plot_data()[plot_data()$Index %in% index(),] %>% filter(!is.na(.data[[y_var()]]))
         p <- p %>% add_trace(data= flag_data, x=~DateTime_rd, y=as.formula(paste0("~`", y, "`")), type="scatter", mode="markers",
                                  name = "Changed", marker = list(color = "darkred"), yaxis="y", inherit=FALSE)
 
@@ -224,7 +224,7 @@ additive_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p
 
       if(input$edit_type == "drift"){
         dat <-edit()$data[edit()$rows,] %>% dplyr::filter(.data$Date >= plot_dates()[1], .data$Date <= plot_dates()[2]) %>%
-          arrange(.data$DateTime_rd)
+          arrange(.data$DateTime_rd) %>% filter(!is.na(.data[[y_var()]]))
 
         if(nrow(dat) > 0){
           p <- p %>% add_trace(data= dat, x=~DateTime_rd, y=as.formula(paste0("~`", y, "`")), type="scatter", mode="lines",

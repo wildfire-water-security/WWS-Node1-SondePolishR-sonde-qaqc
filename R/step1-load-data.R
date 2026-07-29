@@ -241,7 +241,10 @@ load_data_server <- function(id, sondeproj, data_ver){
 
       #otherwise get
       if(input$precip_source %in% c("merra-2", "nldas")){
-        precip <- get_precip(proj$data, input$lat, input$long, input$precip_source, input$token)
+        show_modal_spinner(text = "Downloading precipitation...", spin="fading-circle")
+
+        on.exit(remove_modal_spinner(), add = TRUE)
+          precip <- get_precip(proj$data, input$lat, input$long, input$precip_source, input$token)
 
         proj$meta$coords <- c(input$lat, input$long)
       }else{
@@ -255,13 +258,13 @@ load_data_server <- function(id, sondeproj, data_ver){
 
       sondeproj(proj)
 
-      if (interactive()) {
-        shinyalert::shinyalert(
-          title = "Precipitation Data Loaded",
-          text = "Precipitation data has been added to existing project.",
-          type = "success"
-        )
-      }
+      # if (interactive()) {
+      #   shinyalert::shinyalert(
+      #     title = "Precipitation Data Loaded",
+      #     text = "Precipitation data has been added to existing project.",
+      #     type = "success"
+      #   )
+      # }
     })
   #export values so we can check them
     #save values we want to check as their own reactive

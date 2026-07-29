@@ -76,13 +76,34 @@ test_that("version control works as expected", {
     dd1 <- get_diff(split1, data)  #fake adding data from split1 to full data
 
     #if we reverse additions from data we should get split1
-    newdata1 <- apply_diff(data, dd1, invert=TRUE)
-    all.equal(split1, newdata1)
+    newdata1 <- apply_diff(data, dd1, invert=TRUE, skip_merge=FALSE)
+    expect_equal(split1, newdata1)
 
     #if we apply diff to split1 we should get data
-    newdata2 <- apply_diff(split1, dd1)
-    all.equal(data, newdata2)
+    newdata2 <- apply_diff(split1, dd1, skip_merge=FALSE)
+    expect_equal(data, newdata2)
 
+  #check data merge with real data and check diff looks right
+    proj1 <- load_project(csv_path = "testdata/example-csv-data1.csv", csv_files = paste0("example-csv-data", 1, ".csv"),
+                         tz = "Etc/GMT+8", site="FAL")
+    temp_rds <- tempfile(fileext=".rds")
+    saveRDS(proj1, temp_rds)
 
+    #add a new file
+    proj2 <- load_project(csv_path = "testdata/example-csv-data2.csv", csv_files = paste0("example-csv-data", 2, ".csv"),
+                         tz = "Etc/GMT+8", site="FAL", prj_path=temp_rds)
+
+    expect_true(nrow(proj2$data) > nrow(proj1$data)) #data gets added
+    expect_equal(names(proj2$diffs), "dd1")
+    diff <- proj2$diffs$dd1
+    expect_equal(diff$fDOM_QSU_flag, NULL)
+    expect_true(is.data.frame(diff$fDOM_QSU))
+    expect_true(all(diff$fDOM_QSU$op_type == "data_merge"))
+
+    #test getting raw data back
+    raw <- get_raw_data(proj2)
+
+    #data should still look like data, don't remove data or change flags
+    expect_equal(raw, proj2$data)
 
 })

@@ -2,19 +2,38 @@
 
 ## SondePolishR 0.0.9004
 
-(2026-07-xx)
+(2026-07-29)
 
 ### Bug Fixes
 
 -   Added a warning when the "remove OOW periods" button is clicked but no field form data is provided so you know why it's not doing anything.
 
--   Doesn't allow export without a filepath to prevent app from crashing.
+-   Doesn't allow export without a file path to prevent app from crashing.
 
 -   Now exported datetimes don't drop the time for midnight (this causes issues when trying to read back into R).
 
+-   Remaining bug in using quality flags to select outlier points left over from switching flagging methods.
+
+-   Fixed bugs related to version control system preventing raw data from being plotted after data merges and fixing an issue where the diffs in changelog and actual diffs were one number off.
+
+-   The second y-variable no longer resets whenever the data in the project changes.
+
+-   Gaps are correctly identified now, previously was relying on just the DateTime which didn't produce any results after performing interpolation.
+
+-   In shift selection, when selecting a new selection of points that contained points already selected, the old points were not selected.
+
+-   Data versioning had a bug in applying diffs when they had data merges and you were trying to add/remove data from the merges, not just ignore them.
+
+-   Interpolated points had a file name of "interpolated" this caused issues when coloring points by filename and doing drift corrections since those weren't selected with the rest of the file.
+
+-   Random forest interpolation method failed because it was trying to include the flag columns.
+
 ### **Updates**
 
--   Updated formatting on exported data so now raw data will condense duplicates and have the same formatting as other exports. Also added the sitename to the exported data.
+-   Unsummarized exported data will now condense duplicates and have the same formatting as other exports. Also added the site name to the exported data.
+-   Flagging module now has more descriptive notes and button names so it's clearer what the "commit"/edit is doing.
+-   Now "automated" point selection methods for outliers and interpolation will only select points within the plotted range. This is to prevent accidentally removing or filling in points you haven't reviewed.
+-   Added a waiting indicator for loading precipitation data and switched the progress bar to a loading indicator for the interpolation step.
 
 ## SondePolishR 0.0.9003
 

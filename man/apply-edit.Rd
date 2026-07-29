@@ -5,12 +5,14 @@
 \alias{apply_edit_server}
 \title{Shiny module to added flags and save changes to  data}
 \usage{
-apply_edit_UI(id, note = NULL)
+apply_edit_UI(id, edit_type = "flag", note = NULL)
 
 apply_edit_server(id, sondeproj, edit)
 }
 \arguments{
 \item{id}{the shiny ID of the action button}
+
+\item{edit_type}{A character used to determine button naming options include flag, remove, interpolate, and change.}
 
 \item{sondeproj}{A `reactiveVal` holding the current `sondeproj`.}
 

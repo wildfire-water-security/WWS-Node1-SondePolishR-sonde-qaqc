@@ -27,7 +27,6 @@ identify_dups <- function(data){
   par_names <- get_parms(data)
   keep <- rowSums(!is.na(data[par_names])) > 0
 
-
   dup_rng <-data[keep, ] %>% dplyr::select(-c("FileName", "DateTime")) %>% group_by(.data$DateTime_rd) %>%
     summarise(count = n(), .groups = "drop") %>% filter(.data$count > 1) %>%
     reframe(start = summarise_date_ranges(.data$DateTime_rd, ignore=0)$start,

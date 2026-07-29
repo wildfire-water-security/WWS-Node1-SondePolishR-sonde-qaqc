@@ -4,7 +4,7 @@
 \alias{identify_gaps}
 \title{Identify missing observations with sonde data}
 \usage{
-identify_gaps(data, ignore = 60 * 5)
+identify_gaps(data, ignore = NULL)
 }
 \arguments{
 \item{data}{a \code{data.frame} with sonde data.}

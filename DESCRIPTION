@@ -1,7 +1,7 @@
 Package: SondePolishR
 Type: Package
 Title: Perform Quality Assurance and Data Corrections on Sonde Data
-Version: 0.0.9003
+Version: 0.0.9004
 Authors@R: c(
     person(
       "Katie", "Wampler",
@@ -54,7 +54,8 @@ Imports:
     missForest,
     nasapower,
     grDevices,
-    httr2
+    httr2,
+    shinybusy
 Suggests: 
     knitr,
     rmarkdown,

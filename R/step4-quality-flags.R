@@ -25,7 +25,7 @@ quality_UI <- function(id){
           ),
           accordion_panel(
             "Save Edits",
-            apply_edit_UI(ns("apply_limits"), note=""),
+            apply_edit_UI(ns("apply_limits"), note="Highlighted points will be flagged"),
           ),
           accordion_panel(
             "Date Ranges",

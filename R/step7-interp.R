@@ -28,7 +28,7 @@ interp_UI <- function(id){
           ),
           accordion_panel(
             "Save Edits",
-            apply_edit_UI(ns("apply_limits"), note=""),
+            apply_edit_UI(ns("apply_limits"), edit_type = "interpolate", note="Highlighted points will be interpolated"),
           ),
           accordion_panel(
             "Date Ranges",
@@ -90,24 +90,24 @@ interp_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_l
   #get data to fill and interpolation df as list
    data_fill_list <- reactive({
      req(sondeproj())
-     withProgress(message = "Preparing data", value = 0, {
+     show_modal_spinner(text = "Preparing data...", spin="fading-circle")
+     on.exit(remove_modal_spinner(), add = TRUE)
      prep_interp(sondeproj())
-     })
    })
 
   #interpolate
   data_interp <- reactive({
-    withProgress(message = "Interpolating data", value = 0, {
-      run_interp(data_fill_list()$interp, y_var(), input$method, input$freq)
-    })
+    show_modal_spinner(text = "Interpolating data...", spin="fading-circle")
+    on.exit(remove_modal_spinner(), add = TRUE)
+    run_interp(data_fill_list()$interp, y_var(), input$method, input$freq)
   })
 
   #fill data
   data_fill <- reactive({
     req(data_fill_list(), data_interp(), y_var())
-    withProgress(message = "Interpolating data", value = 0.5, {
-      apply_interp(data_fill_list()$fill, data_interp(), y_var(), input$max_length)
-    })
+    show_modal_spinner(text = "Filling data...", spin="fading-circle")
+    on.exit(remove_modal_spinner(), add = TRUE)
+      apply_interp(data_fill_list()$fill, data_interp(), y_var(), input$max_length, plot_dates())
     })
 
   #filter data to plot

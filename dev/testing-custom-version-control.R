@@ -456,3 +456,20 @@ apply_diff <- function(data, diff, invert = FALSE){
     #go backwards
     newdata2 <- apply_diff(data3, diff2, invert = TRUE)
     newdata1 <- apply_diff(data2, diff1, invert = TRUE)
+
+# figuring out bugs with the flags now being added to version control ------
+  #create a project with an additional data to add
+    proj <- load_project(csv_path = "inst/extdata/example-csv-data1.csv", csv_files = paste0("example-csv-data", 1, ".csv"),
+                         tz = "Etc/GMT+8", site="FAL")
+    temp_rds <- tempfile(fileext=".rds")
+    saveRDS(proj, temp_rds)
+
+  #add a new file
+    proj <- load_project(csv_path = "inst/extdata/example-csv-data2.csv", csv_files = paste0("example-csv-data", 2, ".csv"),
+                         tz = "Etc/GMT+8", site="FAL", prj_path=temp_rds)
+
+    test <- proj$data    #data looks fine
+    test <- proj$diffs$dd1
+
+  #test getting raw data back
+    raw <- get_raw_data(proj)

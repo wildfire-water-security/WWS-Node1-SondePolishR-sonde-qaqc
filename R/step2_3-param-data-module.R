@@ -90,8 +90,7 @@ update_parms_server <- function(id, sondeproj, data_ver, y_var,input_id = "y_var
         session,
         input_id,
         choices = choices_r,
-        selected = choices_r[1]
-      )
+        selected = ifelse(is.null(y_var()) | y_var() =="", "none", y_var()))
     }
 
 

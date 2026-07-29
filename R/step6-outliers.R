@@ -28,7 +28,7 @@ outlier_UI <- function(id){
             bslib::layout_columns(
               col_widths = c(3,3,1,5),
               numericInput(ns("k"),"Window Size",value =5,step=2),
-              numericInput(ns("t"),"Threshold",value = 2, step=0.1),
+              numericInput(ns("t"),"Threshold",value = 5, step=0.1),
               tags$div(
                 style = "width: 1px; height: 85px; background-color: #6c7881; display: inline-block; margin: 0 30px; vertical-align: middle;"),
               div(class = "d-flex justify-content-center align-items-center",
@@ -39,7 +39,7 @@ outlier_UI <- function(id){
           ),
           accordion_panel(
             "Save Edits",
-            apply_edit_UI(ns("apply_limits"), note=""),
+            apply_edit_UI(ns("apply_limits"), edit_type = "remove", note="Highlighted points will be removed"),
           ),
           accordion_panel(
             "Date Ranges",
@@ -114,12 +114,11 @@ outlier_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_
       data <- sondeproj()$data
       x <- data[[y_var()]] #needed by everything
 
-      # interpolate to temp fill gaps so filter will work
-      x_fill <- zoo::na.approx(x, na.rm = FALSE)
-      x_fill <- zoo::na.locf(x_fill, na.rm = FALSE)        # forward fill
-      x_fill <- zoo::na.locf(x_fill, fromLast = TRUE)      # backward fill
-
       if(input$filter_type == "hampel"){
+        # interpolate to temp fill gaps so filter will work
+        x_fill <- zoo::na.approx(x, na.rm = FALSE)
+        x_fill <- zoo::na.locf(x_fill, na.rm = FALSE)        # forward fill
+        x_fill <- zoo::na.locf(x_fill, fromLast = TRUE)      # backward fill
         hampel_out <- pracma::hampel(x_fill, input$k, input$t)
 
         outlier <- rep(FALSE, length(x))
@@ -127,6 +126,10 @@ outlier_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_
       }
 
       if(input$filter_type == "rel_change"){
+        # interpolate to temp fill gaps so filter will work
+        x_fill <- zoo::na.approx(x, na.rm = FALSE)
+        x_fill <- zoo::na.locf(x_fill, na.rm = FALSE)        # forward fill
+        x_fill <- zoo::na.locf(x_fill, fromLast = TRUE)      # backward fill
         rel_change_lead <- abs(x_fill - lead(x_fill)) / zoo::rollmedian(x_fill, input$k, fill= NA, align = "right") * 100
         rel_change_lag <- abs(x_fill - lag(x_fill)) / zoo::rollmedian(x_fill, input$k, fill= NA, align = "left") * 100
 
@@ -135,12 +138,12 @@ outlier_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_
       }
 
       if(input$filter_type == "questionable"){
-        outlier <- get_qual_flags(sondeproj()$flags$flag_qual, y_var())
+        outlier <- get_qual_flags(sondeproj()$data, y_var())
         outlier <- ifelse(is.na(outlier), FALSE, ifelse(outlier == "Questionable", TRUE, FALSE))
       }
 
       if(input$filter_type == "bad"){
-        outlier <- get_qual_flags(sondeproj()$flags$flag_qual, y_var())
+        outlier <- get_qual_flags(sondeproj()$data, y_var())
         outlier <- ifelse(is.na(outlier), FALSE, ifelse(outlier == "Bad", TRUE, FALSE))
       }
 
@@ -148,7 +151,7 @@ outlier_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_
       if(input$filter_type == "none" || sum(outlier) == 0){
         NULL
       }else{
-        data$Index[outlier]
+        data[outlier,] %>% dplyr::filter(.data$Date >= plot_dates()[1], .data$Date <= plot_dates()[2]) %>% pull(.data$Index)
 
       }
       })

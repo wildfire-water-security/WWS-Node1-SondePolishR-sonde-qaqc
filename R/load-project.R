@@ -124,13 +124,14 @@ load_project <- function(csv_path=NULL, csv_files=NULL, prj_path=NULL,
         dplyr::mutate(Index = 1:n())
 
       if(nrow(data_merge) > prev_lines){
-        #document data addition
-        obj <- write_log(obj, "all", "adding new data", n = (nrow(data_merge) - prev_lines), diff_name = diff_version(obj), return="sondeproj")
-
         #store diff
         diff <- list(get_diff(obj$data, data_merge))
         names(diff) <- diff_version(obj)
         obj$diffs <- append(obj$diffs, diff)
+
+        #document data addition, needs to be after getting diff so name is correct
+        obj <- write_log(obj, "all", "adding new data", n = (nrow(data_merge) - prev_lines), diff_name = diff_version(obj), return="sondeproj")
+
 
       }
       obj$data <- data_merge

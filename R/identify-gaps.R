@@ -16,13 +16,17 @@
 #'
 #' @examples
 #' identify_gaps(example_data, ignore=0)
-identify_gaps <- function(data, ignore = 60*5){
+identify_gaps <- function(data, ignore = NULL){
   stopifnot(inherits(data, "data.frame"))
-
   interval <- get_interval(data)
 
+  if(is.null(ignore)){ignore <- interval * 8}
+
+  #get parameters
+  params <- get_parms(data)
   missing <- data %>% complete(DateTime_rd = seq(min(.data$DateTime_rd), max(.data$DateTime_rd), by = paste(interval, "min"))) %>%
-    filter(is.na(.data$Index))
+    mutate(all_missing = if_all(all_of(params), is.na)) %>% filter(.data$all_missing) %>% select(-"all_missing")
+
   if(nrow(missing) == 0){return(NULL)}
 
   missing <- missing %>% reframe(start = summarise_date_ranges(.data$DateTime_rd, ignore=ignore, interval =interval)$start,

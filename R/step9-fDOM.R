@@ -26,7 +26,7 @@ fdom_UI <- function(id){
           ),
           accordion_panel(
             "Save Edits",
-            apply_edit_UI(ns("apply_limits"), note=""),
+            apply_edit_UI(ns("apply_limits"), edit_type = "change", note="Apply selected fDOM correction"),
           ),
           accordion_panel(
             "Date Ranges",

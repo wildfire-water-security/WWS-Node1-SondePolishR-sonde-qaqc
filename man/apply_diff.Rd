@@ -4,7 +4,13 @@
 \alias{apply_diff}
 \title{Apply a diff object to a dataset}
 \usage{
-apply_diff(data, diff, id = "DateTime", invert = FALSE, skip_merge = TRUE)
+apply_diff(
+  data,
+  diff,
+  id = c("DateTime_rd", "DupNum"),
+  invert = FALSE,
+  skip_merge = TRUE
+)
 }
 \arguments{
 \item{data}{the data to apply the `diff` to. Must contain all the columns in `diff` or a list of flags.}
