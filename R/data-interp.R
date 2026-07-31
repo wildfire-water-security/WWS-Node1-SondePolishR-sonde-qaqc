@@ -29,7 +29,9 @@ prep_interp <- function(proj){
   par_names <- get_parms(data)
 
   flags <- grep("_flag$", get_parms(data, flags=TRUE), value=TRUE)
-  fix_flags <- function(x){ifelse(is.null(x), list(c(NA)), x)}
+  fix_flags <- function(x){
+    lapply(x, function(y){ifelse(is.null(y), list(c(NA)), y)})
+    }
   #get the dataset to interpolate (still may have dupes)
   data_fill <- data %>%
     complete(DateTime_rd = seq(min(.data$DateTime_rd), max(.data$DateTime_rd),
@@ -151,6 +153,7 @@ run_interp <- function(data_interp, y_var, method, freq=1){
 #' data_filled <- apply_interp(interp_dfs$fill, filled_yvar,
 #'                             "fDOM_QSU", 8, range(interp_dfs$fill$Date))
 apply_interp <- function(data_fill, data_interp, y_var, max_length, date_range){
+
   interval <- get_interval(data_fill)
 
   yvar_fill <- .fill_short_gaps(data_interp[[y_var]],

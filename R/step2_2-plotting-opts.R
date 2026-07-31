@@ -5,6 +5,7 @@
 #' Used to create and return selections about what to include in the plot.
 #'
 #' @param id the shiny ID of the module
+#' @param start_val a vector the same length as the list with the initial values to use for the plotting options.
 #'
 #' @returns a list of length 5:
 #' - points: should points be plotted?
@@ -18,7 +19,7 @@
 #' @keywords internal
 #'
 #'
-plot_options_UI <- function(id){
+plot_options_UI <- function(id, start_val = c(TRUE,TRUE,FALSE,FALSE,FALSE,FALSE)){
   ns <- NS(id)
   tagList(
     tags$h5("Plot Options"),
@@ -27,22 +28,22 @@ plot_options_UI <- function(id){
     fluidRow(
       column(6,
              div(style = "margin-bottom:-10px;",
-             checkboxInput( ns("points"), "Plot points",value = TRUE)),
+             checkboxInput( ns("points"), "Plot points",value = start_val[1])),
 
              div(style = "margin-bottom:-10px;",
-                 checkboxInput( ns("line"), "Plot line",value = TRUE)),
+                 checkboxInput( ns("line"), "Plot line",value = start_val[2])),
 
              div(style = "margin-bottom:-10px;",
-                 checkboxInput( ns("files"),"Color points by file",value = FALSE))),
+                 checkboxInput( ns("files"),"Color points by file",value = start_val[3]))),
       column(6,
              div(style = "margin-bottom:-10px;",
-                 checkboxInput(ns("oow"),"Show out-of-water periods",value = FALSE)),
+                 checkboxInput(ns("oow"),"Show out-of-water periods",value = start_val[4])),
 
              div(style = "margin-bottom:-10px;",
-                 checkboxInput(ns("calcheck"),"Show calibration checks",value = FALSE)),
+                 checkboxInput(ns("calcheck"),"Show calibration checks",value = start_val[5])),
 
              div(style = "margin-bottom:-10px;",
-                 checkboxInput(ns("qualflag"),"Show questionable points",value = FALSE))),
+                 checkboxInput(ns("qualflag"),"Show questionable points",value = start_val[6]))),
 )
 
 )

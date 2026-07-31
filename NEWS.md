@@ -1,5 +1,19 @@
 # SondePolishR
 
+## SondePolishR 0.0.9005
+
+(2026-07-31)
+
+### Bug Fixes
+
+-   Can no longer select rows in the other table options within check data module. This allowed you to unintentially view past data versions.
+
+-   Bug in interpolation code to fill in flags was causing the first flag of the data to apply to the entire dataset.
+
+### **Updates**
+
+-   Now in the quality flags module, visualizing those flags starts selected so you don't have to remember to select it to view the flags you applied after flagging.
+
 ## SondePolishR 0.0.9004
 
 (2026-07-29)

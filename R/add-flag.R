@@ -25,9 +25,10 @@ add_flags <- function(data, y_var, index, flag){
     #add flag
     flags <- data[[coln]]
 
-    flags[index] <- lapply(flags[index], function(old_flag) {
+    flags[index] <- unlist(lapply(flags[index], function(old_flag) {
+      old_flag <- unlist(old_flag)
       sort(unique(na.omit(c(old_flag, flag))))
-    })
+    }))
 
     data[[coln]] <- flags
   }

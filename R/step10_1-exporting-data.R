@@ -6,6 +6,7 @@
 #' @param filetype file extension
 #' @param data data to save to specified file on click
 #' @param startname the default name for the file
+#' @param data_ver A `reactiveVal` holding a number used to track when new data is added to trigger resets.
 #'
 #' @rdname file-export
 #' @export
@@ -33,7 +34,8 @@ save_path_server <- function(id, data,
                              startname = "sonde_export",
                              label = "Choose Location",
                              title = "Select save path",
-                             filetype = ".csv") {
+                             filetype = ".csv",
+                             data_ver) {
   moduleServer(id, function(input, output, session) {
 
     ns = session$ns #needed to make updating UI work

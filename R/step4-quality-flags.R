@@ -33,7 +33,7 @@ quality_UI <- function(id){
           ),
           accordion_panel(
             "Plotting Options",
-            plot_options_UI(ns("plot_opts"))
+            plot_options_UI(ns("plot_opts"),start_val = c(TRUE,TRUE,FALSE,FALSE,FALSE,TRUE))
           ))
       ),
       mainPanel(
@@ -160,7 +160,7 @@ quality_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_
       #set which traces hold points
       built_p <- plotly_build(p)
       names <- sapply(built_p$x$data, function(x){x$name})
-      traces(which(!(names %in% c("Bad", "Questionable", "qual_flags")))-1)
+      traces(which(!(names %in% c("Bad", "Questionable", "qual_flags"))))
 
       #return plot
       p

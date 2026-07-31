@@ -13,7 +13,8 @@ save_path_server(
   startname = "sonde_export",
   label = "Choose Location",
   title = "Select save path",
-  filetype = ".csv"
+  filetype = ".csv",
+  data_ver
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ save_path_server(
 \item{title}{dialog title}
 
 \item{filetype}{file extension}
+
+\item{data_ver}{A \code{reactiveVal} holding a number used to track when new data is added to trigger resets.}
 }
 \description{
 File save selector UI

@@ -131,9 +131,10 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var,period_view, date
         df$Est_Time <- format(df$Est_Time, "%Y-%m-%d  %H:%M")
       }
 
+      sel_method <- ifelse(input$table_opt == "Change Log", "single", "none")
       DT::datatable(
        df,
-       selection = list(mode = "single"),
+       selection = list(mode = sel_method),
        filter = "top",
        colnames = df_cols
       )})
@@ -201,9 +202,10 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var,period_view, date
     undo_ver <- reactive({
       req(sondeproj())
 
+
       row <- input$log_table_rows_selected
 
-      if (is.null(row)) {
+      if (is.null(row) | input$table_opt != "Change Log") {
         return(NULL)
       }
 

@@ -45,7 +45,6 @@
 #' data <- read_sonde(file, return = "list")
 read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NULL, tz="Etc/GMT+8"){
   stopifnot(tools::file_ext(file) == "csv", file.exists(file), return %in% c("df", "list"))
-
   #guess timezone
   if(is.null(tz)){tz <- Sys.timezone(location = TRUE)}
 
@@ -101,6 +100,10 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NUL
     }else{
       serial <- text[4:(skip-4)] %>% as.data.frame() %>% tidyr::separate_wider_delim(cols='.', delim=",", names_sep="") %>% as.data.frame()
       colnames(serial) <- unlist(strsplit(text[3], ","))
+
+      #remove any empty rows/cols
+      serial[serial == ""] <- NA
+      serial <- serial %>% select(where(~ !all(is.na(.)))) %>% filter(rowSums(is.na(.)) != ncol(.))
       serial$Model <- gsub("[0-9]P Sonde", "Battery_V", serial$Model)
       add_c <- serial[which(serial$Model == "CT"),]
       add_c$Model <- "Temp_C"
