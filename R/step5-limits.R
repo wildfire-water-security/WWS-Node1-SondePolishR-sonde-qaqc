@@ -39,7 +39,8 @@ limits_UI <- function(id){
             ))
       ),
       mainPanel(
-        plotlyOutput(ns("limit_plot"), height="400px"),
+        main_plot_UI(ns("limit_plot")),
+
         #add buttons to navigate date
         weekly_range_buttons_UI(ns("date_nav")),
       ))
@@ -147,15 +148,7 @@ limits_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_l
     })
 
     #save to export
-    output$limit_plot <- plotly::renderPlotly({
-      validate(
-        need(nrow(plot_data()) > 0,
-             "No data available for the selected date range."))
-
-      # convert to plotly
-      p <- plot_obj()
-      toWebGL(p)
-    })
+    main_plot_server("limit_plot", sondeproj, plot_obj, plot_data, y_var, startmin=reactive(input$min), startmax=reactive(input$max))
 
     #redraw when back on module to prevent weird drawing issues
     observeEvent(input$modules, {

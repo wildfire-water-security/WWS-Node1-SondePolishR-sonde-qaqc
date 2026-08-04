@@ -39,7 +39,8 @@ quality_UI <- function(id){
           ))
       ),
       mainPanel(
-        plotlyOutput(ns("quality_plot"), height="400px"),
+        main_plot_UI(ns("quality_plot")),
+
         #add buttons to navigate date
         weekly_range_buttons_UI(ns("date_nav")),
       ))
@@ -129,6 +130,9 @@ quality_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_
     observeEvent(input$quality_flag, {
       plotlyProxy("quality_plot", session) %>%
         plotlyProxyInvoke("relayout", list(selections = list()))
+
+     #also set method back to add
+      updateRadioButtons(session, "selection_mode", selected = "add")
     },ignoreInit = TRUE)
 
   #filter data to plot
@@ -176,22 +180,7 @@ quality_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_
     })
 
     #save to export
-    output$quality_plot <- plotly::renderPlotly({
-      validate(
-        need(nrow(plot_data()) > 0,
-             "No data available for the selected date range."))
-
-      # convert to plotly
-      p <- plot_obj() %>%
-        plotly::event_register("plotly_selected") %>%
-        plotly::layout(dragmode = "select")
-      p <- toWebGL(p)
-
-      plot_exist(TRUE)
-
-      p
-
-    })
+    main_plot_server("quality_plot", sondeproj, plot_obj, plot_data, y_var, "plotly_selected", sel_mode=TRUE,plot_exist)
 
     #redraw when back on module to prevent weird drawing issues
     observeEvent(input$modules, {

@@ -40,6 +40,8 @@ interp_UI <- function(id){
           ))
       ),
       mainPanel(
+        main_plot_UI(ns("interp_plot")),
+
         plotlyOutput(ns("interp_plot"), height="400px"),
         #add buttons to navigate date
         weekly_range_buttons_UI(ns("date_nav")),
@@ -139,15 +141,7 @@ interp_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_l
       p
     })
 
-    output$interp_plot <- plotly::renderPlotly({
-      validate(
-        need(nrow(plot_data()) > 0,
-             "No data available for the selected date range."))
-
-      # convert to plotly
-      p <- plot_obj()
-      toWebGL(p)
-    })
+    main_plot_server("interp_plot", sondeproj, plot_obj, plot_data, y_var)
 
     observeEvent(input$modules, {
       req(input$modules == "step-7")

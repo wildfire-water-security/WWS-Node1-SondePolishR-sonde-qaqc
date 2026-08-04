@@ -38,7 +38,8 @@ fdom_UI <- function(id){
           ))
         ),
       mainPanel(
-        plotlyOutput(ns("fdom_plot"), height="400px"),
+        main_plot_UI(ns("fdom_plot")),
+
         #add buttons to navigate date
         weekly_range_buttons_UI(ns("date_nav")),
       ))
@@ -161,15 +162,9 @@ fdom_server <- function(id, sondeproj, data_ver, y_var, period_view, dates, p_le
     })
 
     #save to export
-    output$fdom_plot <- plotly::renderPlotly({
-      validate(
-        need(nrow(plot_data()) > 0,
-             "No data available for the selected date range."))
-
-      # convert to plotly
-      p <- plot_obj()
-      toWebGL(p)
-    })
+    main_plot_server("fdom_plot", sondeproj, plot_obj, plot_data, reactiveVal("fDOM_QSU"),
+                     startmin=reactive(floor(min(corr_data()$fDOM_QSU, na.rm=TRUE))),
+                     startmax=reactive(ceiling(max(corr_data()$fDOM_QSU, na.rm=TRUE)*1.05)))
 
     observeEvent(input$modules, {
       req(input$modules == "step-9")

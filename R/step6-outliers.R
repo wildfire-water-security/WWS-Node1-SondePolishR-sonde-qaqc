@@ -51,7 +51,8 @@ outlier_UI <- function(id){
           ))
         ),
       mainPanel(
-        plotlyOutput(ns("outlier_plot"), height="400px"),
+        main_plot_UI(ns("outlier_plot")),
+
         #add buttons to navigate date
         weekly_range_buttons_UI(ns("date_nav")),
       ))
@@ -241,22 +242,7 @@ outlier_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_
     })
 
     #save to export
-    output$outlier_plot <- plotly::renderPlotly({
-      validate(
-        need(nrow(plot_data()) > 0,
-             "No data available for the selected date range."))
-
-      # convert to plotly
-      p <- plot_obj() %>%
-        plotly::event_register("plotly_selected") %>%
-        plotly::layout(dragmode = "select")
-      p <- toWebGL(p)
-
-      plot_exist(TRUE)
-
-      p
-
-    })
+    main_plot_server("outlier_plot", sondeproj, plot_obj, plot_data, y_var, "plotly_selected", sel_mode=TRUE,plot_exist)
 
     #redraw when back on module to prevent weird drawing issues
     observeEvent(input$modules, {

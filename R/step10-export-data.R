@@ -192,7 +192,8 @@ export_server <- function(id, sondeproj, data_ver, y_var){
              "dups" = sondeproj()$duplicates,
              "gaps" = sondeproj()$data_gaps,
              "changelog" = sondeproj()$changelog,
-             "precip" = sondeproj()$precip)
+             "precip" = sondeproj()$precip %>% mutate(DateTime = format(.data$DateTime, "%Y-%m-%d %H:%M:%S"))
+)
     })
 
     meta_path <- save_path_server("save_meta", metadata, startname = metastartname, filetype = ".csv", data_ver=data_ver)

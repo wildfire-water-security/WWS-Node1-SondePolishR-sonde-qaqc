@@ -36,7 +36,8 @@ additive_UI <- function(id){
         ),
 
     mainPanel(
-      plotlyOutput(ns("shift_plot"), height="400px"),
+      main_plot_UI(ns("shift_plot")),
+
       #add buttons to navigate date
       weekly_range_buttons_UI(ns("date_nav")),
     ))
@@ -244,26 +245,9 @@ additive_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p
     })
 
     #save to export
-    output$shift_plot <- plotly::renderPlotly({
-      validate(
-        need(nrow(plot_data()) > 0,
-             "No data available for the selected date range."))
+    sel_mode <- reactive({ifelse(input$edit_type == "additive", TRUE, FALSE)})
 
-      # convert to plotly
-      p <- plot_obj() %>%
-        plotly::event_register("plotly_selected")
-      p <- toWebGL(p)
-
-      #set to dragmode select as default for input
-      if(input$edit_type == "additive"){
-        p <- p %>% plotly::layout(dragmode = "select")
-      }
-
-      plot_exist(TRUE)
-
-      p
-
-    })
+    main_plot_server("shift_plot", sondeproj, plot_obj, plot_data, y_var, "plotly_selected", sel_mode(), plot_exist)
 
     observeEvent(input$modules, {
       req(input$modules == "step-8")

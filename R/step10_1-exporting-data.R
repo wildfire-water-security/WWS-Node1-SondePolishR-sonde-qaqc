@@ -41,6 +41,7 @@ save_path_server <- function(id, data,
     ns = session$ns #needed to make updating UI work
 
   parsed_path <- reactiveVal() #initialize so box always shows
+  save_okay <- reactiveVal(FALSE) #store if we can actual save file
 
   #define preset roots for file path
     roots <- reactive({
@@ -62,8 +63,13 @@ save_path_server <- function(id, data,
 
     #clear path if data is cleared
     observeEvent(data_ver(), {
-      if(data_ver() == 0){parsed_path(NULL)}
+      if(data_ver() == 0){
+        parsed_path(NULL)
+        save_okay(FALSE)}
     })
+
+    #clear the okay any time the data changes
+    observeEvent(data(),{save_okay(FALSE)})
 
     output$save <- renderUI({
       shinyFiles::shinySaveButton(ns("save"),label = label,
@@ -90,45 +96,36 @@ save_path_server <- function(id, data,
       )
     })
 
-    observeEvent(input$export, {
-      req(parsed_path())
-      if(is.null(data())){
-        if (interactive()) {
-          shinyalert::shinyalert(
-            title = "No Data Available",
-            text = "Selected data is not available.",
-            type = "warning"
-          )
+  #check if overwrite is allowed
+  observeEvent(input$export, {
+    req(parsed_path())
+
+    #if no data available to save give warning
+    if(is.null(data())){
+      shinyalert::shinyalert(
+        title = "No Data Available",
+        text = "Selected data is not available.",
+        type = "warning")
+      }else{
+        #if file exists, make sure it's okay to overwrite
+        if(file.exists(parsed_path()$datapath)){
+          shinyalert::shinyalert(title = "File Already Exists",
+                                 text = "Do you want to overwrite existing data?",
+                                 type = "warning",
+                                 showCancelButton = TRUE,
+                                 inputId = "conf",
+                                 callbackR = function(value){
+                                   if(isTRUE(value)){save_file(parsed_path()$datapath, data())}})
+        }else{
+          save_file(parsed_path()$datapath,data())
         }
-      }
 
-      if(tools::file_ext(parsed_path()$datapath) == "csv" && !is.null(data())){
-        write.csv(data(), parsed_path()$datapath, row.names = FALSE, quote = FALSE)
-
-        #print a message so you know data downloaded
-        if (interactive()) {
-          shinyalert::shinyalert(
-            title = "Data Downloaded",
-            text = "Selected data has been downloaded.",
-            type = "success"
-          )
         }
-      }
-      if(tools::file_ext(parsed_path()$datapath) == "RDS"&& !is.null(data())){
-        saveRDS(data(), parsed_path()$datapath)
-
-        #print a message so you know data downloaded
-        if (interactive()) {
-          shinyalert::shinyalert(
-            title = "Project Saved",
-            text = "Current Sonde Project has been saved.",
-            type = "success"
-          )
-        }
-      }
 
 
-    })
+  })
+
+
 
     return(
       reactive({
@@ -137,4 +134,52 @@ save_path_server <- function(id, data,
       })
     )
   })
+}
+
+
+#function to save file
+save_file <- function(path, data) {
+  if(tools::file_ext(path) == "csv") {
+  tryCatch({
+      write.csv(data, path, row.names = FALSE, quote = FALSE)
+    shinyalert::shinyalert(
+      title = "Data Downloaded",
+      text = "Selected data has been downloaded.",
+      type = "success")
+   }, warning = function(w) {
+      shinyalert::shinyalert(
+        title = "Download Failed",
+        text = "Please ensure the file is not open.",
+        type = "error")
+        FALSE
+      }, error = function(e) {
+      shinyalert::shinyalert(
+        title = "Download Failed",
+        text = "Please ensure the file is not open.",
+        type = "error")
+        FALSE
+      })
+  }else if(tools::file_ext(path) == "RDS") {
+   tryCatch({
+      saveRDS(data, path)
+      shinyalert::shinyalert(
+        title = "Data Downloaded",
+        text = "Selected data has been downloaded.",
+        type = "success")
+
+    }, warning = function(w) {
+      shinyalert::shinyalert(
+        title = "Download Failed",
+        text = "Please ensure the file is not open.",
+        type = "error")
+      FALSE
+    }, error = function(e) {
+      shinyalert::shinyalert(
+        title = "Download Failed",
+        text = "Please ensure the file is not open.",
+        type = "error")
+      FALSE
+    })
+  }
+
 }

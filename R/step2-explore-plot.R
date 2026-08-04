@@ -42,8 +42,8 @@ explore_data_UI <- function(id){
         )),
 
       mainPanel(
-        #add plot
-        plotlyOutput(NS(id,"plot")),
+        main_plot_UI(ns("plot")),
+
         #add buttons to navigate date
         weekly_range_buttons_UI(ns("date_nav")),
         #adding some space after buttons
@@ -286,15 +286,7 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var,period_view, date
     })
 
     #save to export
-    output$plot <- plotly::renderPlotly({
-      validate(
-        need(nrow(plot_data()) > 0,
-          "No data available for the selected date range."))
-
-      # convert to plotly
-      p <- plot_obj()
-      toWebGL(p)
-    })
+    main_plot_server("plot", sondeproj, plot_obj, plot_data, y_var)
 
     #redraw when back on module to prevent weird drawing issues
     observeEvent(input$modules, {

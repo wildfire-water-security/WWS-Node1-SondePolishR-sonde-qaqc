@@ -30,6 +30,12 @@
 
 -   Exported the `get_nldas` function.
 
+-   When saving files, a confirmation message will display if the file already exists.
+
+-   When switching between quality flag methods, default selection method switches back to "add".
+
+-   All main plots now have inputs to control the limits of the y-axis. They default to range of the overall dataset and refresh when the project changes or the variable being plotted changes. This is useful to not zoom in on small changes during periods with low variability.
+
 ## SondePolishR 0.0.9004
 
 (2026-07-29)
