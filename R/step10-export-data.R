@@ -87,7 +87,9 @@ export_server <- function(id, sondeproj, data_ver, y_var){
 
   #starting filenames for export file
     datastartname <- reactive({
-      if(input$frequency == "interval"){
+      if(is.null(sondeproj())){
+        "data"
+      }else if(input$frequency == "interval"){
         make_filename(sondeproj()$meta$site, paste0(get_interval(sondeproj()$data), "min"))
       }else{
         make_filename(sondeproj()$meta$site, input$frequency, input$summary_method)
@@ -179,7 +181,7 @@ export_server <- function(id, sondeproj, data_ver, y_var){
       })
 
     #data save path and saving data
-      data_path <- save_path_server("save_data", export_data, startname=datastartname)
+      data_path <- save_path_server("save_data", export_data, startname=datastartname, data_ver=data_ver)
 
 
  ## EXPORTING METADATA ------
@@ -193,10 +195,10 @@ export_server <- function(id, sondeproj, data_ver, y_var){
              "precip" = sondeproj()$precip)
     })
 
-    meta_path <- save_path_server("save_meta", metadata, startname = metastartname, filetype = ".csv")
+    meta_path <- save_path_server("save_meta", metadata, startname = metastartname, filetype = ".csv", data_ver=data_ver)
 
 ## EXPORTING PROJECT -----
-    proj_path <- save_path_server("save_proj", sondeproj, startname=projstartname, filetype = ".RDS")
+    proj_path <- save_path_server("save_proj", sondeproj, startname=projstartname, filetype = ".RDS", data_ver=data_ver)
 
  ## STUFF FOR TESTING ------
 

@@ -227,13 +227,14 @@ outlier_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_
       if(!input$rm_flags){
         y <- y_var()
         p <- p %>% add_trace(data= flag_data, x=~DateTime_rd, y=as.formula(paste0("~`", y, "`")), type="scatter", mode="markers",
-                                 name = "Flagged", marker = list(color = "darkred"), yaxis="y", inherit = FALSE)
+                                 name = "Flagged", marker = list(color = "darkred"), yaxis="y2", inherit = FALSE)
       }
 
       #set which traces hold points
       built_p <- plotly_build(p)
       names <- sapply(built_p$x$data, function(x){x$name})
-      traces((which(names != "Flagged")-1))
+      traces(which(names %in% c(get_yvar(y_var()), filter_data$FileName))-1)
+
 
       #return plot
       p

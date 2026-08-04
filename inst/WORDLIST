@@ -5,6 +5,7 @@ DataEntry
 DateTime
 DateTimes
 DupNum
+EARTHDATA
 EXO
 Earthdata
 Ecohydrology
@@ -29,7 +30,9 @@ QSU
 Reformats
 Sonde
 SpCond
+Sys
 UI
+Unsummarized
 WWS
 Watras
 YSI
@@ -43,13 +46,17 @@ csv
 dif
 dups
 duptype
+earthdata
+environ
 equilibration
 erroring
 et
 fDOM
 fieldform
 frac
+getenv
 github
+gsfc
 hampel
 hh
 https
@@ -57,6 +64,7 @@ interferences
 interp
 io
 larc
+ldas
 merra
 missForest
 na
@@ -84,7 +92,8 @@ timezones
 turbidities
 tz
 uS
-unsummarized
+urs
 useable
+usethis
 xlsx
 µS

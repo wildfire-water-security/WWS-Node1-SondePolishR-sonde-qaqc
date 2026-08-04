@@ -37,23 +37,17 @@ plot_sonde <- function(data, y_var, y2_var=NULL,
   stopifnot(is.null(proj) || inherits(proj, "sondeproj"))
 
   #pull things from project
-  if(!is.null(proj) && opts$oow | opts$calcheck){
-    fieldform <- proj$fieldform
-    calcheck <- proj$calcheck
-  }else{
-    fieldform <- NULL
-    calcheck <- NULL
-  }
+    if(!is.null(proj) && opts$oow | opts$calcheck){
+      fieldform <- proj$fieldform
+      calcheck <- proj$calcheck
+    }else{
+      fieldform <- NULL
+      calcheck <- NULL
+    }
 
-  if(!is.null(y2_var) && y2_var == "precip"){
-    precip <- proj$precip
-  }else{precip <- NULL}
-
-  #get cal data
-  if(opts$calcheck & !is.null(proj) && "Est_Time" %in% colnames(calcheck)){
-    cal_data <- calcheck %>%
-      filter(.data$Parameter == y_var) %>%
-      pivot_longer(c("Resident_Value", "Check_Value"),names_to = "type",values_to = "value")}
+    if(!is.null(y2_var) && y2_var == "precip"){
+      precip <- proj$precip
+    }else{precip <- NULL}
 
   #nice name for y axes
     y_var_nice <- get_yvar(y_var)
@@ -65,60 +59,78 @@ plot_sonde <- function(data, y_var, y2_var=NULL,
   #get date range to clip OOW and calcheck periods
     date_rg <- range(as.Date(data$DateTime_rd))
 
-  #create plot based on options
-    #base plot
-      mode <- case_when(
-        opts$points & opts$line ~ "lines+markers",
-        opts$points & !opts$line ~ "markers",
-        !opts$points & opts$line ~ "lines")
+  #get cal data
+    if(opts$calcheck & !is.null(proj) && "Est_Time" %in% colnames(calcheck)){
+      cal_data <- calcheck %>%
+        filter(.data$Parameter == y_var) %>%
+        pivot_longer(c("Resident_Value", "Check_Value"),names_to = "type",values_to = "value")}
 
-      p <- plot_ly(source = source) %>%
-        layout(paper_bgcolor = "#3c4d5a", plot_bgcolor = "#475763", font = list(color = "#ebebeb", family="sans-serif"),
-               xaxis = list(title = "<b>Date</b>"),
-               yaxis=list(gridcolor = "#3c4d5a", zeroline = FALSE,title = paste0("<b>", y_var_nice, "</b>"),
-                          overlaying = "y2"),
-               yaxis2=list(gridcolor = "#3c4d5a",zeroline = FALSE,side = "right",
-                            title = paste0("<b>", y2_var_nice, "</b>")))
-      #add second axis
-      if(!is.null(y2_var)){
-        if(y2_var == "precip" & !is.null(precip)){
-          precip <- precip %>% filter(.data$DateTime >= min(date_rg) & .data$DateTime <= max(date_rg)) %>%
-            arrange(.data$DateTime)
+  #set up the plot
+    mode <- case_when(
+      opts$points & opts$line ~ "lines+markers",
+      opts$points & !opts$line ~ "markers",
+      !opts$points & opts$line ~ "lines")
 
-          #add second axis
-          p <- p %>% add_trace(data= precip, x=~DateTime, y=~Precip_mm_hr, type="scatter", yaxis="y2", mode="lines",
-                               name = y2_var_nice,
-                               line = list(color = "#1d3040"))
-        }else if(y2_var == "raw"){
-          raw_data <- get_raw_data(proj)
-          p <- p %>% add_trace(data= raw_data, x=~DateTime_rd, y=as.formula(paste0("~`", y_var, "`")),
-                               type="scatter", yaxis="y", mode="lines",
-                               name = "Raw Data",
-                               line = list(color = "#1d3040"))
-        }else if(y2_var != "precip"){
-          p <- p %>% add_trace(data= data, x=~DateTime_rd, y=as.formula(paste0("~`", y2_var, "`")),
-                               type="scatter", yaxis="y2", mode="lines",
-                               name = y2_var_nice,
-                               line = list(color = "#1d3040"))
-        }
+    p <- plot_ly(source = source) %>%
+      layout(paper_bgcolor = "#3c4d5a", plot_bgcolor = "#475763", font = list(color = "#ebebeb", family="sans-serif"),
+             xaxis = list(title = "<b>Date</b>"),
+             yaxis2=list(gridcolor = "#3c4d5a", zeroline = FALSE,title = paste0("<b>", y_var_nice, "</b>"),
+                         overlaying = "y", side = "left"),
+             yaxis=list(gridcolor = "#3c4d5a",zeroline = FALSE,side = "right",
+                        title = paste0("<b>", y2_var_nice, "</b>")))
+
+  #add second axis (in the back)
+    if(!is.null(y2_var)){
+      if(y2_var == "precip" & !is.null(precip)){
+        precip <- precip %>% filter(.data$DateTime >= min(date_rg) & .data$DateTime <= max(date_rg)) %>%
+          arrange(.data$DateTime)
+
+        #add second axis
+        p <- p %>% add_trace(data= precip, x=~DateTime, y=~Precip_mm_hr, type="scatter", yaxis="y", mode="lines",
+                             name = y2_var_nice,
+                             line = list(color = "#1d3040"))
+      }else if(y2_var == "raw"){
+        raw_data <- get_raw_data(proj)
+        p <- p %>% add_trace(data= raw_data, x=~DateTime_rd, y=as.formula(paste0("~`", y_var, "`")),
+                             type="scatter", yaxis="y", mode="lines",
+                             name = "Raw Data",
+                             line = list(color = "#1d3040"))
+      }else if(y2_var != "precip"){
+        p <- p %>% add_trace(data= data, x=~DateTime_rd, y=as.formula(paste0("~`", y2_var, "`")),
+                             type="scatter", yaxis="y", mode="lines",
+                             name = y2_var_nice,
+                             line = list(color = "#1d3040"))
       }
+    }
 
-      if(!opts$files){
-        p <- p %>% add_trace(data = data, x = ~DateTime_rd,y =as.formula(paste0("~`", y_var, "`")),
-                             mode=mode, type="scatter", name=y_var_nice, yaxis="y")
+  #add main data
+    if(!opts$files){
+      p <- p %>% add_trace(data = data, x = ~DateTime_rd,y =as.formula(paste0("~`", y_var, "`")),
+                           mode=mode, type="scatter", name=y_var_nice, yaxis="y2", inherit=FALSE)
+    }else{
+      pal <- colorRampPalette(c("#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854" ,"#FFD92F" ,"#E5C494", "#B3B3B3")) #from Set 2 color brewer
+      files <- sort(unique(data$FileName))
+      cols <- setNames(pal(length(files)), files)
 
-          if(opts$line){p <- p %>% style(line = list(color = "#ebebeb"), traces =ifelse(!is.null(y2_var), 2,1))}
-          if(opts$points){p <- p %>% style(marker = list(color = "#ebebeb"), traces =ifelse(!is.null(y2_var), 2,1))}
-      }else{
-        files <- unique(data$FileName)
-        pal <- colorRampPalette(c("#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854" ,"#FFD92F" ,"#E5C494", "#B3B3B3")) #from Set 2 color brewer
-        p <- p %>% add_trace(data = data, x = ~DateTime_rd,y = as.formula(paste0("~`", y_var, "`")),
-                     mode=mode, type="scatter", color = ~FileName, yaxis="y", colors = setNames(pal(length(files)), files))
-      }
+      #add unique per file (prevents color bugs)
+      for (f in files) {
+        df <- data %>% filter(.data$FileName == f)
+        p <- p %>% add_trace(data = df, x = ~DateTime_rd, y = as.formula(paste0("~`", y_var, "`")),
+                             name = f,line = list(color = cols[[f]]),marker = list(color = cols[[f]]),
+                             mode=mode, type="scatter", yaxis="y2", inherit = FALSE)}
 
+    }
 
+  #get traces and color if needed
+    if(!opts$files){
+      built_plot <- plotly_build(p)
+      trace_name <- sapply(built_plot$x$data, function(trace) trace$name == y_var_nice)
+      trace_n <- which(trace_name)
+      if(opts$line){p <- p %>% style(line = list(color = "#ebebeb"), traces=trace_n)}
+      if(opts$points){p <- p %>% style(marker = list(color = "#ebebeb"), traces=trace_n)}
+    }
 
-    #plot oow periods
+  #plot oow periods
     if(opts$oow && !is.null(fieldform)){
       #get data from field form for determining cal check (oow periods)
       if(!is.null(fieldform)){oow_data <- get_oow(fieldform, tz=proj$meta$tz,interval=get_interval(proj$data))}
@@ -133,35 +145,44 @@ plot_sonde <- function(data, y_var, y2_var=NULL,
                 x0 = oow_data_clip$start[i],x1 = oow_data_clip$end[i],
                 y0 = 0,y1 = 1,fillcolor = "darkred",line = list(color = "darkred"),
                 opacity = 0.4)}))
-    } }
+      } }
 
-    #plot cal check
+  #plot cal check
     if(opts$calcheck && !is.null(calcheck)){
       cal_data_clip <- cal_data %>% filter(as.Date(.data$Est_Time) >= min(date_rg) & as.Date(.data$Est_Time) <= max(date_rg))
 
-    if(nrow(cal_data_clip) > 0){
-      p <- p %>% add_trace(data = cal_data_clip, x = ~Est_Time,y = ~value,
-                           mode="markers", type="scatter", color = ~type, symbol = I("triangle-up"), yaxis="y",
-                           inherit = FALSE, marker = list(size = 12))
-    }
+      if(nrow(cal_data_clip) > 0){
+        plot_info <- list(Resident_Value = list(shape="triangle-up", name = "Resident Value"),
+                          Check_Value = list(shape="square", name = "Check Value"))
 
-    }
+        #add unique per file (prevents color bugs)
+        for (f in unique(cal_data_clip$type)){
+          df <- cal_data_clip %>% filter(.data$type == f)
+          p <- p %>% add_trace(data = df, x = ~Est_Time, y = ~value,
+                               name = plot_info[[f]]$name,
+                               marker = list(color = "black", size = 12, symbol=plot_info[[f]]$shape),
+                               type="scatter", yaxis="y2", inherit = FALSE, mode="markers")}
+      }}
 
   #plot questionable points
-  if(opts$qualflag){
-    questionable <- data %>% arrange(.data$Index) %>% mutate(qual_flags = get_qual_flags(.data, y_var)) %>%
-      filter(!is.na(.data$qual_flags)) %>% arrange(.data$DateTime)
+    if(opts$qualflag){
+      questionable <- data %>% arrange(.data$Index) %>% mutate(qual_flags = get_qual_flags(.data, y_var)) %>%
+        filter(!is.na(.data$qual_flags)) %>% arrange(.data$DateTime)
 
-    colors <- c("Bad" = "darkred", "Questionable" = "orange")
+      qual_col <- c("Bad" = "darkred", "Questionable" = "orange")
 
-    if(nrow(questionable) > 0){
-      p <- p %>%  add_trace(data= questionable, x=~DateTime_rd, y=as.formula(paste0("~`", y_var, "`")), type="scatter", mode="markers",
-                            color=~qual_flags, yaxis="y", colors= colors, inherit = FALSE)
-    }
+      if(nrow(questionable) > 0){
+
+        for(f in unique(questionable$qual_flags)){
+          df <- questionable %>% filter(.data$qual_flags == f)
+          p <- p %>% add_trace(data = df, x = ~DateTime_rd, y = as.formula(paste0("~`", y_var, "`")),
+                               name = f,type="scatter", mode="markers", yaxis="y2",
+                               marker = list(color = qual_col[[f]]), inherit = FALSE)}
+
+      }}
+
+
+      return(p)
+
 
   }
-
-    return(p)
-
-
-}

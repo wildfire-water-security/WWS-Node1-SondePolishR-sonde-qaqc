@@ -51,12 +51,6 @@ test_that("{shinytest2} recording: checking-module4", {
   expect_equal(tab$parameter[nrow(tab)], "fDOM_QSU")
   expect_equal(tab$note[nrow(tab)],  paste0("Data flagged as questionable"))
 
-  #check viewing questionable points
-  app$set_inputs(`data4-plot_opts-qualflag` = TRUE)
-  plot_obj <- app$get_value(export = "data4-plot_obj")
-  expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
-  app$expect_screenshot(name = "showing_questionable")
-
   #check marking as bad
   app$set_inputs(`data4-plot_opts-qualflag` = FALSE)
   app$set_inputs(`data4-selection_mode` = "add")

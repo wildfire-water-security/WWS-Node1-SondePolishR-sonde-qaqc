@@ -130,7 +130,8 @@ interp_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_l
       if(nrow(interp_points) > 0){
         y <- y_var()
         p <- p  %>% add_trace(data= interp_points, x=~DateTime_rd, y=as.formula(paste0("~`", y, "`")), type="scatter", mode="markers",
-                                  name = "Flagged", marker = list(color = "#2ECC71"), inherit = FALSE)
+                                  name = "Flagged", marker = list(color = "#2ECC71"), inherit = FALSE,
+                              yaxis="y2")
       }
 
 

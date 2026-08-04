@@ -193,14 +193,19 @@ load_data_server <- function(id, sondeproj, data_ver){
                    update_pb = function(amount){incProgress(amount)})
         })
 
+      if(all(is.na(obj$meta$coords)) | all(obj$meta$coords == "")){
+        obj$meta$coords <- c(input$lat, input$long) #also write lat/long if provided
+      }
+
+
       #save object as reactive
       sondeproj(obj)
 
-      #update UI inputs with project values
-      updateTextInput(session, "site", value=ifelse(is.null(obj$meta$site), "", obj$meta$site))
-      updateSelectInput(session, "tz", selected=ifelse(is.null(obj$meta$tz), "", obj$meta$tz))
-      updateTextInput(session, "lat", value=ifelse(is.null(obj$meta$coords[1]), "", obj$meta$coords[1]))
-      updateTextInput(session, "long", value=ifelse(is.null(obj$meta$coords[2]), "", obj$meta$coords[2]))
+      #update UI inputs with project values only if there's something there
+      if(!is.null(obj$meta$site)){updateTextInput(session, "site", value=obj$meta$site)}
+      if(!is.null(obj$meta$tz)){updateSelectInput(session, "tz", selected=obj$meta$tz)}
+      if(!is.null(obj$meta$coords[1])){updateTextInput(session, "lat", value=obj$meta$coords[1])}
+      if(!is.null(obj$meta$coords[2])){updateTextInput(session, "long", value=obj$meta$coords[2])}
 
       #print a message so you know data loaded
       if (interactive()) {
@@ -244,7 +249,16 @@ load_data_server <- function(id, sondeproj, data_ver){
         show_modal_spinner(text = "Downloading precipitation...", spin="fading-circle")
 
         on.exit(remove_modal_spinner(), add = TRUE)
+
+        result <- tryCatch({
           precip <- get_precip(proj$data, input$lat, input$long, input$precip_source, input$token)
+        }, error = function(e) {
+          if(interactive()){
+            shinyalert::shinyalert(
+              title = "Fetching Precipitation Failed",
+              text = "Please check your token value, retry, or try a different method.",
+              type = "error")}
+        })
 
         proj$meta$coords <- c(input$lat, input$long)
       }else{

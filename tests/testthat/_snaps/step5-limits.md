@@ -16,7 +16,7 @@
             "names": {
               "type": "character",
               "attributes": {},
-              "value": ["margin", "paper_bgcolor", "plot_bgcolor", "font", "xaxis", "yaxis", "yaxis2", "hovermode", "showlegend", "shapes"]
+              "value": ["margin", "paper_bgcolor", "plot_bgcolor", "font", "xaxis", "yaxis2", "yaxis", "hovermode", "showlegend", "shapes"]
             }
           },
           "value": [
@@ -117,20 +117,10 @@
                 "names": {
                   "type": "character",
                   "attributes": {},
-                  "value": ["domain", "automargin", "gridcolor", "zeroline", "title", "overlaying"]
+                  "value": ["gridcolor", "zeroline", "title", "overlaying", "side"]
                 }
               },
               "value": [
-                {
-                  "type": "double",
-                  "attributes": {},
-                  "value": [0, 1]
-                },
-                {
-                  "type": "logical",
-                  "attributes": {},
-                  "value": [true]
-                },
                 {
                   "type": "character",
                   "attributes": {},
@@ -149,7 +139,12 @@
                 {
                   "type": "character",
                   "attributes": {},
-                  "value": ["y2"]
+                  "value": ["y"]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["left"]
                 }
               ]
             },
@@ -159,10 +154,20 @@
                 "names": {
                   "type": "character",
                   "attributes": {},
-                  "value": ["gridcolor", "zeroline", "side", "title"]
+                  "value": ["domain", "automargin", "gridcolor", "zeroline", "side", "title"]
                 }
               },
               "value": [
+                {
+                  "type": "double",
+                  "attributes": {},
+                  "value": [0, 1]
+                },
+                {
+                  "type": "logical",
+                  "attributes": {},
+                  "value": [true]
+                },
                 {
                   "type": "character",
                   "attributes": {},
@@ -248,7 +253,7 @@
                     {
                       "type": "character",
                       "attributes": {},
-                      "value": ["y"]
+                      "value": ["y2"]
                     },
                     {
                       "type": "list",
@@ -322,7 +327,7 @@
                     {
                       "type": "character",
                       "attributes": {},
-                      "value": ["y"]
+                      "value": ["y2"]
                     },
                     {
                       "type": "list",
@@ -480,7 +485,7 @@
             "names": {
               "type": "character",
               "attributes": {},
-              "value": ["margin", "paper_bgcolor", "plot_bgcolor", "font", "xaxis", "yaxis", "yaxis2", "hovermode", "showlegend", "shapes"]
+              "value": ["margin", "paper_bgcolor", "plot_bgcolor", "font", "xaxis", "yaxis2", "yaxis", "hovermode", "showlegend", "shapes"]
             }
           },
           "value": [
@@ -581,20 +586,10 @@
                 "names": {
                   "type": "character",
                   "attributes": {},
-                  "value": ["domain", "automargin", "gridcolor", "zeroline", "title", "overlaying"]
+                  "value": ["gridcolor", "zeroline", "title", "overlaying", "side"]
                 }
               },
               "value": [
-                {
-                  "type": "double",
-                  "attributes": {},
-                  "value": [0, 1]
-                },
-                {
-                  "type": "logical",
-                  "attributes": {},
-                  "value": [true]
-                },
                 {
                   "type": "character",
                   "attributes": {},
@@ -613,7 +608,12 @@
                 {
                   "type": "character",
                   "attributes": {},
-                  "value": ["y2"]
+                  "value": ["y"]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["left"]
                 }
               ]
             },
@@ -623,10 +623,20 @@
                 "names": {
                   "type": "character",
                   "attributes": {},
-                  "value": ["gridcolor", "zeroline", "side", "title"]
+                  "value": ["domain", "automargin", "gridcolor", "zeroline", "side", "title"]
                 }
               },
               "value": [
+                {
+                  "type": "double",
+                  "attributes": {},
+                  "value": [0, 1]
+                },
+                {
+                  "type": "logical",
+                  "attributes": {},
+                  "value": [true]
+                },
                 {
                   "type": "character",
                   "attributes": {},
@@ -712,7 +722,7 @@
                     {
                       "type": "character",
                       "attributes": {},
-                      "value": ["y"]
+                      "value": ["y2"]
                     },
                     {
                       "type": "list",
@@ -786,7 +796,7 @@
                     {
                       "type": "character",
                       "attributes": {},
-                      "value": ["y"]
+                      "value": ["y2"]
                     },
                     {
                       "type": "list",
@@ -944,7 +954,7 @@
             "names": {
               "type": "character",
               "attributes": {},
-              "value": ["margin", "paper_bgcolor", "plot_bgcolor", "font", "xaxis", "yaxis", "yaxis2", "hovermode", "showlegend", "shapes"]
+              "value": ["margin", "paper_bgcolor", "plot_bgcolor", "font", "xaxis", "yaxis2", "yaxis", "hovermode", "showlegend", "shapes"]
             }
           },
           "value": [
@@ -1045,20 +1055,10 @@
                 "names": {
                   "type": "character",
                   "attributes": {},
-                  "value": ["domain", "automargin", "gridcolor", "zeroline", "title", "overlaying"]
+                  "value": ["gridcolor", "zeroline", "title", "overlaying", "side"]
                 }
               },
               "value": [
-                {
-                  "type": "double",
-                  "attributes": {},
-                  "value": [0, 1]
-                },
-                {
-                  "type": "logical",
-                  "attributes": {},
-                  "value": [true]
-                },
                 {
                   "type": "character",
                   "attributes": {},
@@ -1077,7 +1077,12 @@
                 {
                   "type": "character",
                   "attributes": {},
-                  "value": ["y2"]
+                  "value": ["y"]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["left"]
                 }
               ]
             },
@@ -1087,10 +1092,20 @@
                 "names": {
                   "type": "character",
                   "attributes": {},
-                  "value": ["gridcolor", "zeroline", "side", "title"]
+                  "value": ["domain", "automargin", "gridcolor", "zeroline", "side", "title"]
                 }
               },
               "value": [
+                {
+                  "type": "double",
+                  "attributes": {},
+                  "value": [0, 1]
+                },
+                {
+                  "type": "logical",
+                  "attributes": {},
+                  "value": [true]
+                },
                 {
                   "type": "character",
                   "attributes": {},
@@ -1176,7 +1191,7 @@
                     {
                       "type": "character",
                       "attributes": {},
-                      "value": ["y"]
+                      "value": ["y2"]
                     },
                     {
                       "type": "list",
@@ -1250,7 +1265,7 @@
                     {
                       "type": "character",
                       "attributes": {},
-                      "value": ["y"]
+                      "value": ["y2"]
                     },
                     {
                       "type": "list",
@@ -1371,7 +1386,7 @@
             "names": {
               "type": "character",
               "attributes": {},
-              "value": ["margin", "paper_bgcolor", "plot_bgcolor", "font", "xaxis", "yaxis", "yaxis2", "hovermode", "showlegend", "shapes"]
+              "value": ["margin", "paper_bgcolor", "plot_bgcolor", "font", "xaxis", "yaxis2", "yaxis", "hovermode", "showlegend", "shapes"]
             }
           },
           "value": [
@@ -1472,20 +1487,10 @@
                 "names": {
                   "type": "character",
                   "attributes": {},
-                  "value": ["domain", "automargin", "gridcolor", "zeroline", "title", "overlaying"]
+                  "value": ["gridcolor", "zeroline", "title", "overlaying", "side"]
                 }
               },
               "value": [
-                {
-                  "type": "double",
-                  "attributes": {},
-                  "value": [0, 1]
-                },
-                {
-                  "type": "logical",
-                  "attributes": {},
-                  "value": [true]
-                },
                 {
                   "type": "character",
                   "attributes": {},
@@ -1504,7 +1509,12 @@
                 {
                   "type": "character",
                   "attributes": {},
-                  "value": ["y2"]
+                  "value": ["y"]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["left"]
                 }
               ]
             },
@@ -1514,10 +1524,20 @@
                 "names": {
                   "type": "character",
                   "attributes": {},
-                  "value": ["gridcolor", "zeroline", "side", "title"]
+                  "value": ["domain", "automargin", "gridcolor", "zeroline", "side", "title"]
                 }
               },
               "value": [
+                {
+                  "type": "double",
+                  "attributes": {},
+                  "value": [0, 1]
+                },
+                {
+                  "type": "logical",
+                  "attributes": {},
+                  "value": [true]
+                },
                 {
                   "type": "character",
                   "attributes": {},
@@ -1603,7 +1623,7 @@
                     {
                       "type": "character",
                       "attributes": {},
-                      "value": ["y"]
+                      "value": ["y2"]
                     },
                     {
                       "type": "list",
@@ -1677,7 +1697,7 @@
                     {
                       "type": "character",
                       "attributes": {},
-                      "value": ["y"]
+                      "value": ["y2"]
                     },
                     {
                       "type": "list",
@@ -1810,7 +1830,7 @@
                   "value": ["summaryDefault", "table"]
                 }
               },
-              "value": [1, 1, 0, 1, 1]
+              "value": [1, 1, 0, 2, 2]
             }
           ]
         }

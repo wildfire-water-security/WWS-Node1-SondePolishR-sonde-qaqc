@@ -154,7 +154,7 @@ fdom_server <- function(id, sondeproj, data_ver, y_var, period_view, dates, p_le
       #add corrected fDOM
       dat <- corr_data() %>% arrange(.data$DateTime_rd) %>% dplyr::filter(.data$Date >= plot_dates()[1], .data$Date <= plot_dates()[2])
       p <- p %>% add_trace(data= dat, x=~DateTime_rd, y=~fDOM_QSU, type="scatter", mode="lines",
-                               name = "Changed", line = list(color = "darkred"), yaxis="y", inherit = FALSE)
+                               name = "Changed", line = list(color = "darkred"), yaxis="y2", inherit = FALSE)
 
       #return plot
       p

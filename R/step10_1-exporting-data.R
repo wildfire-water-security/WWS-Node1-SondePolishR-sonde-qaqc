@@ -60,6 +60,11 @@ save_path_server <- function(id, data,
       parsed_path(shinyFiles::parseSavePath(roots(),input$save))
     })
 
+    #clear path if data is cleared
+    observeEvent(data_ver(), {
+      if(data_ver() == 0){parsed_path(NULL)}
+    })
+
     output$save <- renderUI({
       shinyFiles::shinySaveButton(ns("save"),label = label,
                                   title = title,filetype = filetype,

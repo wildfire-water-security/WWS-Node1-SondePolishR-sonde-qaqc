@@ -4,6 +4,8 @@
 quality_UI <- function(id){
   ns <- NS(id) #line to make module work
   tagList(
+    useShinyjs(),
+
     sidebarLayout(
       sidebarPanel(
         accordion(
@@ -117,10 +119,17 @@ quality_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_
             manual_add(setdiff(manual_add(), full_index))
 
           }
+
         }
 
 
       })
+
+  #clear selection when switching modes
+    observeEvent(input$quality_flag, {
+      plotlyProxy("quality_plot", session) %>%
+        plotlyProxyInvoke("relayout", list(selections = list()))
+    },ignoreInit = TRUE)
 
   #filter data to plot
     plot_data <- reactive({
@@ -149,18 +158,18 @@ quality_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_
 
         plot_opts <- switch(input$quality_flag,
                             "questionable" = list(
-                              nicename = "Questionable",
-                              color = "orange"),
+                              nicename = "Questionable (unsaved)",
+                              color = "#fac769"),
                             "bad" = list(
-                              nicename = "Bad",
-                              color = "darkred"))
+                              nicename = "Bad (unsaved)",
+                              color = "#b83d3d"))
         p <- p %>% add_trace(data= flag_data, x=~DateTime_rd, y=as.formula(paste0("~`", y, "`")), type="scatter", mode="markers",
-                                 name = plot_opts$nicename, marker = list(color = plot_opts$color), yaxis="y", inherit = FALSE)
+                                 name = plot_opts$nicename, marker = list(color = plot_opts$color), yaxis="y2", inherit = FALSE)
 
       #set which traces hold points
       built_p <- plotly_build(p)
       names <- sapply(built_p$x$data, function(x){x$name})
-      traces(which(!(names %in% c("Bad", "Questionable", "qual_flags"))))
+      traces(which(names %in% c(get_yvar(y_var()), filter_data$FileName))-1)
 
       #return plot
       p

@@ -123,14 +123,14 @@ limits_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_l
       if(!input$rm_flags){
         y <- y_var()
         p <- p %>% add_trace(data= flag_data, x=~DateTime_rd, y=as.formula(paste0("~`", y, "`")), type="scatter", mode="markers",
-                             name = "Flagged", marker = list(color = "darkred"), yaxis="y", inherit = FALSE)
+                             name = "Flagged", marker = list(color = "darkred"), yaxis="y2", inherit = FALSE)
       }
 
       #add limits (guarded if OOW periods are also plotted)
       new_shapes <- lapply(c(input$min, input$max), function(x){
         list(type = "line",
              x0 = 0, x1 = 1, xref = "paper", # Spans the full width of the plot
-             y0 = x, y1 = x, yref = "y",
+             y0 = x, y1 = x, yref = "y2",
              line = list(color = "darkred", width = 2, dash = "dash"))
       })
 

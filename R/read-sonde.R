@@ -103,7 +103,7 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NUL
 
       #remove any empty rows/cols
       serial[serial == ""] <- NA
-      serial <- serial %>% select(where(~ !all(is.na(.)))) %>% filter(rowSums(is.na(.)) != ncol(.))
+      serial <- serial %>% select(where(~ !all(is.na(.x)))) %>% filter(!if_all(everything(), is.na))
       serial$Model <- gsub("[0-9]P Sonde", "Battery_V", serial$Model)
       add_c <- serial[which(serial$Model == "CT"),]
       add_c$Model <- "Temp_C"

@@ -218,7 +218,7 @@ additive_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p
          !is.null(input$int)){
         flag_data <- plot_data()[plot_data()$Index %in% index(),] %>% filter(!is.na(.data[[y_var()]]))
         p <- p %>% add_trace(data= flag_data, x=~DateTime_rd, y=as.formula(paste0("~`", y, "`")), type="scatter", mode="markers",
-                                 name = "Changed", marker = list(color = "darkred"), yaxis="y", inherit=FALSE)
+                                 name = "Changed", marker = list(color = "darkred"), yaxis="y2", inherit=FALSE)
 
       }
 
@@ -228,7 +228,7 @@ additive_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p
 
         if(nrow(dat) > 0){
           p <- p %>% add_trace(data= dat, x=~DateTime_rd, y=as.formula(paste0("~`", y, "`")), type="scatter", mode="lines",
-                                   name = "Changed", line = list(color = "darkred"), yaxis="y", inherit = FALSE)
+                                   name = "Changed", line = list(color = "darkred"), yaxis="y2", inherit = FALSE)
 
         }
 
@@ -237,7 +237,7 @@ additive_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p
       #set which traces hold points
       built_p <- plotly_build(p)
       names <- sapply(built_p$x$data, function(x){x$name})
-      traces((which(names != "Changed")-1))
+      traces(which(names %in% c(get_yvar(y_var()), plot_data()$FileName))-1)
 
       #return plot
       p

@@ -43,7 +43,8 @@ read_ff <- function(file, tz){
 
   #check that file looks correct
     #rename cols with PST (OSU specific)
-    df <- df %>% rename_with(~ gsub("_PST", "", .x))
+    df <- df %>% rename_with(~ gsub("_PST", "", .x)) %>%
+      mutate(across(everything(), ~ replace(., . %in% c("N/A", "NA", "na", ""), NA))) #be gracious about how NA's are put in
 
   if(!(all(c("Date", "Time", "Removal_Time", "Return_Time", "Next_Timepoint", "Remove_Period") %in% colnames(df)))){
     stop("Unexpected column names. Please see help(example_fieldform) for details on structure.")
@@ -116,11 +117,8 @@ read_cal <- function(file, tz){
                                                           grepl("pH$", .data$Parameter, ignore.case = TRUE) ~ "pH",
                                                           grepl("Turb", .data$Parameter, ignore.case = TRUE) ~ "Turbidity_FNU",
                                                           grepl("fDOM", .data$Parameter, ignore.case = TRUE) ~ "fDOM_QSU",
-                                                          .default = .data$Parameter))
-
-  #replace blanks and "N/A" with NA
-  df[df == ""] <- NA
-  df[df == "N/A"] <- NA
+                                                          .default = .data$Parameter)) %>%
+    mutate(across(everything(), ~ replace(., . %in% c("N/A", "NA", "na", ""), NA))) #be gracious about how NA's are put in
 
   #remove any full NA rows
   df <- df[rowSums(is.na(df)) < ncol(df), ]
