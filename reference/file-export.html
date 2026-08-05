@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SondePolishR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9004</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9005</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -57,7 +57,8 @@
 <span>  startname <span class="op">=</span> <span class="st">"sonde_export"</span>,</span>
 <span>  label <span class="op">=</span> <span class="st">"Choose Location"</span>,</span>
 <span>  title <span class="op">=</span> <span class="st">"Select save path"</span>,</span>
-<span>  filetype <span class="op">=</span> <span class="st">".csv"</span></span>
+<span>  filetype <span class="op">=</span> <span class="st">".csv"</span>,</span>
+<span>  <span class="va">data_ver</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -87,6 +88,10 @@
 
 <dt id="arg-filetype">filetype<a class="anchor" aria-label="anchor" href="#arg-filetype"></a></dt>
 <dd><p>file extension</p></dd>
+
+
+<dt id="arg-data-ver">data_ver<a class="anchor" aria-label="anchor" href="#arg-data-ver"></a></dt>
+<dd><p>A <code>reactiveVal</code> holding a number used to track when new data is added to trigger resets.</p></dd>
 
 </dl></div>
 

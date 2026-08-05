@@ -5,7 +5,7 @@ Used to create and return selections about what to include in the plot.
 ## Usage
 
 ``` r
-plot_options_UI(id)
+plot_options_UI(id, start_val = c(TRUE, TRUE, FALSE, FALSE, FALSE, FALSE))
 
 plot_options_server(id)
 ```
@@ -15,6 +15,11 @@ plot_options_server(id)
 - id:
 
   the shiny ID of the module
+
+- start_val:
+
+  a vector the same length as the list with the initial values to use
+  for the plotting options.
 
 ## Value
 

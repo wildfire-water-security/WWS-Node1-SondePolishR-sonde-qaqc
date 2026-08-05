@@ -13,7 +13,8 @@ save_path_server(
   startname = "sonde_export",
   label = "Choose Location",
   title = "Select save path",
-  filetype = ".csv"
+  filetype = ".csv",
+  data_ver
 )
 ```
 
@@ -42,3 +43,8 @@ save_path_server(
 - filetype:
 
   file extension
+
+- data_ver:
+
+  A `reactiveVal` holding a number used to track when new data is added
+  to trigger resets.

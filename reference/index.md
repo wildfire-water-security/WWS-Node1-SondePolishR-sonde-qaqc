@@ -15,6 +15,8 @@ Functions for loading sonde data and metadata.
   : Convert field form data to out of water periods
 - [`get_precip()`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/get_precip.md)
   : Get hourly precipitation at data site
+- [`get_nldas()`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/get_nldas.md)
+  : Download NLDAS Hourly Precipitation
 - [`get_skip()`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/get_skip.md)
   : Guess the number of rows to skip to get correct headers
 - [`load_project()`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/load_project.md)
