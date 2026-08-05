@@ -42,6 +42,7 @@
 #' @importFrom dplyr reframe
 #' @importFrom dplyr relocate
 #' @importFrom dplyr rename
+#' @importFrom dplyr rename_at
 #' @importFrom dplyr rename_with
 #' @importFrom dplyr row_number
 #' @importFrom dplyr rowwise

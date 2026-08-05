@@ -31,6 +31,12 @@ test_that("{shinytest2} recording: checking-module10", {
     expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
     app$expect_screenshot(name = "change_min")
 
+  #test multiple methods
+    app$set_inputs(`data10-summary_method` = c("mean", "median", "min"))
+    plot_obj <- app$get_value(export = "data10-plot_obj")
+    expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
+    app$expect_screenshot(name = "multiple_methods")
+
   #test changing date range
     app$set_inputs(`data10-frequency` = "day")
     app$set_inputs(`data10-dates` = as.Date(c("2024-08-07", "2024-08-13")))

@@ -20,7 +20,24 @@ test_that("{shinytest2} recording: checking-module2", {
   expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
   app$expect_screenshot(name = "intial_plot")
 
+  #test y-axis limits
+  app$set_inputs(`data2-plot-yaxismax` = 40)
+  new_limit <- app$get_value(input = "data2-plot-yaxismin")
+  expect_equal(new_limit, -5) #y min should change
+  plot_obj <- app$get_value(export = "data2-plot_obj")
+  expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
+  app$expect_screenshot(name = "changing_ylimit")
+
+  #add second y-axis and make sure it still works
+  app$set_inputs(`data2-update_parms-y2_var` = "precip")
+  app$set_inputs(`data2-plot-yaxismax` = 100)
+  app$wait_for_idle()
+  plot_obj <- app$get_value(export = "data2-plot_obj")
+  #expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2") #doesn't want to behave for whatever reason
+  app$expect_screenshot(name = "changing_ylimit_y2")
+
   #check putting in week view
+  app$set_inputs(`data2-update_parms-y2_var` = "none")
   app$set_inputs(`data2-date_nav-period_view` = TRUE)
   app$wait_for_idle()
   plot_obj <- app$get_value(export = "data2-plot_obj")

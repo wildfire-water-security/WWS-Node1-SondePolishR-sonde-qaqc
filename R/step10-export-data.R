@@ -20,11 +20,9 @@ export_UI <- function(id){
                                 radioButtons(ns("frequency"),"Export Frequency",
                                              choices = c("Hourly" = "hour","Daily" = "day",
                                                          "Weekly (7-day)" = "week","Monthly" = "month","Annual" = "year")),
-                                conditionalPanel(
-                                  condition = sprintf("input['%s'] != 'interval'",ns("frequency")),
-                                  radioButtons(ns("summary_method"),"Summary Method",
-                                               choices = c("Mean" = "mean","Median" = "median","Maximum" = "max","Minimum" = "min")))
-                                ),
+
+                                  checkboxGroupInput(ns("summary_method"),"Summary Method",
+                                               choices = c("Mean" = "mean","Median" = "median","Maximum" = "max","Minimum" = "min"),selected ="mean")),
                                 plotlyOutput(ns("export_plot"))),
           tags$br(),
           save_path_UI(ns("save_data"), button_label = "Export Data")
@@ -87,7 +85,7 @@ export_server <- function(id, sondeproj, data_ver, y_var){
 
   #starting filenames for export file
     datastartname <- reactive({
-      if(is.null(sondeproj())){
+      if(is.null(sondeproj()) | length(input$summary_method) == 0){
         "data"
       }else if(input$frequency == "interval"){
         make_filename(sondeproj()$meta$site, paste0(get_interval(sondeproj()$data), "min"))
@@ -120,7 +118,7 @@ export_server <- function(id, sondeproj, data_ver, y_var){
 
       #summarized data with flags added for export and plotting
       sum_data <- reactive({
-        req(sondeproj())
+        req(sondeproj(), (length(input$summary_method) > 0))
         export_data <- sondeproj()$data
 
         #summarize
@@ -148,9 +146,32 @@ export_server <- function(id, sondeproj, data_ver, y_var){
       plot_obj <- reactive({
         req(y_var(), plot_data())
 
-        #use function to plot sonde data
-        plot_sonde(data=plot_data(), y_var = y_var(), y2_var = NULL, opts=list(points=FALSE,line=TRUE,files=FALSE,
-                                              oow=FALSE,calcheck=FALSE, qualflag = FALSE))
+        #guard so doesn't crash if no method is selected
+        if(length(input$summary_method) > 0){
+          #pull out plotting so we can make a plot for each summary method
+          y_var_nice <- get_yvar(y_var())
+
+          #sort data so line looks correct and remove NA values to prevent warnings
+          data <- plot_data() %>% arrange(.data$DateTime_rd)
+          p <- plot_ly(source = "export_plot") %>%
+            layout(paper_bgcolor = "#3c4d5a", plot_bgcolor = "#475763", font = list(color = "#ebebeb", family="sans-serif"),
+                   xaxis = list(title = "<b>Date</b>"),
+                   yaxis2=list(gridcolor = "#3c4d5a", zeroline = FALSE,title = paste0("<b>", y_var_nice, "</b>"),
+                               overlaying = "y", side = "left"))
+
+            pal <- colorRampPalette(c("#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854" ,"#FFD92F" ,"#E5C494", "#B3B3B3")) #from Set 2 color brewer
+            colors <- pal(length(input$summary_method))
+            for(x in input$summary_method){
+              y_sum <- paste(y_var(), x, sep="_")
+              subdat <- data %>% filter(!is.na(.data[[y_sum]]))
+              p <- p %>% add_trace(data = subdat, x = ~DateTime_rd, y = as.formula(paste0("~`", y_sum, "`")),
+                                   name = x,line = list(color = colors[which(input$summary_method == x)]),
+                                   mode="lines", type="scatter", yaxis="y2", inherit = FALSE)}
+
+          p
+        }
+
+
       })
 
       #save to export

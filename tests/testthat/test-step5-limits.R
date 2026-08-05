@@ -24,6 +24,22 @@ test_that("{shinytest2} recording: checking-module5", {
     expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
     app$expect_screenshot(name = "intial_plot")
 
+  #change y-axis limits manually (make sure it works correctly)
+    #make sure y axis tied to automatically match the max physical limit
+    app$set_inputs(`data5-max` = 600)
+    app$wait_for_idle()
+    new_limit <- app$get_value(input = "data5-limit_plot-yaxismax")
+    expect_equal(new_limit, 600)
+    app$expect_screenshot(name = "high-ylimit")
+
+    #make sure it uses the max data value if limit is lower than data
+    app$set_inputs(`data5-max` = 50)
+    app$wait_for_idle()
+    new_limit <- app$get_value(input = "data5-limit_plot-yaxismax")
+    expect_equal(new_limit, 180)
+    app$expect_screenshot(name = "low-ylimit")
+
+
   #make sure limits update when y var changes
     app$set_inputs(`data5-update_parms-y_var` = "Temp_C")
     rng <- c(app$get_value(input = "data5-min"), app$get_value(input = "data5-max"))

@@ -308,6 +308,8 @@ get_yvar <- function(y_var){
 }
 
 make_filename <- function(site, interval, method=NA){
+  if(length(method) > 1){method <- paste(method, collapse="_")}
+
   name <- case_when(
     (is.null(site) || is.na(site)) & (is.null(method) || is.na(method)) ~ paste0("export_", interval),
     is.null(site) || is.na(site) ~ paste0("export_", interval, "_", method) ,
