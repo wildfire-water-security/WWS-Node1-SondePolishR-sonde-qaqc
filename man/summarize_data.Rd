@@ -4,17 +4,17 @@
 \alias{summarize_data}
 \title{Summarize data to a different time period}
 \usage{
-summarize_data(data, frequency, sum_method)
+summarize_data(data, frequency, sum_method = c("mean", "median", "max", "min"))
 }
 \arguments{
 \item{data}{a \code{data.frame} to summarize}
 
 \item{frequency}{a \code{Period} object created using \code{lubridate::period()} specifying the time frame to summarize over}
 
-\item{sum_method}{the summary method to use to summarize the data}
+\item{sum_method}{the summary method to use to summarize the data, can choose more than one}
 }
 \value{
-a `data.frame.
+a `data.frame where the summary method has been appended to each parameter column name.
 }
 \description{
 Used to take data and aggregate it to a different interval.
@@ -22,4 +22,6 @@ Used to take data and aggregate it to a different interval.
 \examples{
 summarize_data(example_sondeproj$data, lubridate::period(1, "month"), "mean")
 
+#using multiple methods
+summarize_data(example_sondeproj$data, lubridate::period(1, "month"), c("mean", "median", "max"))
 }

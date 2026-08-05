@@ -2,7 +2,7 @@
 
 ## SondePolishR 0.0.9005
 
-(2026-07-31)
+(2026-08-05)
 
 ### Bug Fixes
 
@@ -37,6 +37,8 @@
 -   All main plots now have inputs to control the limits of the y-axis. They default to range of the overall dataset and refresh when the project changes or the variable being plotted changes. This is useful to not zoom in on small changes during periods with low variability.
 
 -   You can now select multiple summary method options when exporting the data. Column names are appended with the summary function and the selected methods all show up on the plot. Summary methods are also extended to the "interval" selection so you can choose how duplicates are dealt with and view differences between methods.
+
+-   Zoom will now hold even when the plot changes. It will reset if new data is loaded, you change the y-variable, or you manually change the y-axis limits. Selection modules also no longer default to the selection tool, they will all start using the zoom tool.
 
 ## SondePolishR 0.0.9004
 

@@ -23,19 +23,20 @@ test_that("data summarizing works", {
       #check values
       test <- data %>% mutate(DateTime_rd = floor_date(.data$DateTime_rd, freq)) %>% group_by(DateTime_rd)
       test_mean <- test %>% summarise(fDOM_QSU = mean(fDOM_QSU, na.rm=TRUE))
-      expect_equal(sum_data$fDOM_QSU, test_mean$fDOM_QSU)
+      expect_equal(sum_data$fDOM_QSU_mean, test_mean$fDOM_QSU)
 
       #try other sum methods
+      sum_data <- summarize_data(data, freq, "median")
       test_median <- test %>% summarise(fDOM_QSU = median(fDOM_QSU, na.rm=TRUE))
-      expect_equal(sum_data$fDOM_QSU, test_mean$fDOM_QSU)
+      expect_equal(sum_data$fDOM_QSU_median, test_median$fDOM_QSU)
 
+      sum_data <- summarize_data(data, freq, "max")
       test_max <- test %>% summarise(fDOM_QSU = max(fDOM_QSU))
-      expect_equal(sum_data$fDOM_QSU, test_mean$fDOM_QSU)
+      expect_equal(sum_data$fDOM_QSU_max, test_max$fDOM_QSU)
 
+      sum_data <- summarize_data(data, freq, "min")
       test_min <- test %>% summarise(fDOM_QSU = min(fDOM_QSU))
-      expect_equal(sum_data$fDOM_QSU, test_mean$fDOM_QSU)
-
-      expect_false(all(test_mean$fDOM_QSU == test_min$fDOM_QSU))
+      expect_equal(sum_data$fDOM_QSU_min, test_min$fDOM_QSU)
 
   #test 1 day summary ------
     freq <- lubridate::period(1, "day")
@@ -55,7 +56,7 @@ test_that("data summarizing works", {
     #check values
       test <- data %>% mutate(DateTime_rd = floor_date(.data$DateTime_rd, freq)) %>% group_by(DateTime_rd)
       test_mean <- test %>% summarise(fDOM_QSU = mean(fDOM_QSU, na.rm=TRUE))
-      expect_equal(sum_data$fDOM_QSU, test_mean$fDOM_QSU)
+      expect_equal(sum_data$fDOM_QSU_mean, test_mean$fDOM_QSU)
 
   #test 7 day summary ------
       freq <- lubridate::period(7, "day")
@@ -74,7 +75,7 @@ test_that("data summarizing works", {
       #check values
       test <- data %>% mutate(DateTime_rd = floor_date(.data$DateTime_rd, freq)) %>% group_by(DateTime_rd)
       test_mean <- test %>% summarise(fDOM_QSU = mean(fDOM_QSU, na.rm=TRUE))
-      expect_equal(sum_data$fDOM_QSU, test_mean$fDOM_QSU)
+      expect_equal(sum_data$fDOM_QSU_mean, test_mean$fDOM_QSU)
 
   #test 1-month summary -----
       freq <- lubridate::period(1, "month")
@@ -93,7 +94,7 @@ test_that("data summarizing works", {
       #check values
       test <- data %>% mutate(DateTime_rd = floor_date(.data$DateTime_rd, freq)) %>% group_by(DateTime_rd)
       test_mean <- test %>% summarise(fDOM_QSU = mean(fDOM_QSU, na.rm=TRUE))
-      expect_equal(sum_data$fDOM_QSU, test_mean$fDOM_QSU)
+      expect_equal(sum_data$fDOM_QSU_mean, test_mean$fDOM_QSU)
 
   #test annual summary -----
       freq <- lubridate::period(1, "year")
@@ -112,6 +113,6 @@ test_that("data summarizing works", {
       #check values
       test <- data %>% mutate(DateTime_rd = floor_date(.data$DateTime_rd, freq)) %>% group_by(DateTime_rd)
       test_mean <- test %>% summarise(fDOM_QSU = mean(fDOM_QSU, na.rm=TRUE))
-      expect_equal(sum_data$fDOM_QSU, test_mean$fDOM_QSU)
+      expect_equal(sum_data$fDOM_QSU_mean, test_mean$fDOM_QSU)
 
 })

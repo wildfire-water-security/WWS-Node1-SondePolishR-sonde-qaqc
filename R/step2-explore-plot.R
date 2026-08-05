@@ -82,6 +82,7 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var,period_view, date
   #keep track of second y_variable
     y2_var <- reactiveVal()
     undo_ver <- reactiveVal() #keep track of data version
+    plot_exist <- reactiveVal() #keeps warning about missing plot
 
   #create log table
   tab <- reactive({
@@ -283,10 +284,10 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var,period_view, date
 
       #use function to plot sonde data
       plot_sonde(data = plot_data(), y_var=y_var(), y2_var= y2, proj = sondeproj(), opts=plot_opts())
-    })
+      })
 
     #save to export
-    main_plot_server("plot", sondeproj, plot_obj, plot_data, y_var)
+    main_plot_server("plot", sondeproj, plot_obj, plot_data, y_var, plot_exist=plot_exist)
 
     #redraw when back on module to prevent weird drawing issues
     observeEvent(input$modules, {

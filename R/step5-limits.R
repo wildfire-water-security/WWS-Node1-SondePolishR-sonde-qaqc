@@ -68,6 +68,7 @@ limits_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_l
   moduleServer(id, function(input, output, session){
     #keep track of second y_variable
     y2_var <- reactiveVal()
+    plot_exist <- reactiveVal() #keeps warning about missing plot
 
   #get column names after file upload (dynamic)
     update_parms_server("update_parms", sondeproj, data_ver, y_var, choices_fun = nice_yvar)
@@ -148,7 +149,8 @@ limits_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_l
     })
 
     #save to export
-    main_plot_server("limit_plot", sondeproj, plot_obj, plot_data, y_var, startmin=reactive(input$min), startmax=reactive(input$max))
+    main_plot_server("limit_plot", sondeproj, plot_obj, plot_data, y_var, plot_exist=plot_exist,
+                     startmin=reactive(input$min), startmax=reactive(input$max))
 
     #redraw when back on module to prevent weird drawing issues
     observeEvent(input$modules, {

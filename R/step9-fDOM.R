@@ -65,6 +65,7 @@ fdom_UI <- function(id){
 #' @rdname fdom
 fdom_server <- function(id, sondeproj, data_ver, y_var, period_view, dates, p_length){
   moduleServer(id, function(input, output, session){
+    plot_exist <- reactiveVal() #keeps warning about missing plot
 
   #get info on equation
     eq_info <- reactive({
@@ -163,6 +164,7 @@ fdom_server <- function(id, sondeproj, data_ver, y_var, period_view, dates, p_le
 
     #save to export
     main_plot_server("fdom_plot", sondeproj, plot_obj, plot_data, reactiveVal("fDOM_QSU"),
+                     plot_exist=plot_exist,
                      startmin=reactive(floor(min(corr_data()$fDOM_QSU, na.rm=TRUE))),
                      startmax=reactive(ceiling(max(corr_data()$fDOM_QSU, na.rm=TRUE)*1.05)))
 

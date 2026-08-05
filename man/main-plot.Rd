@@ -13,7 +13,6 @@ main_plot_server(
   plot_obj,
   plot_data,
   y_var,
-  plot_name = NULL,
   sel_mode = FALSE,
   plot_exist = reactiveVal(),
   startmin = reactiveVal(),
@@ -30,8 +29,6 @@ main_plot_server(
 \item{plot_data}{A `reactiveVal` holding the current dataset to plot.}
 
 \item{y_var}{A `reactiveVal` holding the Y-variable to plot on the y-axis.}
-
-\item{plot_name}{The plot name to register the plot as for selecting points}
 
 \item{sel_mode}{Logical, should selection mode be turned on as default?}
 

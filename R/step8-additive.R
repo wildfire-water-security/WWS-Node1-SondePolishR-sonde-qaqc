@@ -69,6 +69,7 @@ additive_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p
   plot_exist <- reactiveVal() #keeps warning about missing plot
   traces <- reactiveVal() #tracks which traces hold our points to track
   y2_var <- reactiveVal()   #keep track of second y_variable
+  plot_exist <- reactiveVal() #keeps warning about missing plot
 
   #update UI options based on edit method
   output$edit_options <- renderUI({
@@ -247,7 +248,7 @@ additive_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p
     #save to export
     sel_mode <- reactive({ifelse(input$edit_type == "additive", TRUE, FALSE)})
 
-    main_plot_server("shift_plot", sondeproj, plot_obj, plot_data, y_var, "plotly_selected", sel_mode(), plot_exist)
+    main_plot_server("shift_plot", sondeproj, plot_obj, plot_data, y_var, sel_mode(), plot_exist)
 
     observeEvent(input$modules, {
       req(input$modules == "step-8")
