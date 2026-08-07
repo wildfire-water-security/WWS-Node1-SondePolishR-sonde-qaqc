@@ -66,7 +66,7 @@ interp_UI <- function(id){
 #' @param p_length The length of the period to view.
 #' @export
 #' @rdname interp
-interp_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_length){
+interp_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_length, current_mod){
   moduleServer(id, function(input, output, session){
   #keep track of second y_variable
     y2_var <- reactiveVal()
@@ -93,23 +93,29 @@ interp_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_l
   #get data to fill and interpolation df as list
    data_fill_list <- reactive({
      req(sondeproj())
+     if(current_mod() == "step-7"){
      show_modal_spinner(text = "Preparing data...", spin="fading-circle")
-     on.exit(remove_modal_spinner(), add = TRUE)
+     on.exit(remove_modal_spinner(), add = TRUE)}
      prep_interp(sondeproj())
    })
 
   #interpolate
   data_interp <- reactive({
-    show_modal_spinner(text = "Interpolating data...", spin="fading-circle")
-    on.exit(remove_modal_spinner(), add = TRUE)
+    req(sondeproj(), y_var(),input$method, input$freq)
+
+    if(current_mod() == "step-7"){
+      show_modal_spinner(text = "Interpolating data...", spin="fading-circle")
+      on.exit(remove_modal_spinner(), add = TRUE)}
     run_interp(data_fill_list()$interp, y_var(), input$method, input$freq)
   })
 
   #fill data
   data_fill <- reactive({
     req(data_fill_list(), data_interp(), y_var())
-    show_modal_spinner(text = "Filling data...", spin="fading-circle")
-    on.exit(remove_modal_spinner(), add = TRUE)
+    if(current_mod() == "step-7"){
+      show_modal_spinner(text = "Filling data...", spin="fading-circle")
+      on.exit(remove_modal_spinner(), add = TRUE)
+    }
       apply_interp(data_fill_list()$fill, data_interp(), y_var(), input$max_length, plot_dates())
     })
 
@@ -127,7 +133,8 @@ interp_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_l
       if(y2_var() == "none"){y2 <- NULL}else{y2 <- y2_var()}
 
       #use function to plot sonde data
-      p <- plot_sonde(data = plot_data()%>% filter(!.data$fill_flag), y_var=y_var(), y2_var= y2, proj = sondeproj(), opts=plot_opts())
+      p <- plot_sonde(data = plot_data()%>% filter(!.data$fill_flag), y_var=y_var(), y2_var= y2, proj = sondeproj(), opts=plot_opts(),
+                      source = "interp_plot")
       #add interpolated data (show as green points)
       interp_points <- plot_data() %>% filter(.data$fill_flag) %>% filter(!is.na(.data[[y_var()]]))
       if(nrow(interp_points) > 0){
@@ -142,14 +149,14 @@ interp_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_l
       p
     })
 
-    main_plot_server("interp_plot", sondeproj, plot_obj, plot_data, y_var, plot_exist=plot_exist)
+    main_plot_server("interp_plot", data_ver,sondeproj, plot_obj, plot_data, y_var, plot_exist=plot_exist)
 
-    observeEvent(input$modules, {
-      req(input$modules == "step-7")
-
-      plotlyProxy("interp_plot", session) %>%
-        plotlyProxyInvoke("resize")
-    })
+    # observeEvent(current_mod(), {
+    #   req(current_mod() == "step-7")
+    #
+    #   plotlyProxy("interp_plot", session) %>%
+    #     plotlyProxyInvoke("resize")
+    # })
 
   #create edit object
     edit <- reactive({

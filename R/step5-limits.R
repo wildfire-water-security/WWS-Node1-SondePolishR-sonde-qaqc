@@ -120,7 +120,8 @@ limits_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_l
 
 
       #use function to plot sonde data
-      p <- plot_sonde(data = filter_data, y_var=y_var(), y2_var = y2, proj = sondeproj(), opts=plot_opts())
+      p <- plot_sonde(data = filter_data, y_var=y_var(), y2_var = y2, proj = sondeproj(), opts=plot_opts(),
+                      source = "limit_plot")
       #color points outside limits as red
       if(!input$rm_flags){
         y <- y_var()
@@ -149,7 +150,7 @@ limits_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_l
     })
 
     #save to export
-    main_plot_server("limit_plot", sondeproj, plot_obj, plot_data, y_var, plot_exist=plot_exist,
+    main_plot_server("limit_plot", data_ver, sondeproj, plot_obj, plot_data, y_var, plot_exist=plot_exist,
                      startmin=reactive(input$min), startmax=reactive(input$max))
 
     #redraw when back on module to prevent weird drawing issues

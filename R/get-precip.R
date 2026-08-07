@@ -75,7 +75,7 @@ get_precip <- function(data, lat, long, method, token=NULL){
 #' - DateTime: The datetime (`POSIXct`) in UTC, at an hourly resolution.
 #' - Precip_mm_hr: Average precipitation at the requested point in mm per hour.
 #' @export
-#'
+#' @md
 #' @details
 #' You can store your token (expires every two months) in you R environment to reference it safely using:
 #' `usethis::edit_r_environ()` to open the environ file. Add the text EARTHDATA_TOKEN = ###.

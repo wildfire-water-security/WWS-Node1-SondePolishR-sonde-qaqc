@@ -152,7 +152,8 @@ fdom_server <- function(id, sondeproj, data_ver, y_var, period_view, dates, p_le
       req(plot_data(),plot_dates())
 
       #use function to plot sonde data
-      p <- plot_sonde(data = plot_data(), y_var="fDOM_QSU", proj = sondeproj(), opts=plot_opts())
+      p <- plot_sonde(data = plot_data(), y_var="fDOM_QSU", proj = sondeproj(), opts=plot_opts(),
+                      source = "fdom_plot")
       #add corrected fDOM
       dat <- corr_data() %>% arrange(.data$DateTime_rd) %>% dplyr::filter(.data$Date >= plot_dates()[1], .data$Date <= plot_dates()[2])
       p <- p %>% add_trace(data= dat, x=~DateTime_rd, y=~fDOM_QSU, type="scatter", mode="lines",
@@ -163,7 +164,7 @@ fdom_server <- function(id, sondeproj, data_ver, y_var, period_view, dates, p_le
     })
 
     #save to export
-    main_plot_server("fdom_plot", sondeproj, plot_obj, plot_data, reactiveVal("fDOM_QSU"),
+    main_plot_server("fdom_plot",data_ver, sondeproj, plot_obj, plot_data, reactiveVal("fDOM_QSU"),
                      plot_exist=plot_exist,
                      startmin=reactive(floor(min(corr_data()$fDOM_QSU, na.rm=TRUE))),
                      startmax=reactive(ceiling(max(corr_data()$fDOM_QSU, na.rm=TRUE)*1.05)))

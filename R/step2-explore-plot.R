@@ -287,7 +287,7 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var,period_view, date
       })
 
     #save to export
-    main_plot_server("plot", sondeproj, plot_obj, plot_data, y_var, plot_exist=plot_exist)
+    main_plot_server("plot", data_ver, sondeproj, plot_obj, plot_data, y_var, plot_exist=plot_exist)
 
     #redraw when back on module to prevent weird drawing issues
     observeEvent(input$modules, {
