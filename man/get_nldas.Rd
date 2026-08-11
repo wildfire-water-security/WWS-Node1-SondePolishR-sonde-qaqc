@@ -19,19 +19,21 @@ get_nldas(token, lat, long, start, end)
 }
 \value{
 a data.frame with two columns:
-- DateTime: The datetime (`POSIXct`) in UTC, at an hourly resolution.
-- Precip_mm_hr: Average precipitation at the requested point in mm per hour.
+\itemize{
+\item DateTime: The datetime (\code{POSIXct}) in UTC, at an hourly resolution.
+\item Precip_mm_hr: Average precipitation at the requested point in mm per hour.
+}
 }
 \description{
-Downloads precipitation data from [NLDAS](https://ldas.gsfc.nasa.gov/nldas). Available from NASA Earthdata.
+Downloads precipitation data from \href{https://ldas.gsfc.nasa.gov/nldas}{NLDAS}. Available from NASA Earthdata.
 This dataset is available across CONUS at a resolution of 0.125 × 0.125 degrees available from 1981 to near real time.
-This data requires a token to access the data. See [here](https://urs.earthdata.nasa.gov/documentation/for_users/user_token) for
+This data requires a token to access the data. See \href{https://urs.earthdata.nasa.gov/documentation/for_users/user_token}{here} for
 directions on creating a token. Note that this token should be kept secret.
 }
 \details{
 You can store your token (expires every two months) in you R environment to reference it safely using:
-`usethis::edit_r_environ()` to open the environ file. Add the text EARTHDATA_TOKEN = ###.
-Access your stored token via: `Sys.getenv("EARTHDATA_TOKEN")`
+\code{usethis::edit_r_environ()} to open the environ file. Add the text EARTHDATA_TOKEN = ###.
+Access your stored token via: \code{Sys.getenv("EARTHDATA_TOKEN")}
 }
 \examples{
 if(nzchar(Sys.getenv("earthdata_token"))){

@@ -91,7 +91,7 @@ server <- function(input, output, session) {
     p_length <- reactiveVal(7) #length of period view
     current_mod <- reactiveVal()
 
-  #track open module
+  # #track open module
     observeEvent(input$modules, {
       current_mod(input$modules)
     })

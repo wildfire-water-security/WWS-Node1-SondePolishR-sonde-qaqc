@@ -64,6 +64,7 @@ interp_UI <- function(id){
 #' @param dates The date range to view the data.
 #' @param period_view Should data be viewed by period?
 #' @param p_length The length of the period to view.
+#' @param current_mod The name of the current module being viewed.
 #' @export
 #' @rdname interp
 interp_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_length, current_mod){
@@ -92,30 +93,26 @@ interp_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_l
 
   #get data to fill and interpolation df as list
    data_fill_list <- reactive({
-     req(sondeproj())
-     if(current_mod() == "step-7"){
+     req(sondeproj(),current_mod() == "step-7")
      show_modal_spinner(text = "Preparing data...", spin="fading-circle")
-     on.exit(remove_modal_spinner(), add = TRUE)}
+     on.exit(remove_modal_spinner(), add = TRUE)
      prep_interp(sondeproj())
    })
 
   #interpolate
   data_interp <- reactive({
-    req(sondeproj(), y_var(),input$method, input$freq)
-
-    if(current_mod() == "step-7"){
+    req(sondeproj(), y_var(),input$method, input$freq,current_mod() == "step-7")
       show_modal_spinner(text = "Interpolating data...", spin="fading-circle")
-      on.exit(remove_modal_spinner(), add = TRUE)}
+      on.exit
+
     run_interp(data_fill_list()$interp, y_var(), input$method, input$freq)
   })
 
   #fill data
   data_fill <- reactive({
-    req(data_fill_list(), data_interp(), y_var())
-    if(current_mod() == "step-7"){
+    req(data_fill_list(), data_interp(), y_var(),current_mod() == "step-7")
       show_modal_spinner(text = "Filling data...", spin="fading-circle")
       on.exit(remove_modal_spinner(), add = TRUE)
-    }
       apply_interp(data_fill_list()$fill, data_interp(), y_var(), input$max_length, plot_dates())
     })
 
@@ -149,7 +146,22 @@ interp_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_l
       p
     })
 
-    main_plot_server("interp_plot", data_ver,sondeproj, plot_obj, plot_data, y_var, plot_exist=plot_exist)
+    #calculate max and min outside to start since we don't run when data is loaded
+    minv <- reactiveVal()
+    maxv <- reactiveVal()
+    observeEvent(current_mod(),{
+      req(sondeproj(), y_var())
+      #only reset y-values here (for now, likely want to do something similar to manual zoom??)
+      maxval <- ceiling(max(sondeproj()$data[[y_var()]], na.rm=TRUE)*1.05)
+      minval <- floor(min(sondeproj()$data[[y_var()]], na.rm=TRUE) - (maxval*0.05))
+
+      minv(minval)
+      maxv(maxval)
+    })
+
+
+    main_plot_server("interp_plot", data_ver,sondeproj, plot_obj, plot_data, y_var, plot_exist=plot_exist,
+                     startmin = minv, startmax=maxv)
 
     # observeEvent(current_mod(), {
     #   req(current_mod() == "step-7")

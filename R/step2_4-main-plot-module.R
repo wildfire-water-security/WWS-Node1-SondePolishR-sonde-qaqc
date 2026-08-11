@@ -44,12 +44,29 @@ main_plot_server <- function(id, data_ver, sondeproj, plot_obj, plot_data, y_var
   #store zoom vals
     zoom <- reactiveValues(x=NULL, y=NULL, dragmode="zoom")
     date_range <- reactiveVal(NULL) #track x-axis values
+    val_range <- reactiveVal() #track y-axis values
 
-  #no viewable data, reset zoom
+  #check if we need to reset y-axis when data changes (only update if min/max changes)
+    observeEvent(sondeproj(),{
+      req(sondeproj(), zoom, y_var())
+
+      new_vals <- range(sondeproj()$data[[y_var()]])
+      if(!identical(new_vals, val_range())){
+        val_range(new_vals)
+
+        #reset if range changes
+        maxv <- ceiling(max(sondeproj()$data[[y_var()]], na.rm=TRUE)*1.05)
+        minv <- floor(min(sondeproj()$data[[y_var()]], na.rm=TRUE) - (maxv*0.05))
+
+        updateNumericInput(session, "yaxismax", value=max(c(startmax(), maxv), na.rm=TRUE))
+        updateNumericInput(session, "yaxismin", value=min(c(startmin(), minv), na.rm=TRUE))
+        }
+
+    })
+
+  #check if we want to reset zoom, if no viewable data, reset zoom
     observeEvent(plot_data(), {
       req(plot_data(), zoom)
-      #if(id == "limit_plot"){browser()}
-
       zoom_data <- plot_data()
 
       new_range <- range(zoom_data$DateTime_rd, na.rm = TRUE)
@@ -67,49 +84,46 @@ main_plot_server <- function(id, data_ver, sondeproj, plot_obj, plot_data, y_var
         zoom$x$range <- NULL
         zoom$y$range <- NULL
       }
-    }, ignoreInit = TRUE, ignoreNULL = TRUE)
+    })
 
   #reset axes and back to zoom
-    observeEvent(list(data_ver(), y_var(), date_range()), {
+    observeEvent(list(data_ver(), y_var(), date_range(), input$yaxismax, input$yaxismin), {
       req(plot_obj(), y_var())
       zoom$x$range <- NULL
       zoom$y$range <- NULL
     })
 
-  #don't reset dragmode on differences with date range
-    observeEvent(list(data_ver(), y_var()), {
+  #don't reset dragmode on differences with date range, only update user limits with changed data/yvar
+    observeEvent(list(data_ver(), y_var(), startmax(), startmin()), {
       req(plot_obj(), y_var())
       zoom$dragmode <- "zoom"
 
+      #only reset y-values here (for now, likely want to do something similar to manual zoom??)
+      maxv <- ceiling(max(sondeproj()$data[[y_var()]], na.rm=TRUE)*1.05)
+      minv <- floor(min(sondeproj()$data[[y_var()]], na.rm=TRUE) - (maxv*0.05))
+
+      updateNumericInput(session, "yaxismax", value=max(c(startmax(), maxv), na.rm=TRUE))
+      updateNumericInput(session, "yaxismin", value=min(c(startmin(), minv), na.rm=TRUE))
     })
 
+  #keep track of correct y-axis limits
+    y_axis <- reactive({
+    req(sondeproj(), y_var())
 
-  # #when y_var changes update min/max values
-  #   observe({
-  #     req(sondeproj(), y_var())
-  #
-  #     maxv <- ceiling(max(sondeproj()$data[[y_var()]], na.rm=TRUE)*1.05)
-  #     minv <- floor(min(sondeproj()$data[[y_var()]], na.rm=TRUE) - (maxv*0.05))
-  #
-  #     updateNumericInput(session, "yaxismax", value=max(startmax(), maxv, na.rm=TRUE))
-  #     updateNumericInput(session, "yaxismin", value=min(startmin(), minv, na.rm=TRUE))
-  #   })
-  #
-  # observeEvent(input$yaxismax, {
-  #   req(sondeproj(), y_var())
-  #
-  #   minv <- floor(min(sondeproj()$data[[y_var()]], na.rm=TRUE) - (input$yaxismax*0.05))
-  #   updateNumericInput(session, "yaxismin", value=min(startmin(), minv, na.rm=TRUE))
-  # })
-  #
-  # #keep track of y_axis
-  #   y_axis <- reactive({
-  #     if(!is.null(zoom$y)){zoom$y
-  #     }else{
-  #       list(range = c(input$yaxismin, input$yaxismax))}
-  #   })
-  #
-  #
+    if(is.null(zoom$y$range)){
+      list(range=c(input$yaxismin, input$yaxismax))
+    }else{zoom$y}
+  })
+
+    #adjust y min when y max changes
+    observeEvent(input$yaxismax, {
+      req(sondeproj(), y_var())
+
+      minv <- floor(min(sondeproj()$data[[y_var()]], na.rm=TRUE) - (input$yaxismax*0.05))
+      updateNumericInput(session, "yaxismin", value=min(startmin(), minv, na.rm=TRUE))
+    })
+
+ #observe changes to plot
   observeEvent(req(plot_exist(), event_data("plotly_relayout", source = id)),{
     zoom_dat <- event_data("plotly_relayout", source = id)
 
@@ -134,12 +148,6 @@ main_plot_server <- function(id, data_ver, sondeproj, plot_obj, plot_data, y_var
     }
 
   })
-  #
-  # #clear zoom when y_var changes
-  # observeEvent(list(y_var(),input$yaxismax, input$yaxismin),{
-  #     zoom$x <- NULL
-  #     zoom$y <- NULL
-  #   })
 
   #export plot to UI
     #save to export
@@ -157,22 +165,17 @@ main_plot_server <- function(id, data_ver, sondeproj, plot_obj, plot_data, y_var
         p <- p %>% layout(xaxis = zoom$x)
       }
 
-      if(!is.null(zoom$y)){
-        p <- p %>% layout(yaxis2 = zoom$y)
+      p <- p %>% layout(yaxis2 = y_axis())
+
+      #if raw data, put on y-axis
+      build <- plotly_build(p)
+      if(build$x$data[[1]]$name == "Raw Data"){
+        p <- p %>% layout(yaxis = y_axis())
       }
-      #
-      #   p <- p %>% layout(yaxis2 = y_axis())
-      #
-      # #   #check if there's a yaxis name is "raw" if so, also apply layout to yaxis
-      # #   build <- plotly_build(p)
-      # #   if("Raw Data" %in% unlist(sapply(build$x$data, function(x){x$name}))){
-      # #     p <- p %>% layout(yaxis = list(range = c(input$yaxismin, input$yaxismax)))
-      # #   }
-      # # }
-      #
-      # if(sel_mode){
-      #   p <- p %>% plotly::event_register("plotly_selected")
-      # }
+
+      if(sel_mode){
+        p <- p %>% plotly::event_register("plotly_selected")
+      }
 
       plot_exist(TRUE)
 
