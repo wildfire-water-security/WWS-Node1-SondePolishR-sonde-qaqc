@@ -8,7 +8,16 @@ interpolation method.
 ``` r
 interp_UI(id)
 
-interp_server(id, sondeproj, data_ver, y_var, period_view, dates, p_length)
+interp_server(
+  id,
+  sondeproj,
+  data_ver,
+  y_var,
+  period_view,
+  dates,
+  p_length,
+  current_mod
+)
 ```
 
 ## Arguments
@@ -42,3 +51,7 @@ interp_server(id, sondeproj, data_ver, y_var, period_view, dates, p_length)
 - p_length:
 
   The length of the period to view.
+
+- current_mod:
+
+  The name of the current module being viewed.

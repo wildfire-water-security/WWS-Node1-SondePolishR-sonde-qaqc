@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SondePolishR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9005</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9006</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,7 +51,16 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">interp_UI</span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">interp_server</span><span class="op">(</span><span class="va">id</span>, <span class="va">sondeproj</span>, <span class="va">data_ver</span>, <span class="va">y_var</span>, <span class="va">period_view</span>, <span class="va">dates</span>, <span class="va">p_length</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">interp_server</span><span class="op">(</span></span>
+<span>  <span class="va">id</span>,</span>
+<span>  <span class="va">sondeproj</span>,</span>
+<span>  <span class="va">data_ver</span>,</span>
+<span>  <span class="va">y_var</span>,</span>
+<span>  <span class="va">period_view</span>,</span>
+<span>  <span class="va">dates</span>,</span>
+<span>  <span class="va">p_length</span>,</span>
+<span>  <span class="va">current_mod</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -84,6 +93,10 @@
 
 <dt id="arg-p-length">p_length<a class="anchor" aria-label="anchor" href="#arg-p-length"></a></dt>
 <dd><p>The length of the period to view.</p></dd>
+
+
+<dt id="arg-current-mod">current_mod<a class="anchor" aria-label="anchor" href="#arg-current-mod"></a></dt>
+<dd><p>The name of the current module being viewed.</p></dd>
 
 </dl></div>
 
