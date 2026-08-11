@@ -7,7 +7,16 @@
 \usage{
 interp_UI(id)
 
-interp_server(id, sondeproj, data_ver, y_var, period_view, dates, p_length)
+interp_server(
+  id,
+  sondeproj,
+  data_ver,
+  y_var,
+  period_view,
+  dates,
+  p_length,
+  current_mod
+)
 }
 \arguments{
 \item{id}{An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.}
@@ -23,6 +32,8 @@ interp_server(id, sondeproj, data_ver, y_var, period_view, dates, p_length)
 \item{dates}{The date range to view the data.}
 
 \item{p_length}{The length of the period to view.}
+
+\item{current_mod}{The name of the current module being viewed.}
 }
 \description{
 Attempts to fill gaps less than the max length using the specified interpolation method.

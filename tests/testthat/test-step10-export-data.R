@@ -13,7 +13,6 @@ test_that("{shinytest2} recording: checking-module10", {
   app$click("data1-load_prj")
 
   app$set_inputs(modules = "step-10")
-  app$wait_for_idle()
 
   #check initial plot
     plot_obj <- app$get_value(export = "data10-plot_obj")

@@ -89,6 +89,12 @@ server <- function(input, output, session) {
     dates <- reactiveVal(NULL) #the date range to view the data
     period_view <- reactiveVal(FALSE) #should you use period view?
     p_length <- reactiveVal(7) #length of period view
+    current_mod <- reactiveVal()
+
+  # #track open module
+    observeEvent(input$modules, {
+      current_mod(input$modules)
+    })
 
   #step 1: load data
    SondePolishR::load_data_server("data1", sondeproj, data_ver)
@@ -109,7 +115,7 @@ server <- function(input, output, session) {
    SondePolishR::outlier_server("data6", sondeproj, data_ver, y_var, period_view, dates, p_length)
 
   #step 7: data interpolation
-   SondePolishR::interp_server("data7", sondeproj, data_ver, y_var, period_view, dates, p_length)
+   SondePolishR::interp_server("data7", sondeproj, data_ver, y_var, period_view, dates, p_length, current_mod)
 
   #step 8: additive shift
    SondePolishR::additive_server("data8", sondeproj, data_ver, y_var, period_view, dates, p_length)

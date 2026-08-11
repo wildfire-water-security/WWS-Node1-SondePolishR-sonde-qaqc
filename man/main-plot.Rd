@@ -9,6 +9,7 @@ main_plot_UI(id)
 
 main_plot_server(
   id,
+  data_ver,
   sondeproj,
   plot_obj,
   plot_data,
@@ -21,6 +22,8 @@ main_plot_server(
 }
 \arguments{
 \item{id}{the shiny ID of the module}
+
+\item{data_ver}{A `reactiveVal` holding a number used to track when new data is added to trigger resets.}
 
 \item{sondeproj}{A `reactiveVal` holding the current dataset.}
 

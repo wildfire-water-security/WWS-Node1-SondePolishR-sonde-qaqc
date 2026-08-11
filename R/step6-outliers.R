@@ -242,7 +242,7 @@ outlier_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_
     })
 
     #save to export
-    main_plot_server("outlier_plot", sondeproj, plot_obj, plot_data, y_var, sel_mode=TRUE,plot_exist)
+    main_plot_server("outlier_plot",data_ver, sondeproj, plot_obj, plot_data, y_var, sel_mode=TRUE,plot_exist)
 
     #redraw when back on module to prevent weird drawing issues
     observeEvent(input$modules, {

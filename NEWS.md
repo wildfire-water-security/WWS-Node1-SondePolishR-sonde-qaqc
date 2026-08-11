@@ -1,5 +1,13 @@
 # SondePolishR
 
+## SondePolishR 0.0.9006
+
+(2026-08-10)
+
+### Bug Fixes
+
+-   Fixed issues with when zoom was held versus reset.
+
 ## SondePolishR 0.0.9005
 
 (2026-08-05)

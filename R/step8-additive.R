@@ -248,7 +248,7 @@ additive_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p
     #save to export
     sel_mode <- reactive({ifelse(input$edit_type == "additive", TRUE, FALSE)})
 
-    main_plot_server("shift_plot", sondeproj, plot_obj, plot_data, y_var, sel_mode(), plot_exist)
+    main_plot_server("shift_plot", data_ver,sondeproj, plot_obj, plot_data, y_var, sel_mode(), plot_exist)
 
     observeEvent(input$modules, {
       req(input$modules == "step-8")

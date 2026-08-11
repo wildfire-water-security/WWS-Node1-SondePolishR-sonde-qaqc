@@ -22,6 +22,7 @@ test_that("{shinytest2} recording: checking-module2", {
 
   #test y-axis limits
   app$set_inputs(`data2-plot-yaxismax` = 40)
+  app$wait_for_idle()
   new_limit <- app$get_value(input = "data2-plot-yaxismin")
   expect_equal(new_limit, -5) #y min should change
   plot_obj <- app$get_value(export = "data2-plot_obj")
