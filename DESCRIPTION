@@ -55,7 +55,8 @@ Imports:
     nasapower,
     grDevices,
     httr2,
-    shinybusy
+    shinybusy,
+    dlm
 Suggests: 
     knitr,
     rmarkdown,

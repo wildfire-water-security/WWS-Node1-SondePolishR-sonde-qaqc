@@ -37,6 +37,7 @@ reference:
       - apply_dup_edits
       - apply_edit
       - apply_interp
+      - apply_smoothing
       - correct_fdom
       - guess_shift
       - identify_dups

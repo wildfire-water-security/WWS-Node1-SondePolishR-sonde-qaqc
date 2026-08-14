@@ -15,6 +15,8 @@
 #' @importFrom bslib layout_columns
 #' @importFrom bslib page_fluid
 #' @importFrom bslib update_switch
+#' @importFrom dlm dlmModPoly
+#' @importFrom dlm dlmSmooth
 #' @importFrom dplyr across
 #' @importFrom dplyr anti_join
 #' @importFrom dplyr any_of
@@ -104,6 +106,7 @@
 #' @importFrom plotly style
 #' @importFrom plotly toWebGL
 #' @importFrom pracma hampel
+#' @importFrom pracma savgol
 #' @importFrom readr guess_encoding
 #' @importFrom rlang .data
 #' @importFrom rlang `:=` !!
@@ -140,6 +143,7 @@
 #' @importFrom utils write.csv
 #' @importFrom zoo na.approx
 #' @importFrom zoo na.locf
+#' @importFrom zoo rollmean
 #' @importFrom zoo rollmedian
 ## usethis namespace: end
 NULL
