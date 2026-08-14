@@ -79,7 +79,7 @@ correction_server <- function(id, sondeproj, data_ver, y_var,period_view, dates,
     # #        "additive" = additive_UI(ns("additive_submod")),
     # #        "drift" = drift_UI(ns("drift_submod"), sondeproj),
     # #        "smooth" = smooth_UI(ns("smooth_submod")))
-      drift_UI(ns("drift_submod"), sondeproj)
+    smooth_UI(ns("smooth_submod"))
 
 
   })
@@ -106,7 +106,7 @@ correction_server <- function(id, sondeproj, data_ver, y_var,period_view, dates,
         data <- sondeproj()$data
         sel <- event_data("plotly_selected", source = "shift_plot")
 
-        if(!is.null(sel) && length(sel) && nrow(sel) > 0) {
+        if(!is.null(sel) && nrow(sel) > 0) {
           sel <- sel %>%  filter(.data$curveNumber %in% traces()) %>%
             mutate(x = parse_date_time(.data$x, tz=sondeproj()$meta$tz, orders = "Ymd HMS", truncated =3))
           full_index <- data %>%
@@ -125,11 +125,11 @@ correction_server <- function(id, sondeproj, data_ver, y_var,period_view, dates,
       dat <- sondeproj()$data %>% dplyr::filter(.data$Date >= plot_dates()[1], .data$Date <= plot_dates()[2])
 
       #if selected points and using additive, update where they're plotted
-      if(!is.null(index()) && input$edit_type == "additive"){
-        req(input$slope, input$int)
-        rows <- which(dat$Index %in% index())
-        dat <- shift_points(dat, y_var(), rows, shift_val = list(slope=input$slope, int=input$int))
-      }
+      # if(!is.null(index()) && input$edit_type == "additive"){
+      #   req(input$slope, input$int)
+      #   rows <- which(dat$Index %in% index())
+      #   dat <- shift_points(dat, y_var(), rows, shift_val = list(slope=input$slope, int=input$int))
+      # }
 
       dat
     })
@@ -142,17 +142,16 @@ correction_server <- function(id, sondeproj, data_ver, y_var,period_view, dates,
       if(y2_var() == "none"){y2 <- NULL}else{y2 <- y2_var()}
       y <- y_var()
 
-      browser()
      #use function to plot sonde data
       p <- plot_sonde(data = plot_data(), y_var=y_var(), y2_var= y2, proj = sondeproj(), opts=plot_opts(), source="shift_plot")
 
      #add to plot based on module
       #pass plot_obj to server then pass output from that to the display mod
 
-      # #set which traces hold points
-      # built_p <- plotly_build(p)
-      # names <- sapply(built_p$x$data, function(x){x$name})
-      # traces(which(names %in% c(get_yvar(y_var()), plot_data()$FileName))-1)
+      #set which traces hold points
+      built_p <- plotly_build(p)
+      names <- sapply(built_p$x$data, function(x){x$name})
+      traces(which(names %in% c(get_yvar(y_var()), plot_data()$FileName))-1)
 
       #return plot
       p
@@ -160,7 +159,7 @@ correction_server <- function(id, sondeproj, data_ver, y_var,period_view, dates,
 
   #correction sub servers
     #additive_out <- additive_server("additive_submod",sondeproj,y_var,plot_obj,plot_data,index)
-    drift_out <- drift_server("drift_submod",sondeproj,y_var,plot_obj,plot_data)
+    drift_out <- smooth_server("smooth_submod",sondeproj,y_var,plot_obj,plot_data,index)
     #smooth_out <- smooth_server("smooth_submod",sondeproj,y_var,plot_obj,plot_data,index)
     # mod_outputs <- reactive({
     #   req(input$edit_type, sondeproj(), y_var())
@@ -177,7 +176,7 @@ correction_server <- function(id, sondeproj, data_ver, y_var,period_view, dates,
   #create plot
     sel_mode <- reactive({ifelse(input$edit_type != "drift", TRUE, FALSE)})
     main_plot_server("shift_plot", data_ver,sondeproj, drift_out$plot, plot_data, y_var, sel_mode(), plot_exist)
-
+    #main_plot_server("shift_plot", data_ver,sondeproj, plot_obj, plot_data, y_var, sel_mode(), plot_exist)
     # observeEvent(input$modules, {
     #   req(input$modules == "step-8")
     #

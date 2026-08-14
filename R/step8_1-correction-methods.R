@@ -189,7 +189,7 @@ smooth_UI <- function(id){
   tagList(
     div(style="margin-bottom: 8px; font-size:14px", "Apply smoothing correction to selected data:"),
 
-    fluidRow(selectInput(inputId=ns("method"),label = "Smoothing Method:",
+    fluidRow(selectInput(ns("method"),label = "Smoothing Method:",
                       choices = c("Rolling Mean" = "rollmean",
                                   "Rolling Median" = "rollmedian",
                                   "Savitzky–Golay Filter" = "savgol",
@@ -219,9 +219,11 @@ smooth_server <- function(id, sondeproj, y_var, plot, plot_data, index){
 
   #create edit object
     edit <- reactive({
+      req(sondeproj(), y_var())
       newdata <- sondeproj()$data
       #get updated data
       rows <- newdata$Index %in% index() #convert from row numbers to T/F
+      req(input$method)
       nice_methods <- switch(input$method,
                              "rollmean" = "Rolling Mean",
                              "rollmedian" = "Rolling Median",
@@ -239,14 +241,15 @@ smooth_server <- function(id, sondeproj, y_var, plot, plot_data, index){
 
     #update plot
     p <- reactive({
+      req(plot(), y_var())
       p <- plot()
       plot_range <- range(plot_data()$Date)
-      dat <- edit()$data[edit()$rows,] %>% dplyr::filter(.data$Date >= plot_range[1], .data$Date <= plot_range[2]) %>%
-        arrange(.data$DateTime_rd) %>% filter(!is.na(.data[[y_var()]]))
 
-      if(nrow(dat) > 0){
-        p <- p %>% add_trace(data= dat, x=~DateTime_rd, y=as.formula(paste0("~`", y_var(), "`")), type="scatter", mode="lines",
-                                   name = "Smoothed", line = list(color = "darkred"), yaxis="y2", inherit = FALSE)
+      if(!is.null(index())){
+        smooth_data <- apply_smoothing(plot_data(), y_var(), input$method, index(), k=input$smooth_fact)
+        smooth_data <- smooth_data[index(),] %>% arrange(.data$DateTime_rd) %>% filter(!is.na(.data[[y_var()]]))
+        p <- p %>% add_trace(data= smooth_data, x=~DateTime_rd, y=as.formula(paste0("~`", y_var(), "`")), type="scatter", mode="lines",
+                             name = "Smoothed", line = list(color = "darkred"), yaxis="y2", inherit = FALSE)
       }
 
       p

@@ -44,8 +44,8 @@ apply_smoothing <- function(data, y_var, method, index=NULL, k=7){
 
   #if using rolling methods that have NA's at the start, grab a little extra
   if(method %in% c("rollmean", "rollmedian")){
-    newstart <- ifelse(min(index)-parms$k < 1, 1, min(index)-parms$k)
-    newend <- ifelse(max(index)+parms$k > length(index), length(index), max(index)+parms$k)
+    newstart <- ifelse(min(index)-k < 1, 1, min(index)-k)
+    newend <- ifelse(max(index)+k > length(index), max(index), max(index)+k)
     smooth_idx <- seq(from=newstart, to =newend, by=1)
   }else{
     smooth_idx <- index

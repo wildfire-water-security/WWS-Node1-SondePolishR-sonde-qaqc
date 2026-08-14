@@ -48,7 +48,7 @@ main_plot_server <- function(id, data_ver, sondeproj, plot_obj, plot_data, y_var
 
   #check if we need to reset y-axis when data changes (only update if min/max changes)
     observeEvent(sondeproj(),{
-      if(id == "shift_plot"){browser()}
+      #if(id == "shift_plot"){browser()}
 
       req(sondeproj(), zoom, y_var())
 
@@ -97,7 +97,7 @@ main_plot_server <- function(id, data_ver, sondeproj, plot_obj, plot_data, y_var
 
   #don't reset dragmode on differences with date range, only update user limits with changed data/yvar
     observeEvent(list(data_ver(), y_var(), startmax(), startmin()), {
-      if(id == "shift_plot"){browser()}
+      #if(id == "shift_plot"){browser()}
 
       req(plot_obj(), y_var())
       zoom$dragmode <- "zoom"
