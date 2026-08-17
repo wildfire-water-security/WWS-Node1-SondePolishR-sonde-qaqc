@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   app-manual: app-manual.html
   QAQC-flags: QAQC-flags.html
-last_built: 2026-08-11T15:11Z
+last_built: 2026-08-17T21:21Z
 urls:
   reference: https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference
   article: https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/articles

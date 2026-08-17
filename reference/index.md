@@ -42,6 +42,8 @@ Functions for tracking data quality and performing corrections.
   : Log edits to a \`sondeproj\`
 - [`apply_interp()`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/apply_interp.md)
   : Map interpolated data back to dataset
+- [`apply_smoothing()`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/apply_smoothing.md)
+  : Apply smoothing functions to data
 - [`correct_fdom()`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/correct_fdom.md)
   : Apply fDOM temperature and turbidity corrections
 - [`guess_shift()`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/guess_shift.md)

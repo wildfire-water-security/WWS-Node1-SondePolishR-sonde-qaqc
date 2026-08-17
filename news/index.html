@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SondePolishR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9006</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9007</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,7 +42,133 @@
       <small>Source: <a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
-  </main></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9007" id="sondepolishr-009007">SondePolishR 0.0.9007<a class="anchor" aria-label="anchor" href="#sondepolishr-009007"></a></h2>
+<p>(2026-08-17)</p>
+<div class="section level3">
+<h3 id="bug-fixes-0-0-9007">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-0-9007"></a></h3>
+<ul><li>Fixed the News page headers so they actually show up on the website.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="updates-0-0-9007">Updates<a class="anchor" aria-label="anchor" href="#updates-0-0-9007"></a></h3>
+<ul><li>Add several smoothing methods via <code><a href="../reference/apply_smoothing.html">apply_smoothing()</a></code> which can be used to smooth periods of messy data.</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9006" id="sondepolishr-009006">SondePolishR 0.0.9006<a class="anchor" aria-label="anchor" href="#sondepolishr-009006"></a></h2>
+<p>(2026-08-10)</p>
+<div class="section level3">
+<h3 id="bug-fixes-0-0-9006">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-0-9006"></a></h3>
+<ul><li>Fixed issues with when zoom was held versus reset.</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9005" id="sondepolishr-009005">SondePolishR 0.0.9005<a class="anchor" aria-label="anchor" href="#sondepolishr-009005"></a></h2>
+<p>(2026-08-05)</p>
+<div class="section level3">
+<h3 id="bug-fixes-0-0-9005">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-0-9005"></a></h3>
+<ul><li><p>Can no longer select rows in the other table options within check data module. This allowed you to unintentionally view past data versions.</p></li>
+<li><p>Bug in interpolation code to fill in flags was causing the first flag of the data to apply to the entire dataset.</p></li>
+<li><p>Fixed a number of bugs with how colors were displaying in the plot, particularly when using file colors along with other color schemes.</p></li>
+<li><p>Selected points now clears in the quality flags module when switching the method.</p></li>
+<li><p>App no longer crashes if precipitation data can’t be fetched.</p></li>
+<li><p>Issue with flags added to existing flags was fixed.</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="updates-0-0-9005">Updates<a class="anchor" aria-label="anchor" href="#updates-0-0-9005"></a></h3>
+<ul><li><p>Now in the quality flags module, visualizing those flags starts selected so you don’t have to remember to select it to view the flags you applied after flagging.</p></li>
+<li><p>File names for saving files now clear when data is cleared.</p></li>
+<li><p>Metadata files can now recognize missing values even if they’re not quite how R expects them.</p></li>
+<li><p>Site coordinates are now stored if specified before the project is loaded.</p></li>
+<li><p>Exported the <code>get_nldas</code> function.</p></li>
+<li><p>When saving files, a confirmation message will display if the file already exists.</p></li>
+<li><p>When switching between quality flag methods, default selection method switches back to “add”.</p></li>
+<li><p>All main plots now have inputs to control the limits of the y-axis. They default to range of the overall dataset and refresh when the project changes or the variable being plotted changes. This is useful to not zoom in on small changes during periods with low variability.</p></li>
+<li><p>You can now select multiple summary method options when exporting the data. Column names are appended with the summary function and the selected methods all show up on the plot. Summary methods are also extended to the “interval” selection so you can choose how duplicates are dealt with and view differences between methods.</p></li>
+<li><p>Zoom will now hold even when the plot changes. It will reset if new data is loaded, you change the y-variable, or you manually change the y-axis limits. Selection modules also no longer default to the selection tool, they will all start using the zoom tool.</p></li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9004" id="sondepolishr-009004">SondePolishR 0.0.9004<a class="anchor" aria-label="anchor" href="#sondepolishr-009004"></a></h2>
+<p>(2026-07-29)</p>
+<div class="section level3">
+<h3 id="bug-fixes-0-0-9004">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-0-9004"></a></h3>
+<ul><li><p>Added a warning when the “remove OOW periods” button is clicked but no field form data is provided so you know why it’s not doing anything.</p></li>
+<li><p>Doesn’t allow export without a file path to prevent app from crashing.</p></li>
+<li><p>Now exported datetimes don’t drop the time for midnight (this causes issues when trying to read back into R).</p></li>
+<li><p>Remaining bug in using quality flags to select outlier points left over from switching flagging methods.</p></li>
+<li><p>Fixed bugs related to version control system preventing raw data from being plotted after data merges and fixing an issue where the diffs in changelog and actual diffs were one number off.</p></li>
+<li><p>The second y-variable no longer resets whenever the data in the project changes.</p></li>
+<li><p>Gaps are correctly identified now, previously was relying on just the DateTime which didn’t produce any results after performing interpolation.</p></li>
+<li><p>In shift selection, when selecting a new selection of points that contained points already selected, the old points were not selected.</p></li>
+<li><p>Data versioning had a bug in applying diffs when they had data merges and you were trying to add/remove data from the merges, not just ignore them.</p></li>
+<li><p>Interpolated points had a file name of “interpolated” this caused issues when coloring points by filename and doing drift corrections since those weren’t selected with the rest of the file.</p></li>
+<li><p>Random forest interpolation method failed because it was trying to include the flag columns.</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="updates-0-0-9004"><strong>Updates</strong><a class="anchor" aria-label="anchor" href="#updates-0-0-9004"></a></h3>
+<ul><li>Unsummarized exported data will now condense duplicates and have the same formatting as other exports. Also added the site name to the exported data.</li>
+<li>Flagging module now has more descriptive notes and button names so it’s clearer what the “commit”/edit is doing.</li>
+<li>Now “automated” point selection methods for outliers and interpolation will only select points within the plotted range. This is to prevent accidentally removing or filling in points you haven’t reviewed.</li>
+<li>Added a waiting indicator for loading precipitation data and switched the progress bar to a loading indicator for the interpolation step.</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9003" id="sondepolishr-009003">SondePolishR 0.0.9003<a class="anchor" aria-label="anchor" href="#sondepolishr-009003"></a></h2>
+<p>(2026-07-28)</p>
+<div class="section level3">
+<h3 id="bug-fixes-0-0-9003">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-0-9003"></a></h3>
+<ul><li><p>Error when combing flags when removing out of water periods due to flagging all parameters.</p></li>
+<li><p>Quality flags were erroring when trying to use to select points for outlier selection due to changes to the <code>get_qual_flags</code> function.</p></li>
+<li><p>Fixed how the precipitation data was clipped to not remove a data point at the start or end of the dataset.</p></li>
+<li><p>Default directory wasn’t using the user’s working directory, it was using the package directory, now will capture user’s working directory on loading the app.</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="updates-0-0-9003"><strong>Updates</strong><a class="anchor" aria-label="anchor" href="#updates-0-0-9003"></a></h3>
+<ul><li>Changed <code>read_sonde</code> function to also include depth (m) if available in the variables.</li>
+<li>Major changes to how flags are stored within the <code>sondeproj</code> object. These changes won’t affect app user experience at all, but now flags are stored within the dataset itself instead of a separate list so they can also be version controlled so when changes are redone/reverted the flags carry over.</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9002" id="sondepolishr-009002">SondePolishR 0.0.9002<a class="anchor" aria-label="anchor" href="#sondepolishr-009002"></a></h2>
+<p>(2026-07-20)</p>
+<div class="section level3">
+<h3 id="bug-fixes-0-0-9002">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-0-9002"></a></h3>
+<ul><li>When toggling the period view, the period count wasn’t getting reset resulting in issues switching between the periods.</li>
+<li>When data was re-uploaded, some of the point selections (shift correction) weren’t clearing resulting in points still selected from the start.</li>
+<li>Precipitation data timezone were inconsistent and not matching the data timezone correctly.</li>
+<li>There was a bug causing the app to crash when using the clear uploads button.</li>
+<li>Made plots shorter to be easier to view on a less wide screen.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="updates-0-0-9002">Updates<a class="anchor" aria-label="anchor" href="#updates-0-0-9002"></a></h3>
+<ul><li>Added a new method to obtain precipitation data (NLDAS) which is at a finer resolution and appears to be more accurate. However this data requires a token and NASA Earthdata account to download. See documentation for <a href="https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/get_precip.html"><code>get_precip()</code></a> for more details.</li>
+<li>Now if site code, latitude and longitude are saved within a project they will show up in the UI when project is loaded.</li>
+<li>Now when marking data quality there is the option to either mark as “bad” or “questionable”.</li>
+<li>Changed the sidebars to use accordions so it’s easier to view the options you want to view.</li>
+<li>Added a feature in “Explore Data” allowing you to revert your changes and return the data to a previous version.</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9001" id="sondepolishr-009001">SondePolishR 0.0.9001<a class="anchor" aria-label="anchor" href="#sondepolishr-009001"></a></h2>
+<p>(2026-07-13)</p>
+<div class="section level3">
+<h3 id="bug-fixes-0-0-9001">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-0-9001"></a></h3>
+<ul><li>Updated the way flags were saved to not overwrite flags of the same type.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="updates-0-0-9001">Updates<a class="anchor" aria-label="anchor" href="#updates-0-0-9001"></a></h3>
+<ul><li>Reworked the fDOM module to prevent users from correcting fDOM multiple times. Now you must correct temperature before being able to apply turbidity corrections and corrections will only be applied to data that hasn’t had the correction (temperature or turbidity) applied previously.</li>
+<li>Now when a <code>sondeproj</code> is loaded, the site metadata will be populated in the app so you can see/update the values.</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.900" id="sondepolishr-00900">SondePolishR 0.0.900<a class="anchor" aria-label="anchor" href="#sondepolishr-00900"></a></h2>
+<p>(2026-07-09)</p>
+<p>Initial publicly available version.</p>
+</div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">

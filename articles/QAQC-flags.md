@@ -8,10 +8,11 @@ which is used to determine what changes were made to the data.
 | App Module | Flag Code | Flag Meaning |
 |:---|:---|:---|
 | Interpolation | AD01 | Missing data interpolated. |
-| Shift Corrections | CHG01 | Linear shift applied to selected points. |
-| Shift Corrections | CHG02 | Linear drift correction applied to file. |
+| Corrections | CHG01 | Linear shift applied to selected points. |
+| Corrections | CHG02 | Linear drift correction applied to file. |
 | fDOM Corrections | CHG03 | fDOM corrected for temperature. |
 | fDOM Corrections | CHG04 | fDOM corrected for turbidity. |
+| Corrections | CHG05 | Smoothing correction applied to selected points. |
 | Quality Flags | QUAL01 | Data flagged as bad. |
 | Quality Flags | QUAL02 | Data flagged as questionable. |
 | Physical Limits | RM02 | Data removed based on absolute limits. |

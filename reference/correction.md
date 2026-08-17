@@ -1,0 +1,50 @@
+# Address any data shifts or corrections
+
+Plots loaded dataset, user can select a group of points and apply a
+additive shift to the data to correct for shifts, apply a drift
+correction to a data file, or apply a smoothing function to selected
+data.
+
+## Usage
+
+``` r
+correction_UI(id)
+
+correction_server(id, sondeproj, data_ver, y_var, period_view, dates, p_length)
+```
+
+## Arguments
+
+- id:
+
+  An ID string passed to shiny::NS(), used for namespacing UI
+  inputs/outputs.
+
+- sondeproj:
+
+  A `reactiveVal` holding the current dataset.
+
+- data_ver:
+
+  A `reactiveVal` holding a number used to track when new data is added
+  to trigger resets.
+
+- y_var:
+
+  Y-variable to plot on the y-axis.
+
+- period_view:
+
+  Should data be viewed by period?
+
+- dates:
+
+  The date range to view the data.
+
+- p_length:
+
+  The length of the period to view.
+
+## Value
+
+Invisible NULL
