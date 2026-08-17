@@ -290,7 +290,7 @@
                   "value": ["summaryDefault", "table"]
                 }
               },
-              "value": [-2.56, 9.63, 10.74, 12.85540932, 14.4925, 34.39]
+              "value": [-2.56, 9.63, 10.74, 12.86645621, 14.5, 170.61]
             },
             {
               "type": "double",
@@ -605,7 +605,7 @@
                   "value": ["summaryDefault", "table"]
                 }
               },
-              "value": [-2.56, 9.63, 10.74, 12.86778642, 14.5, 170.61]
+              "value": [-2.56, 9.63, 10.74, 12.86645621, 14.5, 170.61]
             },
             {
               "type": "double",
@@ -920,7 +920,7 @@
                   "value": ["summaryDefault", "table"]
                 }
               },
-              "value": [9.55, 10.4575, 11.305, 12.66584077, 14.245, 19.37]
+              "value": [9.55, 10.4675, 11.335, 12.90459821, 14.2925, 170.61]
             },
             {
               "type": "double",
@@ -2123,6 +2123,1229 @@
                 }
               },
               "value": [-4.16883978, 11.1025, 15.655, 18.03679241, 26.2225, 32.81]
+            }
+          ]
+        }
+      ]
+    }
+
+---
+
+    {
+      "type": "list",
+      "attributes": {
+        "names": {
+          "type": "character",
+          "attributes": {},
+          "value": ["layout", "names", "ntraces", "x_rng", "y_rng"]
+        }
+      },
+      "value": [
+        {
+          "type": "list",
+          "attributes": {
+            "names": {
+              "type": "character",
+              "attributes": {},
+              "value": ["margin", "paper_bgcolor", "plot_bgcolor", "font", "xaxis", "yaxis2", "yaxis", "hovermode", "showlegend"]
+            }
+          },
+          "value": [
+            {
+              "type": "list",
+              "attributes": {
+                "names": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["b", "l", "t", "r"]
+                }
+              },
+              "value": [
+                {
+                  "type": "double",
+                  "attributes": {},
+                  "value": [40]
+                },
+                {
+                  "type": "double",
+                  "attributes": {},
+                  "value": [60]
+                },
+                {
+                  "type": "double",
+                  "attributes": {},
+                  "value": [25]
+                },
+                {
+                  "type": "double",
+                  "attributes": {},
+                  "value": [10]
+                }
+              ]
+            },
+            {
+              "type": "character",
+              "attributes": {},
+              "value": ["#3c4d5a"]
+            },
+            {
+              "type": "character",
+              "attributes": {},
+              "value": ["#475763"]
+            },
+            {
+              "type": "list",
+              "attributes": {
+                "names": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["color", "family"]
+                }
+              },
+              "value": [
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["#ebebeb"]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["sans-serif"]
+                }
+              ]
+            },
+            {
+              "type": "list",
+              "attributes": {
+                "names": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["domain", "automargin", "title"]
+                }
+              },
+              "value": [
+                {
+                  "type": "double",
+                  "attributes": {},
+                  "value": [0, 1]
+                },
+                {
+                  "type": "logical",
+                  "attributes": {},
+                  "value": [true]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["<b>Date<\/b>"]
+                }
+              ]
+            },
+            {
+              "type": "list",
+              "attributes": {
+                "names": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["gridcolor", "zeroline", "title", "overlaying", "side"]
+                }
+              },
+              "value": [
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["#3c4d5a"]
+                },
+                {
+                  "type": "logical",
+                  "attributes": {},
+                  "value": [false]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["<b>fDOM (QSU)<\/b>"]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["y"]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["left"]
+                }
+              ]
+            },
+            {
+              "type": "list",
+              "attributes": {
+                "names": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["domain", "automargin", "gridcolor", "zeroline", "side", "title"]
+                }
+              },
+              "value": [
+                {
+                  "type": "double",
+                  "attributes": {},
+                  "value": [0, 1]
+                },
+                {
+                  "type": "logical",
+                  "attributes": {},
+                  "value": [true]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["#3c4d5a"]
+                },
+                {
+                  "type": "logical",
+                  "attributes": {},
+                  "value": [false]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["right"]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["<b><\/b>"]
+                }
+              ]
+            },
+            {
+              "type": "character",
+              "attributes": {},
+              "value": ["closest"]
+            },
+            {
+              "type": "logical",
+              "attributes": {
+                "class": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["plotly_default", "logical"]
+                }
+              },
+              "value": [true]
+            }
+          ]
+        },
+        {
+          "type": "character",
+          "attributes": {
+            "dim": {
+              "type": "integer",
+              "attributes": {},
+              "value": [12, 2]
+            }
+          },
+          "value": ["x", "y", "mode", "type", "name", "yaxis", "marker", "error_y", "error_x", "line", "xaxis", "frame", "x", "y", "type", "mode", "name", "line", "yaxis", "marker", "error_y", "error_x", "xaxis", "frame"]
+        },
+        {
+          "type": "integer",
+          "attributes": {},
+          "value": [2]
+        },
+        {
+          "type": "list",
+          "attributes": {},
+          "value": [
+            {
+              "type": "double",
+              "attributes": {
+                "names": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["Min.", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max."]
+                },
+                "class": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["summaryDefault", "POSIXct", "POSIXt"]
+                },
+                "tzone": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["Etc/GMT+8"]
+                }
+              },
+              "value": [1722459600, 1725728175, 1728995850, 1728996592.60534, 1732265325, 1735540200]
+            },
+            {
+              "type": "double",
+              "attributes": {
+                "names": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["Min.", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max."]
+                },
+                "class": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["summaryDefault", "POSIXct", "POSIXt"]
+                },
+                "tzone": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["Etc/GMT+8"]
+                }
+              },
+              "value": [1734995700, 1735109775, 1735168050, 1735174166.53846002, 1735283025, 1735342200]
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "attributes": {},
+          "value": [
+            {
+              "type": "double",
+              "attributes": {
+                "names": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["Min.", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max."]
+                },
+                "class": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["summaryDefault", "table"]
+                }
+              },
+              "value": [-4.31484888, 8.80355866, 10.09, 12.05870043, 14.36, 34.39]
+            },
+            {
+              "type": "double",
+              "attributes": {
+                "names": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["Min.", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max."]
+                },
+                "class": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["summaryDefault", "table"]
+                }
+              },
+              "value": [-1.03285714, 6.55321429, 12.21785714, 9.84077473, 13.4, 16.34285714]
+            }
+          ]
+        }
+      ]
+    }
+
+---
+
+    {
+      "type": "list",
+      "attributes": {
+        "names": {
+          "type": "character",
+          "attributes": {},
+          "value": ["layout", "names", "ntraces", "x_rng", "y_rng"]
+        }
+      },
+      "value": [
+        {
+          "type": "list",
+          "attributes": {
+            "names": {
+              "type": "character",
+              "attributes": {},
+              "value": ["margin", "paper_bgcolor", "plot_bgcolor", "font", "xaxis", "yaxis2", "yaxis", "hovermode", "showlegend"]
+            }
+          },
+          "value": [
+            {
+              "type": "list",
+              "attributes": {
+                "names": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["b", "l", "t", "r"]
+                }
+              },
+              "value": [
+                {
+                  "type": "double",
+                  "attributes": {},
+                  "value": [40]
+                },
+                {
+                  "type": "double",
+                  "attributes": {},
+                  "value": [60]
+                },
+                {
+                  "type": "double",
+                  "attributes": {},
+                  "value": [25]
+                },
+                {
+                  "type": "double",
+                  "attributes": {},
+                  "value": [10]
+                }
+              ]
+            },
+            {
+              "type": "character",
+              "attributes": {},
+              "value": ["#3c4d5a"]
+            },
+            {
+              "type": "character",
+              "attributes": {},
+              "value": ["#475763"]
+            },
+            {
+              "type": "list",
+              "attributes": {
+                "names": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["color", "family"]
+                }
+              },
+              "value": [
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["#ebebeb"]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["sans-serif"]
+                }
+              ]
+            },
+            {
+              "type": "list",
+              "attributes": {
+                "names": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["domain", "automargin", "title"]
+                }
+              },
+              "value": [
+                {
+                  "type": "double",
+                  "attributes": {},
+                  "value": [0, 1]
+                },
+                {
+                  "type": "logical",
+                  "attributes": {},
+                  "value": [true]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["<b>Date<\/b>"]
+                }
+              ]
+            },
+            {
+              "type": "list",
+              "attributes": {
+                "names": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["gridcolor", "zeroline", "title", "overlaying", "side"]
+                }
+              },
+              "value": [
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["#3c4d5a"]
+                },
+                {
+                  "type": "logical",
+                  "attributes": {},
+                  "value": [false]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["<b>fDOM (QSU)<\/b>"]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["y"]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["left"]
+                }
+              ]
+            },
+            {
+              "type": "list",
+              "attributes": {
+                "names": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["domain", "automargin", "gridcolor", "zeroline", "side", "title"]
+                }
+              },
+              "value": [
+                {
+                  "type": "double",
+                  "attributes": {},
+                  "value": [0, 1]
+                },
+                {
+                  "type": "logical",
+                  "attributes": {},
+                  "value": [true]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["#3c4d5a"]
+                },
+                {
+                  "type": "logical",
+                  "attributes": {},
+                  "value": [false]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["right"]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["<b><\/b>"]
+                }
+              ]
+            },
+            {
+              "type": "character",
+              "attributes": {},
+              "value": ["closest"]
+            },
+            {
+              "type": "logical",
+              "attributes": {
+                "class": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["plotly_default", "logical"]
+                }
+              },
+              "value": [true]
+            }
+          ]
+        },
+        {
+          "type": "character",
+          "attributes": {
+            "dim": {
+              "type": "integer",
+              "attributes": {},
+              "value": [12, 2]
+            }
+          },
+          "value": ["x", "y", "mode", "type", "name", "yaxis", "marker", "error_y", "error_x", "line", "xaxis", "frame", "x", "y", "type", "mode", "name", "line", "yaxis", "marker", "error_y", "error_x", "xaxis", "frame"]
+        },
+        {
+          "type": "integer",
+          "attributes": {},
+          "value": [2]
+        },
+        {
+          "type": "list",
+          "attributes": {},
+          "value": [
+            {
+              "type": "double",
+              "attributes": {
+                "names": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["Min.", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max."]
+                },
+                "class": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["summaryDefault", "POSIXct", "POSIXt"]
+                },
+                "tzone": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["Etc/GMT+8"]
+                }
+              },
+              "value": [1722459600, 1725728175, 1728995850, 1728996592.60534, 1732265325, 1735540200]
+            },
+            {
+              "type": "double",
+              "attributes": {
+                "names": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["Min.", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max."]
+                },
+                "class": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["summaryDefault", "POSIXct", "POSIXt"]
+                },
+                "tzone": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["Etc/GMT+8"]
+                }
+              },
+              "value": [1734995700, 1735110450, 1735169400, 1735176103.80227995, 1735285050, 1735344900]
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "attributes": {},
+          "value": [
+            {
+              "type": "double",
+              "attributes": {
+                "names": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["Min.", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max."]
+                },
+                "class": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["summaryDefault", "table"]
+                }
+              },
+              "value": [-4.31484888, 8.80355866, 10.09, 12.05870043, 14.36, 34.39]
+            },
+            {
+              "type": "double",
+              "attributes": {
+                "names": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["Min.", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max."]
+                },
+                "class": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["summaryDefault", "table"]
+                }
+              },
+              "value": [-1.62026543, 6.50368248, 12.12810366, 9.72805492, 13.36261848, 15.05414103]
+            }
+          ]
+        }
+      ]
+    }
+
+---
+
+    {
+      "type": "list",
+      "attributes": {
+        "names": {
+          "type": "character",
+          "attributes": {},
+          "value": ["layout", "names", "ntraces", "x_rng", "y_rng"]
+        }
+      },
+      "value": [
+        {
+          "type": "list",
+          "attributes": {
+            "names": {
+              "type": "character",
+              "attributes": {},
+              "value": ["margin", "paper_bgcolor", "plot_bgcolor", "font", "xaxis", "yaxis2", "yaxis", "hovermode", "showlegend"]
+            }
+          },
+          "value": [
+            {
+              "type": "list",
+              "attributes": {
+                "names": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["b", "l", "t", "r"]
+                }
+              },
+              "value": [
+                {
+                  "type": "double",
+                  "attributes": {},
+                  "value": [40]
+                },
+                {
+                  "type": "double",
+                  "attributes": {},
+                  "value": [60]
+                },
+                {
+                  "type": "double",
+                  "attributes": {},
+                  "value": [25]
+                },
+                {
+                  "type": "double",
+                  "attributes": {},
+                  "value": [10]
+                }
+              ]
+            },
+            {
+              "type": "character",
+              "attributes": {},
+              "value": ["#3c4d5a"]
+            },
+            {
+              "type": "character",
+              "attributes": {},
+              "value": ["#475763"]
+            },
+            {
+              "type": "list",
+              "attributes": {
+                "names": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["color", "family"]
+                }
+              },
+              "value": [
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["#ebebeb"]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["sans-serif"]
+                }
+              ]
+            },
+            {
+              "type": "list",
+              "attributes": {
+                "names": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["domain", "automargin", "title"]
+                }
+              },
+              "value": [
+                {
+                  "type": "double",
+                  "attributes": {},
+                  "value": [0, 1]
+                },
+                {
+                  "type": "logical",
+                  "attributes": {},
+                  "value": [true]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["<b>Date<\/b>"]
+                }
+              ]
+            },
+            {
+              "type": "list",
+              "attributes": {
+                "names": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["gridcolor", "zeroline", "title", "overlaying", "side"]
+                }
+              },
+              "value": [
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["#3c4d5a"]
+                },
+                {
+                  "type": "logical",
+                  "attributes": {},
+                  "value": [false]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["<b>fDOM (QSU)<\/b>"]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["y"]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["left"]
+                }
+              ]
+            },
+            {
+              "type": "list",
+              "attributes": {
+                "names": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["domain", "automargin", "gridcolor", "zeroline", "side", "title"]
+                }
+              },
+              "value": [
+                {
+                  "type": "double",
+                  "attributes": {},
+                  "value": [0, 1]
+                },
+                {
+                  "type": "logical",
+                  "attributes": {},
+                  "value": [true]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["#3c4d5a"]
+                },
+                {
+                  "type": "logical",
+                  "attributes": {},
+                  "value": [false]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["right"]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["<b><\/b>"]
+                }
+              ]
+            },
+            {
+              "type": "character",
+              "attributes": {},
+              "value": ["closest"]
+            },
+            {
+              "type": "logical",
+              "attributes": {
+                "class": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["plotly_default", "logical"]
+                }
+              },
+              "value": [true]
+            }
+          ]
+        },
+        {
+          "type": "character",
+          "attributes": {
+            "dim": {
+              "type": "integer",
+              "attributes": {},
+              "value": [12, 2]
+            }
+          },
+          "value": ["x", "y", "mode", "type", "name", "yaxis", "marker", "error_y", "error_x", "line", "xaxis", "frame", "x", "y", "type", "mode", "name", "line", "yaxis", "marker", "error_y", "error_x", "xaxis", "frame"]
+        },
+        {
+          "type": "integer",
+          "attributes": {},
+          "value": [2]
+        },
+        {
+          "type": "list",
+          "attributes": {},
+          "value": [
+            {
+              "type": "double",
+              "attributes": {
+                "names": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["Min.", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max."]
+                },
+                "class": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["summaryDefault", "POSIXct", "POSIXt"]
+                },
+                "tzone": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["Etc/GMT+8"]
+                }
+              },
+              "value": [1722459600, 1725728175, 1728995850, 1728996592.60534, 1732265325, 1735540200]
+            },
+            {
+              "type": "double",
+              "attributes": {
+                "names": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["Min.", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max."]
+                },
+                "class": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["summaryDefault", "POSIXct", "POSIXt"]
+                },
+                "tzone": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["Etc/GMT+8"]
+                }
+              },
+              "value": [1734995700, 1735110450, 1735169400, 1735176103.80227995, 1735285050, 1735344900]
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "attributes": {},
+          "value": [
+            {
+              "type": "double",
+              "attributes": {
+                "names": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["Min.", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max."]
+                },
+                "class": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["summaryDefault", "table"]
+                }
+              },
+              "value": [-4.31484888, 8.80355866, 10.09, 12.05870043, 14.36, 34.39]
+            },
+            {
+              "type": "double",
+              "attributes": {
+                "names": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["Min.", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max."]
+                },
+                "class": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["summaryDefault", "table"]
+                }
+              },
+              "value": [0.53090847, 6.22716354, 11.22875481, 9.60847288, 13.18364926, 15.03338999]
+            }
+          ]
+        }
+      ]
+    }
+
+---
+
+    {
+      "type": "list",
+      "attributes": {
+        "names": {
+          "type": "character",
+          "attributes": {},
+          "value": ["layout", "names", "ntraces", "x_rng", "y_rng"]
+        }
+      },
+      "value": [
+        {
+          "type": "list",
+          "attributes": {
+            "names": {
+              "type": "character",
+              "attributes": {},
+              "value": ["margin", "paper_bgcolor", "plot_bgcolor", "font", "xaxis", "yaxis2", "yaxis", "hovermode", "showlegend"]
+            }
+          },
+          "value": [
+            {
+              "type": "list",
+              "attributes": {
+                "names": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["b", "l", "t", "r"]
+                }
+              },
+              "value": [
+                {
+                  "type": "double",
+                  "attributes": {},
+                  "value": [40]
+                },
+                {
+                  "type": "double",
+                  "attributes": {},
+                  "value": [60]
+                },
+                {
+                  "type": "double",
+                  "attributes": {},
+                  "value": [25]
+                },
+                {
+                  "type": "double",
+                  "attributes": {},
+                  "value": [10]
+                }
+              ]
+            },
+            {
+              "type": "character",
+              "attributes": {},
+              "value": ["#3c4d5a"]
+            },
+            {
+              "type": "character",
+              "attributes": {},
+              "value": ["#475763"]
+            },
+            {
+              "type": "list",
+              "attributes": {
+                "names": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["color", "family"]
+                }
+              },
+              "value": [
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["#ebebeb"]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["sans-serif"]
+                }
+              ]
+            },
+            {
+              "type": "list",
+              "attributes": {
+                "names": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["domain", "automargin", "title"]
+                }
+              },
+              "value": [
+                {
+                  "type": "double",
+                  "attributes": {},
+                  "value": [0, 1]
+                },
+                {
+                  "type": "logical",
+                  "attributes": {},
+                  "value": [true]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["<b>Date<\/b>"]
+                }
+              ]
+            },
+            {
+              "type": "list",
+              "attributes": {
+                "names": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["gridcolor", "zeroline", "title", "overlaying", "side"]
+                }
+              },
+              "value": [
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["#3c4d5a"]
+                },
+                {
+                  "type": "logical",
+                  "attributes": {},
+                  "value": [false]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["<b>fDOM (QSU)<\/b>"]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["y"]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["left"]
+                }
+              ]
+            },
+            {
+              "type": "list",
+              "attributes": {
+                "names": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["domain", "automargin", "gridcolor", "zeroline", "side", "title"]
+                }
+              },
+              "value": [
+                {
+                  "type": "double",
+                  "attributes": {},
+                  "value": [0, 1]
+                },
+                {
+                  "type": "logical",
+                  "attributes": {},
+                  "value": [true]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["#3c4d5a"]
+                },
+                {
+                  "type": "logical",
+                  "attributes": {},
+                  "value": [false]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["right"]
+                },
+                {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["<b><\/b>"]
+                }
+              ]
+            },
+            {
+              "type": "character",
+              "attributes": {},
+              "value": ["closest"]
+            },
+            {
+              "type": "logical",
+              "attributes": {
+                "class": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["plotly_default", "logical"]
+                }
+              },
+              "value": [false]
+            }
+          ]
+        },
+        {
+          "type": "character",
+          "attributes": {
+            "dim": {
+              "type": "integer",
+              "attributes": {},
+              "value": [12, 1]
+            }
+          },
+          "value": ["x", "y", "mode", "type", "name", "yaxis", "marker", "error_y", "error_x", "line", "xaxis", "frame"]
+        },
+        {
+          "type": "integer",
+          "attributes": {},
+          "value": [1]
+        },
+        {
+          "type": "list",
+          "attributes": {},
+          "value": [
+            {
+              "type": "double",
+              "attributes": {
+                "names": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["Min.", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max."]
+                },
+                "class": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["summaryDefault", "POSIXct", "POSIXt"]
+                },
+                "tzone": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["Etc/GMT+8"]
+                }
+              },
+              "value": [1722459600, 1725728175, 1728995850, 1728996592.60534, 1732265325, 1735540200]
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "attributes": {},
+          "value": [
+            {
+              "type": "double",
+              "attributes": {
+                "names": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["Min.", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max."]
+                },
+                "class": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["summaryDefault", "table"]
+                }
+              },
+              "value": [-4.31484888, 8.79463682, 10.08, 12.05579202, 14.38, 34.39]
             }
           ]
         }

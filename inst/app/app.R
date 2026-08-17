@@ -52,9 +52,9 @@ ui <-  page_fillable(
                 value = "step-7",
                 SondePolishR::interp_UI("data7")
       ),
-      nav_panel("Shift Corrections",
+      nav_panel("Corrections",
                 value = "step-8",
-                SondePolishR::additive_UI("data8")
+                SondePolishR::correction_UI("data8")
                 ),
       nav_panel("fDOM Corrections",
                 value = "step-9",
@@ -118,7 +118,7 @@ server <- function(input, output, session) {
    SondePolishR::interp_server("data7", sondeproj, data_ver, y_var, period_view, dates, p_length, current_mod)
 
   #step 8: additive shift
-   SondePolishR::additive_server("data8", sondeproj, data_ver, y_var, period_view, dates, p_length)
+   SondePolishR::correction_server("data8", sondeproj, data_ver, y_var, period_view, dates, p_length)
 
   #step 9: fdom corrections
    SondePolishR::fdom_server("data9", sondeproj, data_ver, y_var, period_view, dates, p_length)
