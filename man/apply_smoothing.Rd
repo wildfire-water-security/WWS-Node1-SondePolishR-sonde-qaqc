@@ -4,13 +4,7 @@
 \alias{apply_smoothing}
 \title{Apply smoothing functions to data}
 \usage{
-apply_smoothing(
-  data,
-  y_var,
-  method,
-  index = NULL,
-  parms = list(k = 7, fl = 15, dV = 10)
-)
+apply_smoothing(data, y_var, method, index = NULL, k = 7)
 }
 \arguments{
 \item{data}{A \code{data.frame} with the data to smooth (must have the columns Index and y_var)}
@@ -22,7 +16,7 @@ apply_smoothing(
 
 \item{index}{Index values of the rows that need to be smoothed}
 
-\item{parms}{A named list with the required parameters for the selected method (see details).}
+\item{k}{A adjustment parameter for the selected method (see details).}
 }
 \value{
 data with the values within \code{range} replaced with the smoothed values
@@ -34,22 +28,22 @@ Applies the selected smoothing method to the specified data range.
 The following smoothing methods are currently supported:
 \itemize{
 \item \strong{rollmean}: Based on the \code{rollmean} function from the \code{zoo} package.
-Replaces data with a rolling mean value. Uses the parameter \code{k} to control the number of points
+Replaces data with a rolling mean value. The \code{k} parameter is used to control the number of points
 to include in the mean calculation.
 \item \strong{rollmedian}: Based on the \code{rollmedian} function from the \code{zoo} package.
-Replaces data with a rolling median value. Uses the parameter \code{k} to control the number of points
+Replaces data with a rolling median value. The \code{k} parameter is used to control the number of points
 to include in the median calculation, should be odd but will convert to an odd number with a warning.
 \item \strong{savgol}: Based on the \code{savgol} function from the \code{pracma} package.
 Applies a Savitzky–Golay filter which fits a fourth order polynomial to a sliding range of data.
-Uses the parameter \code{fl} to control the number of points in the window.
+The \code{k} parameter is used controls the number of points in the window.
 \item \strong{savgol}: Based on the \code{dlmSmooth} function from the \code{dlm} package.
 Applies a Kalman filter which process model to the data.
-Uses the parameter \code{dV} to control the amount of smoothing.
+The \code{k} parameter is used controls the amount of smoothing.
 }
 }
 \examples{
-smoothed <- apply_smoothing(example_data, "Temp_C", "rollmean", list(k=100))
-ggplot(example_data, aes(x=DateTime_rd, y=Temp_C)) +
-geom_line(color="black", na.rm=TRUE) +
-geom_line(data=smoothed, color="darkred", na.rm=TRUE)
+smoothed <- apply_smoothing(example_data, "Temp_C", "rollmean", k=100)
+ggplot2::ggplot(example_data, ggplot2::aes(x=DateTime_rd, y=Temp_C)) +
+ggplot2::geom_line(color="black", na.rm=TRUE) +
+ggplot2::geom_line(data=smoothed, color="darkred", na.rm=TRUE)
 }

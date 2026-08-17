@@ -71,17 +71,17 @@ correction_server <- function(id, sondeproj, data_ver, y_var,period_view, dates,
   traces <- reactiveVal() #tracks which traces hold our points to track
   y2_var <- reactiveVal()   #keep track of second y_variable
   plot_exist <- reactiveVal() #keeps warning about missing plot
+  curredit <- reactiveVal() #holds current edit
+  currplot <- reactiveVal() #holds current plot
+  currmethod <- reactiveVal() #holds current edit method
 
   #update UI options based on edit method
   output$edit_options <- renderUI({
-    # req(input$edit_type)
-    # # switch(input$edit_type,
-    # #        "additive" = additive_UI(ns("additive_submod")),
-    # #        "drift" = drift_UI(ns("drift_submod"), sondeproj),
-    # #        "smooth" = smooth_UI(ns("smooth_submod")))
-    smooth_UI(ns("smooth_submod"))
-
-
+    req(input$edit_type)
+    switch(input$edit_type,
+           "additive" = additive_UI(ns("additive_submod")),
+           "drift" = drift_UI(ns("drift_submod"), sondeproj),
+           "smooth" = smooth_UI(ns("smooth_submod")))
   })
 
   #get column names after file upload (dynamic)
@@ -106,7 +106,7 @@ correction_server <- function(id, sondeproj, data_ver, y_var,period_view, dates,
         data <- sondeproj()$data
         sel <- event_data("plotly_selected", source = "shift_plot")
 
-        if(!is.null(sel) && nrow(sel) > 0) {
+        if(length(sel) && nrow(sel) > 0){
           sel <- sel %>%  filter(.data$curveNumber %in% traces()) %>%
             mutate(x = parse_date_time(.data$x, tz=sondeproj()$meta$tz, orders = "Ymd HMS", truncated =3))
           full_index <- data %>%
@@ -115,23 +115,14 @@ correction_server <- function(id, sondeproj, data_ver, y_var,period_view, dates,
             inner_join(sel, by = c("DateTime_rd" = "x")) %>%
             pull(.data$Index)
           index(full_index)
-        }else {index(NULL)}
+        }else{index(NULL)}
 
       })
 
   #filter data to plot
     plot_data <- reactive({
       req(sondeproj(), plot_dates())
-      dat <- sondeproj()$data %>% dplyr::filter(.data$Date >= plot_dates()[1], .data$Date <= plot_dates()[2])
-
-      #if selected points and using additive, update where they're plotted
-      # if(!is.null(index()) && input$edit_type == "additive"){
-      #   req(input$slope, input$int)
-      #   rows <- which(dat$Index %in% index())
-      #   dat <- shift_points(dat, y_var(), rows, shift_val = list(slope=input$slope, int=input$int))
-      # }
-
-      dat
+      sondeproj()$data %>% dplyr::filter(.data$Date >= plot_dates()[1], .data$Date <= plot_dates()[2])
     })
 
 
@@ -145,38 +136,30 @@ correction_server <- function(id, sondeproj, data_ver, y_var,period_view, dates,
      #use function to plot sonde data
       p <- plot_sonde(data = plot_data(), y_var=y_var(), y2_var= y2, proj = sondeproj(), opts=plot_opts(), source="shift_plot")
 
-     #add to plot based on module
-      #pass plot_obj to server then pass output from that to the display mod
-
       #set which traces hold points
       built_p <- plotly_build(p)
       names <- sapply(built_p$x$data, function(x){x$name})
       traces(which(names %in% c(get_yvar(y_var()), plot_data()$FileName))-1)
+
 
       #return plot
       p
     })
 
   #correction sub servers
-    #additive_out <- additive_server("additive_submod",sondeproj,y_var,plot_obj,plot_data,index)
-    drift_out <- smooth_server("smooth_submod",sondeproj,y_var,plot_obj,plot_data,index)
-    #smooth_out <- smooth_server("smooth_submod",sondeproj,y_var,plot_obj,plot_data,index)
-    # mod_outputs <- reactive({
-    #   req(input$edit_type, sondeproj(), y_var())
-    #
-    #   drift_out
-    #   # switch(
-    #   #   input$edit_type,
-    #   #   "additive" = additive_out,
-    #   #   "drift" = drift_out,
-    #   #   "smooth" = smooth_out
-    #   # )
-    # })
+    additive_server("additive_submod",sondeproj,y_var,plot_obj,plot_data,currplot, curredit, currmethod, index)
+    drift_server("drift_submod",sondeproj,y_var,plot_obj,plot_data, currplot, curredit, currmethod)
+    smooth_server("smooth_submod",sondeproj,y_var,plot_obj,plot_data, currplot, curredit, currmethod, index)
+
+    observeEvent(input$edit_type,{
+      req(input$edit_type)
+      currmethod(input$edit_type)
+    })
 
   #create plot
     sel_mode <- reactive({ifelse(input$edit_type != "drift", TRUE, FALSE)})
-    main_plot_server("shift_plot", data_ver,sondeproj, drift_out$plot, plot_data, y_var, sel_mode(), plot_exist)
-    #main_plot_server("shift_plot", data_ver,sondeproj, plot_obj, plot_data, y_var, sel_mode(), plot_exist)
+    # main_plot_server("shift_plot", data_ver,sondeproj, drift_out$plot, plot_data, y_var, sel_mode(), plot_exist)
+    main_plot_server("shift_plot", data_ver,sondeproj, currplot, plot_data, y_var, sel_mode(), plot_exist)
     # observeEvent(input$modules, {
     #   req(input$modules == "step-8")
     #
@@ -185,14 +168,14 @@ correction_server <- function(id, sondeproj, data_ver, y_var,period_view, dates,
     # })
 
   #flagging module
-    apply_edit_server("apply_limits", sondeproj, drift_out$edit)
+    apply_edit_server("apply_limits", sondeproj, curredit)
 
   #export plot so we can check it
     exportTestValues(
-      edit_type = input$edit_type,
-      plot_obj = drift_out$plot(),
+      edit_type = currmethod(),
+      plot_obj = currplot(),
       changelog = sondeproj()$changelog,
-      edit = edit())
+      edit = curredit())
 
    })
 

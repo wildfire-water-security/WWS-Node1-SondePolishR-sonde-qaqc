@@ -90,16 +90,16 @@ main_plot_server <- function(id, data_ver, sondeproj, plot_obj, plot_data, y_var
 
   #reset axes and back to zoom
     observeEvent(list(data_ver(), y_var(), date_range(), input$yaxismax, input$yaxismin), {
-      req(plot_obj(), y_var())
+      req(plot_obj(), y_var(),sondeproj())
       zoom$x$range <- NULL
       zoom$y$range <- NULL
-    })
+    }, ignoreInit = TRUE)
 
   #don't reset dragmode on differences with date range, only update user limits with changed data/yvar
     observeEvent(list(data_ver(), y_var(), startmax(), startmin()), {
       #if(id == "shift_plot"){browser()}
 
-      req(plot_obj(), y_var())
+      req(plot_obj(), y_var(), sondeproj(), y_var())
       zoom$dragmode <- "zoom"
 
       #only reset y-values here (for now, likely want to do something similar to manual zoom??)
@@ -108,7 +108,7 @@ main_plot_server <- function(id, data_ver, sondeproj, plot_obj, plot_data, y_var
 
       updateNumericInput(session, "yaxismax", value=max(c(startmax(), maxv), na.rm=TRUE))
       updateNumericInput(session, "yaxismin", value=min(c(startmin(), minv), na.rm=TRUE))
-    })
+    }, ignoreInit = TRUE)
 
   #keep track of correct y-axis limits
     y_axis <- reactive({
@@ -156,6 +156,7 @@ main_plot_server <- function(id, data_ver, sondeproj, plot_obj, plot_data, y_var
   #export plot to UI
     #save to export
     output$plot <- plotly::renderPlotly({
+      req(sondeproj())
       validate(
         need(nrow(plot_data()) > 0,
              "No data available for the selected date range."))

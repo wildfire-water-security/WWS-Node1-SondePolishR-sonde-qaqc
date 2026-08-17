@@ -33,9 +33,9 @@
 #'
 #' @examples
 #' smoothed <- apply_smoothing(example_data, "Temp_C", "rollmean", k=100)
-#' ggplot(example_data, aes(x=DateTime_rd, y=Temp_C)) +
-#' geom_line(color="black", na.rm=TRUE) +
-#' geom_line(data=smoothed, color="darkred", na.rm=TRUE)
+#' ggplot2::ggplot(example_data, ggplot2::aes(x=DateTime_rd, y=Temp_C)) +
+#' ggplot2::geom_line(color="black", na.rm=TRUE) +
+#' ggplot2::geom_line(data=smoothed, color="darkred", na.rm=TRUE)
 apply_smoothing <- function(data, y_var, method, index=NULL, k=7){
   stopifnot(method %in% c("rollmean", "rollmedian", "savgol", "kalman"))
 
@@ -50,6 +50,9 @@ apply_smoothing <- function(data, y_var, method, index=NULL, k=7){
   }else{
     smooth_idx <- index
   }
+
+  #if number not odd and should be make odd
+  if(k %% 2 == 0){k <- k + 1}
 
   #pull out just data to smooth with a little extra for starting and ending to prevent unneeded NA's
     #get wider index if a subset of data, if not outside the bounds
@@ -71,7 +74,7 @@ apply_smoothing <- function(data, y_var, method, index=NULL, k=7){
   }
 
   if(method == "kalman"){
-    filled <- dlmSmooth(vals, dlmModPoly(1, dV = 10, dW = k))$s[-1]
+    filled <- dlmSmooth(vals, dlmModPoly(1, dV = 20, dW = 1/as.numeric(k)))$s[-1]
   }
 
   #replace data with smoothed data

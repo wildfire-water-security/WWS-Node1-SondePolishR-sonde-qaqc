@@ -5,12 +5,15 @@
 #'
 #' @param id the shiny ID of the module
 #' @param sondeproj A `reactiveVal` holding the current dataset.
-#' @param data_ver A `reactiveVal` holding a number used to track when new data is added to trigger resets.
-#' @param dates The date range to view the data.
-#' @param period_view Should data be viewed by period?
-#' @param p_length The length of the period to view.
+#' @param y_var A `reactiveVal` holding the y-variable being plotted.
+#' @param plot A `reactiveVal` holding a basic plot before things were added.
+#' @param plot_data A `reactiveVal` holding the current data being plotted.
+#' @param currplot A `reactiveVal` holding the current main plot.
+#' @param curredit A `reactiveVal` holding the current edit object.
+#' @param currmethod A `reactiveVal` holding the current correction method.
+#' @param index A `reactiveVal` holding the indices of the selected points within the full dataset.
 #'
-#' @returns a reactive of length two with the min and max dates.
+#' @returns Updates the values of `currplot` and `curredit` to be current with the method.
 #' @rdname additive-method
 #' @export
 #' @keywords internal
@@ -28,25 +31,35 @@ additive_UI <- function(id){
 
 #' @rdname additive-method
 #' @export
-additive_server <- function(id, sondeproj, y_var, plot, plot_data, index){
+additive_server <- function(id, sondeproj, y_var, plot, plot_data, currplot, curredit, currmethod, index){
   moduleServer(id, function(input, output, session){
+
+  #clear index if currmethod changes
+    observeEvent(list(currmethod()), {
+      req(index())
+      index(NULL)
+    })
 
   #reset slope and intercept when data updates
     observeEvent(sondeproj(),{
+      req(currmethod() == "additive")
       updateNumericInput(session,"slope", value =0)
       updateNumericInput(session,"int", value = 0)
     })
 
   #update guesses based on selected points
-    reactive({
+    observeEvent(index(),{
+      req(currmethod() == "additive")
+
       guess <- guess_shift(sondeproj()$data, y_var(), index())
       updateNumericInput(session,"slope", value = guess$slope)
       updateNumericInput(session,"int", value = guess$int)
     })
 
   #create edit object
-    edit <- reactive({
-      newdata <- sondeproj()$data
+   observe({
+     req(currmethod() == "additive", sondeproj(), y_var(), index())
+     newdata <- sondeproj()$data
         #get updated data
         newdata <- shift_points(newdata, y_var(), index(), shift_val = list(slope=input$slope, int=input$int))
         rows <- newdata$Index %in% index() #convert from row numbers to T/F
@@ -55,25 +68,37 @@ additive_server <- function(id, sondeproj, y_var, plot, plot_data, index){
         flag <- "CHG01"
 
       #make edit list
-      list(data = newdata,rows = rows,y_var = y_var(),
-        step = step,note = note,flag = flag)
+      curredit(list(data = newdata,rows = rows,y_var = y_var(),
+        step = step,note = note,flag = flag))
     })
 
   #update plot
-  p <- reactive({
+   observe({
+     req(currmethod() == "additive")
+
     p <- plot()
     if(!is.null(index()) &&
        !is.null(input$slope) &&
        !is.null(input$int)){
-      flag_data <- plot_data()[plot_data()$Index %in% index(),] %>% filter(!is.na(.data[[y_var()]]))
-      p <- p %>% add_trace(data= flag_data, x=~DateTime_rd, y=as.formula(paste0("~`", y_var(), "`")), type="scatter", mode="markers",
-                                 name = "Changed", marker = list(color = "darkred"), yaxis="y2", inherit=FALSE)
+        data <- sondeproj()$data
+        plot_range <- range(plot_data()$Date)
+
+        flag_data <- shift_points(data, y_var(), index(),
+                                shift_val = list(slope=input$slope, int=input$int))
+        flag_data <- flag_data[data$Index %in% index(),] %>%
+        filter(!is.na(.data[[y_var()]])) %>%
+          dplyr::filter(.data$Date >= plot_range[1], .data$Date <= plot_range[2])
+
+      if(nrow(flag_data) > 0){
+        p <- p %>% add_trace(data= flag_data, x=~DateTime_rd, y=as.formula(paste0("~`", y_var(), "`")), type="scatter", mode="markers",
+                             name = "Changed", marker = list(color = "darkred"), yaxis="y2", inherit=FALSE)
+      }
+
     }
-      p
+    currplot(p)
 
   })
 
-    return(list(edit=edit, plot=p))
   })
 
 }
@@ -86,12 +111,14 @@ additive_server <- function(id, sondeproj, y_var, plot, plot_data, index){
 #'
 #' @param id the shiny ID of the module
 #' @param sondeproj A `reactiveVal` holding the current dataset.
-#' @param data_ver A `reactiveVal` holding a number used to track when new data is added to trigger resets.
-#' @param dates The date range to view the data.
-#' @param period_view Should data be viewed by period?
-#' @param p_length The length of the period to view.
+#' @param y_var A `reactiveVal` holding the y-variable being plotted.
+#' @param plot A `reactiveVal` holding a basic plot before things were added.
+#' @param plot_data A `reactiveVal` holding the current data being plotted.
+#' @param currplot A `reactiveVal` holding the current main plot.
+#' @param curredit A `reactiveVal` holding the current edit object.
+#' @param currmethod A `reactiveVal` holding the current correction method.
 #'
-#' @returns a reactive of length two with the min and max dates.
+#' @returns Updates the values of `currplot` and `curredit` to be current with the method.
 #' @rdname drift-method
 #' @export
 #' @keywords internal
@@ -109,15 +136,15 @@ drift_UI <- function(id, sondeproj){
 }
 
 
-#' @rdname additive-method
+#' @rdname drift-method
 #' @export
-drift_server <- function(id, sondeproj, y_var,plot, plot_data){
+drift_server <- function(id, sondeproj, y_var,plot, plot_data, currplot, curredit, currmethod){
   moduleServer(id, function(input, output, session){
 
   #update the drift correction values once a file/variable has been chosen
     observeEvent(
       list(input$file, y_var()),{
-        req(sondeproj(),input$file, y_var())
+        req(sondeproj(),input$file, y_var(), currmethod() == "drift")
         vals <- guess_drift(sondeproj()$data, sondeproj()$calcheck, y_var(), input$file)
 
         updateNumericInput(session,"uncorrect",
@@ -128,8 +155,8 @@ drift_server <- function(id, sondeproj, y_var,plot, plot_data){
       })
 
   #create edit object
-    edit <- reactive({
-      req(input$file)
+    observe({
+      req(input$file, currmethod() == "drift")
       newdata <- sondeproj()$data
       #get updated data
       rows <- newdata$FileName == input$file #T/F
@@ -140,15 +167,18 @@ drift_server <- function(id, sondeproj, y_var,plot, plot_data){
       flag <- "CHG02"
 
       #make edit list
-      list(data = newdata,rows = rows,y_var = y_var(),
-           step = step,note = note,flag = flag)
+      curredit(list(data = newdata,rows = rows,y_var = y_var(),
+           step = step,note = note,flag = flag))
     })
 
-    #update plot
-    p <- reactive({
+    #update plot (try to do without edit call!!!)
+   observe({
+     req(currmethod() == "drift", plot_data(), y_var(), plot(), input$file)
       p <- plot()
       plot_range <- range(plot_data()$Date)
-      dat <- edit()$data[edit()$rows,] %>% dplyr::filter(.data$Date >= plot_range[1], .data$Date <= plot_range[2]) %>%
+      data <- sondeproj()$data
+      data[[y_var()]] <- apply_drift_shift(data[[y_var()]], data$FileName == input$file, input$correct, input$uncorrect)
+      dat <- data[data$FileName == input$file,] %>% dplyr::filter(.data$Date >= plot_range[1], .data$Date <= plot_range[2]) %>%
         arrange(.data$DateTime_rd) %>% filter(!is.na(.data[[y_var()]]))
 
       if(nrow(dat) > 0){
@@ -156,11 +186,9 @@ drift_server <- function(id, sondeproj, y_var,plot, plot_data){
                              name = "Changed", line = list(color = "darkred"), yaxis="y2", inherit = FALSE)
       }
 
-      p
+      currplot(p)
+
       })
-
-
-    return(list(edit=edit, plot=p))
 
   })
 
@@ -173,12 +201,15 @@ drift_server <- function(id, sondeproj, y_var,plot, plot_data){
 #'
 #' @param id the shiny ID of the module
 #' @param sondeproj A `reactiveVal` holding the current dataset.
-#' @param data_ver A `reactiveVal` holding a number used to track when new data is added to trigger resets.
-#' @param dates The date range to view the data.
-#' @param period_view Should data be viewed by period?
-#' @param p_length The length of the period to view.
+#' @param y_var A `reactiveVal` holding the y-variable being plotted.
+#' @param plot A `reactiveVal` holding a basic plot before things were added.
+#' @param plot_data A `reactiveVal` holding the current data being plotted.
+#' @param currplot A `reactiveVal` holding the current main plot.
+#' @param curredit A `reactiveVal` holding the current edit object.
+#' @param currmethod A `reactiveVal` holding the current correction method.
+#' @param index A `reactiveVal` holding the indices of the selected points within the full dataset.
 #'
-#' @returns a reactive of length two with the min and max dates.
+#' @returns Updates the values of `currplot` and `curredit` to be current with the method.
 #' @rdname smooth-method
 #' @export
 #' @keywords internal
@@ -192,21 +223,28 @@ smooth_UI <- function(id){
     fluidRow(selectInput(ns("method"),label = "Smoothing Method:",
                       choices = c("Rolling Mean" = "rollmean",
                                   "Rolling Median" = "rollmedian",
-                                  "Savitzky–Golay Filter" = "savgol",
+                                  "Savitzky-Golay Filter" = "savgol",
                                   "Kalman Filter" = "kalman"), selectize=TRUE, width="60%"),
-          numericInput(ns("smooth_fact"),"Smoothing Factor:",value = 7,step=1, width="40%"))
+          numericInput(ns("smooth_fact"),"Smoothing Factor:",value = 7,step=2, min=1, width="40%"))
 
   )}
 
 
-#' @rdname additive-method
+#'
+#' @rdname smooth-method
 #' @export
-smooth_server <- function(id, sondeproj, y_var, plot, plot_data, index){
+smooth_server <- function(id, sondeproj, y_var, plot, plot_data, currplot, curredit, currmethod, index){
   moduleServer(id, function(input, output, session){
+
+  #clear index if currmethod changes or we change plotted data (then index no longer accurate)
+    observeEvent(list(currmethod()), {
+      req(index())
+      index(NULL)
+    })
 
  #update the default smoothing factor based on method
   observeEvent(list(y_var(), input$method),{
-        req(input$method, y_var())
+        req(input$method, y_var(), currmethod() == "smooth")
 
         default <- switch(input$method,
                           "rollmean" = 7 ,
@@ -216,10 +254,16 @@ smooth_server <- function(id, sondeproj, y_var, plot, plot_data, index){
         updateNumericInput(session,"smooth_fact",value = default)
       })
 
+    observeEvent(input$smooth_fact, {
+      req(input$method, input$smooth_fact, currmethod() == "smooth")
+      if(input$method %in% c("rollmedian","savgol") && input$smooth_fact %% 2 == 0){
+        updateNumericInput(session,"smooth_fact",value = input$smooth_fact + 1)
+      }
+    })
 
   #create edit object
-    edit <- reactive({
-      req(sondeproj(), y_var())
+   observe({
+      req(sondeproj(), y_var(), currmethod() == "smooth")
       newdata <- sondeproj()$data
       #get updated data
       rows <- newdata$Index %in% index() #convert from row numbers to T/F
@@ -227,35 +271,39 @@ smooth_server <- function(id, sondeproj, y_var, plot, plot_data, index){
       nice_methods <- switch(input$method,
                              "rollmean" = "Rolling Mean",
                              "rollmedian" = "Rolling Median",
-                             "savgol" = "Savitzky–Golay Filter",
+                             "savgol" = "Savitzky-Golay Filter",
                              "kalman" = "Kalman Filter")
-      newdata[[y_var()]] <- apply_smoothing(newdata, y_var(), input$method, index(), k=input$smooth_fact)
-      note <- paste0("smoothing correction based using ", nice_methods," using a smoothing factor of ", input$smooth_fact)
+      newdata <- apply_smoothing(newdata, y_var(), input$method, index(), k=input$smooth_fact)
+      note <- paste0("smoothing correction using ", nice_methods," using a smoothing factor of ", input$smooth_fact)
       step <- "smoothing correction"
       flag <- "CHG05"
 
       #make edit list
-      list(data = newdata,rows = rows,y_var = y_var(),
-           step = step,note = note,flag = flag)
+      curredit(list(data = newdata,rows = rows,y_var = y_var(),
+           step = step,note = note,flag = flag))
     })
 
     #update plot
-    p <- reactive({
-      req(plot(), y_var())
+    observe({
+      req(plot(), y_var(), currmethod() == "smooth")
       p <- plot()
       plot_range <- range(plot_data()$Date)
+      data <- sondeproj()$data
 
       if(!is.null(index())){
-        smooth_data <- apply_smoothing(plot_data(), y_var(), input$method, index(), k=input$smooth_fact)
-        smooth_data <- smooth_data[index(),] %>% arrange(.data$DateTime_rd) %>% filter(!is.na(.data[[y_var()]]))
-        p <- p %>% add_trace(data= smooth_data, x=~DateTime_rd, y=as.formula(paste0("~`", y_var(), "`")), type="scatter", mode="lines",
-                             name = "Smoothed", line = list(color = "darkred"), yaxis="y2", inherit = FALSE)
+        smooth_data <- apply_smoothing(data, y_var(), input$method, index(), k=input$smooth_fact)
+        smooth_data <- smooth_data[index(),] %>% arrange(.data$DateTime_rd) %>% filter(!is.na(.data[[y_var()]])) %>%
+          dplyr::filter(.data$Date >= plot_range[1], .data$Date <= plot_range[2])
+
+        if(nrow(smooth_data) > 0){
+          p <- p %>% add_trace(data= smooth_data, x=~DateTime_rd, y=as.formula(paste0("~`", y_var(), "`")), type="scatter", mode="lines",
+                               name = "Smoothed", line = list(color = "darkred"), yaxis="y2", inherit = FALSE)
+        }
+
       }
 
-      p
+      currplot(p)
     })
-
-    return(list(edit=edit, plot=p))
 
   })
 

@@ -14,34 +14,36 @@ test_that("{shinytest2} recording: checking-module7", {
 
   app$set_inputs(modules = "step-7")
 
+
   #check initial plot
   plot_obj <- app$get_value(export = "data7-plot_obj")
   expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
   app$expect_screenshot(name = "intial_plot")
 
   #test changing method
-  app$set_inputs(`data7-method` = "spline")
+  app$set_inputs(`data7-method` = "spline",timeout_ = 4*1000)
   app$wait_for_idle()
   plot_obj <- app$get_value(export = "data7-plot_obj")
   expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
   app$expect_screenshot(name = "spline")
 
   #test changing max length
-  app$set_inputs(`data7-max_length` = 100)
+  app$set_inputs(`data7-max_length` = 100,timeout_ = 4*1000)
+  app$wait_for_idle()
   plot_obj <- app$get_value(export = "data7-plot_obj")
   expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
   app$expect_screenshot(name = "change_max_len")
 
   #test changing method
-  app$set_inputs(`data7-max_length` = 8)
-  app$set_inputs(`data7-method` = "ts_interp")
+  app$set_inputs(`data7-max_length` = 8,timeout_ = 4*1000)
+  app$set_inputs(`data7-method` = "ts_interp",timeout_ = 4*1000)
   app$wait_for_idle()
   plot_obj <- app$get_value(export = "data7-plot_obj")
   expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
   app$expect_screenshot(name = "linear_ts")
 
   #change freq
-  app$set_inputs(`data7-freq` = 100)
+  app$set_inputs(`data7-freq` = 100, timeout_ = 4*1000)
   app$wait_for_idle()
   plot_obj <- app$get_value(export = "data7-plot_obj")
   expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")

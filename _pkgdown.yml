@@ -5,12 +5,14 @@ template:
   bootswatch: superhero
   bslib:
     primary: "#E3795E"
-    bg: "#3c4d5a"
-    fg: "#ebebeb"
+    bg: "#f1f3f5"
+    fg: "#000000"
+    body-color: "#000000"
 
 navbar:
-  bg: primary
+  bg: "#3c4d5a"
   type: dark
+
 reference:
   - title: Run Shiny App
     desc: |

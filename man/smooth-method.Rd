@@ -2,25 +2,44 @@
 % Please edit documentation in R/step8_1-correction-methods.R
 \name{smooth_UI}
 \alias{smooth_UI}
+\alias{smooth_server}
 \title{Apply a smoothing correction to a data file}
 \usage{
 smooth_UI(id)
+
+smooth_server(
+  id,
+  sondeproj,
+  y_var,
+  plot,
+  plot_data,
+  currplot,
+  curredit,
+  currmethod,
+  index
+)
 }
 \arguments{
 \item{id}{the shiny ID of the module}
 
 \item{sondeproj}{A `reactiveVal` holding the current dataset.}
 
-\item{data_ver}{A `reactiveVal` holding a number used to track when new data is added to trigger resets.}
+\item{y_var}{A `reactiveVal` holding the y-variable being plotted.}
 
-\item{dates}{The date range to view the data.}
+\item{plot}{A `reactiveVal` holding a basic plot before things were added.}
 
-\item{period_view}{Should data be viewed by period?}
+\item{plot_data}{A `reactiveVal` holding the current data being plotted.}
 
-\item{p_length}{The length of the period to view.}
+\item{currplot}{A `reactiveVal` holding the current main plot.}
+
+\item{curredit}{A `reactiveVal` holding the current edit object.}
+
+\item{currmethod}{A `reactiveVal` holding the current correction method.}
+
+\item{index}{A `reactiveVal` holding the indices of the selected points within the full dataset.}
 }
 \value{
-a reactive of length two with the min and max dates.
+Updates the values of `currplot` and `curredit` to be current with the method.
 }
 \description{
 Used to smooth out messy data based on optical interference.
