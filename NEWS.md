@@ -2,11 +2,11 @@
 
 (2026-08-17)
 
-## Bug Fixes 
+## Bug Fixes
 
 -   Fixed the News page headers so they actually show up on the website.
 
-## Updates 
+## Updates
 
 -   Add several smoothing methods via `apply_smoothing()` which can be used to smooth periods of messy data.
 
