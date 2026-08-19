@@ -2348,7 +2348,7 @@
               "value": [12, 2]
             }
           },
-          "value": ["x", "y", "mode", "type", "name", "yaxis", "marker", "error_y", "error_x", "line", "xaxis", "frame", "x", "y", "type", "mode", "name", "line", "yaxis", "marker", "error_y", "error_x", "xaxis", "frame"]
+          "value": ["x", "y", "mode", "type", "name", "yaxis", "marker", "error_y", "error_x", "line", "xaxis", "frame", "x", "y", "type", "mode", "name", "line", "marker", "yaxis", "error_y", "error_x", "xaxis", "frame"]
         },
         {
           "type": "integer",
@@ -2399,7 +2399,7 @@
                   "value": ["Etc/GMT+8"]
                 }
               },
-              "value": [1734995700, 1735109775, 1735168050, 1735174166.53846002, 1735283025, 1735342200]
+              "value": [1734995700, 1735081875, 1735168050, 1735168333.59375, 1735255125, 1735342200]
             }
           ]
         },
@@ -2437,7 +2437,7 @@
                   "value": ["summaryDefault", "table"]
                 }
               },
-              "value": [-1.03285714, 6.55321429, 12.21785714, 9.84077473, 13.4, 16.34285714]
+              "value": [-1.03285714, 9.1875, 13.28571429, 12.14971354, 14.74214286, 21.97428571]
             }
           ]
         }
@@ -2663,7 +2663,7 @@
               "value": [12, 2]
             }
           },
-          "value": ["x", "y", "mode", "type", "name", "yaxis", "marker", "error_y", "error_x", "line", "xaxis", "frame", "x", "y", "type", "mode", "name", "line", "yaxis", "marker", "error_y", "error_x", "xaxis", "frame"]
+          "value": ["x", "y", "mode", "type", "name", "yaxis", "marker", "error_y", "error_x", "line", "xaxis", "frame", "x", "y", "type", "mode", "name", "line", "marker", "yaxis", "error_y", "error_x", "xaxis", "frame"]
         },
         {
           "type": "integer",
@@ -2714,7 +2714,7 @@
                   "value": ["Etc/GMT+8"]
                 }
               },
-              "value": [1734995700, 1735110450, 1735169400, 1735176103.80227995, 1735285050, 1735344900]
+              "value": [1734995700, 1735082550, 1735169400, 1735169695.34884, 1735257150, 1735344900]
             }
           ]
         },
@@ -2752,7 +2752,7 @@
                   "value": ["summaryDefault", "table"]
                 }
               },
-              "value": [-1.62026543, 6.50368248, 12.12810366, 9.72805492, 13.36261848, 15.05414103]
+              "value": [-1.62026543, 9.61926465, 13.29229145, 12.12648177, 14.82119487, 22.05260863]
             }
           ]
         }
@@ -2978,7 +2978,7 @@
               "value": [12, 2]
             }
           },
-          "value": ["x", "y", "mode", "type", "name", "yaxis", "marker", "error_y", "error_x", "line", "xaxis", "frame", "x", "y", "type", "mode", "name", "line", "yaxis", "marker", "error_y", "error_x", "xaxis", "frame"]
+          "value": ["x", "y", "mode", "type", "name", "yaxis", "marker", "error_y", "error_x", "line", "xaxis", "frame", "x", "y", "type", "mode", "name", "line", "marker", "yaxis", "error_y", "error_x", "xaxis", "frame"]
         },
         {
           "type": "integer",
@@ -3029,7 +3029,7 @@
                   "value": ["Etc/GMT+8"]
                 }
               },
-              "value": [1734995700, 1735110450, 1735169400, 1735176103.80227995, 1735285050, 1735344900]
+              "value": [1734995700, 1735082550, 1735169400, 1735169695.34884, 1735257150, 1735344900]
             }
           ]
         },
@@ -3067,7 +3067,7 @@
                   "value": ["summaryDefault", "table"]
                 }
               },
-              "value": [0.53090847, 6.22716354, 11.22875481, 9.60847288, 13.18364926, 15.03338999]
+              "value": [0.41580078, 8.54198681, 13.00432559, 12.04521542, 14.69857782, 22.01030687]
             }
           ]
         }
@@ -3345,7 +3345,7 @@
                   "value": ["summaryDefault", "table"]
                 }
               },
-              "value": [-4.31484888, 8.79463682, 10.08, 12.05579202, 14.38, 34.39]
+              "value": [-4.31484888, 8.79488138, 10.08, 12.05579202, 14.36, 34.39]
             }
           ]
         }

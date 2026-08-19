@@ -61,13 +61,16 @@ interp_UI <- function(id){
 #' @param sondeproj A `reactiveVal` holding the current dataset.
 #' @param data_ver A `reactiveVal` holding a number used to track when new data is added to trigger resets.
 #' @param y_var Y-variable to plot on the y-axis.
-#' @param dates The date range to view the data.
-#' @param period_view Should data be viewed by period?
-#' @param p_length The length of the period to view.
+#' @param view_state A `reactiveVal` holding a list of items specifying the view state:
+#'  - abs_dates: The absolute range of dates within the dataset
+#'  - dates: The range of dates being viewed via the date selector
+#'  - period_view: Logical if the period view is being used
+#'  - period_length: Length of period view
+#'  - period_n: The period number to view.
 #' @param current_mod The name of the current module being viewed.
 #' @export
 #' @rdname interp
-interp_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_length, current_mod){
+interp_server <- function(id, sondeproj, data_ver, y_var,view_state, current_mod){
   moduleServer(id, function(input, output, session){
   #keep track of second y_variable
     y2_var <- reactiveVal()
@@ -89,7 +92,7 @@ interp_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_l
   # })
 
   #keep track of dates
-    plot_dates <- weekly_range_server("date_nav", sondeproj, period_view, dates, p_length, data_ver)
+    plot_dates <- weekly_range_server("date_nav", sondeproj, data_ver,view_state)
 
   #get data to fill and interpolation df as list
    data_fill_list <- reactive({

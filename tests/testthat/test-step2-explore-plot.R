@@ -107,7 +107,7 @@ test_that("{shinytest2} recording: checking-module2", {
   app$expect_values(export = "data2-table", name="calcheck-table",screenshot_args = FALSE) #cal check
 
   app$set_inputs(`data2-table_opt` = "Data Summary")
-  app$expect_values(export = "data2-table", name="datasum-table",screenshot_args = FALSE) #cal check
+  app$expect_values(export = "data2-table", name="datasum-table",screenshot_args = FALSE) #data summary
 
   app$set_inputs(`data2-date_nav-period_view` = TRUE)
   app$expect_values(export = "data2-table", name="datasum-table-weekly",screenshot_args = FALSE) #cal check

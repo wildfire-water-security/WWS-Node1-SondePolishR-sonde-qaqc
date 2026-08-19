@@ -7,7 +7,7 @@
 \usage{
 export_UI(id)
 
-export_server(id, sondeproj, data_ver, y_var)
+export_server(id, sondeproj, data_ver, y_var, current_mod)
 }
 \arguments{
 \item{id}{An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.}
@@ -17,6 +17,8 @@ export_server(id, sondeproj, data_ver, y_var)
 \item{data_ver}{A `reactiveVal` holding a number used to track when new data is added to trigger resets.}
 
 \item{y_var}{Y-variable to plot on the y-axis.}
+
+\item{current_mod}{The name of the current module being viewed.}
 }
 \description{
 Save to file the corrected data and metadata including summaries of the data.

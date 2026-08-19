@@ -7,7 +7,7 @@
 \usage{
 quality_UI(id)
 
-quality_server(id, sondeproj, data_ver, y_var, period_view, dates, p_length)
+quality_server(id, sondeproj, data_ver, y_var, view_state)
 }
 \arguments{
 \item{id}{An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.}
@@ -18,11 +18,12 @@ quality_server(id, sondeproj, data_ver, y_var, period_view, dates, p_length)
 
 \item{y_var}{Y-variable to plot on the y-axis.}
 
-\item{period_view}{Should data be viewed by period?}
-
-\item{dates}{The date range to view the data.}
-
-\item{p_length}{The length of the period to view.}
+\item{view_state}{A `reactiveVal` holding a list of items specifying the view state:
+- abs_dates: The absolute range of dates within the dataset
+- dates: The range of dates being viewed via the date selector
+- period_view: Logical if the period view is being used
+- period_length: Length of period view
+- period_n: The period number to view.}
 }
 \description{
 Allows the user to mark data that looks for "weird" and can be viewed as a plotting option or

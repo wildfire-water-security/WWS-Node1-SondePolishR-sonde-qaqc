@@ -5,9 +5,11 @@
 #' @param id the shiny ID of the module
 #' @param sondeproj A `reactiveVal` holding the current dataset.
 #' @param data_ver A `reactiveVal` holding a number used to track when new data is added to trigger resets.
-#' @param dates The date range to view the data.
-#' @param period_view Should data be viewed by period?
-#' @param p_length The length of the period to view.
+#' @param view_state A `reactiveVal` holding a list of items specifying the view state:
+#'  - dates: The range of dates being viewed via the date selector
+#'  - period_view: Logical if the period view is being used
+#'  - period_length: Length of period view
+#'  - period_n: The period number to view.
 #'
 #' @returns a reactive of length two with the min and max dates.
 #' @rdname weekly-range
@@ -48,76 +50,85 @@ weekly_range_buttons_UI  <- function(id){
 
 #' @rdname weekly-range
 #' @export
-weekly_range_server <- function(id, sondeproj, period_view, dates, p_length, data_ver){
+weekly_range_server <- function(id, sondeproj, data_ver, view_state){
   moduleServer(id, function(input, output, session){
-
-  abs_dates <- reactiveVal() #store absolute dates for project
-
-  ##manage the date range --
-      #get total range of data (only update if data version changes)
-      observeEvent(data_ver(), {
-        req(sondeproj())
-        abs <- c(
-          min(sondeproj()$data$Date, na.rm = TRUE),
-          max(sondeproj()$data$Date, na.rm = TRUE))
-
-        abs_dates(abs)
-        dates(abs)   # initialize current selection
-      })
-
-    #update user input
-      observeEvent(dates(), {
-        req(dates())
-        if (!identical(input$dates, dates())){
-          updateDateRangeInput(session,"dates",
-                               start = dates()[1],end = dates()[2],
-                               min   = abs_dates()[1],max = abs_dates()[2])
-        }
-      })
-
-    #update date value
-      observeEvent(input$dates,{
-        if(!identical(input$dates, dates())){
-          dates(input$dates)
-        }}, ignoreInit = TRUE)
-
-  ##sync the period slider --
-    observeEvent(period_view(),{
-      if(!identical(period_view(), input$period_view)){
-        update_switch(id="period_view", value=period_view(), session=session)
-      }})
-    observeEvent(input$period_view,{
-      if(!identical(period_view(), input$period_view)){
-        period_view(input$period_view)
-        period_n(1)
-      }})
-
-  ##sync the period value --
-    observeEvent(p_length(),{updateNumericInput(session, "p_length", value=p_length())})
-    observeEvent(input$p_length,{p_length(input$p_length)})
-
-  ## return plotting date range based on selections --
-    plot_date <- reactive({
-      if(period_view()){
-        start <- dates()[1] + period((p_length()*(period_n()-1)), "days")
-        end <- start + (p_length()-1)
-        c(start, end)
-
-      }else{
-        dates()
-      }})
-
-  #determine total number of periods
-    total <- reactive({
-      total <- ceiling(as.numeric(dates()[2] - dates()[1])/ p_length())
-    })
 
   #keep track of what period we're on
     period_n <- reactiveVal(1) #stores what period we're on
 
-    #reset period length when period/range changes to prevent being way out of date
-    observeEvent(list(p_length(), dates()),{
-      period_n(1)
+  #update user input when view state changes
+      observeEvent(view_state(), {
+        req(view_state(), input$dates)
+
+        view_dat <- view_state()
+        #reset starting period if date range or period length changes
+        if(!identical(input$dates, view_dat$dates)|
+           !identical(view_dat$period_length, input$p_length)){
+            period_n(1)
+        }
+
+        #update date ranges
+        if(!identical(input$dates, view_dat$dates)){
+          updateDateRangeInput(session,"dates",
+                               start = view_dat$dates[1],end = view_dat$dates[2],
+                               min   = view_dat$abs_dates[1],max = view_dat$abs_dates[2])
+        }
+
+        #update period view
+        if(!identical(view_dat$period_view, input$period_view)){
+          update_switch(id="period_view", value=view_dat$period_view, session=session)
+        }
+
+        #update period length
+        if(!identical(view_dat$period_length, input$p_length)){
+          updateNumericInput(session, "p_length", value=view_dat$period_length)
+          }
+
+        #update period being viewed
+        if(!identical(view_dat$period_n, period_n())){
+          period_n(view_dat$period_n)
+        }
+      },ignoreInit = TRUE)
+
+    #update view state if user changes values in the module
+      observeEvent(input$dates,{
+        if(!identical(input$dates, view_state()$dates)){
+          update_view_state(view_state, dates = input$dates)}
+        },ignoreInit = TRUE)
+
+      observeEvent(input$period_view,{
+        if(!identical(input$period_view, view_state()$period_view)){
+          update_view_state(view_state, period_view = input$period_view)}
+      },ignoreInit = TRUE)
+
+      observeEvent(input$p_length,{
+        if(!identical(input$p_length, view_state()$period_length)){
+          update_view_state(view_state, period_length = input$p_length)}
+      },ignoreInit = TRUE)
+
+      observeEvent(period_n(),{
+        if(!identical(period_n(), view_state()$period_n)){
+          update_view_state(view_state, period_n = period_n())}
+      },ignoreInit = TRUE)
+
+  ## return plotting date range based on selections --
+    plot_date <- reactive({
+      view_dat <- view_state()
+
+      if(view_dat$period_view){
+        start <- view_dat$dates[1] + period((view_dat$period_length*(period_n()-1)), "days")
+        end <- start + (view_dat$period_length-1)
+        c(start, end)
+
+      }else{
+        view_dat$dates
+      }})
+
+  #determine total number of periods
+    total <- reactive({
+      view_dat <- view_state()
+
+      total <- ceiling(as.numeric(view_dat$dates[2] - view_dat$dates[1])/ view_dat$period_length)
     })
 
     #update period counter
@@ -131,7 +142,9 @@ weekly_range_server <- function(id, sondeproj, period_view, dates, p_length, dat
 
   #show what data period you're on
     output$n_period <- renderUI({
-      if(period_view()){
+      view_dat <- view_state()
+
+      if(view_dat$period_view){
         req(period_n(), total())
         #n <- ceiling((as.numeric(plot_date()[1] - dates()[1])+p_length())/p_length())
         div(style = paste0("color: #6c7881; font-size: 14px;"),paste(period_n(), "/", total()))

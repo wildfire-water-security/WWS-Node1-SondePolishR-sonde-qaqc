@@ -47,7 +47,7 @@ guess_shift <- function(data, par, index){
   }
 
   #determine slope and int
-  slope <- round(add[2] - add[1], 3)
+  slope <- round((add[length(add)] - add[1]) / length(add), 3)
   int <- round(add[1], 3)
 
   #correct if it's a single point

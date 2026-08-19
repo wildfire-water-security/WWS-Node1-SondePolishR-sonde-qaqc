@@ -59,28 +59,41 @@ quality_UI <- function(id){
 #' @param sondeproj A `reactiveVal` holding the current dataset.
 #' @param data_ver A `reactiveVal` holding a number used to track when new data is added to trigger resets.
 #' @param y_var Y-variable to plot on the y-axis.
-#' @param dates The date range to view the data.
-#' @param period_view Should data be viewed by period?
-#' @param p_length The length of the period to view.
+#' @param view_state A `reactiveVal` holding a list of items specifying the view state:
+#'  - abs_dates: The absolute range of dates within the dataset
+#'  - dates: The range of dates being viewed via the date selector
+#'  - period_view: Logical if the period view is being used
+#'  - period_length: Length of period view
+#'  - period_n: The period number to view.
 #' @export
 #' @rdname quality-flags
-quality_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_length){
+quality_server <- function(id, sondeproj, data_ver, y_var,view_state){
   moduleServer(id, function(input, output, session){
 
   #keep track of second y_variable
     y2_var <- reactiveVal()
 
-  #stores index of selected points
-    manual_add <- reactiveVal(integer())
-    manual_rm <- reactiveVal(integer())
+    #stores index of selected points
+    manual_add <- reactiveVal(list("questionable" = integer(),
+                                   "bad" = integer()))
+
     plot_exist <- reactiveVal() #keeps warning about missing plot
     traces <- reactiveVal() #tracks which traces hold our points to track
 
-  #clearing manual indices if y_var or data updates
-    observeEvent(list(y_var(), data_ver(), sondeproj(), input$quality_flag),{
-      manual_add(NULL)
-      manual_rm(NULL)
-      })
+    #clearing manual indices if y_var or data updates
+    observeEvent(list(y_var(), data_ver()),{
+      manual_add(list("questionable" = integer(),
+                      "bad" = integer()))
+    })
+
+    #clear only the one we're saving
+    observeEvent(sondeproj(),{
+      clear_add <- manual_add()
+      clear_add[[input$quality_flag]] <- integer()
+
+      manual_add(clear_add)
+    })
+
 
   #get column names after file upload (dynamic)
     update_parms_server("update_parms", sondeproj, data_ver, y_var, choices_fun = nice_yvar)
@@ -90,14 +103,15 @@ quality_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_
     plot_opts <- plot_options_server("plot_opts")
 
   #keep track of dates
-    plot_dates <- weekly_range_server("date_nav", sondeproj, period_view, dates, p_length, data_ver)
+    plot_dates <- weekly_range_server("date_nav", sondeproj, data_ver, view_state)
 
-  #track selected data
+    #track selected data
     observeEvent(
       req(plot_exist(), event_data("plotly_selected", source = "quality_plot")),{
         req(sondeproj(), y_var())
 
         data <- sondeproj()$data
+        curr_add <- manual_add()
 
         sel <- event_data("plotly_selected", source = "quality_plot")
         if(is.data.frame(sel)){
@@ -111,19 +125,21 @@ quality_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_
             pull(.data$Index)
 
           if(input$selection_mode == "add"){
-            manual_add(union(manual_add(), full_index))
-            #also remove if index is in rm
-            manual_rm(setdiff(manual_rm(), full_index))
-          }else {
-            manual_rm(union(manual_rm(), full_index))
-            #also remove if index is in add
-            manual_add(setdiff(manual_add(), full_index))
+            curr_add <- lapply(c("questionable", "bad"), function(x){
+              if(x == input$quality_flag){
+                union(curr_add[[x]], full_index)
+              }else{
+                setdiff(curr_add[[x]], full_index)
+              }
+            })
 
+            names(curr_add) <- c("questionable", "bad")
+
+          }else{
+            curr_add[[input$quality_flag]] <- (setdiff(curr_add[[input$quality_flag]], full_index))
           }
-
+          manual_add(curr_add)
         }
-
-
       })
 
   #clear selection when switching modes
@@ -152,23 +168,31 @@ quality_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_
 
       #if we want to filter out flagged points, filter before plotting
         filter_data <- plot_data()
+        indices <- manual_add()
+
         flag_data <- plot_data() %>% filter(.data$Index %in% manual_add() & !is.na(.data[[y_var()]]))
 
       #use function to plot sonde data
-      p <- plot_sonde(data = filter_data, y_var=y_var(), y2_var= y2, proj = sondeproj(), opts=plot_opts(), source="quality_plot")
+        p <- plot_sonde(data = filter_data, y_var=y_var(), y2_var= y2, proj = sondeproj(), opts=plot_opts(), source="quality_plot")
 
       #color points outside limits as red
         y <- y_var()
 
-        plot_opts <- switch(input$quality_flag,
-                            "questionable" = list(
-                              nicename = "Questionable (unsaved)",
-                              color = "#fac769"),
-                            "bad" = list(
-                              nicename = "Bad (unsaved)",
-                              color = "#b83d3d"))
-        p <- p %>% add_trace(data= flag_data, x=~DateTime_rd, y=as.formula(paste0("~`", y, "`")), type="scatter", mode="markers",
-                                 name = plot_opts$nicename, marker = list(color = plot_opts$color), yaxis="y2", inherit = FALSE)
+        for(m in c("questionable", "bad")){
+          plot_opts <- switch(m,
+                              "questionable" = list(
+                                nicename = "Questionable (unsaved)",
+                                color = "#fac769"),
+                              "bad" = list(
+                                nicename = "Bad (unsaved)",
+                                color = "#b83d3d"))
+
+          flag_data <- plot_data() %>% filter(.data$Index %in% indices[[m]] & !is.na(.data[[y_var()]]))
+
+          p <- p %>% add_trace(data= flag_data, x=~DateTime_rd, y=as.formula(paste0("~`", y, "`")), type="scatter", mode="markers",
+                               name = plot_opts$nicename, marker = list(color = plot_opts$color), yaxis="y2", inherit = FALSE)
+
+        }
 
       #set which traces hold points
       built_p <- plotly_build(p)
@@ -195,7 +219,7 @@ quality_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_
       newdata <- sondeproj()$data
 
       #get flags
-      setna <- newdata$Index %in% manual_add()
+      setna <- newdata$Index %in% manual_add()[[input$quality_flag]]
 
       flag_info <- switch(input$quality_flag,
                            "questionable" = list(
@@ -225,7 +249,6 @@ quality_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_
     exportTestValues(
       plot_obj = plot_obj(),
       changelog = sondeproj()$changelog,
-      manual_add = manual_add(),
-      manual_rm = manual_rm())
+      manual_add = manual_add())
 
   })}

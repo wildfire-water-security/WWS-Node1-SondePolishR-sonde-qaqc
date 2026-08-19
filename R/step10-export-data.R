@@ -69,10 +69,11 @@ export_UI <- function(id){
 #' @param sondeproj A `reactiveVal` holding the current dataset.
 #' @param data_ver A `reactiveVal` holding a number used to track when new data is added to trigger resets.
 #' @param y_var Y-variable to plot on the y-axis.
+#' @param current_mod The name of the current module being viewed.
 #'
 #' @export
 #' @rdname export-data
-export_server <- function(id, sondeproj, data_ver, y_var){
+export_server <- function(id, sondeproj, data_ver, y_var, current_mod){
   moduleServer(id, function(input, output, session){
 
   #selecting parameter to view
@@ -112,13 +113,18 @@ export_server <- function(id, sondeproj, data_ver, y_var){
     #create plot
       #filter data by requested range
         plot_data <- reactive({
-          req(sum_data())
+          req(sum_data(), current_mod() == "step-10")
           sum_data() %>% mutate(Date = as.Date(.data$DateTime_rd)) %>% dplyr::filter(.data$Date >= input$dates[1], .data$Date <= input$dates[2])
         })
 
       #summarized data with flags added for export and plotting
       sum_data <- reactive({
-        req(sondeproj(), (length(input$summary_method) > 0))
+        req(sondeproj(), (length(input$summary_method) > 0), current_mod() == "step-10")
+        if(input$frequency %in% c("interval", "hour")){
+          show_modal_spinner(text = "Summarizing data...", spin="fading-circle")
+          on.exit(remove_modal_spinner(), add = TRUE)
+        }
+
         export_data <- sondeproj()$data
 
         #summarize
@@ -208,13 +214,13 @@ export_server <- function(id, sondeproj, data_ver, y_var){
  ## EXPORTING METADATA ------
     metadata <- reactive({
       req(input$meta_opts)
-
       switch(input$meta_opts,
              "dups" = sondeproj()$duplicates,
              "gaps" = sondeproj()$data_gaps,
-             "changelog" = sondeproj()$changelog,
-             "precip" = sondeproj()$precip %>% mutate(DateTime = format(.data$DateTime, "%Y-%m-%d %H:%M:%S"))
-)
+             "changelog" = sondeproj()$changelog %>% mutate(datetime = format(.data$datetime, "%Y-%m-%d %H:%M:%S")),
+             "precip" = sondeproj()$precip %>% mutate(DateTime = format(.data$DateTime, "%Y-%m-%d %H:%M:%S")))
+
+      #make sure any commas are changed to ; to not break csv
     })
 
     meta_path <- save_path_server("save_meta", metadata, startname = metastartname, filetype = ".csv", data_ver=data_ver)

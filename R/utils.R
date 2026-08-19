@@ -333,3 +333,23 @@ drop_flags <- function(data){
   data <- data %>% select(-any_of(flag_names))
   return(data)
 }
+
+
+#' Update the view state reactive
+#'
+#' @param ... an object stored within `view_state` and it's new value
+#'
+#' @returns an updated reactive view state
+#' @noRd
+
+update_view_state <- function(view_state, ...) {
+  state <- view_state()
+  state[names(list(...))] <- list(...)
+  view_state(state)
+}
+
+update_zoom_state <- function(zoom_state, ...) {
+  state <- zoom_state()
+  state[names(list(...))] <- list(...)
+  zoom_state(state)
+}

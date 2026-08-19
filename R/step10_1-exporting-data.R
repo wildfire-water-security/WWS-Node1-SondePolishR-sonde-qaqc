@@ -68,6 +68,12 @@ save_path_server <- function(id, data,
         save_okay(FALSE)}
     })
 
+    #clear selected path when metadata type changes
+    observeEvent(startname(), {
+        parsed_path(NULL)
+        save_okay(FALSE)
+    })
+
     #clear the okay any time the data changes
     observeEvent(data(),{save_okay(FALSE)})
 
@@ -141,7 +147,7 @@ save_path_server <- function(id, data,
 save_file <- function(path, data) {
   if(tools::file_ext(path) == "csv") {
   tryCatch({
-      write.csv(data, path, row.names = FALSE, quote = FALSE)
+      write.csv(data, path, row.names = FALSE, quote = TRUE)
     shinyalert::shinyalert(
       title = "Data Downloaded",
       text = "Selected data has been downloaded.",
