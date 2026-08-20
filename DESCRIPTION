@@ -70,3 +70,4 @@ Depends:
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 Language: en-US
+Config/Needs/website: rmarkdown

@@ -47,7 +47,7 @@ TODO: include a workflow diagram here.
 
     -   Otherwise, load one or more `.csv` files using the **Raw Sonde Data** option.
 
-    -   If you would like to add new raw files to an exisiting project, you may select both a project and a raw file. They will be merged together upon load.
+    -   If you would like to add new raw files to an existing project, you may select both a project and a raw file. They will be merged together upon load.
 
 2.  **Specify metadata file locations:** Similar to locating your data files, you can select metadata files to add to your project. These include:
 

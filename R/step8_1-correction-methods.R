@@ -107,7 +107,7 @@ additive_server <- function(id, sondeproj, y_var, plot, plot_data, currplot, cur
 #' Apply a drift correction to a data file
 #'
 #' Used to account for instrument drift by applying a linear correction to a data file. Uses differences between
-#' check and resident sonde measurments when available as the default correction amount.
+#' check and resident sonde measurements when available as the default correction amount.
 #'
 #' @param id the shiny ID of the module
 #' @param sondeproj A `reactiveVal` holding the current dataset.
