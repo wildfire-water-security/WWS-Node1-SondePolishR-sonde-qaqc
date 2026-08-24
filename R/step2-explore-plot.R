@@ -166,6 +166,9 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var, view_state){
           )
         }
       }else{
+        show_modal_spinner(text = "Removing OOW Periods...", spin="fading-circle")
+        on.exit(remove_modal_spinner(), add = TRUE)
+
         data <- sondeproj()$data
         #get OOW periods
         oow <- get_oow(sondeproj()$fieldform, tz=sondeproj()$meta$tz,interval=get_interval(data))

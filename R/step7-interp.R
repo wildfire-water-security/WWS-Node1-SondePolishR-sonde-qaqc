@@ -106,7 +106,7 @@ interp_server <- function(id, sondeproj, data_ver, y_var,view_state, current_mod
   data_interp <- reactive({
     req(sondeproj(), y_var(),input$method, input$freq,current_mod() == "step-7")
       show_modal_spinner(text = "Interpolating data...", spin="fading-circle")
-      on.exit
+      on.exit(remove_modal_spinner(), add = TRUE)
 
     run_interp(data_fill_list()$interp, y_var(), input$method, input$freq)
   })

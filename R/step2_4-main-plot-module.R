@@ -119,7 +119,7 @@ main_plot_server <- function(id, data_ver, sondeproj, plot_obj, plot_data, y_var
 
     #adjust y min when y max changes
     observeEvent(input$yaxismax, {
-      req(sondeproj(), y_var())
+      req(sondeproj(), y_var(),input$yaxismax)
 
       minv <- floor(min(sondeproj()$data[[y_var()]], na.rm=TRUE) - (input$yaxismax*0.05))
       updateNumericInput(session, "yaxismin", value=min(startmin(), minv, na.rm=TRUE))
