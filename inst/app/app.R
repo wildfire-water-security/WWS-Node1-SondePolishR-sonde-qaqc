@@ -36,10 +36,10 @@ ui <-  page_fillable(
                 value = "step-3",
                 SondePolishR::check_data_UI("data3")
                 ),
-      nav_panel("Quality Flags",
-                value = "step-4",
-                SondePolishR::quality_UI("data4")
-      ),
+      # nav_panel("Quality Flags",
+      #           value = "step-4",
+      #           SondePolishR::quality_UI("data4")
+      # ),
       nav_panel("Physical Limits",
                 value = "step-5",
                 SondePolishR::limits_UI("data5")
@@ -109,8 +109,8 @@ server <- function(input, output, session) {
   #step 3: check data
    SondePolishR::check_data_server("data3", sondeproj, data_ver, y_var)
 
-  #step 4: quality checks
-   SondePolishR::quality_server("data4", sondeproj, data_ver, y_var, view_state)
+  # #step 4: quality checks
+  #  SondePolishR::quality_server("data4", sondeproj, data_ver, y_var, view_state)
 
   #step 5: physical limits
    SondePolishR::limits_server("data5", sondeproj, data_ver, y_var, view_state)

@@ -170,7 +170,7 @@ quality_server <- function(id, sondeproj, data_ver, y_var,view_state){
         filter_data <- plot_data()
         indices <- manual_add()
 
-        flag_data <- plot_data() %>% filter(.data$Index %in% manual_add() & !is.na(.data[[y_var()]]))
+        flag_data <- plot_data() %>% filter(!is.na(.data[[y_var()]]))
 
       #use function to plot sonde data
         p <- plot_sonde(data = filter_data, y_var=y_var(), y2_var= y2, proj = sondeproj(), opts=plot_opts(), source="quality_plot")
