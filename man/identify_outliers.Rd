@@ -11,7 +11,7 @@ identify_outliers(data, y_var, method, k = 5, t = 7)
 
 \item{y_var}{Character specifying the variable to apply smoothing to.}
 
-\item{method}{Character specifying the method to use for smoothing. Options include "hampel" or "rel_change".
+\item{method}{Character specifying the method to use for smoothing. Options include "hampel","rel_change", "high_var".
 See details for more information about the different methods.}
 
 \item{k}{A adjustment parameter for the selected method (see details).}
@@ -34,6 +34,9 @@ to include in the median calculation, the \code{t} parameter is used to control 
 \item \strong{rel_change}: Based on the \code{rollmedian} function from the \code{zoo} package which identifies points
 based on a relative change between the points before and after it. The \code{k} parameter is used to control the number of points
 to include in the median calculation, the \code{t} parameter is used to control the threshold required to be marked as bad.
+\item \strong{high_var}: Used to determine regions of high variability. Uses rolling functions from the \code{zoo} package to determine
+the difference between the point and it's rolling median, then the median absolute deviation (MAD) for these differences are caclulated.
+If the median absolute deviation is greater than \code{t} times the overall data's mean MAD it will be marked as bad.
 }
 }
 \examples{

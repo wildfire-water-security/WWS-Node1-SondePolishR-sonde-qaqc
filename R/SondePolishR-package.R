@@ -123,6 +123,7 @@
 #' @importFrom shinyjs reset
 #' @importFrom shinyjs useShinyjs
 #' @importFrom stats as.formula
+#' @importFrom stats mad
 #' @importFrom stats median
 #' @importFrom stats na.omit
 #' @importFrom stats quantile

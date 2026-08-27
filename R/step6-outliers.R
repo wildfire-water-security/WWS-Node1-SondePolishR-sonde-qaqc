@@ -20,7 +20,7 @@ outlier_UI <- function(id){
               selectInput(ns("filter_type"),
                           "Select Starting Method:",
                           choices = c("None" = "none",
-                                      "Hampel Filter" = "hampel", "Relative Change" = "rel_change"),
+                                      "Hampel Filter" = "hampel", "Relative Change" = "rel_change", "High Variability" = "high_var"),
                           selected = "none"),
               radioButtons(ns("selection_mode"),"Selection Mode",
                            choices = c("Add Bad" = "bad", "Add Questionable" = "questionable", "Remove Selection" = "remove"))),
@@ -274,6 +274,9 @@ outlier_server <- function(id, sondeproj, data_ver, y_var,view_state){
                         "rel_change" = paste0("Data removed based on Relative Percent Change",
                                               " method with a window size of ", input$k, " and threshold of ", input$t,
                                               " paired with manual selection."),
+                        "high_var" =  paste0("Data removed based on regions of high variability",
+                                             " with a window size of ", input$k, " and threshold of ", input$t,
+                                             " paired with manual selection."),
                         "none" = "Data removed based on manual selection.")
 
     #make edit list
