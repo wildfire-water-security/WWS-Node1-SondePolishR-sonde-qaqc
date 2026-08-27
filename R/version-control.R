@@ -16,7 +16,7 @@
 #' - new_data: the values of the changed values in `newdata`
 #' - old_data: the values of the changed values in `olddata`
 #' @export
-#'
+#' @md
 #' @examples
 #' data1 <- example_data[1:10,]
 #' data2 <- data1
@@ -117,6 +117,7 @@ get_diff <- function(olddata, newdata, id=c("DateTime_rd", "DupNum"), ignore=NA)
 #' @returns a `data.frame` with the same columns as `data` with the changes from `diff` applied.
 #' Note that this could increase the number of rows if diff is a data merge.
 #' @export
+#' @md
 #'
 #' @examples
 #' data1 <- example_data[1:10,]
@@ -247,6 +248,7 @@ apply_diff <- function(data, diff, id=c("DateTime_rd", "DupNum"), invert = FALSE
 #' @param proj A `sondeproj` object.
 #' @returns a `data.frame` with raw data.
 #' @export
+#' @md
 #' @examples
 #' raw <- get_raw_data(example_sondeproj)
 get_raw_data <- function(proj){

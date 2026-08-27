@@ -7,20 +7,20 @@
 apply_dup_edits(proj, dup_row, keep_opt, flag_notes = "")
 }
 \arguments{
-\item{proj}{`sondeproj` object holding sonde data.}
+\item{proj}{\code{sondeproj} object holding sonde data.}
 
-\item{dup_row}{Row from the outputs of `identify_dups`}
+\item{dup_row}{Row from the outputs of \code{identify_dups}}
 
-\item{keep_opt}{Character describing which set of duplicates to keep (identified by `DupNum`),
+\item{keep_opt}{Character describing which set of duplicates to keep (identified by \code{DupNum}),
 "use_mean" to take the mean of the values, "remove_both" to remove all the duplicated values.}
 
 \item{flag_notes}{Optional character with additional notes to write to the changelog}
 }
 \value{
-a `sondeproj` with the updated data, flags, and changelog
+a \code{sondeproj} with the updated data, flags, and changelog
 }
 \description{
-Given a row from `identify_dups` and a `sondeproj`, the user can select which data to keep (or take mean)
+Given a row from \code{identify_dups} and a \code{sondeproj}, the user can select which data to keep (or take mean)
 and the requested data summary will be performed, the appropriate flags will be added, and a changelog entry
 will be made.
 }

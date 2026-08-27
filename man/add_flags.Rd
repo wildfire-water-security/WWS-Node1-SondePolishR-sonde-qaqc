@@ -16,7 +16,7 @@ add_flags(data, y_var, index, flag)
 \item{flag}{Flag to add to the data.frame.}
 }
 \value{
-a data.frame with the same dimensions as \code{data} with the flags added to the appropriate column.
+a \code{data.frame} with the same dimensions as \code{data} with the flags added to the appropriate column.
 }
 \description{
 Safely adds a flag to a specific parameter without overwriting old flags. Also maintains a consistent order

@@ -16,7 +16,7 @@ shift_points(data, par, index, shift_val = NULL)
 \item{shift_val}{a list of the slope and int (intercept) to use to shift the data by, if \code{NULL}, it will be guessed using \link[SondePolishR]{guess_shift}}
 }
 \value{
-a data.frame with the values adjusted
+a \code{data.frame} with the values adjusted
 }
 \description{
 Sometimes a continuous sonde signal will be shifted up or down by a consistent value for a period of time, this will adjust the

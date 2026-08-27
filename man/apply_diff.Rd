@@ -13,23 +13,23 @@ apply_diff(
 )
 }
 \arguments{
-\item{data}{the data to apply the `diff` to. Must contain all the columns in `diff` or a list of flags.}
+\item{data}{the data to apply the \code{diff} to. Must contain all the columns in \code{diff} or a list of flags.}
 
-\item{diff}{a list of `diff` or a single `diff` objects generated using `get_diff`.}
+\item{diff}{a list of \code{diff} or a single \code{diff} objects generated using \code{get_diff}.}
 
-\item{id}{name of the column name used to match observations between `olddata` and `newdata`.}
+\item{id}{name of the column name used to match observations between \code{olddata} and \code{newdata}.}
 
-\item{invert}{logical. If `TRUE` changes will be reversed.}
+\item{invert}{logical. If \code{TRUE} changes will be reversed.}
 
-\item{skip_merge}{logical. If `TRUE` will skip any `diff` with are data merges.}
+\item{skip_merge}{logical. If \code{TRUE} will skip any \code{diff} with are data merges.}
 }
 \value{
-a `data.frame` with the same columns as `data` with the changes from `diff` applied.
+a \code{data.frame} with the same columns as \code{data} with the changes from \code{diff} applied.
 Note that this could increase the number of rows if diff is a data merge.
 }
 \description{
-Once changes between `data.frame`s have been saved as a `diff` object, they can be used to move between
-the changes made by applying the `diff` to data.
+Once changes between \code{data.frame}s have been saved as a \code{diff} object, they can be used to move between
+the changes made by applying the \code{diff} to data.
 }
 \examples{
 data1 <- example_data[1:10,]

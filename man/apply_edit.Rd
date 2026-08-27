@@ -2,26 +2,28 @@
 % Please edit documentation in R/apply-edit.R
 \name{apply_edit}
 \alias{apply_edit}
-\title{Log edits to a `sondeproj`}
+\title{Log edits to a \code{sondeproj}}
 \usage{
 apply_edit(proj, edit)
 }
 \arguments{
-\item{proj}{A `sondeproj` object holding sonde data.}
+\item{proj}{A \code{sondeproj} object holding sonde data.}
 
 \item{edit}{A list of length six:
-- data: new updated data as a `data.frame`
-- rows: logical vector which specifies rows changed as TRUE
-- y_var: parameter being edited
-- step: name of the editing step for the changelog
-- note: an optional note to add to the changelog
-- flag: character flag to use for edits to the data}
+\itemize{
+\item data: new updated data as a \code{data.frame}
+\item rows: logical vector which specifies rows changed as TRUE
+\item y_var: parameter being edited
+\item step: name of the editing step for the changelog
+\item note: an optional note to add to the changelog
+\item flag: character flag to use for edits to the data
+}}
 }
 \value{
-A `sondeproj` object with edits made.
+A \code{sondeproj} object with edits made.
 }
 \description{
-Uses a list of edit parameters to update a `sondeproj` with the specified edits. Makes
+Uses a list of edit parameters to update a \code{sondeproj} with the specified edits. Makes
 changes to the data, changelog, and flags.
 }
 \examples{

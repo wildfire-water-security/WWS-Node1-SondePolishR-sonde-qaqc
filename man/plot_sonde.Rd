@@ -15,27 +15,29 @@ plot_sonde(
 )
 }
 \arguments{
-\item{data}{A `data.frame` with the sonde data to plot.}
+\item{data}{A \code{data.frame} with the sonde data to plot.}
 
 \item{y_var}{Y-variable to plot on the y-axis.}
 
 \item{y2_var}{A second, optional y-variable to plot on a second axis.}
 
-\item{proj}{A `sondeproj` object with additional metadata to plot,
-only required if opts includes oow, calcheck, quality_flag or `y2_var` is "precip" or "raw".}
+\item{proj}{A \code{sondeproj} object with additional metadata to plot,
+only required if opts includes oow, calcheck, quality_flag or \code{y2_var} is "precip" or "raw".}
 
 \item{opts}{A list of options for plotting:
-- points: should points be plotted?
-- line: should line be plotted?
+\itemize{
+\item points: should points be plotted?
+\item line: should line be plotted?
 -files: should points be colored by file?
 -oow: should out of water periods be plotted?
 -calcheck: should cal check be plotted?
--quality_flag: should questionable points be plotted?}
+-quality_flag: should questionable points be plotted?
+}}
 
 \item{source}{A character specifying the plot name for shiny reactivity.}
 }
 \value{
-a `plotly` object
+a \code{plotly} object
 }
 \description{
 Allows options for iterative plotting sonde project data for different variables,

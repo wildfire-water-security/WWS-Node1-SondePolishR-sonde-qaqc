@@ -7,10 +7,10 @@
 get_raw_data(proj)
 }
 \arguments{
-\item{proj}{A `sondeproj` object.}
+\item{proj}{A \code{sondeproj} object.}
 }
 \value{
-a `data.frame` with raw data.
+a \code{data.frame} with raw data.
 }
 \description{
 Includes any raw data merges and returns the raw data without any changes. Useful for viewing data before changes were made.

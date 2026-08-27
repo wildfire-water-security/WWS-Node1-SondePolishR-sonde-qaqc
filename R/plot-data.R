@@ -19,6 +19,7 @@
 #'
 #' @returns a `plotly` object
 #' @export
+#' @md
 #'
 #' @examples
 #' plot_sonde(example_data, y_var = "Temp_C")

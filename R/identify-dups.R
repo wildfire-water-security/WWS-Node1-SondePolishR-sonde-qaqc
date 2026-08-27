@@ -116,7 +116,7 @@ identify_dups <- function(data){
 #' @param keep_opt Character describing which set of duplicates to keep (identified by `DupNum`),
 #'  "use_mean" to take the mean of the values, "remove_both" to remove all the duplicated values.
 #' @param flag_notes Optional character with additional notes to write to the changelog
-#'
+#' @md
 #' @returns a `sondeproj` with the updated data, flags, and changelog
 #' @export
 #' @examples

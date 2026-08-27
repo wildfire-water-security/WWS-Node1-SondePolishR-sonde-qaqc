@@ -8,6 +8,7 @@
 -   Actually fixed the issue where selecting a point twice wouldn't trigger the expected action.
 -   The summary table in the **Visualize** tab now shows data summaries from the data within the plotting view. However, the summary table will **not** respond to changes in the zoom state.
 -   Fixed a bug that allowed you to apply edits to data that were not within the set date range. This was problematic as you could accidentally remove points that you hadn't reviewed.
+-   Updated several documentation pages to use markdown styling.
 
 ## Updates
 

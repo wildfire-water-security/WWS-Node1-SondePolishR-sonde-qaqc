@@ -14,7 +14,7 @@
 #'
 #' @returns A `sondeproj` object with edits made.
 #' @export
-#'
+#' @md
 #' @examples
 #' data <- example_data
 #' data$fDOM_QSU[1:4] <- NA
