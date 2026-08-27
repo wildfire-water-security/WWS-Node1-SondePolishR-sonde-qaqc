@@ -157,6 +157,7 @@ read_cal <- function(file, tz){
 #' - **start**: The start of the OOW period stored as a `POSIXct`.
 #' - **end**: The end of the OOW period, stored as a `POSIXct`
 #' @export
+#' @md
 #'
 #' @examples
 #' get_oow(example_sondeproj$fieldform, tz="Etc/GMT+8", interval=15)

@@ -7,23 +7,25 @@
 get_oow(ff, tz, interval)
 }
 \arguments{
-\item{ff}{Field form `data.frame`.}
+\item{ff}{Field form \code{data.frame}.}
 
 \item{tz}{Timezone for the times in the form.}
 
 \item{interval}{Time (in minutes) between measurements, removes the measurement before and after OOW period for safety.}
 }
 \value{
-A `data.frame`with three columns:
-- **site_code**: The site code associated with the OOW period.
-- **start**: The start of the OOW period stored as a `POSIXct`.
-- **end**: The end of the OOW period, stored as a `POSIXct`
+A \code{data.frame}with three columns:
+\itemize{
+\item \strong{site_code}: The site code associated with the OOW period.
+\item \strong{start}: The start of the OOW period stored as a \code{POSIXct}.
+\item \strong{end}: The end of the OOW period, stored as a \code{POSIXct}
+}
 }
 \description{
 Use the information contained in the project field form and use the removal and return times to determine
 the times the sonde was out of the water (OOW) for plotting and data QA/QC. Determines the start and end times
 of when the sonde was out of the water. If a time is missing it will try to guess using the visit time, next timepoint,
-or when no other options will remove the full day. If `Remove_Period` is FALSE it will ignore that period as an OOW period.
+or when no other options will remove the full day. If \code{Remove_Period} is FALSE it will ignore that period as an OOW period.
 }
 \examples{
 get_oow(example_sondeproj$fieldform, tz="Etc/GMT+8", interval=15)

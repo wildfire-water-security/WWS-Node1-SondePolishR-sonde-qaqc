@@ -7,7 +7,7 @@
 \usage{
 load_data_UI(id)
 
-load_data_server(id, sondeproj, data_ver)
+load_data_server(id, sondeproj, data_ver, view_state)
 }
 \arguments{
 \item{id}{An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.}
@@ -15,6 +15,15 @@ load_data_server(id, sondeproj, data_ver)
 \item{sondeproj}{A \code{reactiveVal} holding the current dataset.}
 
 \item{data_ver}{A \code{reactiveVal} holding a number used to track when new data is added to trigger resets.}
+
+\item{view_state}{A \code{reactiveVal} holding a list of items specifying the view state:
+\itemize{
+\item abs_dates: The absolute range of dates within the dataset
+\item dates: The range of dates being viewed via the date selector
+\item period_view: Logical if the period view is being used
+\item period_length: Length of period view
+\item period_n: The period number to view.
+}}
 }
 \value{
 The loaded data as a reactive object.

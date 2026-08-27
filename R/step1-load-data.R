@@ -131,12 +131,19 @@ load_data_UI <- function(id){
 #' @param id An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.
 #' @param sondeproj A `reactiveVal` holding the current dataset.
 #' @param data_ver A `reactiveVal` holding a number used to track when new data is added to trigger resets.
+#' @param view_state A `reactiveVal` holding a list of items specifying the view state:
+#'  - abs_dates: The absolute range of dates within the dataset
+#'  - dates: The range of dates being viewed via the date selector
+#'  - period_view: Logical if the period view is being used
+#'  - period_length: Length of period view
+#'  - period_n: The period number to view.
+#'
 #' @md
 #' @export
 #' @keywords internal
 #' @returns The loaded data as a reactive object.
 #' @rdname load-data
-load_data_server <- function(id, sondeproj, data_ver){
+load_data_server <- function(id, sondeproj, data_ver, view_state){
   moduleServer(id, function(input, output, session){
     #store paths as reactive value so we can clean on reset
       csv_path <- reactiveVal()
@@ -197,6 +204,9 @@ load_data_server <- function(id, sondeproj, data_ver){
         obj$meta$coords <- c(input$lat, input$long) #also write lat/long if provided
       }
 
+      #set initial dates for everything
+      update_view_state(view_state, dates = range(obj$data$Date, na.rm=TRUE))
+      update_view_state(view_state, abs_dates = range(obj$data$Date, na.rm=TRUE))
 
       #save object as reactive
       sondeproj(obj)

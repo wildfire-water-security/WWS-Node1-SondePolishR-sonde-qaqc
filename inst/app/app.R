@@ -36,10 +36,10 @@ ui <-  page_fillable(
                 value = "step-3",
                 SondePolishR::check_data_UI("data3")
                 ),
-      nav_panel("Quality Flags",
-                value = "step-4",
-                SondePolishR::quality_UI("data4")
-      ),
+      # nav_panel("Quality Flags",
+      #           value = "step-4",
+      #           SondePolishR::quality_UI("data4")
+      # ),
       nav_panel("Physical Limits",
                 value = "step-5",
                 SondePolishR::limits_UI("data5")
@@ -86,10 +86,14 @@ server <- function(input, output, session) {
     sondeproj <- reactiveVal(NULL) #the sonde project
     data_ver <- reactiveVal(0) #keeping track of when new data is uploaded
     y_var <- reactiveVal(NULL) #the y-variable being looked at
-    dates <- reactiveVal(NULL) #the date range to view the data
-    period_view <- reactiveVal(FALSE) #should you use period view?
-    p_length <- reactiveVal(7) #length of period view
-    current_mod <- reactiveVal()
+    current_mod <- reactiveVal() # the module being viewed
+
+    #holds the viewing state to sync across the modules
+    view_state <- reactiveVal(list(abs_dates =NULL,
+                                   dates = NULL,
+                                   period_view = FALSE,
+                                   period_length = as.integer(7),
+                                   period_n = 1))
 
   # #track open module
     observeEvent(input$modules, {
@@ -97,34 +101,34 @@ server <- function(input, output, session) {
     })
 
   #step 1: load data
-   SondePolishR::load_data_server("data1", sondeproj, data_ver)
+   SondePolishR::load_data_server("data1", sondeproj, data_ver, view_state)
 
   #step 2: plot data
-   SondePolishR::explore_data_server("data2", sondeproj, data_ver, y_var, period_view, dates, p_length)
+   SondePolishR::explore_data_server("data2", sondeproj, data_ver, y_var, view_state)
 
   #step 3: check data
    SondePolishR::check_data_server("data3", sondeproj, data_ver, y_var)
 
-  #step 4: quality checks
-   SondePolishR::quality_server("data4", sondeproj, data_ver, y_var, period_view, dates, p_length)
+  # #step 4: quality checks
+  #  SondePolishR::quality_server("data4", sondeproj, data_ver, y_var, view_state)
 
   #step 5: physical limits
-   SondePolishR::limits_server("data5", sondeproj, data_ver, y_var, period_view, dates, p_length)
+   SondePolishR::limits_server("data5", sondeproj, data_ver, y_var, view_state)
 
   #step 6: outlier corrections
-   SondePolishR::outlier_server("data6", sondeproj, data_ver, y_var, period_view, dates, p_length)
+   SondePolishR::outlier_server("data6", sondeproj, data_ver, y_var, view_state)
 
   #step 7: data interpolation
-   SondePolishR::interp_server("data7", sondeproj, data_ver, y_var, period_view, dates, p_length, current_mod)
+   SondePolishR::interp_server("data7", sondeproj, data_ver, y_var, view_state, current_mod)
 
   #step 8: additive shift
-   SondePolishR::correction_server("data8", sondeproj, data_ver, y_var, period_view, dates, p_length)
+   SondePolishR::correction_server("data8", sondeproj, data_ver, y_var, view_state)
 
   #step 9: fdom corrections
-   SondePolishR::fdom_server("data9", sondeproj, data_ver, y_var, period_view, dates, p_length)
+   SondePolishR::fdom_server("data9", sondeproj, data_ver, y_var, view_state)
 
   #step 10: export data
-   SondePolishR::export_server("data10", sondeproj, data_ver, y_var)
+   SondePolishR::export_server("data10", sondeproj, data_ver, y_var,current_mod)
 
 
 }

@@ -18,28 +18,32 @@ outlier_UI <- function(id){
             bslib::layout_columns(
               col_widths = c(7, 5),
               selectInput(ns("filter_type"),
-                          "Select Outlier Detection Method:",
-                          choices = c("None" = "none","Questionable Points" = "questionable",
-                                      "Bad Points" = "bad",
-                                      "Hampel Filter" = "hampel", "Relative Change" = "rel_change"),
+                          "Select Starting Method:",
+                          choices = c("None" = "none",
+                                      "Hampel Filter" = "hampel", "Relative Change" = "rel_change", "High Variability" = "high_var"),
                           selected = "none"),
-              radioButtons(ns("selection_mode"),"Manual Selection Method",
-                           choices = c("Add" = "add","Remove" = "remove"))),
+              radioButtons(ns("selection_mode"),"Selection Mode",
+                           choices = c("Add Bad" = "bad", "Add Questionable" = "questionable", "Remove Selection" = "remove"))),
             bslib::layout_columns(
               col_widths = c(3,3,1,5),
               numericInput(ns("k"),"Window Size",value =5,step=2),
-              numericInput(ns("t"),"Threshold",value = 5, step=0.1),
+              numericInput(ns("t"),"Threshold",value = 7, step=0.5),
               tags$div(
                 style = "width: 1px; height: 85px; background-color: #6c7881; display: inline-block; margin: 0 30px; vertical-align: middle;"),
               div(class = "d-flex justify-content-center align-items-center",
                   style = "height: 85px;",
                   actionButton(ns("clear_sel"), "Clear Selection")))
-            ,
-            input_switch(ns("rm_flags"), "Hide Flagged Data")
           ),
           accordion_panel(
             "Save Edits",
-            apply_edit_UI(ns("apply_limits"), edit_type = "remove", note="Highlighted points will be removed"),
+            div(style="margin-bottom: 8px; font-size:16px; font-weight: bold;",
+                "Remove Bad Points"),
+            tags$div(style = "margin-bottom: 20px;",
+                     apply_edit_UI(ns("remove_outliers"), edit_type = "remove", note="")),
+            div(style="margin-bottom: 8px; font-size:16px; font-weight: bold;",
+                "Flag Questionable Points"),
+            apply_edit_UI(ns("flag_question"), note=""),
+
           ),
           accordion_panel(
             "Date Ranges",
@@ -47,7 +51,7 @@ outlier_UI <- function(id){
           ),
           accordion_panel(
             "Plotting Options",
-            plot_options_UI(ns("plot_opts"))
+            plot_options_UI(ns("plot_opts"),start_val = c(TRUE,TRUE,FALSE,FALSE,FALSE,TRUE))
           ))
         ),
       mainPanel(
@@ -76,28 +80,77 @@ outlier_UI <- function(id){
 #' @param sondeproj A `reactiveVal` holding the current dataset.
 #' @param data_ver A `reactiveVal` holding a number used to track when new data is added to trigger resets.
 #' @param y_var Y-variable to plot on the y-axis.
-#' @param dates The date range to view the data.
-#' @param period_view Should data be viewed by period?
-#' @param p_length The length of the period to view.
+#' @param view_state A `reactiveVal` holding a list of items specifying the view state:
+#'  - abs_dates: The absolute range of dates within the dataset
+#'  - dates: The range of dates being viewed via the date selector
+#'  - period_view: Logical if the period view is being used
+#'  - period_length: Length of period view
+#'  - period_n: The period number to view.
 #' @export
 #' @rdname outliers
-outlier_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_length){
+outlier_server <- function(id, sondeproj, data_ver, y_var,view_state){
   moduleServer(id, function(input, output, session){
 
   #keep track of second y_variable
     y2_var <- reactiveVal()
 
   #stores index of selected points
-    manual_add <- reactiveVal(integer())
-    manual_rm <- reactiveVal(integer())
+    manual_chg <- reactiveVal(list("questionable" = integer(),
+                                   "bad" = integer(),
+                                   "remove" = integer()))
     plot_exist <- reactiveVal() #keeps warning about missing plot
     traces <- reactiveVal() #tracks which traces hold our points to track
 
   #clearing manual indices if y_var or data updates
-    observeEvent(list(y_var(), data_ver(), sondeproj(), input$clear_sel),{
-      manual_add(NULL)
-      manual_rm(NULL)
-      })
+    observeEvent(list(y_var(), data_ver(), input$clear_sel),{
+      manual_chg(list("questionable" = integer(),
+                      "bad" = integer(),
+                      "remove" = integer()))
+    })
+
+  #keep track of auto selection
+    auto_index <- reactive({
+      req(sondeproj(), y_var(),input$filter_type)
+      if(input$filter_type == "none"){
+        integer()
+      }else{
+        req(input$k, input$t)
+        data <- sondeproj()$data
+        identify_outliers(data, y_var(), input$filter_type, input$k, input$t)
+      }
+
+    })
+
+  #merge together
+    selected <- reactive({
+      req(manual_chg())
+
+      bad <- union(auto_index(), manual_chg()$bad)
+      questionable <- manual_chg()$questionable
+      bad <- setdiff(bad,questionable) #remove anything marked as questionable, even if auto selected
+      bad <- setdiff(bad, manual_chg()$remove) #remove anything manually removed
+      list("bad"=bad, "questionable"=questionable)
+    })
+
+  #clear manual removal when method changes
+    observeEvent(input$filter_type,{
+      edit_add <- manual_chg()
+      edit_add$remove <- integer()
+      manual_chg(edit_add)
+    })
+
+  #clear only the points we're saving
+  observeEvent(bad_flagged(),{
+    edit_add <- manual_chg()
+    edit_add$bad <- setdiff(edit_add$bad, bad_flagged())
+    manual_chg(edit_add)
+  })
+
+  observeEvent(question_flagged(),{
+    edit_add <- manual_chg()
+    edit_add$questionable <- setdiff(edit_add$questionable, question_flagged())
+    manual_chg(edit_add)
+  })
 
   #get column names after file upload (dynamic)
     update_parms_server("update_parms", sondeproj, data_ver, y_var, choices_fun = nice_yvar)
@@ -107,68 +160,20 @@ outlier_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_
     plot_opts <- plot_options_server("plot_opts")
 
   #keep track of dates
-    plot_dates <- weekly_range_server("date_nav", sondeproj, period_view, dates, p_length, data_ver)
-
-  #implement outlier detection
-    auto_index <- reactive({
-     req(sondeproj(), y_var())
-      data <- sondeproj()$data
-      x <- data[[y_var()]] #needed by everything
-
-      if(input$filter_type == "hampel"){
-        # interpolate to temp fill gaps so filter will work
-        x_fill <- zoo::na.approx(x, na.rm = FALSE)
-        x_fill <- zoo::na.locf(x_fill, na.rm = FALSE)        # forward fill
-        x_fill <- zoo::na.locf(x_fill, fromLast = TRUE)      # backward fill
-        hampel_out <- pracma::hampel(x_fill, input$k, input$t)
-
-        outlier <- rep(FALSE, length(x))
-        outlier[hampel_out$ind] <- TRUE
-      }
-
-      if(input$filter_type == "rel_change"){
-        # interpolate to temp fill gaps so filter will work
-        x_fill <- zoo::na.approx(x, na.rm = FALSE)
-        x_fill <- zoo::na.locf(x_fill, na.rm = FALSE)        # forward fill
-        x_fill <- zoo::na.locf(x_fill, fromLast = TRUE)      # backward fill
-        rel_change_lead <- abs(x_fill - lead(x_fill)) / zoo::rollmedian(x_fill, input$k, fill= NA, align = "right") * 100
-        rel_change_lag <- abs(x_fill - lag(x_fill)) / zoo::rollmedian(x_fill, input$k, fill= NA, align = "left") * 100
-
-        outlier <- rel_change_lead >= input$t & rel_change_lag >= input$t
-        outlier[is.na(outlier)] <- FALSE #deal with ending/starting NA
-      }
-
-      if(input$filter_type == "questionable"){
-        outlier <- get_qual_flags(sondeproj()$data, y_var())
-        outlier <- ifelse(is.na(outlier), FALSE, ifelse(outlier == "Questionable", TRUE, FALSE))
-      }
-
-      if(input$filter_type == "bad"){
-        outlier <- get_qual_flags(sondeproj()$data, y_var())
-        outlier <- ifelse(is.na(outlier), FALSE, ifelse(outlier == "Bad", TRUE, FALSE))
-      }
-
-      #return flagged indices
-      if(input$filter_type == "none" || sum(outlier) == 0){
-        NULL
-      }else{
-        data[outlier,] %>% dplyr::filter(.data$Date >= plot_dates()[1], .data$Date <= plot_dates()[2]) %>% pull(.data$Index)
-
-      }
-      })
+    plot_dates <- weekly_range_server("date_nav", sondeproj, data_ver, view_state)
 
   #track selected data
     observeEvent(
-      req(plot_exist(), event_data("plotly_selected", source = "outlier_plot")),{
+      req(plot_exist(), event_data("plotly_selected", source = "outlier_plot", priority = "event")),{
         req(sondeproj(), y_var())
 
         data <- sondeproj()$data
+        curr_add <- manual_chg()
 
         sel <- event_data("plotly_selected", source = "outlier_plot")
-
         if(is.data.frame(sel)){
           sel <- sel %>% filter(.data$curveNumber %in% traces()) %>%
-            mutate(x = parse_date_time(x, tz=sondeproj()$meta$tz, orders = "Ymd HMS", truncated =3))
+            mutate(x = parse_date_time(.data$x, tz= sondeproj()$meta$tz, orders = "Ymd HMS", truncated =3))
           #get points based on x and y
           full_index <- data %>%
             mutate(value = .data[[y_var()]],
@@ -176,28 +181,28 @@ outlier_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_
             inner_join(sel, by = c("DateTime_rd" = "x", "value" = "y")) %>%
             pull(.data$Index)
 
-          if(input$selection_mode == "add"){
-            manual_add(union(manual_add(), full_index))
-            #also remove if index is in rm
-            manual_rm(setdiff(manual_rm(), full_index))
-          }else {
-            manual_rm(union(manual_rm(), full_index))
-            #also remove if index is in add
-            manual_add(setdiff(manual_add(), full_index))
-
+          if(input$selection_mode == "bad"){
+            curr_add$bad <- union(full_index, curr_add$bad)
+            curr_add$questionable <- setdiff(curr_add$questionable, full_index)
+            curr_add$remove <- setdiff(curr_add$remove, full_index)
           }
+
+          if(input$selection_mode == "questionable"){
+            curr_add$questionable <- union(full_index, curr_add$questionable)
+            curr_add$bad <- setdiff(curr_add$bad, full_index)
+            curr_add$remove <- setdiff(curr_add$remove, full_index)
+          }
+
+          if(input$selection_mode == "remove"){
+            curr_add$bad <- setdiff(curr_add$bad, full_index)
+            curr_add$questionable <- setdiff(curr_add$questionable, full_index)
+            curr_add$remove <- union(full_index, curr_add$remove)
+          }
+
+          manual_chg(curr_add)
         }
-
-
       })
 
-  #keep track of the selected points
-    selected_index <- reactive({
-      auto <- auto_index()
-      auto <- setdiff(auto, manual_rm())
-      union(auto, manual_add())
-
-    })
 
   #filter data to plot
     plot_data <- reactive({
@@ -212,23 +217,30 @@ outlier_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_
       req(y_var(),y2_var(), plot_data())
       if(y2_var() == "none"){y2 <- NULL}else{y2 <- y2_var()}
 
-      #if we want to filter out flagged points, filter before plotting
-      if(input$rm_flags){
-        filter_data <- plot_data() %>% filter(!(.data$Index %in% selected_index()))
-      }else{
-        filter_data <- plot_data()
-        flag_data <- plot_data() %>% filter(.data$Index %in% selected_index() & !is.na(.data[[y_var()]]))
-      }
+      filter_data <- plot_data() %>% filter(!is.na(.data[[y_var()]]))
 
       #use function to plot sonde data
       p <- plot_sonde(data = filter_data, y_var=y_var(), y2_var= y2, proj = sondeproj(), opts=plot_opts(),
                       source="outlier_plot")
 
-      #color points outside limits as red
-      if(!input$rm_flags){
-        y <- y_var()
+      #color points
+      y <- y_var()
+      indices <- selected()
+
+      for(m in c("questionable", "bad")){
+        plot_opts <- switch(m,
+                            "questionable" = list(
+                              nicename = "Questionable (unsaved)",
+                              color = "#fac769"),
+                            "bad" = list(
+                              nicename = "Bad (unsaved)",
+                              color = "#b83d3d"))
+
+        flag_data <- plot_data() %>% filter(.data$Index %in% indices[[m]] & !is.na(.data[[y_var()]]))
+
         p <- p %>% add_trace(data= flag_data, x=~DateTime_rd, y=as.formula(paste0("~`", y, "`")), type="scatter", mode="markers",
-                                 name = "Flagged", marker = list(color = "darkred"), yaxis="y2", inherit = FALSE)
+                             name = plot_opts$nicename, marker = list(color = plot_opts$color), yaxis="y2", inherit = FALSE)
+
       }
 
       #set which traces hold points
@@ -244,48 +256,68 @@ outlier_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_
     #save to export
     main_plot_server("outlier_plot",data_ver, sondeproj, plot_obj, plot_data, y_var, sel_mode=TRUE,plot_exist)
 
-    #redraw when back on module to prevent weird drawing issues
-    observeEvent(input$modules, {
-      req(input$modules == "step-6")
+  # create edit object for removing data
+  edit_rm <- reactive({
+    newdata <- sondeproj()$data
 
-      plotlyProxy("outlier_plot", session) %>%
-        plotlyProxyInvoke("resize")
-    })
+    #only flag data within date range
+    range_index <- plot_data()$Index[plot_data()$Index %in% selected()$bad]
+    setna <- newdata$Index %in% range_index
 
-  #create edit object
-    edit <- reactive({
-      newdata <- sondeproj()$data
+    #set to NA
+    newdata[[y_var()]][setna] <- NA
 
-      #get filtered data
-      setna <- newdata$Index %in% selected_index()
-      newdata[[y_var()]][setna] <- NA
+    note <- switch(input$filter_type,
+                        "hampel" = paste0("Data removed based on Hampel Filter",
+                                          " method with a window size of ", input$k, " and threshold of ", input$t,
+                                          " paired with manual selection."),
+                        "rel_change" = paste0("Data removed based on Relative Percent Change",
+                                              " method with a window size of ", input$k, " and threshold of ", input$t,
+                                              " paired with manual selection."),
+                        "high_var" =  paste0("Data removed based on regions of high variability",
+                                             " with a window size of ", input$k, " and threshold of ", input$t,
+                                             " paired with manual selection."),
+                        "none" = "Data removed based on manual selection.")
 
-      nicemethod <- switch(input$filter_type,
-                           "hampel" = "Hampel Filter",
-                           "rel_change" = "Relative Change")
-      #make edit list
-      list(
-        data = newdata,
-        rows = setna,
-        y_var = y_var(),
-        step = "outlier removal",
-        note = paste0("Data removed based on ", nicemethod,
-                      " method with a window size of ", input$k, " and threshold of ", input$t,
-                      " paired with manual outlier detection."),
-        flag = "RM03"
-      )
+    #make edit list
+    list(
+      data = newdata,
+      rows = setna,
+      y_var = y_var(),
+      step = "outlier removal",
+      note = note,
+      flag = "RM03"
+    )
 
-    })
+  })
 
-  #flagging module
-     apply_edit_server("apply_limits", sondeproj, edit)
+  edit_chg <- reactive({
+    newdata <- sondeproj()$data
+
+    #only flag data within date range
+    range_index <- plot_data()$Index[plot_data()$Index %in% selected()$questionable]
+    setna <- newdata$Index %in% range_index
+
+    #make edit list
+    list(
+      data = newdata,
+      rows = setna,
+      y_var = y_var(),
+      step = "outlier removal",
+      note = paste0("Data flagged as questionable via manual selection."),
+      flag = "QUAL02"
+    )
+
+  })
+
+  #flagging modules
+    bad_flagged <- apply_edit_server("remove_outliers", sondeproj, edit_rm)
+    question_flagged <- apply_edit_server("flag_question", sondeproj, edit_chg)
 
   #export plot so we can check it
     exportTestValues(
       plot_obj = plot_obj(),
       changelog = sondeproj()$changelog,
-      manual_add = manual_add(),
-      manual_rm = manual_rm(),
-      selected = selected_index())
+      selected = selected())
 
   })}

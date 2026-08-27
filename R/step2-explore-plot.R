@@ -65,9 +65,12 @@ explore_data_UI <- function(id){
 #' @param sondeproj A `reactiveVal` holding the current dataset.
 #' @param data_ver A `reactiveVal` holding a number used to track when new data is added to trigger resets.
 #' @param y_var Y-variable to plot on the y-axis.
-#' @param dates The date range to view the data.
-#' @param period_view Should data be viewed by period?
-#' @param p_length The length of the period to view.
+#' @param view_state A `reactiveVal` holding a list of items specifying the view state:
+#'  - abs_dates: The absolute range of dates within the dataset
+#'  - dates: The range of dates being viewed via the date selector
+#'  - period_view: Logical if the period view is being used
+#'  - period_length: Length of period view
+#'  - period_n: The period number to view.
 
 #' @md
 #' @keywords internal
@@ -75,7 +78,7 @@ explore_data_UI <- function(id){
 #' @rdname explore-data
 #' @returns Invisible NULL
 #'
-explore_data_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_length){
+explore_data_server <- function(id, sondeproj, data_ver, y_var, view_state){
   moduleServer(id, function(input, output, session){
     ns <- NS(id) #line to make module work
 
@@ -87,6 +90,8 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var,period_view, date
   #create log table
   tab <- reactive({
     req(sondeproj())
+
+    dates <- view_state()$dates
 
     if(input$table_opt == "Field Form"){
       req(sondeproj()$fieldform)
@@ -102,8 +107,10 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var,period_view, date
         dplyr::select(-c("Resident_Probe_Serial","Check_Probe_Serial", "Site_Code")) %>%
         filter(.data$Parameter == y_var())
     }else if(input$table_opt == "Data Summary"){
-      data <- sondeproj()$data %>% dplyr::filter(.data$Date >= dates()[1], .data$Date <= dates()[2])
-      precip <- sondeproj()$precip %>% dplyr::filter(.data$DateTime >= dates()[1], .data$DateTime <= dates()[2])
+      req(plot_data())
+      data <- plot_data()
+      date_ranges <- range(data$Date)
+      precip <- sondeproj()$precip %>% dplyr::filter(.data$DateTime >= date_ranges[1], .data$DateTime <= date_ranges[2])
       describe_data(data, precip)
     }
   })
@@ -161,6 +168,9 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var,period_view, date
           )
         }
       }else{
+        show_modal_spinner(text = "Removing OOW Periods...", spin="fading-circle")
+        on.exit(remove_modal_spinner(), add = TRUE)
+
         data <- sondeproj()$data
         #get OOW periods
         oow <- get_oow(sondeproj()$fieldform, tz=sondeproj()$meta$tz,interval=get_interval(data))
@@ -197,7 +207,7 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var,period_view, date
     })
 
   #keep track of dates
-    plot_dates <- weekly_range_server("date_nav", sondeproj, period_view, dates, p_length, data_ver)
+    plot_dates <- weekly_range_server("date_nav", sondeproj, data_ver, view_state)
 
   #keep track of selected data version
     undo_ver <- reactive({

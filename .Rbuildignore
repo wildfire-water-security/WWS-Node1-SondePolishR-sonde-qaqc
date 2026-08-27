@@ -10,3 +10,4 @@ _\.new\.png$
 ^docs$
 ^pkgdown$
 ^\.github$
+^vignettes/articles$

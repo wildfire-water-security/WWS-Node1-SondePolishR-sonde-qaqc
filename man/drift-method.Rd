@@ -40,6 +40,6 @@ Updates the values of `currplot` and `curredit` to be current with the method.
 }
 \description{
 Used to account for instrument drift by applying a linear correction to a data file. Uses differences between
-check and resident sonde measurments when available as the default correction amount.
+check and resident sonde measurements when available as the default correction amount.
 }
 \keyword{internal}

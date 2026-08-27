@@ -7,24 +7,26 @@
 get_diff(olddata, newdata, id = c("DateTime_rd", "DupNum"), ignore = NA)
 }
 \arguments{
-\item{olddata}{a `data.frame` with the original data.}
+\item{olddata}{a \code{data.frame} with the original data.}
 
-\item{newdata}{a `data.frame` with the revised data.}
+\item{newdata}{a \code{data.frame} with the revised data.}
 
-\item{id}{name of the column name used to match observations between `olddata` and `newdata`. Must be convertible to a number.}
+\item{id}{name of the column name used to match observations between \code{olddata} and \code{newdata}. Must be convertible to a number.}
 
 \item{ignore}{a character vector including any column names to not track.}
 }
 \value{
-A `diff` object with a named list item for each column being tracked.
-Each list item will either be `NULL` if there were no changes to that column or have the following structure:
-- op_type: a character describing the type of change made
-- id: the id values for the change made
-- new_data: the values of the changed values in `newdata`
-- old_data: the values of the changed values in `olddata`
+A \code{diff} object with a named list item for each column being tracked.
+Each list item will either be \code{NULL} if there were no changes to that column or have the following structure:
+\itemize{
+\item op_type: a character describing the type of change made
+\item id: the id values for the change made
+\item new_data: the values of the changed values in \code{newdata}
+\item old_data: the values of the changed values in \code{olddata}
+}
 }
 \description{
-Compares the values between the two `data.frames` and creates a small `diff` object that stores the
+Compares the values between the two \code{data.frames} and creates a small \code{diff} object that stores the
 datetimes of the change and the new and old values. Used to move between versions. Note that this function
 does not currently support addition and removal of columns, but row additions/subtractions are supported.
 }

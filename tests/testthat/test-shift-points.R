@@ -4,7 +4,7 @@ test_that("shift guessing works", {
     y_var <- "ODO_mg_L"
     index <- 5:7
     newdata <- shift_points(proj$data, y_var, index)
-    expect_equal(newdata[[y_var]][index], proj$data[[y_var]][index]/0.8)
+    expect_equal(newdata[[y_var]][index], (proj$data[[y_var]][index]/0.8 )+ c(0, 0.001, 0.002))
 
   #test a few different types of shifts
     #linear shift down

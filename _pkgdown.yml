@@ -26,7 +26,6 @@ reference:
       - get_oow
       - get_precip
       - get_nldas
-      - get_skip
       - load_project
       - read_cal
       - read_ff
@@ -45,6 +44,7 @@ reference:
       - guess_shift
       - identify_dups
       - identify_gaps
+      - identify_outliers
       - prep_interp
       - run_interp
       - shift_points

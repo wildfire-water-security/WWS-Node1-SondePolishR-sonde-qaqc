@@ -53,16 +53,19 @@ correction_UI <- function(id){
 #' @param sondeproj A `reactiveVal` holding the current dataset.
 #' @param data_ver A `reactiveVal` holding a number used to track when new data is added to trigger resets.
 #' @param y_var Y-variable to plot on the y-axis.
-#' @param dates The date range to view the data.
-#' @param period_view Should data be viewed by period?
-#' @param p_length The length of the period to view.
+#' @param view_state A `reactiveVal` holding a list of items specifying the view state:
+#'  - abs_dates: The absolute range of dates within the dataset
+#'  - dates: The range of dates being viewed via the date selector
+#'  - period_view: Logical if the period view is being used
+#'  - period_length: Length of period view
+#'  - period_n: The period number to view.
 #' @md
 #' @keywords internal
 #' @export
 #' @rdname correction
 #' @returns Invisible NULL
 #'
-correction_server <- function(id, sondeproj, data_ver, y_var,period_view, dates, p_length){
+correction_server <- function(id, sondeproj, data_ver, y_var,view_state){
   moduleServer(id, function(input, output, session){
 
   index <- reactiveVal() #stores index of selected points
@@ -92,7 +95,7 @@ correction_server <- function(id, sondeproj, data_ver, y_var,period_view, dates,
     plot_opts <- plot_options_server("plot_opts")
 
   #keep track of dates
-    plot_dates <- weekly_range_server("date_nav", sondeproj, period_view, dates, p_length, data_ver)
+    plot_dates <- weekly_range_server("date_nav", sondeproj, data_ver,view_state)
 
   #code for tracking selected points
     #clearing manual indices if y_var or data updates
@@ -101,7 +104,7 @@ correction_server <- function(id, sondeproj, data_ver, y_var,period_view, dates,
     })
 
     observeEvent(
-      req(plot_exist(), event_data("plotly_selected", source = "shift_plot"), input$edit_type != "drift"),{
+      req(plot_exist(), event_data("plotly_selected", source = "shift_plot", priority = "event"), input$edit_type != "drift"),{
         req(sondeproj(), y_var())
         data <- sondeproj()$data
         sel <- event_data("plotly_selected", source = "shift_plot")
@@ -109,11 +112,17 @@ correction_server <- function(id, sondeproj, data_ver, y_var,period_view, dates,
         if(length(sel) && nrow(sel) > 0){
           sel <- sel %>%  filter(.data$curveNumber %in% traces()) %>%
             mutate(x = parse_date_time(.data$x, tz=sondeproj()$meta$tz, orders = "Ymd HMS", truncated =3))
+
           full_index <- data %>%
             mutate(value = .data[[y_var()]],
                    DateTime_rd = .data$DateTime_rd) %>%
             inner_join(sel, by = c("DateTime_rd" = "x")) %>%
             pull(.data$Index)
+
+        if(input$edit_type == "smooth"){
+          full_index <- seq(from=min(full_index), to=max(full_index), by=1)
+        }
+
           index(full_index)
         }else{index(NULL)}
 

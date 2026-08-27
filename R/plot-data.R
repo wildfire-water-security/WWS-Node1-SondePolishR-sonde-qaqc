@@ -19,6 +19,7 @@
 #'
 #' @returns a `plotly` object
 #' @export
+#' @md
 #'
 #' @examples
 #' plot_sonde(example_data, y_var = "Temp_C")
@@ -80,25 +81,25 @@ plot_sonde <- function(data, y_var, y2_var=NULL,
                         title = paste0("<b>", y2_var_nice, "</b>")))
 
   #add second axis (in the back)
-    if(!is.null(y2_var)){
+    if(!is.null(y2_var) && y2_var != y_var){
       if(y2_var == "precip" & !is.null(precip)){
         precip <- precip %>% filter(.data$DateTime >= min(date_rg) & .data$DateTime <= max(date_rg)) %>%
           arrange(.data$DateTime)
 
         #add second axis
         p <- p %>% add_trace(data= precip, x=~DateTime, y=~Precip_mm_hr, type="scatter", yaxis="y", mode="lines",
-                             name = y2_var_nice,
+                             name = y2_var_nice, inherit = FALSE,
                              line = list(color = "#1d3040"))
       }else if(y2_var == "raw"){
         raw_data <- get_raw_data(proj)
         p <- p %>% add_trace(data= raw_data, x=~DateTime_rd, y=as.formula(paste0("~`", y_var, "`")),
                              type="scatter", yaxis="y", mode="lines",
-                             name = "Raw Data",
+                             name = "Raw Data",inherit = FALSE,
                              line = list(color = "#1d3040"))
       }else if(y2_var != "precip"){
         p <- p %>% add_trace(data= data, x=~DateTime_rd, y=as.formula(paste0("~`", y2_var, "`")),
                              type="scatter", yaxis="y", mode="lines",
-                             name = y2_var_nice,
+                             name = y2_var_nice,inherit = FALSE,
                              line = list(color = "#1d3040"))
       }
     }

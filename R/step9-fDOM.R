@@ -58,12 +58,15 @@ fdom_UI <- function(id){
 #' @param sondeproj A `reactiveVal` holding the current dataset.
 #' @param data_ver A `reactiveVal` holding a number used to track when new data is added to trigger resets.
 #' @param y_var Y-variable to plot on the y-axis.
-#' @param dates The date range to view the data.
-#' @param period_view Should data be viewed by period?
-#' @param p_length The length of the period to view.
+#' @param view_state A `reactiveVal` holding a list of items specifying the view state:
+#'  - abs_dates: The absolute range of dates within the dataset
+#'  - dates: The range of dates being viewed via the date selector
+#'  - period_view: Logical if the period view is being used
+#'  - period_length: Length of period view
+#'  - period_n: The period number to view.
 #' @export
 #' @rdname fdom
-fdom_server <- function(id, sondeproj, data_ver, y_var, period_view, dates, p_length){
+fdom_server <- function(id, sondeproj, data_ver, y_var, view_state){
   moduleServer(id, function(input, output, session){
     plot_exist <- reactiveVal() #keeps warning about missing plot
 
@@ -115,7 +118,7 @@ fdom_server <- function(id, sondeproj, data_ver, y_var, period_view, dates, p_le
     plot_opts <- plot_options_server("plot_opts")
 
   #keep track of dates
-    plot_dates <- weekly_range_server("date_nav", sondeproj, period_view, dates, p_length, data_ver)
+    plot_dates <- weekly_range_server("date_nav", sondeproj, data_ver, view_state)
 
   #give warning if data isn't temp corrected
    observeEvent(input$method, {

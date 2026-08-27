@@ -9,7 +9,7 @@
 #' @param index Row numbers to add flag to.
 #' @param flag Flag to add to the data.frame.
 #' @md
-#' @returns a data.frame with the same dimensions as `data` with the flags added to the appropriate column.
+#' @returns a `data.frame` with the same dimensions as `data` with the flags added to the appropriate column.
 #' @export
 #'
 #' @examples

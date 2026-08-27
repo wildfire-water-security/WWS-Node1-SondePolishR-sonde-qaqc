@@ -10,7 +10,7 @@
 
 #' @returns a numeric with the guessed shift value based on the parameter
 #' @export
-#'
+#' @md
 #' @examples
 #' guess_shift(example_sondeproj$data, "ODO_mg_L", 5:7)
 
@@ -47,7 +47,7 @@ guess_shift <- function(data, par, index){
   }
 
   #determine slope and int
-  slope <- round(add[2] - add[1], 3)
+  slope <- round((add[length(add)] - add[1]) / length(add), 3)
   int <- round(add[1], 3)
 
   #correct if it's a single point
@@ -69,8 +69,8 @@ guess_shift <- function(data, par, index){
 #' @param par the parameter being corrected
 #' @param index the index values of the rows that need to be shifted
 #' @param shift_val a list of the slope and int (intercept) to use to shift the data by, if `NULL`, it will be guessed using \link[SondePolishR]{guess_shift}
-#'
-#' @returns a data.frame with the values adjusted
+#' @md
+#' @returns a `data.frame` with the values adjusted
 #' @export
 #'
 #' @examples

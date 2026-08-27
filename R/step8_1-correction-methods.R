@@ -107,7 +107,7 @@ additive_server <- function(id, sondeproj, y_var, plot, plot_data, currplot, cur
 #' Apply a drift correction to a data file
 #'
 #' Used to account for instrument drift by applying a linear correction to a data file. Uses differences between
-#' check and resident sonde measurments when available as the default correction amount.
+#' check and resident sonde measurements when available as the default correction amount.
 #'
 #' @param id the shiny ID of the module
 #' @param sondeproj A `reactiveVal` holding the current dataset.
@@ -267,7 +267,7 @@ smooth_server <- function(id, sondeproj, y_var, plot, plot_data, currplot, curre
       newdata <- sondeproj()$data
       #get updated data
       rows <- newdata$Index %in% index() #convert from row numbers to T/F
-      req(input$method)
+      req(input$method, input$smooth_fact)
       nice_methods <- switch(input$method,
                              "rollmean" = "Rolling Mean",
                              "rollmedian" = "Rolling Median",
@@ -285,7 +285,7 @@ smooth_server <- function(id, sondeproj, y_var, plot, plot_data, currplot, curre
 
     #update plot
     observe({
-      req(plot(), y_var(), currmethod() == "smooth")
+      req(plot(), y_var(), currmethod() == "smooth", input$smooth_fact)
       p <- plot()
       plot_range <- range(plot_data()$Date)
       data <- sondeproj()$data
@@ -296,8 +296,9 @@ smooth_server <- function(id, sondeproj, y_var, plot, plot_data, currplot, curre
           dplyr::filter(.data$Date >= plot_range[1], .data$Date <= plot_range[2])
 
         if(nrow(smooth_data) > 0){
-          p <- p %>% add_trace(data= smooth_data, x=~DateTime_rd, y=as.formula(paste0("~`", y_var(), "`")), type="scatter", mode="lines",
-                               name = "Smoothed", line = list(color = "darkred"), yaxis="y2", inherit = FALSE)
+          p <- p %>% add_trace(data= smooth_data, x=~DateTime_rd, y=as.formula(paste0("~`", y_var(), "`")), type="scatter", mode="lines+markers",
+                               name = "Smoothed", line = list(color = "darkred"),
+                               marker = list(color = "darkred"), yaxis="y2", inherit = FALSE)
         }
 
       }
