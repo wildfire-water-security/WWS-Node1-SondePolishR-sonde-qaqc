@@ -1,5 +1,34 @@
 # Changelog
 
+## SondePolishR 0.0.9008
+
+(2026-08-27)
+
+### Bug Fixes
+
+- When the period length changes, the period being viewed resets to 0 to
+  prevent being in a date range that’s outside the data.
+- Actually fixed the issue where selecting a point twice wouldn’t
+  trigger the expected action.
+- The summary table in the **Visualize** tab now shows data summaries
+  from the data within the plotting view. However, the summary table
+  will **not** respond to changes in the zoom state.
+- Fixed a bug that allowed you to apply edits to data that were not
+  within the set date range. This was problematic as you could
+  accidentally remove points that you hadn’t reviewed.
+- Updated several documentation pages to use markdown styling.
+
+### Updates
+
+- The **quality flags** tab was removed and the functionality was
+  combined with the **identify outliers** tab. This was done to
+  encourage starting with the automated methods of identifying outliers
+  to make point removal more standardized and make the process faster.
+- A new method was added to identify outliers, “high variability”, see
+  `identify_outliers` for details on this method.
+- The default threshold for identifying outliers was changed from 5 to 7
+  to prevent false positives.
+
 ## SondePolishR 0.0.9007
 
 (2026-08-17)

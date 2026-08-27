@@ -5,7 +5,7 @@ removal and return times to determine the times the sonde was out of the
 water (OOW) for plotting and data QA/QC. Determines the start and end
 times of when the sonde was out of the water. If a time is missing it
 will try to guess using the visit time, next timepoint, or when no other
-options will remove the full day. If \`Remove_Period\` is FALSE it will
+options will remove the full day. If `Remove_Period` is FALSE it will
 ignore that period as an OOW period.
 
 ## Usage
@@ -18,7 +18,7 @@ get_oow(ff, tz, interval)
 
 - ff:
 
-  Field form \`data.frame\`.
+  Field form `data.frame`.
 
 - tz:
 
@@ -31,10 +31,13 @@ get_oow(ff, tz, interval)
 
 ## Value
 
-A \`data.frame\`with three columns: - \*\*site_code\*\*: The site code
-associated with the OOW period. - \*\*start\*\*: The start of the OOW
-period stored as a \`POSIXct\`. - \*\*end\*\*: The end of the OOW
-period, stored as a \`POSIXct\`
+A `data.frame`with three columns:
+
+- **site_code**: The site code associated with the OOW period.
+
+- **start**: The start of the OOW period stored as a `POSIXct`.
+
+- **end**: The end of the OOW period, stored as a `POSIXct`
 
 ## Examples
 

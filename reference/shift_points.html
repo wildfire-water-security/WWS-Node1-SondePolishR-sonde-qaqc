@@ -9,7 +9,7 @@ dataset for those values by that set amount."><meta property="og:image" content=
 
     <a class="navbar-brand me-2" href="../index.html">SondePolishR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9007</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9008</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -21,6 +21,7 @@ dataset for those values by that set amount."><meta property="og:image" content=
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/app-manual.html">App User Guide</a></li>
+    <li><a class="dropdown-item" href="../articles/correction-steps.html">Correction Workflow</a></li>
     <li><a class="dropdown-item" href="../articles/QAQC-flags.html">QAQC Flags</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -77,7 +78,7 @@ dataset for those values by that set amount.</p>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>a data.frame with the values adjusted</p>
+    <p>a <code>data.frame</code> with the values adjusted</p>
     </div>
 
     <div class="section level2">
@@ -86,7 +87,7 @@ dataset for those values by that set amount.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 7.072 7.056 7.040</span>
 <span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">shift_points</span><span class="op">(</span><span class="va">example_sondeproj</span><span class="op">$</span><span class="va">data</span>, <span class="st">"ODO_mg_L"</span>, <span class="fl">5</span><span class="op">:</span><span class="fl">7</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">data</span><span class="op">$</span><span class="va">ODO_mg_L</span><span class="op">[</span><span class="fl">5</span><span class="op">:</span><span class="fl">7</span><span class="op">]</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 8.84 8.82 8.80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 8.840 8.821 8.802</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

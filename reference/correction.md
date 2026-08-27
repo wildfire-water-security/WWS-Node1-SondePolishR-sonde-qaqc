@@ -10,7 +10,7 @@ data.
 ``` r
 correction_UI(id)
 
-correction_server(id, sondeproj, data_ver, y_var, period_view, dates, p_length)
+correction_server(id, sondeproj, data_ver, y_var, view_state)
 ```
 
 ## Arguments
@@ -33,17 +33,19 @@ correction_server(id, sondeproj, data_ver, y_var, period_view, dates, p_length)
 
   Y-variable to plot on the y-axis.
 
-- period_view:
+- view_state:
 
-  Should data be viewed by period?
+  A `reactiveVal` holding a list of items specifying the view state:
 
-- dates:
+  - abs_dates: The absolute range of dates within the dataset
 
-  The date range to view the data.
+  - dates: The range of dates being viewed via the date selector
 
-- p_length:
+  - period_view: Logical if the period view is being used
 
-  The length of the period to view.
+  - period_length: Length of period view
+
+  - period_n: The period number to view.
 
 ## Value
 

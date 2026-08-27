@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SondePolishR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9007</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9008</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -19,6 +19,7 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/app-manual.html">App User Guide</a></li>
+    <li><a class="dropdown-item" href="../articles/correction-steps.html">Correction Workflow</a></li>
     <li><a class="dropdown-item" href="../articles/QAQC-flags.html">QAQC Flags</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -51,7 +52,7 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">export_UI</span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">export_server</span><span class="op">(</span><span class="va">id</span>, <span class="va">sondeproj</span>, <span class="va">data_ver</span>, <span class="va">y_var</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">export_server</span><span class="op">(</span><span class="va">id</span>, <span class="va">sondeproj</span>, <span class="va">data_ver</span>, <span class="va">y_var</span>, <span class="va">current_mod</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -72,6 +73,10 @@
 
 <dt id="arg-y-var">y_var<a class="anchor" aria-label="anchor" href="#arg-y-var"></a></dt>
 <dd><p>Y-variable to plot on the y-axis.</p></dd>
+
+
+<dt id="arg-current-mod">current_mod<a class="anchor" aria-label="anchor" href="#arg-current-mod"></a></dt>
+<dd><p>The name of the current module being viewed.</p></dd>
 
 </dl></div>
 

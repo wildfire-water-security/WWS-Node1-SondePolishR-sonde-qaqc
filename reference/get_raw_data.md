@@ -15,11 +15,11 @@ get_raw_data(proj)
 
 - proj:
 
-  A \`sondeproj\` object.
+  A `sondeproj` object.
 
 ## Value
 
-a \`data.frame\` with raw data.
+a `data.frame` with raw data.
 
 ## Examples
 

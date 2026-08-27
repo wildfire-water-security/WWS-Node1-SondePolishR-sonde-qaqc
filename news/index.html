@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SondePolishR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9007</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9008</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -19,6 +19,7 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/app-manual.html">App User Guide</a></li>
+    <li><a class="dropdown-item" href="../articles/correction-steps.html">Correction Workflow</a></li>
     <li><a class="dropdown-item" href="../articles/QAQC-flags.html">QAQC Flags</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -42,6 +43,24 @@
       <small>Source: <a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9008" id="sondepolishr-009008">SondePolishR 0.0.9008<a class="anchor" aria-label="anchor" href="#sondepolishr-009008"></a></h2>
+<p>(2026-08-27)</p>
+<div class="section level3">
+<h3 id="bug-fixes-0-0-9008">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-0-9008"></a></h3>
+<ul><li>When the period length changes, the period being viewed resets to 0 to prevent being in a date range that’s outside the data.</li>
+<li>Actually fixed the issue where selecting a point twice wouldn’t trigger the expected action.</li>
+<li>The summary table in the <strong>Visualize</strong> tab now shows data summaries from the data within the plotting view. However, the summary table will <strong>not</strong> respond to changes in the zoom state.</li>
+<li>Fixed a bug that allowed you to apply edits to data that were not within the set date range. This was problematic as you could accidentally remove points that you hadn’t reviewed.</li>
+<li>Updated several documentation pages to use markdown styling.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="updates-0-0-9008">Updates<a class="anchor" aria-label="anchor" href="#updates-0-0-9008"></a></h3>
+<ul><li>The <strong>quality flags</strong> tab was removed and the functionality was combined with the <strong>identify outliers</strong> tab. This was done to encourage starting with the automated methods of identifying outliers to make point removal more standardized and make the process faster.</li>
+<li>A new method was added to identify outliers, “high variability”, see <code>identify_outliers</code> for details on this method.</li>
+<li>The default threshold for identifying outliers was changed from 5 to 7 to prevent false positives.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.9007" id="sondepolishr-009007">SondePolishR 0.0.9007<a class="anchor" aria-label="anchor" href="#sondepolishr-009007"></a></h2>
 <p>(2026-08-17)</p>

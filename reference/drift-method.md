@@ -2,7 +2,7 @@
 
 Used to account for instrument drift by applying a linear correction to
 a data file. Uses differences between check and resident sonde
-measurments when available as the default correction amount.
+measurements when available as the default correction amount.
 
 ## Usage
 

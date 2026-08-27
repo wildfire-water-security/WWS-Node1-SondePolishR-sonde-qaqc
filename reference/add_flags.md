@@ -30,8 +30,8 @@ add_flags(data, y_var, index, flag)
 
 ## Value
 
-a data.frame with the same dimensions as `data` with the flags added to
-the appropriate column.
+a `data.frame` with the same dimensions as `data` with the flags added
+to the appropriate column.
 
 ## Examples
 

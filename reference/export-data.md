@@ -8,7 +8,7 @@ data.
 ``` r
 export_UI(id)
 
-export_server(id, sondeproj, data_ver, y_var)
+export_server(id, sondeproj, data_ver, y_var, current_mod)
 ```
 
 ## Arguments
@@ -30,3 +30,7 @@ export_server(id, sondeproj, data_ver, y_var)
 - y_var:
 
   Y-variable to plot on the y-axis.
+
+- current_mod:
+
+  The name of the current module being viewed.

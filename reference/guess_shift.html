@@ -9,7 +9,7 @@ data before and after the selected observations to guess the appropriate value t
 
     <a class="navbar-brand me-2" href="../index.html">SondePolishR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9007</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9008</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -21,6 +21,7 @@ data before and after the selected observations to guess the appropriate value t
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/app-manual.html">App User Guide</a></li>
+    <li><a class="dropdown-item" href="../articles/correction-steps.html">Correction Workflow</a></li>
     <li><a class="dropdown-item" href="../articles/QAQC-flags.html">QAQC Flags</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -80,7 +81,7 @@ data before and after the selected observations to guess the appropriate value t
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">guess_shift</span><span class="op">(</span><span class="va">example_sondeproj</span><span class="op">$</span><span class="va">data</span>, <span class="st">"ODO_mg_L"</span>, <span class="fl">5</span><span class="op">:</span><span class="fl">7</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $slope</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -0.004</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -0.003</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $int</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.768</span>

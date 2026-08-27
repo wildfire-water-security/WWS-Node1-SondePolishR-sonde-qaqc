@@ -9,7 +9,7 @@ This module visualizes those limits and flags data outside specified limits."><m
 
     <a class="navbar-brand me-2" href="../index.html">SondePolishR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9007</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9008</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -21,6 +21,7 @@ This module visualizes those limits and flags data outside specified limits."><m
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/app-manual.html">App User Guide</a></li>
+    <li><a class="dropdown-item" href="../articles/correction-steps.html">Correction Workflow</a></li>
     <li><a class="dropdown-item" href="../articles/QAQC-flags.html">QAQC Flags</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -54,7 +55,7 @@ This module visualizes those limits and flags data outside specified limits.</p>
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">limits_UI</span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">limits_server</span><span class="op">(</span><span class="va">id</span>, <span class="va">sondeproj</span>, <span class="va">data_ver</span>, <span class="va">y_var</span>, <span class="va">period_view</span>, <span class="va">dates</span>, <span class="va">p_length</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">limits_server</span><span class="op">(</span><span class="va">id</span>, <span class="va">sondeproj</span>, <span class="va">data_ver</span>, <span class="va">y_var</span>, <span class="va">view_state</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -77,16 +78,13 @@ This module visualizes those limits and flags data outside specified limits.</p>
 <dd><p>Y-variable to plot on the y-axis.</p></dd>
 
 
-<dt id="arg-period-view">period_view<a class="anchor" aria-label="anchor" href="#arg-period-view"></a></dt>
-<dd><p>Should data be viewed by period?</p></dd>
-
-
-<dt id="arg-dates">dates<a class="anchor" aria-label="anchor" href="#arg-dates"></a></dt>
-<dd><p>The date range to view the data.</p></dd>
-
-
-<dt id="arg-p-length">p_length<a class="anchor" aria-label="anchor" href="#arg-p-length"></a></dt>
-<dd><p>The length of the period to view.</p></dd>
+<dt id="arg-view-state">view_state<a class="anchor" aria-label="anchor" href="#arg-view-state"></a></dt>
+<dd><p>A `reactiveVal` holding a list of items specifying the view state:
+- abs_dates: The absolute range of dates within the dataset
+- dates: The range of dates being viewed via the date selector
+- period_view: Logical if the period view is being used
+- period_length: Length of period view
+- period_n: The period number to view.</p></dd>
 
 </dl></div>
 

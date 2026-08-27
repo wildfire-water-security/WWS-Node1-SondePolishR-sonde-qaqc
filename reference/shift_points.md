@@ -32,7 +32,7 @@ shift_points(data, par, index, shift_val = NULL)
 
 ## Value
 
-a data.frame with the values adjusted
+a `data.frame` with the values adjusted
 
 ## Examples
 
@@ -41,5 +41,5 @@ example_sondeproj$data$ODO_mg_L[5:7]
 #> [1] 7.072 7.056 7.040
 data <- shift_points(example_sondeproj$data, "ODO_mg_L", 5:7)
 data$ODO_mg_L[5:7]
-#> [1] 8.84 8.82 8.80
+#> [1] 8.840 8.821 8.802
 ```

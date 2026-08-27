@@ -1,6 +1,6 @@
-# Log edits to a \`sondeproj\`
+# Log edits to a `sondeproj`
 
-Uses a list of edit parameters to update a \`sondeproj\` with the
+Uses a list of edit parameters to update a `sondeproj` with the
 specified edits. Makes changes to the data, changelog, and flags.
 
 ## Usage
@@ -13,19 +13,27 @@ apply_edit(proj, edit)
 
 - proj:
 
-  A \`sondeproj\` object holding sonde data.
+  A `sondeproj` object holding sonde data.
 
 - edit:
 
-  A list of length six: - data: new updated data as a \`data.frame\` -
-  rows: logical vector which specifies rows changed as TRUE - y_var:
-  parameter being edited - step: name of the editing step for the
-  changelog - note: an optional note to add to the changelog - flag:
-  character flag to use for edits to the data
+  A list of length six:
+
+  - data: new updated data as a `data.frame`
+
+  - rows: logical vector which specifies rows changed as TRUE
+
+  - y_var: parameter being edited
+
+  - step: name of the editing step for the changelog
+
+  - note: an optional note to add to the changelog
+
+  - flag: character flag to use for edits to the data
 
 ## Value
 
-A \`sondeproj\` object with edits made.
+A `sondeproj` object with edits made.
 
 ## Examples
 

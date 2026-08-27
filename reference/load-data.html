@@ -11,7 +11,7 @@ the user will need to select a save path with the file name based on the name of
 
     <a class="navbar-brand me-2" href="../index.html">SondePolishR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9007</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9008</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -23,6 +23,7 @@ the user will need to select a save path with the file name based on the name of
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/app-manual.html">App User Guide</a></li>
+    <li><a class="dropdown-item" href="../articles/correction-steps.html">Correction Workflow</a></li>
     <li><a class="dropdown-item" href="../articles/QAQC-flags.html">QAQC Flags</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -57,7 +58,7 @@ the user will need to select a save path with the file name based on the name of
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">load_data_UI</span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">load_data_server</span><span class="op">(</span><span class="va">id</span>, <span class="va">sondeproj</span>, <span class="va">data_ver</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">load_data_server</span><span class="op">(</span><span class="va">id</span>, <span class="va">sondeproj</span>, <span class="va">data_ver</span>, <span class="va">view_state</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -74,6 +75,15 @@ the user will need to select a save path with the file name based on the name of
 
 <dt id="arg-data-ver">data_ver<a class="anchor" aria-label="anchor" href="#arg-data-ver"></a></dt>
 <dd><p>A <code>reactiveVal</code> holding a number used to track when new data is added to trigger resets.</p></dd>
+
+
+<dt id="arg-view-state">view_state<a class="anchor" aria-label="anchor" href="#arg-view-state"></a></dt>
+<dd><p>A <code>reactiveVal</code> holding a list of items specifying the view state:</p><ul><li><p>abs_dates: The absolute range of dates within the dataset</p></li>
+<li><p>dates: The range of dates being viewed via the date selector</p></li>
+<li><p>period_view: Logical if the period view is being used</p></li>
+<li><p>period_length: Length of period view</p></li>
+<li><p>period_n: The period number to view.</p></li>
+</ul></dd>
 
 </dl></div>
     <div class="section level2">

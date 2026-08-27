@@ -34,7 +34,7 @@ a numeric with the guessed shift value based on the parameter
 ``` r
 guess_shift(example_sondeproj$data, "ODO_mg_L", 5:7)
 #> $slope
-#> [1] -0.004
+#> [1] -0.003
 #> 
 #> $int
 #> [1] 1.768

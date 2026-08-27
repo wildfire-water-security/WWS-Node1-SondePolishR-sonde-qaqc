@@ -1,8 +1,8 @@
 # Apply a diff object to a dataset
 
-Once changes between \`data.frame\`s have been saved as a \`diff\`
-object, they can be used to move between the changes made by applying
-the \`diff\` to data.
+Once changes between `data.frame`s have been saved as a `diff` object,
+they can be used to move between the changes made by applying the `diff`
+to data.
 
 ## Usage
 
@@ -20,32 +20,32 @@ apply_diff(
 
 - data:
 
-  the data to apply the \`diff\` to. Must contain all the columns in
-  \`diff\` or a list of flags.
+  the data to apply the `diff` to. Must contain all the columns in
+  `diff` or a list of flags.
 
 - diff:
 
-  a list of \`diff\` or a single \`diff\` objects generated using
-  \`get_diff\`.
+  a list of `diff` or a single `diff` objects generated using
+  `get_diff`.
 
 - id:
 
-  name of the column name used to match observations between \`olddata\`
-  and \`newdata\`.
+  name of the column name used to match observations between `olddata`
+  and `newdata`.
 
 - invert:
 
-  logical. If \`TRUE\` changes will be reversed.
+  logical. If `TRUE` changes will be reversed.
 
 - skip_merge:
 
-  logical. If \`TRUE\` will skip any \`diff\` with are data merges.
+  logical. If `TRUE` will skip any `diff` with are data merges.
 
 ## Value
 
-a \`data.frame\` with the same columns as \`data\` with the changes from
-\`diff\` applied. Note that this could increase the number of rows if
-diff is a data merge.
+a `data.frame` with the same columns as `data` with the changes from
+`diff` applied. Note that this could increase the number of rows if diff
+is a data merge.
 
 ## Examples
 

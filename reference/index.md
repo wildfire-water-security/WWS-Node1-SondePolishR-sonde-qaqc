@@ -17,8 +17,6 @@ Functions for loading sonde data and metadata.
   : Get hourly precipitation at data site
 - [`get_nldas()`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/get_nldas.md)
   : Download NLDAS Hourly Precipitation
-- [`get_skip()`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/get_skip.md)
-  : Guess the number of rows to skip to get correct headers
 - [`load_project()`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/load_project.md)
   : Load and combine sonde project components
 - [`read_cal()`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/read_cal.md)
@@ -34,28 +32,45 @@ Functions for tracking data quality and performing corrections.
 
 - [`add_flags()`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/add_flags.md)
   : Add new flag to dataset
+
 - [`apply_drift_shift()`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/apply_drift_shift.md)
   : Apply a drift correction to a parameter
+
 - [`apply_dup_edits()`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/apply_dup_edits.md)
   : Deals with duplicates in data and documents changes
+
 - [`apply_edit()`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/apply_edit.md)
-  : Log edits to a \`sondeproj\`
+  :
+
+  Log edits to a `sondeproj`
+
 - [`apply_interp()`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/apply_interp.md)
   : Map interpolated data back to dataset
+
 - [`apply_smoothing()`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/apply_smoothing.md)
   : Apply smoothing functions to data
+
 - [`correct_fdom()`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/correct_fdom.md)
   : Apply fDOM temperature and turbidity corrections
+
 - [`guess_shift()`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/guess_shift.md)
   : Guess the amount to shift observations
+
 - [`identify_dups()`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/identify_dups.md)
   : Identify duplicated observations with sonde data
+
 - [`identify_gaps()`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/identify_gaps.md)
   : Identify missing observations with sonde data
+
+- [`identify_outliers()`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/identify_outliers.md)
+  : Auto-detect potential bad data points
+
 - [`prep_interp()`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/prep_interp.md)
   : Prepare interpolation dataset
+
 - [`run_interp()`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/run_interp.md)
   : Interpolate data gaps
+
 - [`shift_points()`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/shift_points.md)
   : Correct points via an absolute shift
 

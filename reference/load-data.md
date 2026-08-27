@@ -10,7 +10,7 @@ save path with the file name based on the name of the data file.
 ``` r
 load_data_UI(id)
 
-load_data_server(id, sondeproj, data_ver)
+load_data_server(id, sondeproj, data_ver, view_state)
 ```
 
 ## Arguments
@@ -28,6 +28,20 @@ load_data_server(id, sondeproj, data_ver)
 
   A `reactiveVal` holding a number used to track when new data is added
   to trigger resets.
+
+- view_state:
+
+  A `reactiveVal` holding a list of items specifying the view state:
+
+  - abs_dates: The absolute range of dates within the dataset
+
+  - dates: The range of dates being viewed via the date selector
+
+  - period_view: Logical if the period view is being used
+
+  - period_length: Length of period view
+
+  - period_n: The period number to view.
 
 ## Value
 

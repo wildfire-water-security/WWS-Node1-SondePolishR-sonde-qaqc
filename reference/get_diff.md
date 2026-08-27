@@ -1,7 +1,7 @@
 # Track differences between sonde data
 
-Compares the values between the two \`data.frames\` and creates a small
-\`diff\` object that stores the datetimes of the change and the new and
+Compares the values between the two `data.frames` and creates a small
+`diff` object that stores the datetimes of the change and the new and
 old values. Used to move between versions. Note that this function does
 not currently support addition and removal of columns, but row
 additions/subtractions are supported.
@@ -16,16 +16,16 @@ get_diff(olddata, newdata, id = c("DateTime_rd", "DupNum"), ignore = NA)
 
 - olddata:
 
-  a \`data.frame\` with the original data.
+  a `data.frame` with the original data.
 
 - newdata:
 
-  a \`data.frame\` with the revised data.
+  a `data.frame` with the revised data.
 
 - id:
 
-  name of the column name used to match observations between \`olddata\`
-  and \`newdata\`. Must be convertible to a number.
+  name of the column name used to match observations between `olddata`
+  and `newdata`. Must be convertible to a number.
 
 - ignore:
 
@@ -33,12 +33,17 @@ get_diff(olddata, newdata, id = c("DateTime_rd", "DupNum"), ignore = NA)
 
 ## Value
 
-A \`diff\` object with a named list item for each column being tracked.
-Each list item will either be \`NULL\` if there were no changes to that
-column or have the following structure: - op_type: a character
-describing the type of change made - id: the id values for the change
-made - new_data: the values of the changed values in \`newdata\` -
-old_data: the values of the changed values in \`olddata\`
+A `diff` object with a named list item for each column being tracked.
+Each list item will either be `NULL` if there were no changes to that
+column or have the following structure:
+
+- op_type: a character describing the type of change made
+
+- id: the id values for the change made
+
+- new_data: the values of the changed values in `newdata`
+
+- old_data: the values of the changed values in `olddata`
 
 ## Examples
 
