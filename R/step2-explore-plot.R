@@ -107,8 +107,10 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var, view_state){
         dplyr::select(-c("Resident_Probe_Serial","Check_Probe_Serial", "Site_Code")) %>%
         filter(.data$Parameter == y_var())
     }else if(input$table_opt == "Data Summary"){
-      data <- sondeproj()$data %>% dplyr::filter(.data$Date >= dates[1], .data$Date <= dates[2])
-      precip <- sondeproj()$precip %>% dplyr::filter(.data$DateTime >= dates[1], .data$DateTime <= dates[2])
+      req(plot_data())
+      data <- plot_data()
+      date_ranges <- range(data$Date)
+      precip <- sondeproj()$precip %>% dplyr::filter(.data$DateTime >= date_ranges[1], .data$DateTime <= date_ranges[2])
       describe_data(data, precip)
     }
   })

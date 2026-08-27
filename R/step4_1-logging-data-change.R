@@ -51,6 +51,8 @@ apply_edit_UI <- function(id, edit_type ="flag", note=NULL) {
 apply_edit_server <- function(id, sondeproj, edit){
   moduleServer(id, function(input, output, session) {
 
+    saved_indices <- reactiveVal(NULL)
+
   #when button is hit, apply flags, and edit data
     observeEvent(input$apply_flags, {
       req(sondeproj(), edit())
@@ -70,9 +72,9 @@ apply_edit_server <- function(id, sondeproj, edit){
     #clear user note
       updateTextInput(session,"flag_notes",value = "")
 
-   # return(apply = reactive(input$apply_flags))
+      saved_indices(sondeproj()$data$Index[edit2$rows])
+    })
 
-      })
-
+    return(saved_indices)
   })
 }

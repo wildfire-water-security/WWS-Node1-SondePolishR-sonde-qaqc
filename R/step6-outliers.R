@@ -27,7 +27,7 @@ outlier_UI <- function(id){
             bslib::layout_columns(
               col_widths = c(3,3,1,5),
               numericInput(ns("k"),"Window Size",value =5,step=2),
-              numericInput(ns("t"),"Threshold",value = 5, step=0.1),
+              numericInput(ns("t"),"Threshold",value = 7, step=0.5),
               tags$div(
                 style = "width: 1px; height: 85px; background-color: #6c7881; display: inline-block; margin: 0 30px; vertical-align: middle;"),
               div(class = "d-flex justify-content-center align-items-center",
@@ -139,17 +139,18 @@ outlier_server <- function(id, sondeproj, data_ver, y_var,view_state){
       manual_chg(edit_add)
     })
 
-  #clear only the one we're saving
-    observeEvent(sondeproj(), {
-      req(sondeproj())
-      edit_add <- manual_chg()
-      if(input$selection_mode != "remove"){
-        edit_add[[input$selection_mode]] <- integer()
-       }
+  #clear only the points we're saving
+  observeEvent(bad_flagged(),{
+    edit_add <- manual_chg()
+    edit_add$bad <- setdiff(edit_add$bad, bad_flagged())
+    manual_chg(edit_add)
+  })
 
-      manual_chg(edit_add)
-
-    })
+  observeEvent(question_flagged(),{
+    edit_add <- manual_chg()
+    edit_add$questionable <- setdiff(edit_add$questionable, question_flagged())
+    manual_chg(edit_add)
+  })
 
   #get column names after file upload (dynamic)
     update_parms_server("update_parms", sondeproj, data_ver, y_var, choices_fun = nice_yvar)
@@ -163,7 +164,7 @@ outlier_server <- function(id, sondeproj, data_ver, y_var,view_state){
 
   #track selected data
     observeEvent(
-      req(plot_exist(), event_data("plotly_selected", source = "outlier_plot")),{
+      req(plot_exist(), event_data("plotly_selected", source = "outlier_plot", priority = "event")),{
         req(sondeproj(), y_var())
 
         data <- sondeproj()$data
@@ -259,8 +260,11 @@ outlier_server <- function(id, sondeproj, data_ver, y_var,view_state){
   edit_rm <- reactive({
     newdata <- sondeproj()$data
 
-    #get filtered data
-    setna <- newdata$Index %in% selected()$bad
+    #only flag data within date range
+    range_index <- plot_data()$Index[plot_data()$Index %in% selected()$bad]
+    setna <- newdata$Index %in% range_index
+
+    #set to NA
     newdata[[y_var()]][setna] <- NA
 
     note <- switch(input$filter_type,
@@ -287,8 +291,9 @@ outlier_server <- function(id, sondeproj, data_ver, y_var,view_state){
   edit_chg <- reactive({
     newdata <- sondeproj()$data
 
-    #get filtered data
-    setna <- newdata$Index %in% selected()$questionable
+    #only flag data within date range
+    range_index <- plot_data()$Index[plot_data()$Index %in% selected()$questionable]
+    setna <- newdata$Index %in% range_index
 
     #make edit list
     list(
@@ -303,8 +308,8 @@ outlier_server <- function(id, sondeproj, data_ver, y_var,view_state){
   })
 
   #flagging modules
-     apply_edit_server("remove_outliers", sondeproj, edit_rm)
-     apply_edit_server("flag_question", sondeproj, edit_chg)
+    bad_flagged <- apply_edit_server("remove_outliers", sondeproj, edit_rm)
+    question_flagged <- apply_edit_server("flag_question", sondeproj, edit_chg)
 
   #export plot so we can check it
     exportTestValues(

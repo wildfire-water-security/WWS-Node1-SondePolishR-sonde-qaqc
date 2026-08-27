@@ -36,3 +36,6 @@ based on a relative change between the points before and after it. The \code{k} 
 to include in the median calculation, the \code{t} parameter is used to control the threshold required to be marked as bad.
 }
 }
+\examples{
+identify_outliers(example_data, "fDOM_QSU", "hampel")
+}

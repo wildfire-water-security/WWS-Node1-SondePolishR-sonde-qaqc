@@ -103,7 +103,12 @@ weekly_range_server <- function(id, sondeproj, data_ver, view_state){
 
       observeEvent(input$p_length,{
         if(!identical(input$p_length, view_state()$period_length)){
-          update_view_state(view_state, period_length = input$p_length)}
+          update_view_state(view_state, period_length = input$p_length)
+
+          #reset the period being viewed
+          period_n(1)
+          update_view_state(view_state, period_n = period_n())
+        }
       },ignoreInit = TRUE)
 
       observeEvent(period_n(),{

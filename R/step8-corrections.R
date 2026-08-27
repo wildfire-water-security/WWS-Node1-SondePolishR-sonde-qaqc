@@ -104,7 +104,7 @@ correction_server <- function(id, sondeproj, data_ver, y_var,view_state){
     })
 
     observeEvent(
-      req(plot_exist(), event_data("plotly_selected", source = "shift_plot"), input$edit_type != "drift"),{
+      req(plot_exist(), event_data("plotly_selected", source = "shift_plot", priority = "event"), input$edit_type != "drift"),{
         req(sondeproj(), y_var())
         data <- sondeproj()$data
         sel <- event_data("plotly_selected", source = "shift_plot")
