@@ -1,3 +1,17 @@
+# SondePolishR 0.0.9009
+
+(2026-09-xx)
+
+## Bug Fixes
+
+-   In the interpolation tab, the period navigation buttons were shifted downward.
+
+## Updates
+
+-   The **hampel** filter method in identifying outliers was adjusted to ignore regions where the median deviation is 0.
+-   The corrections tab was placed before the interpolation tab since this step should typically occur first.
+-   Updated the interpolation code to not have to run the `apply_interp` step whenever the period changes.
+
 # SondePolishR 0.0.9008
 
 (2026-08-27)

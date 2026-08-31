@@ -26,7 +26,7 @@ outlier_UI <- function(id){
                            choices = c("Add Bad" = "bad", "Add Questionable" = "questionable", "Remove Selection" = "remove"))),
             bslib::layout_columns(
               col_widths = c(3,3,1,5),
-              numericInput(ns("k"),"Window Size",value =5,step=2),
+              numericInput(ns("k"),"Window Size",value =7,step=2),
               numericInput(ns("t"),"Threshold",value = 7, step=0.5),
               tags$div(
                 style = "width: 1px; height: 85px; background-color: #6c7881; display: inline-block; margin: 0 30px; vertical-align: middle;"),
@@ -261,11 +261,9 @@ outlier_server <- function(id, sondeproj, data_ver, y_var,view_state){
     newdata <- sondeproj()$data
 
     #only flag data within date range
-    range_index <- plot_data()$Index[plot_data()$Index %in% selected()$bad]
-    setna <- newdata$Index %in% range_index
-
-    #set to NA
-    newdata[[y_var()]][setna] <- NA
+    index <- newdata %>% filter(.data$Index %in% selected()$bad) %>%
+      dplyr::filter(.data$Date >= plot_dates()[1], .data$Date <= plot_dates()[2]) %>% pull(Index)
+    newdata[[y_var()]][newdata$Index %in% index] <- NA
 
     note <- switch(input$filter_type,
                         "hampel" = paste0("Data removed based on Hampel Filter",
@@ -282,7 +280,7 @@ outlier_server <- function(id, sondeproj, data_ver, y_var,view_state){
     #make edit list
     list(
       data = newdata,
-      rows = setna,
+      rows = index,
       y_var = y_var(),
       step = "outlier removal",
       note = note,

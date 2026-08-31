@@ -5,7 +5,7 @@ library(zoo)
 
 ## inputs to module
 proj <- example_sondeproj
-y_var <- "fDOM_QSU"
+y_var <- "ODO_mg_L"
 
 #UI choices
 filter_type <- "hampel"
@@ -21,16 +21,16 @@ x_fill <- zoo::na.locf(x_fill, fromLast = TRUE)      # backward fill
   #all methods should return logic vector of flagged points that could be passed to edit
 #step 1: hampel filter -----
   #UI for this option
-  k <- 8
-  t <- 2.5
+  k <- 7
+  t <- 7
+
+
+
+
 if(filter_type == "hampel"){
   #show UI options for k (window size) and t (threshold)
 
-  hampel_out <- pracma::hampel(x_fill, k, t)
-
-  outlier <- rep(FALSE, length(x))
-  outlier[hampel_out$ind] <- TRUE
-
+  outlier <- hampel_robust(x_fill, k, t)
   outlier
 
 }
@@ -82,8 +82,8 @@ if(filter_type == "relative_change"){
   outlier <- roll_mad > typical_mad * t #is above threshold?
 
   #check
-  test <- example_data %>% mutate(outlier = outlier, median = roll_sd)
+  test <- example_data %>% mutate(outlier = outlier)
   #ggplotly(ggplot(test, aes(x=DateTime_rd, y=fDOM_QSU)) + geom_line() + geom_point(aes(color=median)))
-  ggplotly(ggplot(test, aes(x=DateTime_rd, y=fDOM_QSU))  + geom_line() + geom_point(aes(color=outlier)))
+  ggplotly(ggplot(test, aes(x=DateTime_rd, y=ODO_mg_L))  + geom_line() + geom_point(aes(color=outlier)))
 
   ggplot(test, aes(x=DateTime_rd)) + geom_line(aes(y=fDOM_QSU)) + geom_line(aes(y=median), color="red")

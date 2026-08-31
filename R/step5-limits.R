@@ -169,14 +169,14 @@ limits_server <- function(id, sondeproj, data_ver, y_var,view_state){
       newdata <- sondeproj()$data
 
       #get filtered data
-      setna <- newdata[[y_var()]] < input$min | newdata[[y_var()]] > input$max
-      setna[is.na(setna)] <- FALSE #if NA, will return NA, we want to make FALSE
-      newdata[[y_var()]][setna] <- NA
+      index <- newdata %>% filter(.data[[y_var()]] < input$min | .data[[y_var()]] > input$max) %>%
+        dplyr::filter(.data$Date >= plot_dates()[1], .data$Date <= plot_dates()[2]) %>% pull(Index)
+      newdata[[y_var()]][newdata$Index %in% index] <- NA
 
       #make edit list
       list(
         data = newdata,
-        rows = setna,
+        rows = index,
         y_var = y_var(),
         step = "absolute limits",
         note = paste0("Data removed based on absolute limits of ", input$min, " and ", input$max),

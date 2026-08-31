@@ -42,7 +42,6 @@ interp_UI <- function(id){
       mainPanel(
         main_plot_UI(ns("interp_plot")),
 
-        plotlyOutput(ns("interp_plot"), height="400px"),
         #add buttons to navigate date
         weekly_range_buttons_UI(ns("date_nav")),
       ))
@@ -175,11 +174,18 @@ interp_server <- function(id, sondeproj, data_ver, y_var,view_state, current_mod
 
   #create edit object
     edit <- reactive({
+      browser()
+
+      ##need to filter this to only mark within data range
       req(data_fill(), y_var())
-      newdata <- data_fill()
-      rows <- newdata$fill_flag
-      rows[is.na(newdata[[y_var()]]) & rows] <- !rows[is.na(newdata[[y_var()]]) & rows] # make sure we don't flag if not filled
-      newdata <- newdata %>% select(-"fill_flag")
+      newdata <- sondeproj()$data
+      fill_data <- data_fill() ## this fills the full range, only want to replace within view range
+
+      #only replace data within date range
+      index <- fill_data %>% filter(.data$fill_flag & !is.na(.data[[y_var()]])) %>% # make sure we don't flag if not filled
+        dplyr::filter(.data$Date >= plot_dates()[1], .data$Date <= plot_dates()[2]) %>% pull(Index)
+
+      newdata[[y_var()]][index] <- fill_data[[y_var()]][index]
 
       #nice names of methods
       label_name <- switch(input$method,
@@ -191,7 +197,7 @@ interp_server <- function(id, sondeproj, data_ver, y_var,view_state, current_mod
       #get diff and flags
       edit <- list(
         data = newdata,
-        rows = rows,
+        rows = index,
         y_var = y_var(),
         step = "data interpolation",
         note = paste0("Data interpolated using ", label_name, " with a maximum gap size of ", input$max_length, " hours."),
