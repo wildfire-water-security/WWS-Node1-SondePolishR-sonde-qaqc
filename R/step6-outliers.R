@@ -294,12 +294,12 @@ outlier_server <- function(id, sondeproj, data_ver, y_var,view_state){
 
     #only flag data within date range
     range_index <- plot_data()$Index[plot_data()$Index %in% selected()$questionable]
-    setna <- newdata$Index %in% range_index
+    index <- range_index
 
     #make edit list
     list(
       data = newdata,
-      rows = setna,
+      rows = index,
       y_var = y_var(),
       step = "outlier removal",
       note = paste0("Data flagged as questionable via manual selection."),

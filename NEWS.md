@@ -5,12 +5,16 @@
 ## Bug Fixes
 
 -   In the interpolation tab, the period navigation buttons were shifted downward.
+-   Median and mean functions were not ignoring `NA` values causing weird placing of points when filling.
+-   The y-min limit wasn't updating in the interpolation tab with y-max limit changes.
 
 ## Updates
 
 -   The **hampel** filter method in identifying outliers was adjusted to ignore regions where the median deviation is 0.
 -   The corrections tab was placed before the interpolation tab since this step should typically occur first.
 -   Updated the interpolation code to not have to run the `apply_interp` step whenever the period changes.
+-   Removed the Savitzky–Golay filter smoothing method as it was not working well for the data types.
+-   Now when data or a project is loaded the app will fill in any missing `datetimes` within the data so the rows/indices are consistent and don't change during the interpolation step.
 
 # SondePolishR 0.0.9008
 

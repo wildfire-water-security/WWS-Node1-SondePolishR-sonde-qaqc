@@ -122,7 +122,12 @@ main_plot_server <- function(id, data_ver, sondeproj, plot_obj, plot_data, y_var
       req(sondeproj(), y_var(),input$yaxismax)
 
       minv <- floor(min(sondeproj()$data[[y_var()]], na.rm=TRUE) - (input$yaxismax*0.05))
-      updateNumericInput(session, "yaxismin", value=min(startmin(), minv, na.rm=TRUE))
+
+      if(id != "interp_plot"){
+        updateNumericInput(session, "yaxismin", value=min(startmin(), minv, na.rm=TRUE))
+      }else{
+        updateNumericInput(session, "yaxismin", value=minv)
+      }
     })
 
  #observe changes to plot

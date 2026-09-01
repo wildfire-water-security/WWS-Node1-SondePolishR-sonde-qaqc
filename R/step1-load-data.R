@@ -194,7 +194,7 @@ load_data_server <- function(id, sondeproj, data_ver, view_state){
   #when button to load project is clicked, read in everything and merge together
     observeEvent(input$load_prj, {
     if(any(c(!is.null(input$pj_file), !is.null(input$csv_files)))){
-      withProgress(message = "loading sonde files...", min=0,max=length(csv_path()), {
+      withProgress(message = "loading sonde files...", min=0,max=length(csv_path())+1, {
           obj <- load_project(csv_path(), csv_files=input$csv_files$name, prj_path=prj_path(),
                    ff_path=ff_path(), cc_path=cc_path(), tz=input$tz, site=input$site,
                    update_pb = function(amount){incProgress(amount)})
@@ -282,13 +282,6 @@ load_data_server <- function(id, sondeproj, data_ver, view_state){
 
       sondeproj(proj)
 
-      # if (interactive()) {
-      #   shinyalert::shinyalert(
-      #     title = "Precipitation Data Loaded",
-      #     text = "Precipitation data has been added to existing project.",
-      #     type = "success"
-      #   )
-      # }
     })
   #export values so we can check them
     #save values we want to check as their own reactive

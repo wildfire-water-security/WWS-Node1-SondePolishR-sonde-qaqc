@@ -189,6 +189,8 @@ fdom_server <- function(id, sondeproj, data_ver, y_var, view_state){
                        "temperature" = !is_corrected(proj, "temp"),
                        is_corrected(proj, "temp") & !is_corrected(proj, "turb"))
 
+      index <- newdata$Index[rows]
+
       #provide warnings
       if(sum(rows) == 0){
         if(interactive()){
@@ -216,7 +218,7 @@ fdom_server <- function(id, sondeproj, data_ver, y_var, view_state){
       #make edit list
       list(
         data = newdata,
-        rows = rows,
+        rows = index,
         y_var = "fDOM_QSU",
         step = "fDOM correction",
         note = method_note,

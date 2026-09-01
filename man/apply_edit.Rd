@@ -12,7 +12,7 @@ apply_edit(proj, edit)
 \item{edit}{A list of length six:
 \itemize{
 \item data: new updated data as a \code{data.frame}
-\item rows: logical vector which specifies rows changed as TRUE
+\item rows: vector of indices that were changed
 \item y_var: parameter being edited
 \item step: name of the editing step for the changelog
 \item note: an optional note to add to the changelog
@@ -29,7 +29,7 @@ changes to the data, changelog, and flags.
 \examples{
 data <- example_data
 data$fDOM_QSU[1:4] <- NA
-rows <- rep(FALSE, nrow(data))
+rows <- c(1:4)
 rows[1:4] <- TRUE
 edit <- list(data = example_data,
              rows = rows,

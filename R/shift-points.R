@@ -113,13 +113,16 @@ shift_points <- function(data, par, index, shift_val=NULL){
 apply_drift_shift <- function(x, rows, corrected, uncorrected){
   n <- sum(rows)
 
-  # amount needed at final point (using paired check, resident)
-  d <- corrected - uncorrected
+  #trying to add some guards to prevent warnings
+  if(is.integer(n) | is.numeric(n) && n > 0){
+    # amount needed at final point (using paired check, resident)
+    d <- corrected - uncorrected
 
-  # increasing additive correction
-  add <- d * ((seq_len(n) - 1) / (n - 1))
+    # increasing additive correction
+    add <- d * ((seq_len(n) - 1) / (n - 1))
 
-  x[rows] <- x[rows] + add
+    x[rows] <- x[rows] + add
+  }
 
   return(x)
 }

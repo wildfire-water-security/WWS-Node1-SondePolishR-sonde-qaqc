@@ -60,15 +60,15 @@ additive_server <- function(id, sondeproj, y_var, plot, plot_data, currplot, cur
    observe({
      req(currmethod() == "additive", sondeproj(), y_var(), index())
      newdata <- sondeproj()$data
+     indexn <- index()
         #get updated data
-        newdata <- shift_points(newdata, y_var(), index(), shift_val = list(slope=input$slope, int=input$int))
-        rows <- newdata$Index %in% index() #convert from row numbers to T/F
+        newdata <- shift_points(newdata, y_var(), indexn, shift_val = list(slope=input$slope, int=input$int))
         note <- paste0("shift with slope ", input$slope," and intercept ", input$int)
         step <- "additive shifts"
         flag <- "CHG01"
 
       #make edit list
-      curredit(list(data = newdata,rows = rows,y_var = y_var(),
+      curredit(list(data = newdata,rows = indexn,y_var = y_var(),
         step = step,note = note,flag = flag))
     })
 
@@ -158,8 +158,10 @@ drift_server <- function(id, sondeproj, y_var,plot, plot_data, currplot, curredi
     observe({
       req(input$file, currmethod() == "drift")
       newdata <- sondeproj()$data
+
       #get updated data
-      rows <- newdata$FileName == input$file #T/F
+      indexn <- newdata %>% filter(.data$FileName == input$file) %>% pull(Index)
+      rows <- newdata$Index %in% indexn #T/F
       newdata[[y_var()]] <- apply_drift_shift(newdata[[y_var()]], rows, input$correct, input$uncorrect)
       note <- paste0("drift correction based on an uncorrected value of ", input$uncorrect," and corrected value of ", input$correct,
                      " for file ", input$file)
@@ -167,7 +169,7 @@ drift_server <- function(id, sondeproj, y_var,plot, plot_data, currplot, curredi
       flag <- "CHG02"
 
       #make edit list
-      curredit(list(data = newdata,rows = rows,y_var = y_var(),
+      curredit(list(data = newdata,rows = indexn,y_var = y_var(),
            step = step,note = note,flag = flag))
     })
 
@@ -223,7 +225,6 @@ smooth_UI <- function(id){
     fluidRow(selectInput(ns("method"),label = "Smoothing Method:",
                       choices = c("Rolling Mean" = "rollmean",
                                   "Rolling Median" = "rollmedian",
-                                  "Savitzky-Golay Filter" = "savgol",
                                   "Kalman Filter" = "kalman"), selectize=TRUE, width="60%"),
           numericInput(ns("smooth_fact"),"Smoothing Factor:",value = 7,step=2, min=1, width="40%"))
 
@@ -266,20 +267,19 @@ smooth_server <- function(id, sondeproj, y_var, plot, plot_data, currplot, curre
       req(sondeproj(), y_var(), currmethod() == "smooth")
       newdata <- sondeproj()$data
       #get updated data
-      rows <- newdata$Index %in% index() #convert from row numbers to T/F
+      indexn <- index() #convert from row numbers to T/F
       req(input$method, input$smooth_fact)
       nice_methods <- switch(input$method,
                              "rollmean" = "Rolling Mean",
                              "rollmedian" = "Rolling Median",
-                             "savgol" = "Savitzky-Golay Filter",
                              "kalman" = "Kalman Filter")
-      newdata <- apply_smoothing(newdata, y_var(), input$method, index(), k=input$smooth_fact)
+      newdata <- apply_smoothing(newdata, y_var(), input$method, indexn, k=input$smooth_fact)
       note <- paste0("smoothing correction using ", nice_methods," using a smoothing factor of ", input$smooth_fact)
       step <- "smoothing correction"
       flag <- "CHG05"
 
       #make edit list
-      curredit(list(data = newdata,rows = rows,y_var = y_var(),
+      curredit(list(data = newdata,rows = indexn, y_var = y_var(),
            step = step,note = note,flag = flag))
     })
 

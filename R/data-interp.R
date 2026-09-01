@@ -7,9 +7,7 @@
 #'
 #' @param proj A `sondeproj` object holding sonde data.
 #'
-#' @returns a list of length two:
-#' - fill: `data.frame` based on `proj$data` with missing `datetime` values added.
-#' - interp: `data.frame` based on `proj$data` with duplicates condensed to a single value.
+#' @returns a `data.frame` based on `proj$data` with duplicates condensed to a single value for interpolating.
 #' @export
 #' @md
 #' @examples
@@ -20,32 +18,8 @@ prep_interp <- function(proj){
   #get data from project
   data <- proj$data
 
-  #determine interval of data for gap length
-  interval <- get_interval(data)
-
   #stuff to fill in missing correctly
-  tz <- proj$meta$tz
-  name <- unique(data$Site_Name)
   par_names <- get_parms(data)
-
-  flags <- grep("_flag$", get_parms(data, flags=TRUE), value=TRUE)
-  fix_flags <- function(x){
-    lapply(x, function(y){ifelse(is.null(y), list(c(NA)), y)})
-    }
-  #get the dataset to interpolate (still may have dupes)
-  data_fill <- data %>%
-    complete(DateTime_rd = seq(min(.data$DateTime_rd), max(.data$DateTime_rd),
-                               by = paste(interval, "min"))) %>%
-    arrange(.data$DateTime_rd, .data$DupNum) %>% #want to arrange in time order for filling
-    mutate(Index = 1:n(),
-           DupNum = ifelse(is.na(.data$DupNum), 1, .data$DupNum),
-           Date = if_else(is.na(.data$Date), as.Date(.data$DateTime_rd, tz = tz), .data$Date),
-           Time_HH_mm_ss = if_else(is.na(.data$Time_HH_mm_ss), strftime(.data$DateTime_rd, "%H:%M:%S"), .data$Time_HH_mm_ss),
-           DateTime = if_else(is.na(.data$DateTime), .data$DateTime_rd, .data$DateTime),
-           Site_Name = name) %>%
-    mutate(across(all_of(flags), ~fix_flags(.x))) %>% arrange(.data$Index) %>%
-    fill(.data$FileName, .direction = "down") %>% arrange(.data$DateTime_rd, .data$DupNum)
-
 
   #get df with a single stamp per row (conflicting duplicates are set to NA)
   #determine which sets of dups are conflicting (for removing from interpolated data)
@@ -57,7 +31,7 @@ prep_interp <- function(proj){
   conflict_list <- split(conflict$DateTime_rd, conflict$param)
 
   #set those parameters/datetimes to NA
-  data_interp <- data_fill %>%
+  data_interp <- data %>%
     mutate(across(all_of(names(conflict_list)),
                   ~ replace(.x, .data$DateTime_rd %in% conflict_list[[cur_column()]],NA)))
 
@@ -67,7 +41,7 @@ prep_interp <- function(proj){
     tidyr::fill(any_of(par_names), .direction = "downup") %>%
     slice(1) %>% ungroup()
 
-  return(list(fill = data_fill, interp = data_interp))
+  return(data_interp)
 
 }
 

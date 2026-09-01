@@ -14,7 +14,7 @@ identify_outliers(data, y_var, method, k = 5, t = 7)
 \item{method}{Character specifying the method to use for smoothing. Options include "hampel","rel_change", "high_var".
 See details for more information about the different methods.}
 
-\item{k}{A adjustment parameter for the selected method (see details).}
+\item{k}{A adjustment parameter for the selected method (see details). This is the total length of points before and after the point.}
 
 \item{t}{A adjustment parameter for the selected method (see details).}
 }
@@ -30,7 +30,8 @@ The following detection methods are currently supported:
 \itemize{
 \item \strong{hampel}: Based on the \code{hampel} function from the \code{pracma} package which identifies points
 based on a median absolute deviation. The \code{k} parameter is used to control the number of points
-to include in the median calculation, the \code{t} parameter is used to control the threshold required to be marked as bad.
+to include in the median calculation, the \code{t} parameter is used to control the threshold required to be marked as bad. The
+default function was modified to ignore points where the MAD is 0.
 \item \strong{rel_change}: Based on the \code{rollmedian} function from the \code{zoo} package which identifies points
 based on a relative change between the points before and after it. The \code{k} parameter is used to control the number of points
 to include in the median calculation, the \code{t} parameter is used to control the threshold required to be marked as bad.

@@ -4,7 +4,7 @@
 \alias{apply_interp}
 \title{Map interpolated data back to dataset}
 \usage{
-apply_interp(data_fill, data_interp, y_var, max_length, date_range)
+apply_interp(data_fill, data_interp, y_var, max_length)
 }
 \arguments{
 \item{data_fill}{\code{data.frame} based on \code{proj$data} with missing \code{datetime} values added from \code{prep_interp()}.}
@@ -14,8 +14,6 @@ apply_interp(data_fill, data_interp, y_var, max_length, date_range)
 \item{y_var}{Variable being interpolated.}
 
 \item{max_length}{The maximum length in hours to fill via interpolation.}
-
-\item{date_range}{The date range in which to fill data, used to only fill data within plotted range.}
 }
 \value{
 \code{data_fill} with missing values interpolated.

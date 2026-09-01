@@ -138,5 +138,36 @@ load_project <- function(csv_path=NULL, csv_files=NULL, prj_path=NULL,
 
     }
 
+  #fill in missing datetime stamps for future interpolation
+    if(is.function(update_pb)){setProgress(value = length(csv_path)+1, message = "Preparing Project....")}
+
+    data <- obj$data
+
+    #determine interval of data for gap length
+    interval <- get_interval(data)
+
+    #stuff to fill in missing correctly
+    par_names <- get_parms(data)
+
+    flags <- grep("_flag$", get_parms(data, flags=TRUE), value=TRUE)
+    fix_flags <- function(x){
+      lapply(x, function(y){ifelse(is.null(y), list(c(NA)), y)})
+    }
+    #get the dataset to interpolate (still may have dupes)
+    data_fill <- data %>%
+      complete(DateTime_rd = seq(min(.data$DateTime_rd), max(.data$DateTime_rd),
+                                 by = paste(interval, "min"))) %>%
+      arrange(.data$DateTime_rd, .data$DupNum) %>% #want to arrange in time order for filling
+      mutate(Index = 1:n(),
+             DupNum = ifelse(is.na(.data$DupNum), 1, .data$DupNum),
+             Date = if_else(is.na(.data$Date), as.Date(.data$DateTime_rd, tz = tz), .data$Date),
+             Time_HH_mm_ss = if_else(is.na(.data$Time_HH_mm_ss), strftime(.data$DateTime_rd, "%H:%M:%S"), .data$Time_HH_mm_ss),
+             DateTime = if_else(is.na(.data$DateTime), .data$DateTime_rd, .data$DateTime),
+             Site_Name = site) %>%
+      mutate(across(all_of(flags), ~fix_flags(.x))) %>% arrange(.data$Index) %>%
+      fill(.data$FileName, .direction = "down") %>% arrange(.data$DateTime_rd, .data$DupNum)
+
+  obj$data <- data_fill
+
   return(obj)
 }

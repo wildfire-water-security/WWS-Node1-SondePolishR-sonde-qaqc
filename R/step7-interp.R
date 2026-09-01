@@ -94,7 +94,7 @@ interp_server <- function(id, sondeproj, data_ver, y_var,view_state, current_mod
     plot_dates <- weekly_range_server("date_nav", sondeproj, data_ver,view_state)
 
   #get data to fill and interpolation df as list
-   data_fill_list <- reactive({
+   data_prep <- reactive({
      req(sondeproj(),current_mod() == "step-7")
      show_modal_spinner(text = "Preparing data...", spin="fading-circle")
      on.exit(remove_modal_spinner(), add = TRUE)
@@ -103,19 +103,20 @@ interp_server <- function(id, sondeproj, data_ver, y_var,view_state, current_mod
 
   #interpolate
   data_interp <- reactive({
-    req(sondeproj(), y_var(),input$method, input$freq,current_mod() == "step-7")
+    req(data_prep(), y_var(),input$method, input$freq,current_mod() == "step-7")
       show_modal_spinner(text = "Interpolating data...", spin="fading-circle")
       on.exit(remove_modal_spinner(), add = TRUE)
 
-    run_interp(data_fill_list()$interp, y_var(), input$method, input$freq)
+    run_interp(data_prep(), y_var(), input$method, input$freq)
   })
 
   #fill data
   data_fill <- reactive({
-    req(data_fill_list(), data_interp(), y_var(),current_mod() == "step-7")
+    req(sondeproj(), data_interp(), y_var(),current_mod() == "step-7")
       show_modal_spinner(text = "Filling data...", spin="fading-circle")
       on.exit(remove_modal_spinner(), add = TRUE)
-      apply_interp(data_fill_list()$fill, data_interp(), y_var(), input$max_length, plot_dates())
+      data <- sondeproj()$data
+      apply_interp(data, data_interp(), y_var(), input$max_length)
     })
 
   #filter data to plot
@@ -174,8 +175,6 @@ interp_server <- function(id, sondeproj, data_ver, y_var,view_state, current_mod
 
   #create edit object
     edit <- reactive({
-      browser()
-
       ##need to filter this to only mark within data range
       req(data_fill(), y_var())
       newdata <- sondeproj()$data
