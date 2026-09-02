@@ -19,5 +19,5 @@ two different values, they will be set to NA for the purposes of interpolation t
 interpolate with questionable data.
 }
 \examples{
-interp_dfs <- prep_interp(example_sondeproj)
+interp_df <- prep_interp(example_sondeproj)
 }

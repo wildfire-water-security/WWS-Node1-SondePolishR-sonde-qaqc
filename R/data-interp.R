@@ -11,7 +11,7 @@
 #' @export
 #' @md
 #' @examples
-#' interp_dfs <- prep_interp(example_sondeproj)
+#' interp_df <- prep_interp(example_sondeproj)
 prep_interp <- function(proj){
   stopifnot(inherits(proj, "sondeproj"))
 
@@ -71,8 +71,8 @@ prep_interp <- function(proj){
 #' If set to 365 it will look at annual fluctuations.
 #'
 #' @examples
-#' interp_dfs <- prep_interp(example_sondeproj)
-#' filled_yvar <- run_interp(interp_dfs$interp, "fDOM_QSU", "linear")
+#' interp_df <- prep_interp(example_sondeproj)
+#' filled_yvar <- run_interp(interp_df, "fDOM_QSU", "linear")
 run_interp <- function(data_interp, y_var, method, freq=1){
   stopifnot(is.data.frame(data_interp))
 
@@ -121,10 +121,10 @@ run_interp <- function(data_interp, y_var, method, freq=1){
 #' @md
 #'
 #' @examples
-#' interp_dfs <- prep_interp(example_sondeproj)
-#' filled_yvar <- run_interp(interp_dfs$interp, "fDOM_QSU", "linear")
-#' data_filled <- apply_interp(interp_dfs$fill, filled_yvar,
-#'                             "fDOM_QSU", 8, range(interp_dfs$fill$Date))
+#' interp_df <- prep_interp(example_sondeproj)
+#' filled_yvar <- run_interp(interp_df, "fDOM_QSU", "linear")
+#' data_filled <- apply_interp(interp_df, filled_yvar,
+#'                             "fDOM_QSU", 8)
 apply_interp <- function(data_fill, data_interp, y_var, max_length){
 
   interval <- get_interval(data_fill)

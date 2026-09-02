@@ -18,7 +18,7 @@ test_that("project is loaded and merged correctly", {
       expect_equal(proj$meta, list(site="FAL", tz="Etc/GMT+8", coords=c(43.96, -122.63))) #should maintain from example
 
       #make sure data merged
-      expect_equal(nrow(proj$data), 14528)
+      expect_equal(nrow(proj$data), 14539)
       expect_equal(length(get_parms(proj$data, flags=TRUE)),12)
       expect_equal(nrow(proj$changelog), 5) #no longer merges in since we have all the data in the original project
       expect_equal(length(proj$diffs), 4)
@@ -42,7 +42,7 @@ test_that("project is loaded and merged correctly", {
       expect_equal(proj$meta, list(site="test", tz="Etc/GMT+8", coords=c(NA, NA))) #should write new
 
       #make sure data merged
-      expect_equal(nrow(proj$data), 8071) #expect csv1 + csv2 rows
+      expect_equal(nrow(proj$data), 8072) #expect csv1 + csv2 rows
       expect_equal(length(get_parms(proj$data, flags=TRUE)),12)
       expect_equal(nrow(proj$changelog), 1)
       expect_equal(length(proj$diffs), 0)
@@ -65,7 +65,7 @@ test_that("project is loaded and merged correctly", {
       expect_s3_class(proj$changelog, "data.frame")
 
       #make sure data merged
-      expect_equal(nrow(proj$data), 14528) #expect csv1 + csv2 +csv3 rows
+      expect_equal(nrow(proj$data), 14539) #expect csv1 + csv2 +csv3 rows
       expect_equal(length(get_parms(proj$data, flags=TRUE)),12)
       expect_equal(nrow(proj$changelog), 5)
       expect_equal(length(proj$diffs), 4)

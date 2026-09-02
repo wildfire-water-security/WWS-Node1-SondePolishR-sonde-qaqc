@@ -43,7 +43,7 @@ identify_dups <- function(data){
   for(r in 1:nrow(dup_rng)){
     plot_dat <- data %>% filter(.data$DateTime_rd >= dup_rng$start[r] &
                                   .data$DateTime_rd <= dup_rng$end[r]) %>%
-      pivot_longer(-c("Index":"Site_Name"), names_to = "parameter", values_to = "measure")
+      pivot_longer(-c("DateTime_rd":"Site_Name"), names_to = "parameter", values_to = "measure")
 
     #check for different values (if more than one file)
     if(length(unique(plot_dat$FileName)) > 1){

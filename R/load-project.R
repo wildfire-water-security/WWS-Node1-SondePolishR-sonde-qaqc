@@ -165,7 +165,7 @@ load_project <- function(csv_path=NULL, csv_files=NULL, prj_path=NULL,
              DateTime = if_else(is.na(.data$DateTime), .data$DateTime_rd, .data$DateTime),
              Site_Name = site) %>%
       mutate(across(all_of(flags), ~fix_flags(.x))) %>% arrange(.data$Index) %>%
-      fill(.data$FileName, .direction = "down") %>% arrange(.data$DateTime_rd, .data$DupNum)
+      fill("FileName", .direction = "down") %>% arrange(.data$DateTime_rd, .data$DupNum)
 
   obj$data <- data_fill
 

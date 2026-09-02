@@ -23,8 +23,8 @@ Uses interpolated values to attempt to fill in missing data being aware of
 maximum gap lengths to fill and duplicates.
 }
 \examples{
-interp_dfs <- prep_interp(example_sondeproj)
-filled_yvar <- run_interp(interp_dfs$interp, "fDOM_QSU", "linear")
-data_filled <- apply_interp(interp_dfs$fill, filled_yvar,
-                            "fDOM_QSU", 8, range(interp_dfs$fill$Date))
+interp_df <- prep_interp(example_sondeproj)
+filled_yvar <- run_interp(interp_df, "fDOM_QSU", "linear")
+data_filled <- apply_interp(interp_df, filled_yvar,
+                            "fDOM_QSU", 8)
 }
