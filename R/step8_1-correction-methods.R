@@ -160,7 +160,7 @@ drift_server <- function(id, sondeproj, y_var,plot, plot_data, currplot, curredi
       newdata <- sondeproj()$data
 
       #get updated data
-      indexn <- newdata %>% filter(.data$FileName == input$file) %>% pull(Index)
+      indexn <- newdata %>% filter(.data$FileName == input$file) %>% pull(.data$Index)
       rows <- newdata$Index %in% indexn #T/F
       newdata[[y_var()]] <- apply_drift_shift(newdata[[y_var()]], rows, input$correct, input$uncorrect)
       note <- paste0("drift correction based on an uncorrected value of ", input$uncorrect," and corrected value of ", input$correct,

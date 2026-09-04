@@ -4,7 +4,7 @@
 \alias{apply_edit}
 \title{Log edits to a \code{sondeproj}}
 \usage{
-apply_edit(proj, edit)
+apply_edit(proj, edit, username)
 }
 \arguments{
 \item{proj}{A \code{sondeproj} object holding sonde data.}
@@ -18,6 +18,8 @@ apply_edit(proj, edit)
 \item note: an optional note to add to the changelog
 \item flag: character flag to use for edits to the data
 }}
+
+\item{username}{the username of the person who made the change}
 }
 \value{
 A \code{sondeproj} object with edits made.
@@ -37,6 +39,6 @@ edit <- list(data = example_data,
              step = "outlier removal",
              note = "example edit",
              flag = "RM07")
-updated_proj <- apply_edit(example_sondeproj, edit)
+updated_proj <- apply_edit(example_sondeproj, edit, "Smith")
 
 }

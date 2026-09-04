@@ -4,7 +4,6 @@ ContDataQC
 DataEntry
 DateTime
 DateTimes
-DupNum
 EARTHDATA
 EXO
 Earthdata
@@ -48,8 +47,8 @@ coords
 csv
 curredit
 currplot
+data's
 dif
-dups
 duptype
 environ
 equilibration
@@ -61,6 +60,7 @@ frac
 github
 hampel
 hh
+hideable
 https
 interferences
 interp
@@ -75,9 +75,7 @@ nasa
 natively
 nchanged
 ndif
-newdata
 nldas
-olddata
 oow
 params
 perc
@@ -94,9 +92,12 @@ sondeproj
 sondes
 ss
 timezones
+turb
 turbidities
 tz
 uS
+unflag
+unselected
 useable
 xlsx
 µS

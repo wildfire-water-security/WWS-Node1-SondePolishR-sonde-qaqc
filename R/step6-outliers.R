@@ -86,9 +86,10 @@ outlier_UI <- function(id){
 #'  - period_view: Logical if the period view is being used
 #'  - period_length: Length of period view
 #'  - period_n: The period number to view.
+#' @param username A `reactiveVal` holding the name of the analyst for the changelog
 #' @export
 #' @rdname outliers
-outlier_server <- function(id, sondeproj, data_ver, y_var,view_state){
+outlier_server <- function(id, sondeproj, data_ver, y_var,view_state, username){
   moduleServer(id, function(input, output, session){
 
   #keep track of second y_variable
@@ -262,7 +263,7 @@ outlier_server <- function(id, sondeproj, data_ver, y_var,view_state){
 
     #only flag data within date range
     index <- newdata %>% filter(.data$Index %in% selected()$bad) %>%
-      dplyr::filter(.data$Date >= plot_dates()[1], .data$Date <= plot_dates()[2]) %>% pull(Index)
+      dplyr::filter(.data$Date >= plot_dates()[1], .data$Date <= plot_dates()[2]) %>% pull(.data$Index)
     newdata[[y_var()]][newdata$Index %in% index] <- NA
 
     note <- switch(input$filter_type,
@@ -309,8 +310,8 @@ outlier_server <- function(id, sondeproj, data_ver, y_var,view_state){
   })
 
   #flagging modules
-    bad_flagged <- apply_edit_server("remove_outliers", sondeproj, edit_rm)
-    question_flagged <- apply_edit_server("flag_question", sondeproj, edit_chg)
+    bad_flagged <- apply_edit_server("remove_outliers", sondeproj, edit_rm, username)
+    question_flagged <- apply_edit_server("flag_question", sondeproj, edit_chg, username)
 
   #export plot so we can check it
     exportTestValues(

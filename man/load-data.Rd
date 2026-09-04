@@ -7,7 +7,7 @@
 \usage{
 load_data_UI(id)
 
-load_data_server(id, sondeproj, data_ver, view_state)
+load_data_server(id, sondeproj, data_ver, view_state, username)
 }
 \arguments{
 \item{id}{An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.}
@@ -24,6 +24,8 @@ load_data_server(id, sondeproj, data_ver, view_state)
 \item period_length: Length of period view
 \item period_n: The period number to view.
 }}
+
+\item{username}{A \code{reactiveVal} holding the name of the analyst for the changelog}
 }
 \value{
 The loaded data as a reactive object.

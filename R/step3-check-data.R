@@ -51,6 +51,7 @@ check_data_UI <- function(id){
 #' @param sondeproj A `reactiveVal` holding the current dataset.
 #' @param data_ver A `reactiveVal` holding a number used to track when new data is added to trigger resets.
 #' @param y_var Y-variable to plot on the y-axis.
+#' @param username A `reactiveVal` holding the name of the analyst for the changelog
 
 #' @md
 #' @keywords internal
@@ -58,7 +59,7 @@ check_data_UI <- function(id){
 #' @rdname check-data
 #' @returns Invisible NULL
 #'
-check_data_server <- function(id, sondeproj, data_ver, y_var){
+check_data_server <- function(id, sondeproj, data_ver, y_var, username){
   moduleServer(id, function(input, output, session){
 
   #when data loaded, get dups and gaps
@@ -167,7 +168,7 @@ check_data_server <- function(id, sondeproj, data_ver, y_var){
 
   #plot selected dup
     dup_plot_data <- reactive({
-      req(selected_dup())
+      req(nrow(selected_dup())>0 & all(!is.na(selected_dup()$duptype)))
       data <- sondeproj()$data
       dupdata <- data %>% filter(.data$DateTime_rd >= selected_dup()$start,.data$DateTime_rd <= selected_dup()$end) %>%
       mutate(color_labs = if(selected_dup()$duptype == "multiple files"){.data$FileName}else{paste0("Set ", .data$DupNum)})
@@ -202,6 +203,7 @@ check_data_server <- function(id, sondeproj, data_ver, y_var){
 
   #update options for which version to keep
     output$keep_ui <- renderUI({
+      req(selected_dup())
       dat <- dup_plot_data() %>% filter(.data$color_labs != "non-duplicated data")
       opts <- c(unique(dat$color_labs), "use_mean", "remove_both")
 
@@ -220,7 +222,7 @@ check_data_server <- function(id, sondeproj, data_ver, y_var){
       req(input$keep_opt)
 
       proj <- sondeproj()
-      proj <- apply_dup_edits(proj,selected_dup(),input$keep_opt,input$flag_notes)
+      proj <- apply_dup_edits(proj,selected_dup(),input$keep_opt,input$flag_notes, username())
       proj <- refresh_checks(proj)
 
       sondeproj(proj) #update project

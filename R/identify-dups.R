@@ -43,7 +43,9 @@ identify_dups <- function(data){
   for(r in 1:nrow(dup_rng)){
     plot_dat <- data %>% filter(.data$DateTime_rd >= dup_rng$start[r] &
                                   .data$DateTime_rd <= dup_rng$end[r]) %>%
-      pivot_longer(-c("DateTime_rd":"Site_Name"), names_to = "parameter", values_to = "measure")
+      pivot_longer(-any_of(c("DateTime_rd","Site_Name", "Index", "DateTime", "Date", "Time_HH_mm_ss","DupNum",
+                             "FileName")),
+                   names_to = "parameter", values_to = "measure")
 
     #check for different values (if more than one file)
     if(length(unique(plot_dat$FileName)) > 1){
@@ -116,6 +118,8 @@ identify_dups <- function(data){
 #' @param keep_opt Character describing which set of duplicates to keep (identified by `DupNum`),
 #'  "use_mean" to take the mean of the values, "remove_both" to remove all the duplicated values.
 #' @param flag_notes Optional character with additional notes to write to the changelog
+#' @param username the username of the person who made the change
+#'
 #' @md
 #' @returns a `sondeproj` with the updated data, flags, and changelog
 #' @export
@@ -124,9 +128,9 @@ identify_dups <- function(data){
 #' "example-sondeproj-messy.RDS")
 #' proj <- readRDS(path)
 #' proj$duplicates <- identify_dups(proj$data)
-#' flagged <- apply_dup_edits(proj, proj$duplicates[1,], "use_mean")
+#' flagged <- apply_dup_edits(proj, proj$duplicates[1,], "use_mean", username="Smith")
 
-apply_dup_edits <- function(proj, dup_row, keep_opt, flag_notes=""){
+apply_dup_edits <- function(proj, dup_row, keep_opt, flag_notes="", username){
    data <- proj$data
 
   #identify parameters that need to be set to NA
@@ -200,7 +204,8 @@ apply_dup_edits <- function(proj, dup_row, keep_opt, flag_notes=""){
     names(diff) <- diff_version(proj) #give name to list item
 
     proj <- write_log(proj, "all", "combine duplicates", n=n_edit,
-                      note = note, diff_name = names(diff), return = "sondeproj")
+                      note = note, diff_name = names(diff), return = "sondeproj",
+                      user = username)
 
   #add in new df and diff
     proj$data <- data_nodup

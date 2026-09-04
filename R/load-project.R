@@ -13,6 +13,7 @@
 #' @param site the site name or site code.
 #' @param update_pb takes a function used to update a progress bar in a shiny
 #' interface.
+#' @param username the username of the person who made the change
 #'
 #' @returns a `sondeproj` object. For more details on structure
 #' see `example_sondeproj`
@@ -20,13 +21,17 @@
 #' @md
 #' @examples
 #' file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "example-csv-data1.csv")
-#' proj <- load_project(csv_path = file, csv_files = "example_file1")
+#' proj <- load_project(csv_path = file, csv_files = "example_file1", username="Smith")
 load_project <- function(csv_path=NULL, csv_files=NULL, prj_path=NULL,
                          ff_path=NULL, cc_path=NULL, tz="Etc/GMT+8",
-                         site = NULL,
+                         site = NULL, username=NULL,
                          update_pb = NULL){
   #set csv merge as NULL if not loaded to prevent errors in creating obj
     csv_merge <- NULL
+
+  if(!is.null(username)){
+    username <- Sys.info()[["user"]]
+  }
 
   #if csv projected, load files
   if(!is.null(csv_path)){
@@ -55,7 +60,8 @@ load_project <- function(csv_path=NULL, csv_files=NULL, prj_path=NULL,
       obj <- readRDS(prj_path)
     }else{
       #create new project if one isn't loaded
-      changelog <- write_log(NULL, "all", "initial load", n = nrow(csv_merge), diff_name = "raw")
+      changelog <- write_log(NULL, "all", "initial load", n = nrow(csv_merge), diff_name = "raw",
+                             user=username)
 
       #create sonde object
       obj <- list(meta = list(site = site, tz= tz, coords = c(NA, NA)),
@@ -130,7 +136,8 @@ load_project <- function(csv_path=NULL, csv_files=NULL, prj_path=NULL,
         obj$diffs <- append(obj$diffs, diff)
 
         #document data addition, needs to be after getting diff so name is correct
-        obj <- write_log(obj, "all", "adding new data", n = (nrow(data_merge) - prev_lines), diff_name = diff_version(obj), return="sondeproj")
+        obj <- write_log(obj, "all", "adding new data", n = (nrow(data_merge) - prev_lines), diff_name = diff_version(obj), return="sondeproj",
+                         user=username)
 
 
       }

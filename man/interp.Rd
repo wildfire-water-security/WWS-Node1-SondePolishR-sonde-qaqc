@@ -7,7 +7,15 @@
 \usage{
 interp_UI(id)
 
-interp_server(id, sondeproj, data_ver, y_var, view_state, current_mod)
+interp_server(
+  id,
+  sondeproj,
+  data_ver,
+  y_var,
+  view_state,
+  username,
+  current_mod
+)
 }
 \arguments{
 \item{id}{An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.}
@@ -24,6 +32,8 @@ interp_server(id, sondeproj, data_ver, y_var, view_state, current_mod)
 - period_view: Logical if the period view is being used
 - period_length: Length of period view
 - period_n: The period number to view.}
+
+\item{username}{A `reactiveVal` holding the name of the analyst for the changelog}
 
 \item{current_mod}{The name of the current module being viewed.}
 }

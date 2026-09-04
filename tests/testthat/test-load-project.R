@@ -30,7 +30,7 @@ test_that("project is loaded and merged correctly", {
       ff_path <- file.path(test_path(), "testdata", "example-fieldform.csv")
       cc_path <- file.path(test_path(), "testdata", "example-calcheck.csv")
 
-      proj <- load_project(csv_path, csv_files, prj_path,ff_path, cc_path, site="test")
+      proj <- load_project(csv_path, csv_files, prj_path,ff_path, cc_path, site="test", username="Smith")
 
       #make sure things look as expected
       expect_s3_class(proj, "sondeproj")
@@ -54,7 +54,7 @@ test_that("project is loaded and merged correctly", {
       ff_path <- file.path(test_path(), "testdata", "example-fieldform.csv")
       cc_path <- file.path(test_path(), "testdata", "example-calcheck.csv")
 
-      proj <- load_project(csv_path, csv_files, prj_path,ff_path, cc_path)
+      proj <- load_project(csv_path, csv_files, prj_path,ff_path, cc_path, username="Smith")
 
       #make sure things look as expected
       expect_s3_class(proj, "sondeproj")
@@ -77,7 +77,7 @@ test_that("project is loaded and merged correctly", {
       ff_path <- NULL
       cc_path <- NULL
 
-      proj <- load_project(csv_path, csv_files, prj_path,ff_path, cc_path)
+      proj <- load_project(csv_path, csv_files, prj_path,ff_path, cc_path, username="Smith")
 
       #make sure things look as expected
       expect_s3_class(proj, "sondeproj")

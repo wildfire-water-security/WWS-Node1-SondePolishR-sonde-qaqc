@@ -11,7 +11,7 @@
 #' - step: name of the editing step for the changelog
 #' - note: an optional note to add to the changelog
 #' - flag: character flag to use for edits to the data
-#'
+#' @param username the username of the person who made the change
 #' @returns A `sondeproj` object with edits made.
 #' @export
 #' @md
@@ -26,9 +26,9 @@
 #'              step = "outlier removal",
 #'              note = "example edit",
 #'              flag = "RM07")
-#' updated_proj <- apply_edit(example_sondeproj, edit)
+#' updated_proj <- apply_edit(example_sondeproj, edit, "Smith")
 #'
-apply_edit <- function(proj, edit){
+apply_edit <- function(proj, edit, username){
   stopifnot(is.list(edit), inherits(proj, "sondeproj"))
 
   #skip applying edit if no rows changed
@@ -56,7 +56,8 @@ apply_edit <- function(proj, edit){
 
   #update log entry
     proj <- write_log(proj, edit$y_var, edit$step, n=length(edit$rows),
-                      note = edit$note, diff_name = names(dif), return = "sondeproj")
+                      note = edit$note, diff_name = names(dif), return = "sondeproj",
+                      user=username)
 
   #add in new df and diff
     proj$data <- newdata

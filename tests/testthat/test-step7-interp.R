@@ -6,7 +6,7 @@ test_that("{shinytest2} recording: checking-module7", {
   local_app_support(app_dir)
   app <- AppDriver$new(app_dir, variant = platform_variant(),
                        name = "m7", height = 911, width = 1619,
-                       expect_values_screenshot_args = FALSE,load_timeout = 60000)
+                       expect_values_screenshot_args = FALSE)
   app$upload_file(`data1-pj_file` = file.path(test_path(), "testdata", "example-sondeproj-messy.RDS"))
 
   #click to load files and create project

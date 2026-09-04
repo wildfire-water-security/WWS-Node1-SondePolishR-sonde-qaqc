@@ -26,7 +26,7 @@
 #' to include in the median calculation, the `t` parameter is used to control the threshold required to be marked as bad.
 #'
 #' - **high_var**: Used to determine regions of high variability. Uses rolling functions from the `zoo` package to determine
-#' the difference between the point and it's rolling median, then the median absolute deviation (MAD) for these differences are caclulated.
+#' the difference between the point and it's rolling median, then the median absolute deviation (MAD) for these differences are calculated.
 #' If the median absolute deviation is greater than `t` times the overall data's mean MAD it will be marked as bad.
 #'
 #' @examples

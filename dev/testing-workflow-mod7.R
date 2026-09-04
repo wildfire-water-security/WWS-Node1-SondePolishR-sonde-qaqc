@@ -130,7 +130,7 @@ fill_df <- data.frame(DateTime_rd = data_interp$DateTime_rd, x_fill = x_fill)
     flag = "AD01",
     changetype = "flag_add")
 
-  new_proj <- apply_edit(proj, edit)
+  new_proj <- apply_edit(proj, edit, username())
 
 #plot
   ggplot() + geom_line(data=proj$data, aes(x=DateTime_rd, y=.data[[y_var]])) +

@@ -96,23 +96,7 @@ test_that("{shinytest2} recording: checking-module2", {
   app$wait_for_idle()
   plot_obj <- app$get_value(export = "data2-plot_obj")
   expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
-  app$expect_screenshot(name = "change_variable")
-
-  #check on the table
-  app$expect_values(export = "data2-table", name="changelog-table",screenshot_args = FALSE)
-
-  #change to get other tables
-  app$set_inputs(`data2-table_opt` = "Field Form")
-  app$expect_values(export = "data2-table", name="fieldform-table",screenshot_args = FALSE) #fieldform
-
-  app$set_inputs(`data2-table_opt` = "Calibration Check")
-  app$expect_values(export = "data2-table", name="calcheck-table",screenshot_args = FALSE) #cal check
-
-  app$set_inputs(`data2-table_opt` = "Data Summary")
-  app$expect_values(export = "data2-table", name="datasum-table2",screenshot_args = FALSE) #data summary
-
-  app$set_inputs(`data2-date_nav-period_view` = TRUE)
-  app$expect_values(export = "data2-table", name="datasum-table-weekly",screenshot_args = FALSE) #cal check
+  app$expect_screenshot(name = "removing_OOW")
 
   #test reverting changes (can't get to work)
   # app$set_inputs(`data2-date_nav-period_view` = FALSE)

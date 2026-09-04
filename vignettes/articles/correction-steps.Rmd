@@ -184,7 +184,7 @@ Next we will review the record and remove points that are clearly bad, or mark p
 
 4.  **When to flag points.**
 
-    -   With a turbidity record, the main thing to be on the look out for is peaks without a receeding limb, suggesting the peak isn't real.
+    -   With a turbidity record, the main thing to be on the look out for is peaks without a receding limb, suggesting the peak isn't real.
 
     -   There may be small spikes within the data record, if the auto-selection methods don't flag them, leave these sorts of spikes that are less than \~2 FNU alone. There will likely be many and it should not impact the statistics on the dataset.
 
@@ -618,7 +618,7 @@ Next we will review the record and remove points that are clearly bad, or mark p
 
         > **Note:** Do not set the max y-value to lower than around 5-10 QSU to avoid zooming in too much on very small shifts in fDOM.
 
-    -   If you have clean turbidity data, add that to the plot as a second y-axis using the **Select Parameters** panel. This information is extremely helpful when trying to determine real peaks from spurious ones. **Particularly for fDOM a high spike it turbidity may cause interferencing causing a dip in fDOM that would otherwise look errant.**
+    -   If you have clean turbidity data, add that to the plot as a second y-axis using the **Select Parameters** panel. This information is extremely helpful when trying to determine real peaks from spurious ones. **Particularly for fDOM a high spike in turbidity may cause interference, causing a dip in fDOM that would otherwise look errant.**
 
 3.  **Review the selections.** Review the entire record, one period at at time to check the points automatically selected.
 

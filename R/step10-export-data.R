@@ -70,7 +70,6 @@ export_UI <- function(id){
 #' @param data_ver A `reactiveVal` holding a number used to track when new data is added to trigger resets.
 #' @param y_var Y-variable to plot on the y-axis.
 #' @param current_mod The name of the current module being viewed.
-#'
 #' @export
 #' @rdname export-data
 export_server <- function(id, sondeproj, data_ver, y_var, current_mod){

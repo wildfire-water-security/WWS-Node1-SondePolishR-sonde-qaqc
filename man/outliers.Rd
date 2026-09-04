@@ -7,7 +7,7 @@
 \usage{
 outlier_UI(id)
 
-outlier_server(id, sondeproj, data_ver, y_var, view_state)
+outlier_server(id, sondeproj, data_ver, y_var, view_state, username)
 }
 \arguments{
 \item{id}{An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.}
@@ -24,6 +24,8 @@ outlier_server(id, sondeproj, data_ver, y_var, view_state)
 - period_view: Logical if the period view is being used
 - period_length: Length of period view
 - period_n: The period number to view.}
+
+\item{username}{A `reactiveVal` holding the name of the analyst for the changelog}
 }
 \description{
 Looks for "weird" data where there are large spikes within a short period that are likely unrealistic and caused by

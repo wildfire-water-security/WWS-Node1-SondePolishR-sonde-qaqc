@@ -65,9 +65,10 @@ limits_UI <- function(id){
 #'  - period_view: Logical if the period view is being used
 #'  - period_length: Length of period view
 #'  - period_n: The period number to view.
+#' @param username A `reactiveVal` holding the name of the analyst for the changelog
 #' @export
 #' @rdname limits
-limits_server <- function(id, sondeproj, data_ver, y_var,view_state){
+limits_server <- function(id, sondeproj, data_ver, y_var,view_state, username){
   moduleServer(id, function(input, output, session){
     #keep track of second y_variable
     y2_var <- reactiveVal()
@@ -170,7 +171,7 @@ limits_server <- function(id, sondeproj, data_ver, y_var,view_state){
 
       #get filtered data
       index <- newdata %>% filter(.data[[y_var()]] < input$min | .data[[y_var()]] > input$max) %>%
-        dplyr::filter(.data$Date >= plot_dates()[1], .data$Date <= plot_dates()[2]) %>% pull(Index)
+        dplyr::filter(.data$Date >= plot_dates()[1], .data$Date <= plot_dates()[2]) %>% pull(.data$Index)
       newdata[[y_var()]][newdata$Index %in% index] <- NA
 
       #make edit list
@@ -186,7 +187,7 @@ limits_server <- function(id, sondeproj, data_ver, y_var,view_state){
     })
 
   #flagging module
-    apply_edit_server("apply_limits", sondeproj, edit)
+    apply_edit_server("apply_limits", sondeproj, edit, username)
 
   #export plot so we can check it
     exportTestValues(

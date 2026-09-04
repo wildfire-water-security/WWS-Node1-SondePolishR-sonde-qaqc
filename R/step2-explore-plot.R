@@ -71,6 +71,7 @@ explore_data_UI <- function(id){
 #'  - period_view: Logical if the period view is being used
 #'  - period_length: Length of period view
 #'  - period_n: The period number to view.
+#' @param username A `reactiveVal` holding the name of the analyst for the changelog
 
 #' @md
 #' @keywords internal
@@ -78,7 +79,7 @@ explore_data_UI <- function(id){
 #' @rdname explore-data
 #' @returns Invisible NULL
 #'
-explore_data_server <- function(id, sondeproj, data_ver, y_var, view_state){
+explore_data_server <- function(id, sondeproj, data_ver, y_var, view_state, username){
   moduleServer(id, function(input, output, session){
     ns <- NS(id) #line to make module work
 
@@ -182,13 +183,13 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var, view_state){
         setna <- data$Index %in% rm_index
 
         data_filter <- data %>% mutate(filter = setna) %>%
-          mutate(across(-("Index":"Battery_V"), ~ if_else(filter, NA, .x))) %>%
+          mutate(across(-("DateTime_rd":"Battery_V"), ~ if_else(filter, NA, .x))) %>%
           select(-"filter")
 
         #flag these changes were made
         edit <- list(
           data = data_filter,
-          rows = setna,
+          rows = rm_index,
           y_var = "all",
           step = "removing oow",
           note = paste0("OOW periods removed based on information from the field form."),
@@ -198,7 +199,7 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var, view_state){
 
 
         #log edits
-        proj <- apply_edit(sondeproj(), edit)
+        proj <- apply_edit(sondeproj(), edit, username())
 
         #update sondeproj
         sondeproj(proj)

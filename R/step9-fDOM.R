@@ -64,9 +64,10 @@ fdom_UI <- function(id){
 #'  - period_view: Logical if the period view is being used
 #'  - period_length: Length of period view
 #'  - period_n: The period number to view.
+#' @param username A `reactiveVal` holding the name of the analyst for the changelog
 #' @export
 #' @rdname fdom
-fdom_server <- function(id, sondeproj, data_ver, y_var, view_state){
+fdom_server <- function(id, sondeproj, data_ver, y_var, view_state, username){
   moduleServer(id, function(input, output, session){
     plot_exist <- reactiveVal() #keeps warning about missing plot
 
@@ -228,7 +229,7 @@ fdom_server <- function(id, sondeproj, data_ver, y_var, view_state){
     })
 
   #flagging module
-    apply_edit_server("apply_limits", sondeproj, edit)
+    apply_edit_server("apply_limits", sondeproj, edit, username)
 
   #export plot so we can check it
     exportTestValues(

@@ -67,9 +67,10 @@ interp_UI <- function(id){
 #'  - period_length: Length of period view
 #'  - period_n: The period number to view.
 #' @param current_mod The name of the current module being viewed.
+#' @param username A `reactiveVal` holding the name of the analyst for the changelog
 #' @export
 #' @rdname interp
-interp_server <- function(id, sondeproj, data_ver, y_var,view_state, current_mod){
+interp_server <- function(id, sondeproj, data_ver, y_var,view_state, username, current_mod){
   moduleServer(id, function(input, output, session){
   #keep track of second y_variable
     y2_var <- reactiveVal()
@@ -182,7 +183,7 @@ interp_server <- function(id, sondeproj, data_ver, y_var,view_state, current_mod
 
       #only replace data within date range
       index <- fill_data %>% filter(.data$fill_flag & !is.na(.data[[y_var()]])) %>% # make sure we don't flag if not filled
-        dplyr::filter(.data$Date >= plot_dates()[1], .data$Date <= plot_dates()[2]) %>% pull(Index)
+        dplyr::filter(.data$Date >= plot_dates()[1], .data$Date <= plot_dates()[2]) %>% pull(.data$Index)
 
       newdata[[y_var()]][index] <- fill_data[[y_var()]][index]
 
@@ -206,7 +207,7 @@ interp_server <- function(id, sondeproj, data_ver, y_var,view_state, current_mod
     })
 
   #flagging module
-    apply_edit_server("apply_limits", sondeproj, edit)
+    apply_edit_server("apply_limits", sondeproj, edit, username)
 
   #export plot so we can check it
     exportTestValues(

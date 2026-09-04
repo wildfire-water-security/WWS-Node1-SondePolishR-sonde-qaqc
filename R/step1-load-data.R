@@ -63,7 +63,8 @@ load_data_UI <- function(id){
           div(
             class = "d-flex flex-column justify-content-center align-items-center gap-3 h-100",
             actionButton(ns("load_prj"),"Load Sonde Data",width = "60%"),
-            actionButton(ns("reset"),"Clear Uploads",width = "60%")
+            actionButton(ns("reset"),"Clear Uploads",width = "60%"),
+            textInput(ns("username"),"Analyst Name", width="75%")
             )),
 
         bslib::card(
@@ -137,13 +138,14 @@ load_data_UI <- function(id){
 #'  - period_view: Logical if the period view is being used
 #'  - period_length: Length of period view
 #'  - period_n: The period number to view.
+#' @param username A `reactiveVal` holding the name of the analyst for the changelog
 #'
 #' @md
 #' @export
 #' @keywords internal
 #' @returns The loaded data as a reactive object.
 #' @rdname load-data
-load_data_server <- function(id, sondeproj, data_ver, view_state){
+load_data_server <- function(id, sondeproj, data_ver, view_state, username){
   moduleServer(id, function(input, output, session){
     #store paths as reactive value so we can clean on reset
       csv_path <- reactiveVal()
@@ -168,6 +170,10 @@ load_data_server <- function(id, sondeproj, data_ver, view_state){
       observe({
         req(input$precip_file)
         precip_path(input$precip_file$datapath)})
+      observe({
+        req(input$username)
+        username(input$username)
+      })
 
     #reset when requested which should prevent files from being uploaded
       observeEvent(input$reset, {
@@ -197,6 +203,7 @@ load_data_server <- function(id, sondeproj, data_ver, view_state){
       withProgress(message = "loading sonde files...", min=0,max=length(csv_path())+1, {
           obj <- load_project(csv_path(), csv_files=input$csv_files$name, prj_path=prj_path(),
                    ff_path=ff_path(), cc_path=cc_path(), tz=input$tz, site=input$site,
+                   username=username(),
                    update_pb = function(amount){incProgress(amount)})
         })
 
