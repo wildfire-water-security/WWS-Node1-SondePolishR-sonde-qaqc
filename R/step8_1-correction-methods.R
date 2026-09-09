@@ -143,7 +143,7 @@ drift_server <- function(id, sondeproj, y_var,plot, plot_data, currplot, curredi
 
   #update the drift correction values once a file/variable has been chosen
     observeEvent(
-      list(input$file, y_var()),{
+      list(input$file, y_var(), currmethod()),{
         req(sondeproj(),input$file, y_var(), currmethod() == "drift")
         vals <- guess_drift(sondeproj()$data, sondeproj()$calcheck, y_var(), input$file)
 

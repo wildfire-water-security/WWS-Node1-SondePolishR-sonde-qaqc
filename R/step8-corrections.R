@@ -138,7 +138,7 @@ correction_server <- function(id, sondeproj, data_ver, y_var,view_state, usernam
 
   #create plotly plot, add in sub-mod additions
     plot_obj <- reactive({
-      req(y_var(),y2_var(), plot_data())
+      req(y_var(),y2_var(), plot_data(), data_check(plot_data(), y_var()))
 
       if(y2_var() == "none"){y2 <- NULL}else{y2 <- y2_var()}
       y <- y_var()

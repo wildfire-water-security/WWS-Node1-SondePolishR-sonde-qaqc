@@ -9,7 +9,7 @@ check_data_UI <- function(id){
     sidebarLayout(
       sidebarPanel(
         width = 2,
-
+        update_parms_UI(ns("update_parms")),
         tags$h5("Table Options"),
 
         selectInput(
@@ -61,6 +61,8 @@ check_data_UI <- function(id){
 #'
 check_data_server <- function(id, sondeproj, data_ver, y_var, username){
   moduleServer(id, function(input, output, session){
+
+  update_parms_server("update_parms", sondeproj, data_ver, y_var, choices_fun = nice_yvar)
 
   #when data loaded, get dups and gaps
   observeEvent(sondeproj(),{

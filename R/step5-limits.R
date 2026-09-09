@@ -111,7 +111,7 @@ limits_server <- function(id, sondeproj, data_ver, y_var,view_state, username){
 
   #create plotly plot
     plot_obj <- reactive({
-      req(y_var(),y2_var(), plot_data())
+      req(y_var(),y2_var(), plot_data(), data_check(plot_data(), y_var()))
       if(y2_var() == "none"){y2 <- NULL}else{y2 <- y2_var()}
 
       #if we want to filter out flagged points, filter before plotting
@@ -122,8 +122,7 @@ limits_server <- function(id, sondeproj, data_ver, y_var,view_state, username){
         flag_data <- plot_data() %>% dplyr::filter(.data[[y_var()]] < input$min | .data[[y_var()]] > input$max)
       }
 
-
-      #use function to plot sonde data
+      #use function to plot sonde dat
       p <- plot_sonde(data = filter_data, y_var=y_var(), y2_var = y2, proj = sondeproj(), opts=plot_opts(),
                       source = "limit_plot")
       #color points outside limits as red

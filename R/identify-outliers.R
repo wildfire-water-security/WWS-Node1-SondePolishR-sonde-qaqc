@@ -38,8 +38,9 @@ identify_outliers <- function(data, y_var, method, k=5, t=7){
   x <- data[[y_var]] #get variable we're identifying
 
   #if number not odd and should be make odd
+  k_half <- ceiling((k-1)/2) #halve for functions not centered
   if(k %% 2 == 0){k <- k + 1}
-  k_half <- (k-1)/2 #halve for functions not centered
+  if(k_half %% 2 == 0){k_half <- k_half + 1}
 
   if(method == "hampel"){
     # interpolate to temp fill gaps so filter will work

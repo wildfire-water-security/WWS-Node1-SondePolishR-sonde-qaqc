@@ -153,7 +153,7 @@ fdom_server <- function(id, sondeproj, data_ver, y_var, view_state, username){
 
   #create plotly plot
     plot_obj <- reactive({
-      req(plot_data(),plot_dates())
+      req(plot_data(), data_check(plot_data(), y_var()))
 
       #use function to plot sonde data
       p <- plot_sonde(data = plot_data(), y_var="fDOM_QSU", proj = sondeproj(), opts=plot_opts(),
