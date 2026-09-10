@@ -9,7 +9,7 @@ bad and need to be removed."><meta property="og:image" content="https://wildfire
 
     <a class="navbar-brand me-2" href="../index.html">SondePolishR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9008</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9009</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -23,6 +23,7 @@ bad and need to be removed."><meta property="og:image" content="https://wildfire
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/app-manual.html">App User Guide</a></li>
     <li><a class="dropdown-item" href="../articles/correction-steps.html">Correction Workflow</a></li>
     <li><a class="dropdown-item" href="../articles/QAQC-flags.html">QAQC Flags</a></li>
+    <li><a class="dropdown-item" href="../articles/using-precipitation-data.html">Using Precipitation Data</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -74,7 +75,7 @@ See details for more information about the different methods.</p></dd>
 
 
 <dt id="arg-k">k<a class="anchor" aria-label="anchor" href="#arg-k"></a></dt>
-<dd><p>A adjustment parameter for the selected method (see details).</p></dd>
+<dd><p>A adjustment parameter for the selected method (see details). This is the total length of points before and after the point.</p></dd>
 
 
 <dt id="arg-t">t<a class="anchor" aria-label="anchor" href="#arg-t"></a></dt>
@@ -89,38 +90,39 @@ See details for more information about the different methods.</p></dd>
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>The following detection methods are currently supported:</p><ul><li><p><strong>hampel</strong>: Based on the <code>hampel</code> function from the <code>pracma</code> package which identifies points
 based on a median absolute deviation. The <code>k</code> parameter is used to control the number of points
-to include in the median calculation, the <code>t</code> parameter is used to control the threshold required to be marked as bad.</p></li>
+to include in the median calculation, the <code>t</code> parameter is used to control the threshold required to be marked as bad. The
+default function was modified to ignore points where the MAD is 0.</p></li>
 <li><p><strong>rel_change</strong>: Based on the <code>rollmedian</code> function from the <code>zoo</code> package which identifies points
 based on a relative change between the points before and after it. The <code>k</code> parameter is used to control the number of points
 to include in the median calculation, the <code>t</code> parameter is used to control the threshold required to be marked as bad.</p></li>
 <li><p><strong>high_var</strong>: Used to determine regions of high variability. Uses rolling functions from the <code>zoo</code> package to determine
-the difference between the point and it's rolling median, then the median absolute deviation (MAD) for these differences are caclulated.
+the difference between the point and it's rolling median, then the median absolute deviation (MAD) for these differences are calculated.
 If the median absolute deviation is greater than <code>t</code> times the overall data's mean MAD it will be marked as bad.</p></li>
 </ul></div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">identify_outliers</span><span class="op">(</span><span class="va">example_data</span>, <span class="st">"fDOM_QSU"</span>, <span class="st">"hampel"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [1]  1429  1543  2105  2129  2190  2762  2815  4765  4771  5123  5134  5490</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [13]  5511  5554  5561  5584  5594  5650  5653  5669  5692  5713  5723  5734</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [25]  5736  5738  5745  5782  5795  5803  5832  5862  5878  5899  5938  5982</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [37]  5992  5998  6054  6067  6089  6090  6091  6098  6104  6150  6158  6173</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [49]  6177  6183  6185  6186  6192  6200  6201  6203  6211  6226  6227  6229</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [61]  6234  6243  6253  6256  6266  6273  6276  6292  6315  6318  6346  6347</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [73]  6358  6374  6378  6393  6403  6412  6413  6425  6426  6446  6448  6476</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [85]  6490  6491  6498  6517  6529  6544  6553  6557  6564  6566  6569  6579</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [97]  6607  6635  6650  6657  6669  6675  6678  6687  6688  6689  6703  6706</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [109]  6734  6741  6749  6761  6775  6784  6787  6790  6795  6799  6824  6829</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [121]  6833  6865  6894  6974  6981  6985  6986  6987  6997  7003  7004  7009</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [133]  7012  7021  7025  7029  7032  7049  7050  7055  7059  7067  7068  7080</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [145]  7081  7095  7106  7108  7115  7133  7139  7141  7142  7145  7146  7148</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [157]  7156  7179  7187  7189  7196  7200  7208  7222  7238  7245  7250  7251</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [169]  7255  7262  7264  7267  7272  7303  7313  7314  7319  7341  7346  7351</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [181]  7362  7365  7366  7400  7406  7412  7423  7433  7475  7482  7520  7521</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [193]  7522  7523  7538  7539  7559  7571  7575  7588  7590  7595  7612  7614</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [205]  7623  7624  7639  7640  7651  7675  7679  7686  7688  7693  7724  7733</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [217]  7735  7825  7846  7852  7919  7928  7948  7951  7953  7957  7965  7972</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [229]  7978  8015  8020  8029  8037  8055  8063  8065 10472 12814 13691 14522</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1]  1429  1519  1543  2105  2129  2190  2815  2898  5094  5123  5386  5477</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [13]  5490  5511  5554  5561  5584  5594  5650  5653  5692  5713  5723  5734</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [25]  5745  5782  5795  5803  5810  5832  5878  5899  5938  5982  5992  5998</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [37]  6054  6067  6098  6104  6158  6173  6177  6186  6192  6211  6226  6229</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [49]  6234  6243  6253  6256  6266  6273  6276  6292  6308  6315  6318  6322</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [61]  6346  6347  6358  6374  6393  6403  6412  6413  6425  6426  6446  6448</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [73]  6476  6490  6491  6498  6517  6544  6553  6557  6564  6566  6569  6579</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [85]  6607  6635  6650  6657  6669  6675  6678  6703  6706  6734  6741  6761</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [97]  6775  6784  6787  6790  6799  6808  6824  6829  6833  6865  6894  6974</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [109]  6981  6993  6997  7003  7004  7009  7012  7021  7025  7029  7032  7049</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [121]  7050  7055  7059  7067  7068  7080  7081  7095  7108  7115  7133  7139</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [133]  7142  7145  7148  7156  7179  7187  7189  7196  7200  7208  7222  7238</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [145]  7245  7250  7251  7255  7262  7264  7267  7272  7303  7313  7314  7319</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [157]  7341  7346  7351  7362  7365  7366  7400  7406  7412  7423  7433  7475</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [169]  7482  7503  7506  7538  7539  7559  7571  7575  7588  7590  7595  7612</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [181]  7614  7623  7626  7639  7640  7644  7646  7651  7675  7679  7686  7688</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [193]  7693  7721  7724  7733  7735  7761  7793  7825  7846  7852  7919  7928</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [205]  7933  7948  7951  7953  7957  7965  7972  7978  8015  8019  8020  8029</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [217]  8037  8055  8063  8065 10459 10461 10472 13479 13632 13679 13717 13794</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [229] 14044 14140 14141 14522</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

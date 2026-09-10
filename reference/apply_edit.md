@@ -6,7 +6,7 @@ specified edits. Makes changes to the data, changelog, and flags.
 ## Usage
 
 ``` r
-apply_edit(proj, edit)
+apply_edit(proj, edit, username)
 ```
 
 ## Arguments
@@ -21,7 +21,7 @@ apply_edit(proj, edit)
 
   - data: new updated data as a `data.frame`
 
-  - rows: logical vector which specifies rows changed as TRUE
+  - rows: vector of indices that were changed
 
   - y_var: parameter being edited
 
@@ -30,6 +30,10 @@ apply_edit(proj, edit)
   - note: an optional note to add to the changelog
 
   - flag: character flag to use for edits to the data
+
+- username:
+
+  the username of the person who made the change
 
 ## Value
 
@@ -40,7 +44,7 @@ A `sondeproj` object with edits made.
 ``` r
 data <- example_data
 data$fDOM_QSU[1:4] <- NA
-rows <- rep(FALSE, nrow(data))
+rows <- c(1:4)
 rows[1:4] <- TRUE
 edit <- list(data = example_data,
              rows = rows,
@@ -48,5 +52,5 @@ edit <- list(data = example_data,
              step = "outlier removal",
              note = "example edit",
              flag = "RM07")
-updated_proj <- apply_edit(example_sondeproj, edit)
+updated_proj <- apply_edit(example_sondeproj, edit, "Smith")
 ```

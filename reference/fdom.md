@@ -8,7 +8,7 @@ effects can be corrected for.
 ``` r
 fdom_UI(id)
 
-fdom_server(id, sondeproj, data_ver, y_var, view_state)
+fdom_server(id, sondeproj, data_ver, y_var, view_state, username)
 ```
 
 ## Arguments
@@ -38,3 +38,7 @@ fdom_server(id, sondeproj, data_ver, y_var, view_state)
   range of dates being viewed via the date selector - period_view:
   Logical if the period view is being used - period_length: Length of
   period view - period_n: The period number to view.
+
+- username:
+
+  A \`reactiveVal\` holding the name of the analyst for the changelog

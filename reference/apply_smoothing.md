@@ -51,12 +51,7 @@ The following smoothing methods are currently supported:
   calculation, should be odd but will convert to an odd number with a
   warning.
 
-- **savgol**: Based on the `savgol` function from the `pracma` package.
-  Applies a Savitzky–Golay filter which fits a fourth order polynomial
-  to a sliding range of data. The `k` parameter is used controls the
-  number of points in the window.
-
-- **savgol**: Based on the `dlmSmooth` function from the `dlm` package.
+- **kalman**: Based on the `dlmSmooth` function from the `dlm` package.
   Applies a Kalman filter which process model to the data. The `k`
   parameter is used controls the amount of smoothing.
 

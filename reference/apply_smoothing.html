@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SondePolishR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9008</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9009</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -21,6 +21,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/app-manual.html">App User Guide</a></li>
     <li><a class="dropdown-item" href="../articles/correction-steps.html">Correction Workflow</a></li>
     <li><a class="dropdown-item" href="../articles/QAQC-flags.html">QAQC Flags</a></li>
+    <li><a class="dropdown-item" href="../articles/using-precipitation-data.html">Using Precipitation Data</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -90,10 +91,7 @@ to include in the mean calculation.</p></li>
 <li><p><strong>rollmedian</strong>: Based on the <code>rollmedian</code> function from the <code>zoo</code> package.
 Replaces data with a rolling median value. The <code>k</code> parameter is used to control the number of points
 to include in the median calculation, should be odd but will convert to an odd number with a warning.</p></li>
-<li><p><strong>savgol</strong>: Based on the <code>savgol</code> function from the <code>pracma</code> package.
-Applies a Savitzky–Golay filter which fits a fourth order polynomial to a sliding range of data.
-The <code>k</code> parameter is used controls the number of points in the window.</p></li>
-<li><p><strong>savgol</strong>: Based on the <code>dlmSmooth</code> function from the <code>dlm</code> package.
+<li><p><strong>kalman</strong>: Based on the <code>dlmSmooth</code> function from the <code>dlm</code> package.
 Applies a Kalman filter which process model to the data.
 The <code>k</code> parameter is used controls the amount of smoothing.</p></li>
 </ul></div>

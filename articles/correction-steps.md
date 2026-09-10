@@ -3,8 +3,8 @@
 ## Overview
 
 Correction of continuous water quality records can be a complicated task
-as the data can span a large time range and can include several
-parameters which may require different types of corrections and checks.
+as the data can span a large period and can include several parameters
+which may require different types of corrections and checks.
 Additionally, some corrections (i.e., turbidity) may effect other
 parameters (i.e., fDOM).
 
@@ -40,12 +40,14 @@ Throughout this tutorial we will refer to **tabs** and **panels**.
     run_app()
     ```
 
+------------------------------------------------------------------------
+
 ## Step 2: Load Data
 
 1.  **Specify data file locations.** Upon loading the app, you should be
     on the **Load Data** tab. On the first card (1. Sonde Data), use the
     **Browse** button to navigate to the data file(s) you want to load.
-    This step does not load the data. It simply tells the app were the
+    *This step does not load the data.* It simply tells the app were the
     data you want to load is located.
 
     > Specifically, this step will copy your selected files to temporary
@@ -92,7 +94,12 @@ Throughout this tutorial we will refer to **tabs** and **panels**.
     > info you do not need to re-add it, this info gets saved within the
     > sonde project and will be loaded with the rest of the data.
 
-4.  **Load the data.** Use the **Load Data** section to load your
+4.  In the **Load Data** section enter the **analyst name** you want
+    associated with the changes. This will be stored in the changelog
+    and should be something you’re okay with being visible to anyone you
+    share the project with.
+
+5.  **Load the data.** Use the **Load Data** section to load your
     selected data by clicking the **Load Sonde Data** button.
 
     - The loaded files will remain unless a new file is uploaded. If
@@ -100,7 +107,7 @@ Throughout this tutorial we will refer to **tabs** and **panels**.
       to clear your file uploads first using the **Clear Uploads**
       button which will clear all the file locations.
 
-5.  **Load Precipitation Data.** Precipitation data can be extremely
+6.  **Load Precipitation Data.** Precipitation data can be extremely
     helpful in making decisions about data corrections as it can help
     determine if observed spikes could have been caused by increased
     flows. There are currently three options for adding precipitation
@@ -116,11 +123,13 @@ Throughout this tutorial we will refer to **tabs** and **panels**.
       real time at an hourly scale. This data requires a token to access
       the data. See [NASA
       Earthdata](https://urs.earthdata.nasa.gov/documentation/for_users/user_token)
-      for directions on creating a token. *Note that this token should
-      be kept secret.*
+      for directions on creating a token. See [Using Precipitation
+      Data](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/articles/using-precipitation-data.md)
+      for directions for securely storing this token where the app can
+      access it.
 
-      > The API for this product can also be unreliable, it make take a
-      > bit to load and you may need to try more than once.
+      > **Note:** The API for this product can be unreliable, it make
+      > take a bit to load and you may need to try more than once.
 
     - **User uploaded precipitation:** You can also upload a custom
       precipitation file. See
@@ -135,10 +144,12 @@ Throughout this tutorial we will refer to **tabs** and **panels**.
 
 ![](figures/load-data.gif)
 
+------------------------------------------------------------------------
+
 ## Step 3: Save Initial Project
 
 While every effort has been made to prevent the app from crashing. It’s
-a new app still under development and bugs can occur. **It’s recommend
+a new app, still under development and bugs can occur. **It’s recommend
 to save your project frequently** to prevent loss of work. To save your
 project:
 
@@ -157,6 +168,8 @@ project:
 3.  Click **Export Project** to save your project to the specified file.
 
 ![](figures/save-project.gif)
+
+------------------------------------------------------------------------
 
 ## Step 4: Initial Data Checks
 
@@ -185,9 +198,9 @@ performing corrections.
       > **Note:** The measurement taken right before and after the sonde
       > was removed from the water is also removed to prevent issues
       > with time difference between the recorded time and the sonde
-      > time and short equilibrium periods. If no times are specified in
-      > the field form, the OOW period will default to the entire day of
-      > the field form.
+      > time and short equilibrium periods. *If no times are specified
+      > in the field form, the OOW period will default to the entire day
+      > of the field visit.*
 
 3.  **Check for data duplicates.** While not the most common, duplicates
     in the data record can occur. This is typically due to:
@@ -234,139 +247,111 @@ performing corrections.
     safely overwrite it unless you want to keep a unedited copy of your
     project.
 
-## Step 5: Correct Turbidity
+![](figures/data-checks.gif)
 
-Turbidity is often one of the most challenging records to correct.
-Turbidity signals can reach very high peaks in a short time period.
-However, since it’s an optical sensor, peaks can also be due to optical
-interference (e.g., a leaf near the sensor). A critical part of the
-cleaning process for turbidity is to remove these “bad” spikes caused by
-interference while not removing real spikes in turbidity.
+------------------------------------------------------------------------
 
-### Step 5.1 Remove any data outside of the sensor’s physical limits.
+## Step 5: Semi-Automated Data Cleaning
 
-Navigate to the **Physical Limits** tab and select Turbidity under
+### 5.1 General Methods
+
+#### Step 5.1.1 Remove any data outside of the sensor’s physical limits
+
+Navigate to the **Physical Limits** tab and select your parameter under
 **Select Parameters**. This will display the data with the default range
 of the sensor (uses YSI EXO probe limits), with any data outside this
 range shown in red.
-
-> Particularly in very clean streams, turbidity may dip below 0 NTU,
-> meaning the stream water is cleaner than the water used to calibrate
-> the sonde. In these cases you likely want to set the minimum limit to
-> slightly below 0 to avoid removing this data.
 
 If there are any points outside of the physical limits you wish to
 remove, use the **Save Edits** panel to edit the data. A default note
 will indicate the limits used to remove data, but you may also add
 additional information. Click **Remove Points** to save the change.
 
-### Step 5.2 Apply quality flags to data.
+![](figures/turb-limits.gif)
 
-We will apply flags to points within the turbidity record marking them
-as *questionable* or *bad.* These flags will be exported with the final
-data and can be used to remove points from the record.
+#### Step 5.1.2 Remove Outlier Points.
 
-1.  **Adjust the plot to better visualize turbidity data.**
+Next we will review the record and remove points that are clearly bad,
+or mark points as questionable. The bad points will be flagged and
+removed from the dataset. The questionable points will be flagged in the
+final dataset.
 
-    - Use the **Date Ranges** panel to set a period length of **15**
-      days and use the slider to **view data by period**.
+1.  **Use a filter to auto-select likely bad points.** Under **select
+    starting method.** Typically the **Hampel Filter** method should
+    work for most datasets. See
+    [`identify_outliers()`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/identify_outliers.md)
+    for more details about selection methods.
+
+    - You may need to adjust the **window size** (i.e., determines how
+      many nearby points it looks at) or **threshold** (i.e., how “bad”
+      a point has to be to be flagged) for your data. It will likely not
+      be perfect, the next step is to manually review all these
+      selections.
+
+2.  **Adjust the plot to better visualize the data.** See the section
+    below, [5.2 Parameter Specific
+    Considerations](#parameter-specific-considerations), for parameter
+    specific considerations and recommendations.
+
+    - Use the **Date Ranges** panel to set a period length and use the
+      slider to **view data by period**.
 
     - Adjust the **max y-value** to the left of the plot to the range of
-      your data. It defaults to the maximum value across the entire
-      dataset, which is likely to be high due to turbidity peaks.
+      your data. You can also remove the **max y-value** which will
+      scale the plot to the range of the data being viewed.
 
-      > Do not set the max y-value to lower than around 5-10 NTU to
-      > avoid zooming in too much on very small shifts in turbidity.
+    - You can also include an additional parameter as a second y-axis
+      using the **Select Parameters** panel. This information can be
+      helpful when trying to determine real peaks from spurious ones.
 
-    - If you loaded precipitation data or have depth data. Add that to
-      the plot as a second y-axis using the **Select Parameters** panel.
-      This information is extremely helpful when trying to determine
-      real peaks from spurious ones.
+![](figures/turb-set-view.gif)
 
-2.  **Decide if a point/region should be marked as bad or
-    questionable.** Within the first period, use the zoom function to
-    more closely examine any regions that look either bad or
-    questionable.
+3.  **Review the selections.** Review the entire record, one period at
+    at time to check the points automatically selected.
 
-    - A *bad* point for turbidity is typically a peak that does not have
-      a falling limb, particularly when not associated with
-      precipitation or a change in depth.
+    - **To add a point not selected by the automatic method**: Ensure
+      your selection method in the **Identify Outliers** panel is “Add
+      Bad”, then switch to either the **Box Select** or **Lasso Select**
+      tools in the upper right corner of the plot to select the point.
 
-    - A *questionable* point is one where the falling limb is
-      inconclusive, the data is messy but associated with precipitation
-      or a depth change, or a peak looks bad, but the change is small
-      (\< 1 NTU). Use the following decision tree to determine the
-      correct flag for a point or set of points:
+    - **To mark a point as questionable:** Ensure your selection method
+      in the **Identify Outliers** panel is “Add Questionable”. You can
+      mark either unselected points or points auto-selected as bad.
 
-      **\[decision tree here for determining how to mark it\]**
+    - **To remove a selected point:** Ensure your selection method in
+      the **Identify Outliers** panel is “Remove Selection”, and select
+      the point(s) you want to unflag. This will remove all flags (bad
+      and questionable).
 
-3.  **Apply a quality flag to a set of points.**
+![](figures/turb-check-bad.gif)
 
-    - To mark a point select the appropriate flag under the **Apply
-      Quality Flags** panel and switch to either the **Box Select** or
-      **Lasso Select** tools in the upper right corner of the plot to
-      select the point.
+4.  **Apply flags to points.** Once you’ve reviewed the record, you need
+    to save the flags.
 
-      > Within the period, you may switch between marking points as bad
-      > and questionable but you must save each set separately.
+    - Toggle the option to **View data by period** to see the entire
+      record again.
 
-    - Once you’ve selected the points for a region, go to the **Save
-      Edits** panel, enter an optional note, and click **Flag Points**
-      to save the flag to the selected points. The color of the points
-      should change and no longer show *(unsaved)* in the legend.
+    - Go to the **Save Edits** panel. Here you can save both the bad
+      points and the questionable points. For each flag, enter an
+      optional note, and click **Flag Points** to save the flag to the
+      selected points. The color of the points should change and no
+      longer show *(unsaved)* in the legend.
 
-4.  **Repeat steps 2-3 for all data periods.** Use the **Next Period**
-    button under the plot to move through the data record, applying
-    quality flags.
+    > **Note:** Once you’ve flagged the bad points, if you still have a
+    > starting method, the filter will identify new points that could be
+    > bad. You can use this as a double check that you selected all the
+    > appropriate points.
 
-    - You may need to adjust the **max** **y-value** as you move through
-      the data. If you clear this value it will auto-scale the data
-      which can be helpful for viewing high peaks.
+![](figures/turb-flagging.gif)
 
-### Step 5.3 Remove Bad Points.
+#### Step 5.1.3 Apply Additional Corrections.
 
-1.  Navigate to the **Outlier Removal** tab.
-
-2.  On the **Date Ranges** panel, unselect **View data by period**.
-
-3.  Remove any points marked as *bad* by selecting **Bad Points** as the
-    outlier detection method under the **Identify Outliers** panel.
-
-4.  Remove the points using the **Save Edits** panel, clicking the
-    **Remove Points** button. This will make all turbidity values marked
-    as *bad* as `NA`.
-
-### Step 5.4 Interpolate Missing Points.
-
-Removing errant points will result in gaps within the data record for
-turbidity. We can attempt to fill in these gaps using interpolation.
-
-1.  Navigate to the **Interpolation** page.
-
-2.  Select your interpolation method. For turbidity it’s recommended to
-    use the **Linear** method which will use linear interpolation
-    methods.
-
-3.  Adjust the maximum fill window. The default is to only fill gaps
-    less than 8 hours. This default is likely fine for most systems.
-    However, if you would like to be more conservative you can decrease
-    this value. All interpolated points will be flagged in the exported
-    data.
-
-4.  Confirm the interpolation changes using the **Save Edits** panel,
-    clicking the **Fill Points** button. This will add the green points
-    in the plot to the dataset for turbidity.
-
-### Step 5.5 Apply Additional Corrections.
-
-While the major issue with turbidity tends to be errant peaks,
-occasionally there are other issues that need to be dealt with. These
-can be performed using the **Corrections** tab.
+There may be other issues in the dataset that need to be dealt with.
+These can be performed using the **Corrections** tab.
 
 - **Additive:** Used to apply a linear or absolute shift to a set of
-  selected data. For turbidity this can be used to adjust a baseline
-  that is below 0. To apply this kind of correction, ensure you’re on
-  the *Additive* option within the **Corrections** panel.
+  selected data. To apply this kind of correction, ensure you’re on the
+  *Additive* option within the **Corrections** panel.
 
   - Use one of the selection tools to select the point or set of points
     you want to apply a shift correction to.
@@ -379,6 +364,8 @@ can be performed using the **Corrections** tab.
 
   - Save the change using the **Save Edits** panel by clicking the
     **Update Points** button.
+
+  ![](figures/SC-additive.gif)
 
 - **Drift**: Used to apply a linear shift to an entire data file. This
   is sometimes needed when a sensor is swapped out and the data has a
@@ -404,6 +391,8 @@ can be performed using the **Corrections** tab.
   - Save the change using the **Save Edits** panel by clicking the
     **Update Points** button.
 
+  ![](figures/temp-drift.gif)
+
 - **Smoothing:** Used to smooth out a segment of messy data due to
   optical interference. To apply this kind of correction, ensure you’re
   on the *Smoothing* option within the **Corrections** panel.
@@ -422,114 +411,12 @@ can be performed using the **Corrections** tab.
   > and therefore should be used carefully and sparingly to preserve
   > trends that would otherwise have to be removed.
 
-### Step 5.6 Save Project.
+![](figures/fdom-smoothing.gif)
 
-1.  **Save the project.** Navigate back to the **Download Data** tab and
-    click the **Export Project** button to save the edits to your
-    project. When prompted if you want to overwrite your project you can
-    safely overwrite it unless you want to keep a copy of your project
-    prior to the turbidity edits.
+#### Step 5.1.4 Interpolate Missing Points.
 
-## Step 6: Correct Temperature
-
-While turbidity can be very challenging to correct, temperature is one
-of the easiest records to correct. Since it’s not an optical sensor, it
-tends to experience less errant peaks and the records itself tends to be
-slow, smooth changes over time.
-
-### Step 6.1 Remove any data outside of the sensor’s physical limits.
-
-Navigate to the **Physical Limits** tab and select Temperature under
-**Select Parameters**. This will display the data with the default range
-of the sensor (uses YSI EXO probe limits), with any data outside this
-range shown in red.
-
-If there are any points outside of the physical limits you wish to
-remove, use the **Save Edits** panel to edit the data. A default note
-will indicate the limits used to remove data, but you may also add
-additional information. Click **Remove Points** to save the change.
-
-### Step 5.2 Apply quality flags to data.
-
-We will apply flags to points within the temperature record marking them
-as *questionable* or *bad.* These flags will be exported with the final
-data and can be used to remove points from the record.
-
-1.  **Adjust the plot to better visualize temperature data.**
-
-    - Use the **Date Ranges** panel to set a period length of **30**
-      days and use the slider to **view data by period**. We want to use
-      a larger period length here as this data tends to be smoother.
-
-    - Adjust the **max y-value** to the left of the plot to the range of
-      your data. It defaults to the maximum value across the entire
-      dataset, which is likely to be high due to turbidity peaks.
-
-      > Do not set the max y-value to lower than around 5-10 NTU to
-      > avoid zooming in too much on very small shifts in turbidity.
-
-    - If you loaded precipitation data or have depth data. Add that to
-      the plot as a second y-axis using the **Select Parameters** panel.
-      This information is extremely helpful when trying to determine
-      real peaks from spurious ones.
-
-2.  **Decide if a point/region should be marked as bad or
-    questionable.** Within the first period, use the zoom function to
-    more closely examine any regions that look either bad or
-    questionable.
-
-    - A *bad* point for turbidity is typically a peak that does not have
-      a falling limb, particularly when not associated with
-      precipitation or a change in depth.
-
-    - A *questionable* point is one where the falling limb is
-      inconclusive, the data is messy but associated with precipitation
-      or a depth change, or a peak looks bad, but the change is small
-      (\< 1 NTU). Use the following decision tree to determine the
-      correct flag for a point or set of points:
-
-      **\[decision tree here for determining how to mark it\]**
-
-3.  **Apply a quality flag to a set of points.**
-
-    - To mark a point select the appropriate flag under the **Apply
-      Quality Flags** panel and switch to either the **Box Select** or
-      **Lasso Select** tools in the upper right corner of the plot to
-      select the point.
-
-      > Within the period, you may switch between marking points as bad
-      > and questionable but you must save each set separately.
-
-    - Once you’ve selected the points for a region, go to the **Save
-      Edits** panel, enter an optional note, and click **Flag Points**
-      to save the flag to the selected points. The color of the points
-      should change and no longer show *(unsaved)* in the legend.
-
-4.  **Repeat steps 2-3 for all data periods.** Use the **Next Period**
-    button under the plot to move through the data record, applying
-    quality flags.
-
-    - You may need to adjust the **max** **y-value** as you move through
-      the data. If you clear this value it will auto-scale the data
-      which can be helpful for viewing high peaks.
-
-### Step 5.3 Remove Bad Points.
-
-1.  Navigate to the **Outlier Removal** tab.
-
-2.  On the **Date Ranges** panel, unselect **View data by period**.
-
-3.  Remove any points marked as *bad* by selecting **Bad Points** as the
-    outlier detection method under the **Identify Outliers** panel.
-
-4.  Remove the points using the **Save Edits** panel, clicking the
-    **Remove Points** button. This will make all turbidity values marked
-    as *bad* as `NA`.
-
-### Step 5.4 Interpolate Missing Points.
-
-Removing errant points will result in gaps within the data record for
-turbidity. We can attempt to fill in these gaps using interpolation.
+Removing errant points will result in gaps within the data record. We
+can attempt to fill in these gaps using interpolation.
 
 1.  Navigate to the **Interpolation** page.
 
@@ -543,227 +430,251 @@ turbidity. We can attempt to fill in these gaps using interpolation.
     this value. All interpolated points will be flagged in the exported
     data.
 
-4.  Confirm the interpolation changes using the **Save Edits** panel,
+4.  Toggle **View the data by period** and check that the interpolations
+    look reasonable. **Make sure to untoggle this option after checking
+    or when you apply edits it will only apply to the section you’re
+    viewing**.
+
+5.  Confirm the interpolation changes using the **Save Edits** panel,
     clicking the **Fill Points** button. This will add the green points
     in the plot to the dataset for turbidity.
 
-### Step 5.5 Apply Additional Corrections.
+![](figures/turb-interp.gif)
 
-While the major issue with turbidity tends to be errant peaks,
-occasionally there are other issues that need to be dealt with. These
-can be performed using the **Corrections** tab.
-
-- **Additive:** Used to apply a linear or absolute shift to a set of
-  selected data. For turbidity this can be used to adjust a baseline
-  that is below 0. To apply this kind of correction, ensure you’re on
-  the *Additive* option within the **Corrections** panel.
-
-  - Use one of the selection tools to select the point or set of points
-    you want to apply a shift correction to.
-
-  - The app will guess at the shift value to apply, and show the shifted
-    points in red.
-
-  - Adjust the *slope* and *intercept* values in the **Corrections**
-    panel until you’re happy with the shift.
-
-  - Save the change using the **Save Edits** panel by clicking the
-    **Update Points** button.
-
-- **Drift**: Used to apply a linear shift to an entire data file. This
-  is sometimes needed when a sensor is swapped out and the data has a
-  large jump due to drift in the calibration. To apply this kind of
-  correction, ensure you’re on the *Drift* option within the
-  **Corrections** panel.
-
-  - In the **Corrections** panel, select the file you want to apply the
-    correction to.
-
-  - The app will guess at the amount of drift correction to apply.
-
-    - If calibration check metadata is included in the project, it will
-      use those values.
-
-    - If there is no calibration check data available it will use the
-      difference between the last point of the file and the first point
-      of the next file.
-
-  - Adjust the *uncorrected* and *corrected* values in the
-    **Corrections** panel until you’re happy with the shift.
-
-  - Save the change using the **Save Edits** panel by clicking the
-    **Update Points** button.
-
-- **Smoothing:** Used to smooth out a segment of messy data due to
-  optical interference. To apply this kind of correction, ensure you’re
-  on the *Smoothing* option within the **Corrections** panel.
-
-  - Use one of the selection tools to select the region you want to
-    apply a smoothing correction to. The smoothed points will show on
-    the plot as red points and line.
-
-  - You can adjust the smoothing method and smoothing factor in the
-    **Corrections** panel.
-
-  - Save the change using the **Save Edits** panel by clicking the
-    **Update Points** button.
-
-  > **Note:** This will essentially “rewrite” whole sections of data,
-  > and therefore should be used carefully and sparingly to preserve
-  > trends that would otherwise have to be removed.
-
-### Step 5.6 Save Project.
+#### Step 5.1.5 Save Project.
 
 1.  **Save the project.** Navigate back to the **Download Data** tab and
     click the **Export Project** button to save the edits to your
     project. When prompted if you want to overwrite your project you can
     safely overwrite it unless you want to keep a copy of your project
-    prior to the turbidity edits.
-
-- Look out for unnatural rises.
-
-- Use a larger period to see the overall pattern.
-
-- Could be a drift correction if SC sensor changes.
-
-- view with DO
-
-- remove bad points
-
-- interpolate
-
-- corrections for any drift
-
-- save project
-
-## Step 7: Correct Dissolved Oxygen
-
-- Should also be pretty clean, similar to temperature we shouldn’t
-  expect a lot of big drops. 
-
-- Probably won’t see a lot of the bad spikes downwards.  
-
-- Spikes straying from the normal trend ~0.5 mg/L?? And above remove,
-  otherwise just leave.  
-
-- Could also just look with the default values to see the diurnal
-  patterns.
-
-- remove bad points
-
-- interpolate
-
-- corrections for any drift
-
-- save project
-
-## Step 8: Correct pH
-
-1.  There shouldn’t be a lot of spikes, but they do drift and go bad.  
-
-&nbsp;
-
-2.  Shouldn’t need a lot of adjustments. Any short-term spikes (likely
-    downward) are likely bad.  
-
-&nbsp;
-
-3.  Strange drops that aren’t bad, mark the drop points as questionable
-    -\> 11 not enough evidence to do anything with it.  
-
-&nbsp;
-
-4.  Only flag things outside of the normal random variability.
-
-5.  remove bad points
-
-6.  interpolate
-
-7.  corrections for any drift
-
-8.  save project
-
-## Step 9: Specific Conductivity
-
-- View first the whole period to see what it looks like.  
-
-2.  After viewing use 10 day periods to visualize.  
-
-&nbsp;
-
-3.  Set max to ~80??  
-
-&nbsp;
-
-4.  Looking for drift or spots where it’s shifted down.  
-
-&nbsp;
-
-5.  View with precip 
-
-6.  Apply shift corrections when there’s dips using the corrections -\>
-    additive tool. Called drop outs?? 
-
-7.  Downward spikes -\> bad, should be smooth like temperature or
-    associated with a lot of rain.  
-
-8.  Could use the default scale per period.  
-
-9.  Leave anything less than ~0.5-2 uS/cm -\> (check vals) leave alone
-    can change quickly.  
-
-10. If you want to remove something because it looks bad, but you’re not
-    sure if you should, mark it as questionable (applies to everything).
-    -\> 10 
-
-11. remove bad points
-
-12. interpolate
-
-13. corrections for any drift
-
-14. save project
-
-## Step 10: fDOM
-
-1.  Correct turbidity before fDOM because then you can use the cleaned
-    turbidity record to figure out what to remove in the fDOM. Make sure
-    to remove bad points before correcting fDOM to remove bad turbidity
-    spikes.  
-
-&nbsp;
-
-2.  When correcting give spikes to leeway, leave things alone that are
-    3-4 QSU. Sensor is messy. 
-
-&nbsp;
-
-3.  Plot 12 downward spike also see in turbidity  
-
-&nbsp;
-
-4.  Baseline fDOM don’t go lower than 15-20 QSU (depending on the
-    steam). 
-
-&nbsp;
-
-5.  But downward spikes could be due to differences in turbidity,
-    looking for mirror/flipped turb record, it should have starting limb
-    that decreases  
-
-&nbsp;
-
-6.  For downward spikes like bubbles (plot 13) could use the rolling
-    median to smooth out the bad spikes. 
-
-&nbsp;
-
-5.  remove bad points
-
-6.  interpolate
-
-7.  corrections for any drift
-
-8.  fDOM corrections
-
-9.  save project
+    prior to the current edits.
+
+### 5.2 Parameter Specific Considerations
+
+#### 5.2.1 Recommended Display Parameters and Correction Order
+
+| Order |      Parameter       | Period Length | Y-Max Limit |    Second Y-Axis    |
+|:-----:|:--------------------:|:-------------:|:-----------:|:-------------------:|
+|   1   |     Temperature      |    30 days    |     N/A     |  Dissolved Oxygen   |
+|   2   |   Dissolved Oxygen   |    30 days    |     N/A     |     Temperature     |
+|   3   |        Depth         |    15 days    |     N/A     |    Precipitation    |
+|   4   |          pH          |    15 days    |     N/A     | Precipitation/Depth |
+|   5   | Specific Conductance |    10 days    |     N/A     | Precipitation/Depth |
+|   6   |      Turbidity       |    15 days    |  5-10 NTU   | Precipitation/Depth |
+|   7   |         fDOM         |    15 days    |  15-20 QSU  |      Turbidity      |
+
+#### 5.2.2 Typical Corrections Needed by Parameter
+
+- **Temperature** is typically one of the easiest records to correct.
+  Since it’s not an optical sensor, it tends to experience less errant
+  peaks and the data itself tends to experience slow, smooth changes
+  over time. It may still have the occasional errant peak and may still
+  need a drift correction when a sensor is swapped out.
+
+- **Dissolved Oxygen** is similar to temperature. Since it’s not an
+  optical sensor, it tends to experience less errant peaks and the data
+  itself tends to experience slow, smooth changes over time. It may
+  still have the occasional errant peak and may still need a drift
+  correction when a sensor is swapped out.
+
+- **Depth** may experience errant peaks, particularly when the sonde is
+  removed from the water, so removing out of water periods is critical.
+  It may also require drift corrections or additive shifts depending on
+  shifts in the calibration.
+
+- **pH** should also be relatively easy to correct. However, the pH
+  sensors can go bad, so it’s important to look out for unrealistic
+  values (i.e., pH \< 4 or pH \> 10). What’s unrealistic may vary based
+  on your system. However, when sensors have previously gone bad we’ve
+  observed reported values \> 14 which is definitely unrealistic for any
+  natural system.
+
+- **Specific Conductance** can suffer from quick spikes that are
+  unrealistic and should be removed during the outlier correction
+  methods. Another common issue to look out for is short periods of
+  shifts where it appears the data record has been shifted down by a
+  constant value, these should be adjusted using the additive
+  corrections.
+
+- **Turbidity** is often one of the most challenging records to correct.
+  Turbidity signals can reach very high peaks in a short time period.
+  However, since it’s an optical sensor, peaks can also be due to
+  optical interference (e.g., a leaf near the sensor). A critical part
+  of the cleaning process for turbidity is to remove these “bad” spikes
+  caused by interference while not removing real spikes in turbidity.
+
+  - **When removing outlier points in a turbidity record:**
+
+    - Be on the look out for peaks without a receding limb, suggesting
+      the peak isn’t real.
+
+    - There may be small spikes within the data record, if the
+      auto-selection methods don’t flag them, leave these sorts of
+      spikes that are less than ~2 FNU alone. There will likely be many
+      and it should not impact the statistics on the dataset.
+
+    - There may also be areas of low variability that select points that
+      don’t appear to be peaks. You should remove the flags for these
+      points.
+
+- **Fluorescent Dissolved Organic Matter** (fDOM) can also be one of the
+  most challenging parameters to correct. It’s an optical sensor that is
+  vulnerable to visual obstructions including high turbidity values.
+  fDOM values are also temperature dependent, experiencing quenching
+  impacts. Unlike the rest of the parameters, we will correct fDOM for
+  both temperature and turbidity after the data has been cleaned. **We
+  will also use turbidity data to help determine which points to remove,
+  so it’s critical to correct the turbidity record first.**
+
+  - **When removing outlier points in a fDOM record:**
+
+    - Be on the look out for peaks without a receding limb, suggesting
+      the peak isn’t real. Conversely, you may also see a drop without a
+      “rising” limb, which is likely also not real.
+
+    - There may be small spikes within the data record, if the
+      auto-selection methods don’t flag them, leave these sorts of
+      spikes that are less than ~3-4 QSU alone. There will likely be
+      many and it should not impact the statistics on the dataset.
+
+    - There many also be areas of low variability that select points
+      that don’t appear to be peaks. You should remove the flags for
+      these points.
+
+    - When reviewing downward spikes it’s important to see if the
+      downward spike is associated with a increase in turbidity. If this
+      is the case, the drop is likely to be real unless the change is
+      large. You can review this point after performing turbidity
+      corrections and remove if it still appears errant.
+
+### Step 5.3 Apply fDOM Corrections
+
+Ideally fDOM corrections should be applied using site specific
+corrections (see [Akie et al. 2024](https://doi.org/10.1002/hyp.70023)).
+However, these correction factors can be labor and time intensive to
+collect. Existing work suggests that for low turbidity values (\< 300
+FNU), a standard correction factor may be used.
+
+> **Note:** fDOM should be corrected for temperature before turbidity
+> and the app will not apply a turbidity correction to data that has not
+> be temperature corrected. Additionally, correction will only be
+> applied to data that has not been corrected.
+
+1.  **Correct fDOM data for temperature.** In the absence of a
+    site-specific correction factor, you can use a general factor
+    suggested by [Akie et
+    al. 2024](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/articles/doi.org/10.1002/hyp.70023).
+    To apply the correction go to the **Save Edits** panel and click
+    **Update Points.**
+
+2.  **Correct fDOM data for turbidity.** Turbidity corrections can be
+    quite complex and there have been a number of attempts at devising
+    equations to correct for turbidity. The module currently supports
+    five different correction options:
+
+    - **None:** Skip turbidity corrections, more than temperature,
+      turbidity corrections are thought to be site specific,
+      particularly at high turbidities.
+
+    - **Inverse Polynomial:** A equation suggested by [Fleck et
+      al. 2026](https://doi.org/10.3133/ofr20261063) which applies a
+      correction factor based on a quadratic equation with turbidity.
+      This was found to fit similarly to more complex, five parameter
+      models. Default values are the values reported by Fleck et
+      al. 2026.
+
+    - **Exponential (1-parameter):** One of the initial correction
+      equations proposed by [Downing et
+      al. 2012](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/articles/doi.org/10.4319/lom.2012.10.767)
+      which uses a single correction factor. The default correction
+      factor comes from [Akie et
+      al. 2024](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/articles/doi.org/10.1002/hyp.70023)
+      as the value for generic Elliot silt loam which was suggested to
+      be appropriate to use for turbidity values *below* 300 FNU.
+
+    - **Exponential (2-parameter):** A slightly modified version of the
+      original 1-parameter model proposed by [Fleck et
+      al. 2026](https://doi.org/10.3133/ofr20261063). This model works
+      well for lower turbidity values but can have a poor fit at higher
+      turbidity values (\>100-200 FNU). Default correction values come
+      from [Fleck et al. 2026](https://doi.org/10.3133/ofr20261063).
+
+    - **Exponential (5-parameter):** As an approach that would work
+      across the full turbidity range, [Fleck et
+      al. 2026](https://doi.org/10.3133/ofr20261063) proposed a
+      5-parameter model which fit high turbidity data well, but was
+      complex to fit. Default correction values come from [Fleck et
+      al. 2026](https://doi.org/10.3133/ofr20261063).
+
+    To apply the correction go to the **Save Edits** panel and click
+    **Update Points.**
+
+![](figures/fdom-corrections.gif)
+
+------------------------------------------------------------------------
+
+## Step 6: Export Data
+
+After you’ve performed any cleaning steps, the last step is to export
+your data so a more usable format.
+
+- **Export cleaned data:** Export the data in the **Export Data** card
+  on the **Download Data** tab. The selected data will be saved to the
+  specified file as a `.csv` file. You have several options when
+  exporting the data:
+
+  - **Date Range:** If you only want to export data for a certain date
+    range, you can specify that here. By default the entire date range
+    will be exported.
+
+  - **Export Frequency:** If you would like the data summarized into a
+    different time period (e.g., hourly, daily, monthly) select that
+    here. The default is the interval of the data.
+
+  - **Summary Method:** When summarizing data, how would you like the
+    data summarized. You may select more than one method. The output
+    table will have each parameter name appended with the function used
+    to summarize.
+
+  > **Note:** The export function will summarize the data by the
+  > requested interval. If you export the data at the measurement
+  > interval, this means that the duplicates will be summarized using
+  > the selected summary method.
+
+  After specifying the data you want to export, click the **Choose
+  Location** button to select where you want to save your data to and
+  what name to use for your data. You can use the selector in the top to
+  change your root directory. Click **Save** to confirm the save
+  location.
+
+  > **Important:** Your data is not exported at this point! You must
+  > also click the **Export Data** button to save the data to your
+  > specified file.
+
+![](figures/data-export.gif)
+
+- **Export metadata:** Export the project metadata in the **Export
+  Metadata** card on the **Download Data** tab. This section is used to
+  export metadata stored within the project to a `.csv` file. There are
+  four different files that can be saved:
+
+  - **Duplicate Notes:** Exports the table describing the data
+    duplicates with any user added notes.
+
+  - **Missing Data Notes:** Exports the table describing the data gaps
+    with any user added notes.
+
+  - **Change Log:** Exports the change log describing all the changes
+    made to the data.
+
+  - **Precipitation:** Exports the hourly precipitation data.
+
+  After specifying the metadata you want to export, click the **Choose
+  Location** button to select where you want to save your data to and
+  what name to use for your data. You can use the selector in the top to
+  change your root directory. Click **Save** to confirm the save
+  location.
+
+  > **Important:** Your metadata is not exported at this point! You must
+  > also click the **Export Metadata** button to save the metadata to
+  > your specified file.

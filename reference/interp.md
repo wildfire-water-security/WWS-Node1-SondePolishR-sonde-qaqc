@@ -8,7 +8,15 @@ interpolation method.
 ``` r
 interp_UI(id)
 
-interp_server(id, sondeproj, data_ver, y_var, view_state, current_mod)
+interp_server(
+  id,
+  sondeproj,
+  data_ver,
+  y_var,
+  view_state,
+  username,
+  current_mod
+)
 ```
 
 ## Arguments
@@ -38,6 +46,10 @@ interp_server(id, sondeproj, data_ver, y_var, view_state, current_mod)
   range of dates being viewed via the date selector - period_view:
   Logical if the period view is being used - period_length: Length of
   period view - period_n: The period number to view.
+
+- username:
+
+  A \`reactiveVal\` holding the name of the analyst for the changelog
 
 - current_mod:
 

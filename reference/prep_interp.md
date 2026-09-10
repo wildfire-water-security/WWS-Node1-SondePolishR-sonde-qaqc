@@ -20,16 +20,11 @@ prep_interp(proj)
 
 ## Value
 
-a list of length two:
-
-- fill: `data.frame` based on `proj$data` with missing `datetime` values
-  added.
-
-- interp: `data.frame` based on `proj$data` with duplicates condensed to
-  a single value.
+a `data.frame` based on `proj$data` with duplicates condensed to a
+single value for interpolating.
 
 ## Examples
 
 ``` r
-interp_dfs <- prep_interp(example_sondeproj)
+interp_df <- prep_interp(example_sondeproj)
 ```

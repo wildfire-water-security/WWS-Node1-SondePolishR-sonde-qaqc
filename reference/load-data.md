@@ -10,7 +10,7 @@ save path with the file name based on the name of the data file.
 ``` r
 load_data_UI(id)
 
-load_data_server(id, sondeproj, data_ver, view_state)
+load_data_server(id, sondeproj, data_ver, view_state, username)
 ```
 
 ## Arguments
@@ -42,6 +42,10 @@ load_data_server(id, sondeproj, data_ver, view_state)
   - period_length: Length of period view
 
   - period_n: The period number to view.
+
+- username:
+
+  A `reactiveVal` holding the name of the analyst for the changelog
 
 ## Value
 

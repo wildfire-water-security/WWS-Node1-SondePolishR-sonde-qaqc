@@ -11,7 +11,7 @@ will be made."><meta property="og:image" content="https://wildfire-water-securit
 
     <a class="navbar-brand me-2" href="../index.html">SondePolishR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9008</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9009</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -25,6 +25,7 @@ will be made."><meta property="og:image" content="https://wildfire-water-securit
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/app-manual.html">App User Guide</a></li>
     <li><a class="dropdown-item" href="../articles/correction-steps.html">Correction Workflow</a></li>
     <li><a class="dropdown-item" href="../articles/QAQC-flags.html">QAQC Flags</a></li>
+    <li><a class="dropdown-item" href="../articles/using-precipitation-data.html">Using Precipitation Data</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -56,7 +57,7 @@ will be made.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">apply_dup_edits</span><span class="op">(</span><span class="va">proj</span>, <span class="va">dup_row</span>, <span class="va">keep_opt</span>, flag_notes <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">apply_dup_edits</span><span class="op">(</span><span class="va">proj</span>, <span class="va">dup_row</span>, <span class="va">keep_opt</span>, flag_notes <span class="op">=</span> <span class="st">""</span>, <span class="va">username</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -79,6 +80,10 @@ will be made.</p>
 <dt id="arg-flag-notes">flag_notes<a class="anchor" aria-label="anchor" href="#arg-flag-notes"></a></dt>
 <dd><p>Optional character with additional notes to write to the changelog</p></dd>
 
+
+<dt id="arg-username">username<a class="anchor" aria-label="anchor" href="#arg-username"></a></dt>
+<dd><p>the username of the person who made the change</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -91,7 +96,7 @@ will be made.</p>
 <span class="r-in"><span><span class="st">"example-sondeproj-messy.RDS"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">proj</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">proj</span><span class="op">$</span><span class="va">duplicates</span> <span class="op">&lt;-</span> <span class="fu"><a href="identify_dups.html">identify_dups</a></span><span class="op">(</span><span class="va">proj</span><span class="op">$</span><span class="va">data</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">flagged</span> <span class="op">&lt;-</span> <span class="fu">apply_dup_edits</span><span class="op">(</span><span class="va">proj</span>, <span class="va">proj</span><span class="op">$</span><span class="va">duplicates</span><span class="op">[</span><span class="fl">1</span>,<span class="op">]</span>, <span class="st">"use_mean"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">flagged</span> <span class="op">&lt;-</span> <span class="fu">apply_dup_edits</span><span class="op">(</span><span class="va">proj</span>, <span class="va">proj</span><span class="op">$</span><span class="va">duplicates</span><span class="op">[</span><span class="fl">1</span>,<span class="op">]</span>, <span class="st">"use_mean"</span>, username<span class="op">=</span><span class="st">"Smith"</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

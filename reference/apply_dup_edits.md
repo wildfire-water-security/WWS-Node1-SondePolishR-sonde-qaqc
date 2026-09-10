@@ -8,7 +8,7 @@ will be made.
 ## Usage
 
 ``` r
-apply_dup_edits(proj, dup_row, keep_opt, flag_notes = "")
+apply_dup_edits(proj, dup_row, keep_opt, flag_notes = "", username)
 ```
 
 ## Arguments
@@ -31,6 +31,10 @@ apply_dup_edits(proj, dup_row, keep_opt, flag_notes = "")
 
   Optional character with additional notes to write to the changelog
 
+- username:
+
+  the username of the person who made the change
+
 ## Value
 
 a `sondeproj` with the updated data, flags, and changelog
@@ -42,5 +46,5 @@ path <- file.path(fs::path_package("extdata", package = "SondePolishR"),
 "example-sondeproj-messy.RDS")
 proj <- readRDS(path)
 proj$duplicates <- identify_dups(proj$data)
-flagged <- apply_dup_edits(proj, proj$duplicates[1,], "use_mean")
+flagged <- apply_dup_edits(proj, proj$duplicates[1,], "use_mean", username="Smith")
 ```

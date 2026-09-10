@@ -17,7 +17,7 @@ identify_gaps(data, ignore = NULL)
 
 - ignore:
 
-  the length in minutes to ignore gaps
+  the length in minutes to ignore gaps, defaults to 8 observations.
 
 ## Value
 

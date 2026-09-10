@@ -6,7 +6,7 @@ of maximum gap lengths to fill and duplicates.
 ## Usage
 
 ``` r
-apply_interp(data_fill, data_interp, y_var, max_length, date_range)
+apply_interp(data_fill, data_interp, y_var, max_length)
 ```
 
 ## Arguments
@@ -31,11 +31,6 @@ apply_interp(data_fill, data_interp, y_var, max_length, date_range)
 
   The maximum length in hours to fill via interpolation.
 
-- date_range:
-
-  The date range in which to fill data, used to only fill data within
-  plotted range.
-
 ## Value
 
 `data_fill` with missing values interpolated.
@@ -43,8 +38,8 @@ apply_interp(data_fill, data_interp, y_var, max_length, date_range)
 ## Examples
 
 ``` r
-interp_dfs <- prep_interp(example_sondeproj)
-filled_yvar <- run_interp(interp_dfs$interp, "fDOM_QSU", "linear")
-data_filled <- apply_interp(interp_dfs$fill, filled_yvar,
-                            "fDOM_QSU", 8, range(interp_dfs$fill$Date))
+interp_df <- prep_interp(example_sondeproj)
+filled_yvar <- run_interp(interp_df, "fDOM_QSU", "linear")
+data_filled <- apply_interp(interp_df, filled_yvar,
+                            "fDOM_QSU", 8)
 ```

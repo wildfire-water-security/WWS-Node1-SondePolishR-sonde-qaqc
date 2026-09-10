@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SondePolishR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9008</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9009</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -21,6 +21,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/app-manual.html">App User Guide</a></li>
     <li><a class="dropdown-item" href="../articles/correction-steps.html">Correction Workflow</a></li>
     <li><a class="dropdown-item" href="../articles/QAQC-flags.html">QAQC Flags</a></li>
+    <li><a class="dropdown-item" href="../articles/using-precipitation-data.html">Using Precipitation Data</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -91,8 +92,8 @@ If set to 365 it will look at annual fluctuations.</p></li>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">interp_dfs</span> <span class="op">&lt;-</span> <span class="fu"><a href="prep_interp.html">prep_interp</a></span><span class="op">(</span><span class="va">example_sondeproj</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">filled_yvar</span> <span class="op">&lt;-</span> <span class="fu">run_interp</span><span class="op">(</span><span class="va">interp_dfs</span><span class="op">$</span><span class="va">interp</span>, <span class="st">"fDOM_QSU"</span>, <span class="st">"linear"</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">interp_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="prep_interp.html">prep_interp</a></span><span class="op">(</span><span class="va">example_sondeproj</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">filled_yvar</span> <span class="op">&lt;-</span> <span class="fu">run_interp</span><span class="op">(</span><span class="va">interp_df</span>, <span class="st">"fDOM_QSU"</span>, <span class="st">"linear"</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

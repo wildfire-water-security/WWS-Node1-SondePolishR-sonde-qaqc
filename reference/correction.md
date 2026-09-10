@@ -10,7 +10,7 @@ data.
 ``` r
 correction_UI(id)
 
-correction_server(id, sondeproj, data_ver, y_var, view_state)
+correction_server(id, sondeproj, data_ver, y_var, view_state, username)
 ```
 
 ## Arguments
@@ -46,6 +46,10 @@ correction_server(id, sondeproj, data_ver, y_var, view_state)
   - period_length: Length of period view
 
   - period_n: The period number to view.
+
+- username:
+
+  A `reactiveVal` holding the name of the analyst for the changelog
 
 ## Value
 

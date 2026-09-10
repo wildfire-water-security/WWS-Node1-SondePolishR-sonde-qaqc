@@ -7,7 +7,7 @@ Check data for duplicates, gaps, remove OOW periods
 ``` r
 check_data_UI(id)
 
-check_data_server(id, sondeproj, data_ver, y_var)
+check_data_server(id, sondeproj, data_ver, y_var, username)
 ```
 
 ## Arguments
@@ -29,6 +29,10 @@ check_data_server(id, sondeproj, data_ver, y_var)
 - y_var:
 
   Y-variable to plot on the y-axis.
+
+- username:
+
+  A `reactiveVal` holding the name of the analyst for the changelog
 
 ## Value
 

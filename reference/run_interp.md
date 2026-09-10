@@ -61,6 +61,6 @@ Currently the follow interpolation options are supported:
 ## Examples
 
 ``` r
-interp_dfs <- prep_interp(example_sondeproj)
-filled_yvar <- run_interp(interp_dfs$interp, "fDOM_QSU", "linear")
+interp_df <- prep_interp(example_sondeproj)
+filled_yvar <- run_interp(interp_df, "fDOM_QSU", "linear")
 ```

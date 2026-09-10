@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SondePolishR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9008</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9009</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -21,6 +21,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/app-manual.html">App User Guide</a></li>
     <li><a class="dropdown-item" href="../articles/correction-steps.html">Correction Workflow</a></li>
     <li><a class="dropdown-item" href="../articles/QAQC-flags.html">QAQC Flags</a></li>
+    <li><a class="dropdown-item" href="../articles/using-precipitation-data.html">Using Precipitation Data</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -43,6 +44,33 @@
       <small>Source: <a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9009" id="sondepolishr-009009">SondePolishR 0.0.9009<a class="anchor" aria-label="anchor" href="#sondepolishr-009009"></a></h2>
+<p>(2026-09-10)</p>
+<div class="section level3">
+<h3 id="bug-fixes-0-0-9009">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-0-9009"></a></h3>
+<ul><li>In the interpolation tab, the period navigation buttons were shifted downward.</li>
+<li>Median and mean functions were not ignoring <code>NA</code> values, causing weird placing of points when filling.</li>
+<li>The y-min limit wasn’t updating in the interpolation tab with y-max limit changes.</li>
+<li>The auto-guess for the drift corrections wouldn’t automatically update if you switched to drift, switched away, and switched back.</li>
+<li>Fixed a warning when trying to plot when there was no data within the range.</li>
+<li>Fixed a bug with the shift correction when selecting an area including the first point in the data causing a fatal crash.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="updates-0-0-9009">Updates<a class="anchor" aria-label="anchor" href="#updates-0-0-9009"></a></h3>
+<ul><li>The <strong>hampel</strong> filter method in identifying outliers was adjusted to ignore regions where the median deviation is 0.</li>
+<li>Adjusted how the <strong>k</strong> parameter was used in outlier detection. Previously due to the way the function worked, the percent change and hampel methods were using twice the window than the high variability method. Also adjusted the numeric input so that if an even value is provided it returns an odd value.</li>
+<li>The corrections tab was placed before the interpolation tab since this step should typically occur first.</li>
+<li>Updated the interpolation code to not have to run the <code>apply_interp</code> step whenever the period changes.</li>
+<li>Removed the Savitzky–Golay filter smoothing method as it was not working well for the data.</li>
+<li>Now when data or a project is loaded the app will fill in any missing <code>datetimes</code> within the data so the rows/indices are consistent and don’t change during the interpolation step.</li>
+<li>You can now customize the analyst name used for the changlog. It previously defaulted to you computer username.</li>
+<li>In the <strong>Check Data</strong> tab you can now select which parameter you want to view for the duplicate plots.</li>
+<li>Added an article (available on the <a href="https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/articles/correction-steps.html">website</a>) with a preliminary workflow.</li>
+<li>Updated the app manual to reflect the current workflow.</li>
+<li>Updated the token space in the <strong>Load Data</strong> tab to pull automatically if the token is stored an a variable under the R environment.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.9008" id="sondepolishr-009008">SondePolishR 0.0.9008<a class="anchor" aria-label="anchor" href="#sondepolishr-009008"></a></h2>
 <p>(2026-08-27)</p>

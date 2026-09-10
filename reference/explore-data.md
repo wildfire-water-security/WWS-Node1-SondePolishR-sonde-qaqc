@@ -10,7 +10,7 @@ dataset versions via row selection in a table via the `log`.
 ``` r
 explore_data_UI(id)
 
-explore_data_server(id, sondeproj, data_ver, y_var, view_state)
+explore_data_server(id, sondeproj, data_ver, y_var, view_state, username)
 ```
 
 ## Arguments
@@ -46,6 +46,10 @@ explore_data_server(id, sondeproj, data_ver, y_var, view_state)
   - period_length: Length of period view
 
   - period_n: The period number to view.
+
+- username:
+
+  A `reactiveVal` holding the name of the analyst for the changelog
 
 ## Value
 

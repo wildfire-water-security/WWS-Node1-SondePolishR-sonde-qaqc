@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SondePolishR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9008</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9009</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,6 +41,7 @@
 <li><a class="dropdown-item" href="../articles/app-manual.html">App User Guide</a></li>
     <li><a class="dropdown-item" href="../articles/correction-steps.html">Correction Workflow</a></li>
     <li><a class="dropdown-item" href="../articles/QAQC-flags.html">QAQC Flags</a></li>
+    <li><a class="dropdown-item" href="../articles/using-precipitation-data.html">Using Precipitation Data</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -99,7 +100,7 @@ flags, and metadata. See <code><a href="../reference/example_sondeproj.html">hel
 details on project structure.</p>
 <p><strong>Note: This app will not modify any raw data files. It is only
 able to read raw files and save to specified location.</strong></p>
-<p>The app consists of ten modules or pages. <em>While they are put in
+<p>The app consists of nine modules or pages. <em>While they are put in
 an order that represent a typical correction workflow, the steps do not
 need to be performed in order.</em></p>
 <ol style="list-style-type: decimal">
@@ -114,24 +115,21 @@ water.</p></li>
 <li><p><strong>Data Checks:</strong> View summaries of data gaps and
 duplicates. Resolve duplicates and add notes about duplicate/missing
 data.</p></li>
-<li><p><strong>Quality Flags:</strong> Flag data points as being
-questionable. These flags can be visualized in other plots across
-modules and used to automatically select points in outlier
-removal.</p></li>
 <li><p><strong>Physical Limits:</strong> Removes data points outside a
 specified range. Limits default to common sensor measurement
 limits.</p></li>
-<li><p><strong>Outlier Removal:</strong> Remove outlier data points.
-Removal can be done via a combination of automatic outlier detection and
-manual addition or removal of points.</p></li>
+<li><p><strong>Outlier Removal:</strong> Remove outlier data points and
+mark questionable points. Removal can be done via a combination of
+automatic outlier detection and manual addition or removal of
+points.</p></li>
 <li><p><strong>Interpolation:</strong> Fill in missing data points using
 interpolation. User can select between several different interpolation
 methods and can control how big of a gap is filled via
 interpolation.</p></li>
-<li><p><strong>Shift Corrections:</strong> Perform a shift correction
-for a selected set of points or apply a linear drift correction to a
-specific file. Drift corrections are based on calibration checks when
-provided.</p></li>
+<li><p><strong>Corrections:</strong> Perform a shift correction for a
+selected set of points, apply a linear drift correction to a specific
+file, or apply a smoothing correction to a region. Drift corrections are
+based on calibration checks when provided.</p></li>
 <li><p><strong>fDOM Corrections:</strong> Apply temperature and
 turbidity corrections to fDOM data using one of several methods. Methods
 default to published coefficient values but can be set to custom
@@ -207,11 +205,16 @@ only need to be input once per project.</p>
 <div class="section level4">
 <h4 id="load-data-1">1.4 Load Data<a class="anchor" aria-label="anchor" href="#load-data-1"></a>
 </h4>
-<p>This step uses the <code>load_project</code> function to read in data
-and format as a <code>sondeproj</code>. Use once you’re specified the
-file paths to all applicable data and metadata.</p>
-<p>To load a new project, use the <strong>clear uploads</strong> button
-to remove all previous file paths.</p>
+<ul>
+<li><p>Before loading the data, supply an analyst name, this could be
+your initials or name. It will be used in the changelog to track who
+made what change.</p></li>
+<li><p>This step uses the <code>load_project</code> function to read in
+data and format as a <code>sondeproj</code>. Use once you’re specified
+the file paths to all applicable data and metadata.</p></li>
+<li><p>To load a new project, use the <strong>clear uploads</strong>
+button to remove all previous file paths.</p></li>
+</ul>
 </div>
 <div class="section level4">
 <h4 id="add-precipitation">1.5 Add Precipitation<a class="anchor" aria-label="anchor" href="#add-precipitation"></a>
@@ -220,20 +223,6 @@ to remove all previous file paths.</p>
 Precipitation data is particularly helpful when correcting turbidity and
 fDOM data to determine if peaks are real or not. To add precipitation
 data there are three options:</p>
-<ul>
-<li>
-<a href="https://gmao.gsfc.nasa.gov/gmao-products/merra-2/" class="external-link">Merra-2</a>:
-Available from NASA power. This dataset is available across a global
-scale at a resolution of 0.5 x 0.625 degrees available from 1981 to near
-real time</li>
-<li>
-<a href="https://ldas.gsfc.nasa.gov/nldas" class="external-link">NLDAS</a>: Available from
-NASA Earthdata. This dataset is available across CONUS at a resolution
-of 0.125 × 0.125 degrees available from 1981 to near real time. This
-data requires a token to access the data. See <a href="https://urs.earthdata.nasa.gov/documentation/for_users/user_token" class="external-link">here</a>
-for directions on creating a token. Note that this token should be kept
-secret.</li>
-</ul>
 <ol style="list-style-type: decimal">
 <li><p>Provide a site latitude and longitude and download hourly
 precipitation data from <a href="https://gmao.gsfc.nasa.gov/gmao-products/merra-2/" class="external-link">Merra-2</a>
@@ -292,6 +281,10 @@ in <strong>Load Data</strong>.</p></li>
 <li><p><strong>Other sonde variables:</strong> You can also plot any of
 the other variables within the dataset.</p></li>
 </ul>
+<p>Next to the plot you can also control the minimum and maximum
+y-values to display. It will default to the maximum value of the full
+dataset. You can also remove the value to have it autoscale to the data
+actively being viewed.</p>
 <p><strong>Plot Options</strong></p>
 <p>In addition to adjusting the axes, there are also options to include
 addition items on the plot or adjust coloring of the points:</p>
@@ -415,40 +408,7 @@ resolved duplicate removed.</em></p>
 </div>
 </div>
 <div class="section level3">
-<h3 id="quality-flags">4 Quality Flags<a class="anchor" aria-label="anchor" href="#quality-flags"></a>
-</h3>
-<p>This step is used to mark regions or points that are questionable or
-bad. This uses the <code>apply_edit</code> function to add a quality
-flag. This flag can be visualized as a plotting option and will be
-exported with the other data flags. Additionally, these points can be
-used as a starting point for removing outlier points in <a href="#outlier-removal">6 Outlier Removal</a>.</p>
-<p>You can select and flag points as either “bad” or “questionable”
-which will be colored and flagged separately.</p>
-<blockquote>
-<p>If there are additional flags of interest please make note of that in
-the following <a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/34" class="external-link">feature
-request</a>.</p>
-</blockquote>
-<p>This module is very similar to <strong>Visualize</strong> except it
-has a new section <strong>Apply Quality Flags</strong>. To select points
-use the plotly Box Select or Lasso Select options in the top right of
-the plot (Box Select is used as a default) to select points that are
-questionable. These points will be colored orange.</p>
-<p>To remove points once highlighted, switch the <strong>selection
-method</strong> to “Remove”. To view data points in more detail, use the
-Date Range options described in <a href="#explore-plot">2.1 Explore
-Plot</a>. Once you’re happy with the points selected, you can use the
-<strong>Flag Points</strong> section to apply flags to the highlighted
-points. Use the text box to enter any additional notes you might have
-about the flagging. This step can be performed as many times as you
-would like.</p>
-<p>Once points have been marked as questionable, they will no longer be
-highlighted, but can be viewed by toggling the “Show questionable
-points” <strong>plot option</strong>.</p>
-<hr>
-</div>
-<div class="section level3">
-<h3 id="physical-limits">5 Physical Limits<a class="anchor" aria-label="anchor" href="#physical-limits"></a>
+<h3 id="physical-limits">4 Physical Limits<a class="anchor" aria-label="anchor" href="#physical-limits"></a>
 </h3>
 <p>This step is used to remove points that are outside a set minimum and
 maximum. As it’s name suggests, this is often used to remove points
@@ -466,20 +426,17 @@ log by default will include the lower and upper limit ranges.</p>
 <hr>
 </div>
 <div class="section level3">
-<h3 id="outlier-removal">6 Outlier Removal<a class="anchor" aria-label="anchor" href="#outlier-removal"></a>
+<h3 id="outlier-removal">5 Outlier Removal<a class="anchor" aria-label="anchor" href="#outlier-removal"></a>
 </h3>
-<p>This step is used to remove “bad” or erroneous data points. It works
-similarly to <a href="#quality-flags">4 Quality Flags</a> except instead
-of just flagging the points, the points are removed from the dataset.
-There are several methods that can be used to select points for
-removal:</p>
+<p>This step is used to remove “bad” or erroneous data points. You can
+also mark regions or points that are questionable or bad. Points marked
+as bad are removed from the dataset while points marked as questionable
+are flagged but retained. There are several methods that can be used to
+select points for removal:</p>
 <ul>
 <li><p><strong>None or manual selection only</strong>: This will start
 with no points highlighted, use the selection tools with plotly to
 select and remove points to remove.</p></li>
-<li><p><strong>Questionable points:</strong> Automatically selects any
-points marked as questionable in <a href="#quality-flags">4 Quality
-Flags</a></p></li>
 <li><p><strong>Hampel filter:</strong> Uses a <a href="https://search.r-project.org/CRAN/refmans/pracma/html/hampel.html" class="external-link">hampel
 filter</a> to select outliers which is based on median absolute
 deviation across points. The selected points can be adjusted using the
@@ -490,6 +447,9 @@ the threshold for selecting.</p></li>
 difference across a median of <strong>k</strong> points. The
 <strong>t</strong> parameter controls the threshold for
 selecting.</p></li>
+<li><p><strong>High variability:</strong> Locates periods that have high
+variability relative to the surrounding data which may indicate
+unrealistic noise that should be removed.</p></li>
 </ul>
 <p>All automatic selection methods can be used in combination with
 manual selection to adjust the selected points.</p>
@@ -503,7 +463,7 @@ notes.</p>
 <hr>
 </div>
 <div class="section level3">
-<h3 id="interpolation">7 Interpolation<a class="anchor" aria-label="anchor" href="#interpolation"></a>
+<h3 id="interpolation">6 Interpolation<a class="anchor" aria-label="anchor" href="#interpolation"></a>
 </h3>
 <p>This step is used to fill in missing data points either from data
 gaps or from data removals during corrections. You can set the maximum
@@ -538,17 +498,17 @@ different methods or including different user notes.</p>
 <hr>
 </div>
 <div class="section level3">
-<h3 id="shift-corrections">8 Shift Corrections<a class="anchor" aria-label="anchor" href="#shift-corrections"></a>
+<h3 id="corrections">7 Corrections<a class="anchor" aria-label="anchor" href="#corrections"></a>
 </h3>
-<p>This step is used to apply shifts to sections of data. There are two
-types of shifts that can be applied. To switch between the two methods
-change the selection under <strong>Select Type</strong>.</p>
+<p>This step is used to apply shifts to sections of data. There are
+three types of corrections that can be applied. To switch between the
+methods, change the selection under <strong>Select Type</strong>.</p>
 <div class="section level4">
-<h4 id="additive">8.1 Additive<a class="anchor" aria-label="anchor" href="#additive"></a>
+<h4 id="additive">7.1 Additive<a class="anchor" aria-label="anchor" href="#additive"></a>
 </h4>
 <p>This method is meant to correct groups of points that are shifted due
 to instrument issues (i.e., sensor interference). It works similarly to
-<a href="#outlier-removal">6 Outlier Removal</a> where you use the
+<a href="#outlier-removal">5 Outlier Removal</a> where you use the
 plotly selection tools to select a group of points within the plot. Once
 you select a group of points, it will guess the slope and intercept
 needed apply a linear shift correction to fit the start and end points
@@ -559,7 +519,7 @@ absolute shift, you can set slope to 0 and adjust the intercept.
 with no points.</strong></p>
 </div>
 <div class="section level4">
-<h4 id="drift">8.2 Drift<a class="anchor" aria-label="anchor" href="#drift"></a>
+<h4 id="drift">7.2 Drift<a class="anchor" aria-label="anchor" href="#drift"></a>
 </h4>
 <p>This method is used to correct for drift in sensors over time. While
 not required, it works best when a calibration check file has been
@@ -569,14 +529,39 @@ either use the calibration check data to determine the uncorrected
 based on the gap between the file and the next. The difference in values
 is used to apply a linear drift correction to the data and the corrected
 data is shown as a red line on the plot.</p>
-<p>For both methods, and similar to the other modules, when you want to
+</div>
+<div class="section level4">
+<h4 id="smoothing">7.3 Smoothing<a class="anchor" aria-label="anchor" href="#smoothing"></a>
+</h4>
+<p>This method is used to correct for highly “messy” regions of data.
+The method works by applying a smoothing correction to a selected data
+range using the selection tool. Smoothing method include:</p>
+<ul>
+<li><p><strong>rollmean</strong>: Based on the <code>rollmean</code>
+function from the <code>zoo</code> package. Replaces data with a rolling
+mean value. The <code>k</code> parameter is used to control the number
+of points to include in the mean calculation.</p></li>
+<li><p><strong>rollmedian</strong>: Based on the <code>rollmedian</code>
+function from the <code>zoo</code> package. Replaces data with a rolling
+median value. The <code>k</code> parameter is used to control the number
+of points to include in the median calculation, should be odd but will
+convert to an odd number with a warning.</p></li>
+<li><p><strong>kalman</strong>: Based on the <code>dlmSmooth</code>
+function from the <code>dlm</code> package. Applies a Kalman filter
+which process model to the data. The <code>k</code> parameter is used
+controls the amount of smoothing.</p></li>
+</ul>
+<p>This method should be used sparingly as it will “rewrite” or adjust
+large portions of data, including points you may have more confidence
+in.</p>
+<p>For all methods, and similar to the other modules, when you want to
 save a change use the <strong>Flag points</strong> section. To add an
 optional note and save the updated values.</p>
 <hr>
 </div>
 </div>
 <div class="section level3">
-<h3 id="fdom-corrections">9 fDOM Corrections<a class="anchor" aria-label="anchor" href="#fdom-corrections"></a>
+<h3 id="fdom-corrections">8 fDOM Corrections<a class="anchor" aria-label="anchor" href="#fdom-corrections"></a>
 </h3>
 <p>This step is used to correct fDOM data. fDOM is measured using an
 optical sensor that is affected by quenching due to temperature
@@ -638,13 +623,13 @@ optional note and save the updated values.</p>
 </div>
 </div>
 <div class="section level3">
-<h3 id="download-data">10 Download Data<a class="anchor" aria-label="anchor" href="#download-data"></a>
+<h3 id="download-data">9 Download Data<a class="anchor" aria-label="anchor" href="#download-data"></a>
 </h3>
 <p>This step is used to export cleaned data including data summaries and
 metadata and save the <code>sondeproj</code>. Similar to <a href="#load-data">1 Load Data</a>, this step is separated into several
 sections.</p>
 <div class="section level4">
-<h4 id="export-data">10.1 Export Data<a class="anchor" aria-label="anchor" href="#export-data"></a>
+<h4 id="export-data">9.1 Export Data<a class="anchor" aria-label="anchor" href="#export-data"></a>
 </h4>
 <p>This section is used to view and export summaries of the data as
 <code>.csv</code> files. You have several options to control the data
@@ -656,7 +641,8 @@ export data within the specified range.</p></li>
 larger windows (e.g., hourly or daily values)</p></li>
 <li><p><strong>Summary Method:</strong> Available if <strong>export
 frequency</strong> is larger than the data interval. Used to specify the
-method used to summarize the data.</p></li>
+method used to summarize the data. You may select more than one and they
+will show up as separate column in the exported data.</p></li>
 </ul>
 <blockquote>
 <p>While there is an option to select a parameter, this only controls
@@ -668,7 +654,7 @@ Location</strong> to set the file name and save location. Click
 <strong>Export Data</strong> to save the data to the file.</p>
 </div>
 <div class="section level4">
-<h4 id="export-metadata">10.2 Export Metadata<a class="anchor" aria-label="anchor" href="#export-metadata"></a>
+<h4 id="export-metadata">9.2 Export Metadata<a class="anchor" aria-label="anchor" href="#export-metadata"></a>
 </h4>
 <p>This section is used to export metadata stored within the project to
 a <code>.csv</code> file. There are four different files that can be
@@ -687,7 +673,7 @@ Add Precipitation</a>).</p></li>
 </ul>
 </div>
 <div class="section level4">
-<h4 id="save-sonde-project">10.3 Save Sonde Project<a class="anchor" aria-label="anchor" href="#save-sonde-project"></a>
+<h4 id="save-sonde-project">9.3 Save Sonde Project<a class="anchor" aria-label="anchor" href="#save-sonde-project"></a>
 </h4>
 <p>This section is used to save the <code>sondeproj</code> to a
 <code>.RDS</code> file (an R readable file). Similar to the other steps,
