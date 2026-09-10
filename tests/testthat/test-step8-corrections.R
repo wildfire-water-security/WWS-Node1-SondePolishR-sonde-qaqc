@@ -113,7 +113,7 @@ test_that("{shinytest2} recording: checking-module8", {
     app$expect_screenshot(name = "initial_smoothing")
 
     #change method
-    app$set_inputs(`data8-smooth_submod-method` = "savgol")
+    app$set_inputs(`data8-smooth_submod-method` = "kalman")
     plot_obj <- app$get_value(export = "data8-plot_obj")
     expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
     app$expect_screenshot(name = "change_smooth_mtd")
@@ -134,7 +134,7 @@ test_that("{shinytest2} recording: checking-module8", {
     tab <- app$get_value(export = "data8-changelog")
     expect_true(nrow(tab) > nrow(example_sondeproj$changelog))
     expect_equal(tab$parameter[nrow(tab)], "fDOM_QSU")
-    expect_equal(tab$note[nrow(tab)], paste0("smoothing correction using ", "Savitzky-Golay Filter",
+    expect_equal(tab$note[nrow(tab)], paste0("smoothing correction using ", "Kalman Filter",
                                              " using a smoothing factor of ", 55))
 
 })

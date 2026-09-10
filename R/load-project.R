@@ -13,6 +13,7 @@
 #' @param site the site name or site code.
 #' @param update_pb takes a function used to update a progress bar in a shiny
 #' interface.
+#' @param username the username of the person who made the change
 #'
 #' @returns a `sondeproj` object. For more details on structure
 #' see `example_sondeproj`
@@ -20,13 +21,17 @@
 #' @md
 #' @examples
 #' file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "example-csv-data1.csv")
-#' proj <- load_project(csv_path = file, csv_files = "example_file1")
+#' proj <- load_project(csv_path = file, csv_files = "example_file1", username="Smith")
 load_project <- function(csv_path=NULL, csv_files=NULL, prj_path=NULL,
                          ff_path=NULL, cc_path=NULL, tz="Etc/GMT+8",
-                         site = NULL,
+                         site = NULL, username=NULL,
                          update_pb = NULL){
   #set csv merge as NULL if not loaded to prevent errors in creating obj
     csv_merge <- NULL
+
+  if(!is.null(username)){
+    username <- Sys.info()[["user"]]
+  }
 
   #if csv projected, load files
   if(!is.null(csv_path)){
@@ -55,7 +60,8 @@ load_project <- function(csv_path=NULL, csv_files=NULL, prj_path=NULL,
       obj <- readRDS(prj_path)
     }else{
       #create new project if one isn't loaded
-      changelog <- write_log(NULL, "all", "initial load", n = nrow(csv_merge), diff_name = "raw")
+      changelog <- write_log(NULL, "all", "initial load", n = nrow(csv_merge), diff_name = "raw",
+                             user=username)
 
       #create sonde object
       obj <- list(meta = list(site = site, tz= tz, coords = c(NA, NA)),
@@ -130,13 +136,45 @@ load_project <- function(csv_path=NULL, csv_files=NULL, prj_path=NULL,
         obj$diffs <- append(obj$diffs, diff)
 
         #document data addition, needs to be after getting diff so name is correct
-        obj <- write_log(obj, "all", "adding new data", n = (nrow(data_merge) - prev_lines), diff_name = diff_version(obj), return="sondeproj")
+        obj <- write_log(obj, "all", "adding new data", n = (nrow(data_merge) - prev_lines), diff_name = diff_version(obj), return="sondeproj",
+                         user=username)
 
 
       }
       obj$data <- data_merge
 
     }
+
+  #fill in missing datetime stamps for future interpolation
+    if(is.function(update_pb)){setProgress(value = length(csv_path)+1, message = "Preparing Project....")}
+
+    data <- obj$data
+
+    #determine interval of data for gap length
+    interval <- get_interval(data)
+
+    #stuff to fill in missing correctly
+    par_names <- get_parms(data)
+
+    flags <- grep("_flag$", get_parms(data, flags=TRUE), value=TRUE)
+    fix_flags <- function(x){
+      lapply(x, function(y){ifelse(is.null(y), list(c(NA)), y)})
+    }
+    #get the dataset to interpolate (still may have dupes)
+    data_fill <- data %>%
+      complete(DateTime_rd = seq(min(.data$DateTime_rd), max(.data$DateTime_rd),
+                                 by = paste(interval, "min"))) %>%
+      arrange(.data$DateTime_rd, .data$DupNum) %>% #want to arrange in time order for filling
+      mutate(Index = 1:n(),
+             DupNum = ifelse(is.na(.data$DupNum), 1, .data$DupNum),
+             Date = if_else(is.na(.data$Date), as.Date(.data$DateTime_rd, tz = tz), .data$Date),
+             Time_HH_mm_ss = if_else(is.na(.data$Time_HH_mm_ss), strftime(.data$DateTime_rd, "%H:%M:%S"), .data$Time_HH_mm_ss),
+             DateTime = if_else(is.na(.data$DateTime), .data$DateTime_rd, .data$DateTime),
+             Site_Name = site) %>%
+      mutate(across(all_of(flags), ~fix_flags(.x))) %>% arrange(.data$Index) %>%
+      fill("FileName", .direction = "down") %>% arrange(.data$DateTime_rd, .data$DupNum)
+
+  obj$data <- data_fill
 
   return(obj)
 }

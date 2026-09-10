@@ -10,11 +10,7 @@ prep_interp(proj)
 \item{proj}{A \code{sondeproj} object holding sonde data.}
 }
 \value{
-a list of length two:
-\itemize{
-\item fill: \code{data.frame} based on \code{proj$data} with missing \code{datetime} values added.
-\item interp: \code{data.frame} based on \code{proj$data} with duplicates condensed to a single value.
-}
+a \code{data.frame} based on \code{proj$data} with duplicates condensed to a single value for interpolating.
 }
 \description{
 Completes the date-time sequence to add missing rows for missing datetimes. Also creates an
@@ -23,5 +19,5 @@ two different values, they will be set to NA for the purposes of interpolation t
 interpolate with questionable data.
 }
 \examples{
-interp_dfs <- prep_interp(example_sondeproj)
+interp_df <- prep_interp(example_sondeproj)
 }

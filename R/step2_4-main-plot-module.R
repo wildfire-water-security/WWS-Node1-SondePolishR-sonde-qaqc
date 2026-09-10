@@ -81,7 +81,7 @@ main_plot_server <- function(id, data_ver, sondeproj, plot_obj, plot_data, y_var
         zoom_data <- zoom_data %>% filter(.data[[y_var()]] >= zoom$y$range[1] & .data[[y_var()]] <= zoom$y$range[2])
       }
 
-      if(nrow(zoom_data) == 0){
+      if(all(is.na(zoom_data[[y_var()]]))){
         update_zoom_state(zoom_state, x = list(range=NULL))
         update_zoom_state(zoom_state, y = list(range=NULL))
       }
@@ -122,7 +122,12 @@ main_plot_server <- function(id, data_ver, sondeproj, plot_obj, plot_data, y_var
       req(sondeproj(), y_var(),input$yaxismax)
 
       minv <- floor(min(sondeproj()$data[[y_var()]], na.rm=TRUE) - (input$yaxismax*0.05))
-      updateNumericInput(session, "yaxismin", value=min(startmin(), minv, na.rm=TRUE))
+
+      if(id != "interp_plot"){
+        updateNumericInput(session, "yaxismin", value=min(startmin(), minv, na.rm=TRUE))
+      }else{
+        updateNumericInput(session, "yaxismin", value=minv)
+      }
     })
 
  #observe changes to plot
@@ -158,8 +163,9 @@ main_plot_server <- function(id, data_ver, sondeproj, plot_obj, plot_data, y_var
     #save to export
     output$plot <- plotly::renderPlotly({
       req(sondeproj())
+      no_data_check <- plot_data() %>% filter(!is.na(.data[[y_var()]]))
       validate(
-        need(nrow(plot_data()) > 0,
+        need(nrow(no_data_check) > 0,
              "No data available for the selected date range."))
 
       zoom <- zoom_state()
@@ -169,7 +175,7 @@ main_plot_server <- function(id, data_ver, sondeproj, plot_obj, plot_data, y_var
         plotly::layout(dragmode = zoom$dragmode)
 
       #apply zoom
-      if(!is.null(zoom$x)){
+      if(!is.null(zoom$x$range)){
         p <- p %>% layout(xaxis = zoom$x)
       }
 

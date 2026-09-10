@@ -59,13 +59,14 @@ correction_UI <- function(id){
 #'  - period_view: Logical if the period view is being used
 #'  - period_length: Length of period view
 #'  - period_n: The period number to view.
+#' @param username A `reactiveVal` holding the name of the analyst for the changelog
 #' @md
 #' @keywords internal
 #' @export
 #' @rdname correction
 #' @returns Invisible NULL
 #'
-correction_server <- function(id, sondeproj, data_ver, y_var,view_state){
+correction_server <- function(id, sondeproj, data_ver, y_var,view_state, username){
   moduleServer(id, function(input, output, session){
 
   index <- reactiveVal() #stores index of selected points
@@ -137,7 +138,7 @@ correction_server <- function(id, sondeproj, data_ver, y_var,view_state){
 
   #create plotly plot, add in sub-mod additions
     plot_obj <- reactive({
-      req(y_var(),y2_var(), plot_data())
+      req(y_var(),y2_var(), plot_data(), data_check(plot_data(), y_var()))
 
       if(y2_var() == "none"){y2 <- NULL}else{y2 <- y2_var()}
       y <- y_var()
@@ -177,7 +178,7 @@ correction_server <- function(id, sondeproj, data_ver, y_var,view_state){
     # })
 
   #flagging module
-    apply_edit_server("apply_limits", sondeproj, curredit)
+    apply_edit_server("apply_limits", sondeproj, curredit, username)
 
   #export plot so we can check it
     exportTestValues(

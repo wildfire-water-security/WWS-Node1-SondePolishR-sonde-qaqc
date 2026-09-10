@@ -15,7 +15,6 @@
 #' guess_shift(example_sondeproj$data, "ODO_mg_L", 5:7)
 
 guess_shift <- function(data, par, index){
-
   if(is.null(index) || all(is.na(index))){
     return(list(slope = 0, int = 0))
   }
@@ -31,7 +30,7 @@ guess_shift <- function(data, par, index){
   t2 <- vals[end + 1]
 
   # edge cases
-  if(is.na(t1) & is.na(t2)){
+  if((length(t1) == 0 || is.na(t1)) & (length(t2) == 0 || is.na(t2))){
     return(list(slope = 0, int = 0))
   }else if(length(t1) == 0 || is.na(t1)){
     add <- rep(t2 - vals[end], length(index))
@@ -113,13 +112,16 @@ shift_points <- function(data, par, index, shift_val=NULL){
 apply_drift_shift <- function(x, rows, corrected, uncorrected){
   n <- sum(rows)
 
-  # amount needed at final point (using paired check, resident)
-  d <- corrected - uncorrected
+  #trying to add some guards to prevent warnings
+  if(is.integer(n) | is.numeric(n) && n > 0){
+    # amount needed at final point (using paired check, resident)
+    d <- corrected - uncorrected
 
-  # increasing additive correction
-  add <- d * ((seq_len(n) - 1) / (n - 1))
+    # increasing additive correction
+    add <- d * ((seq_len(n) - 1) / (n - 1))
 
-  x[rows] <- x[rows] + add
+    x[rows] <- x[rows] + add
+  }
 
   return(x)
 }

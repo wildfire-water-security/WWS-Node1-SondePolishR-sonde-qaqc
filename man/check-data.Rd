@@ -7,7 +7,7 @@
 \usage{
 check_data_UI(id)
 
-check_data_server(id, sondeproj, data_ver, y_var)
+check_data_server(id, sondeproj, data_ver, y_var, username)
 }
 \arguments{
 \item{id}{An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.}
@@ -17,6 +17,8 @@ check_data_server(id, sondeproj, data_ver, y_var)
 \item{data_ver}{A \code{reactiveVal} holding a number used to track when new data is added to trigger resets.}
 
 \item{y_var}{Y-variable to plot on the y-axis.}
+
+\item{username}{A \code{reactiveVal} holding the name of the analyst for the changelog}
 }
 \value{
 Invisible NULL

@@ -85,13 +85,13 @@ test_that("version control works as expected", {
 
   #check data merge with real data and check diff looks right
     proj1 <- load_project(csv_path = "testdata/example-csv-data1.csv", csv_files = paste0("example-csv-data", 1, ".csv"),
-                         tz = "Etc/GMT+8", site="FAL")
+                         tz = "Etc/GMT+8", site="FAL", username="Smith")
     temp_rds <- tempfile(fileext=".rds")
     saveRDS(proj1, temp_rds)
 
     #add a new file
     proj2 <- load_project(csv_path = "testdata/example-csv-data2.csv", csv_files = paste0("example-csv-data", 2, ".csv"),
-                         tz = "Etc/GMT+8", site="FAL", prj_path=temp_rds)
+                         tz = "Etc/GMT+8", site="FAL", prj_path=temp_rds, username="Smith")
 
     expect_true(nrow(proj2$data) > nrow(proj1$data)) #data gets added
     expect_equal(names(proj2$diffs), "dd1")

@@ -4,7 +4,7 @@
 \alias{apply_interp}
 \title{Map interpolated data back to dataset}
 \usage{
-apply_interp(data_fill, data_interp, y_var, max_length, date_range)
+apply_interp(data_fill, data_interp, y_var, max_length)
 }
 \arguments{
 \item{data_fill}{\code{data.frame} based on \code{proj$data} with missing \code{datetime} values added from \code{prep_interp()}.}
@@ -14,8 +14,6 @@ apply_interp(data_fill, data_interp, y_var, max_length, date_range)
 \item{y_var}{Variable being interpolated.}
 
 \item{max_length}{The maximum length in hours to fill via interpolation.}
-
-\item{date_range}{The date range in which to fill data, used to only fill data within plotted range.}
 }
 \value{
 \code{data_fill} with missing values interpolated.
@@ -25,8 +23,8 @@ Uses interpolated values to attempt to fill in missing data being aware of
 maximum gap lengths to fill and duplicates.
 }
 \examples{
-interp_dfs <- prep_interp(example_sondeproj)
-filled_yvar <- run_interp(interp_dfs$interp, "fDOM_QSU", "linear")
-data_filled <- apply_interp(interp_dfs$fill, filled_yvar,
-                            "fDOM_QSU", 8, range(interp_dfs$fill$Date))
+interp_df <- prep_interp(example_sondeproj)
+filled_yvar <- run_interp(interp_df, "fDOM_QSU", "linear")
+data_filled <- apply_interp(interp_df, filled_yvar,
+                            "fDOM_QSU", 8)
 }

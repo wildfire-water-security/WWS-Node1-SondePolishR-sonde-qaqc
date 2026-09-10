@@ -8,5 +8,6 @@
 
 library(testthat)
 library(SondePolishR)
+options(shinytest2.load_timeout = 30 * 1000) # Increases timeout to 30 seconds
 
 test_check("SondePolishR")

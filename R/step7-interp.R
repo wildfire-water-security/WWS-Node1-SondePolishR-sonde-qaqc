@@ -42,7 +42,6 @@ interp_UI <- function(id){
       mainPanel(
         main_plot_UI(ns("interp_plot")),
 
-        plotlyOutput(ns("interp_plot"), height="400px"),
         #add buttons to navigate date
         weekly_range_buttons_UI(ns("date_nav")),
       ))
@@ -68,9 +67,10 @@ interp_UI <- function(id){
 #'  - period_length: Length of period view
 #'  - period_n: The period number to view.
 #' @param current_mod The name of the current module being viewed.
+#' @param username A `reactiveVal` holding the name of the analyst for the changelog
 #' @export
 #' @rdname interp
-interp_server <- function(id, sondeproj, data_ver, y_var,view_state, current_mod){
+interp_server <- function(id, sondeproj, data_ver, y_var,view_state, username, current_mod){
   moduleServer(id, function(input, output, session){
   #keep track of second y_variable
     y2_var <- reactiveVal()
@@ -95,7 +95,7 @@ interp_server <- function(id, sondeproj, data_ver, y_var,view_state, current_mod
     plot_dates <- weekly_range_server("date_nav", sondeproj, data_ver,view_state)
 
   #get data to fill and interpolation df as list
-   data_fill_list <- reactive({
+   data_prep <- reactive({
      req(sondeproj(),current_mod() == "step-7")
      show_modal_spinner(text = "Preparing data...", spin="fading-circle")
      on.exit(remove_modal_spinner(), add = TRUE)
@@ -104,19 +104,20 @@ interp_server <- function(id, sondeproj, data_ver, y_var,view_state, current_mod
 
   #interpolate
   data_interp <- reactive({
-    req(sondeproj(), y_var(),input$method, input$freq,current_mod() == "step-7")
+    req(data_prep(), y_var(),input$method, input$freq,current_mod() == "step-7")
       show_modal_spinner(text = "Interpolating data...", spin="fading-circle")
       on.exit(remove_modal_spinner(), add = TRUE)
 
-    run_interp(data_fill_list()$interp, y_var(), input$method, input$freq)
+    run_interp(data_prep(), y_var(), input$method, input$freq)
   })
 
   #fill data
   data_fill <- reactive({
-    req(data_fill_list(), data_interp(), y_var(),current_mod() == "step-7")
+    req(sondeproj(), data_interp(), y_var(),current_mod() == "step-7")
       show_modal_spinner(text = "Filling data...", spin="fading-circle")
       on.exit(remove_modal_spinner(), add = TRUE)
-      apply_interp(data_fill_list()$fill, data_interp(), y_var(), input$max_length, plot_dates())
+      data <- sondeproj()$data
+      apply_interp(data, data_interp(), y_var(), input$max_length)
     })
 
   #filter data to plot
@@ -129,7 +130,7 @@ interp_server <- function(id, sondeproj, data_ver, y_var,view_state, current_mod
 
   #create plotly plot
     plot_obj <- reactive({
-      req(y_var(),y2_var(), plot_data())
+      req(y_var(),y2_var(), plot_data(), data_check(plot_data(), y_var()))
       if(y2_var() == "none"){y2 <- NULL}else{y2 <- y2_var()}
 
       #use function to plot sonde data
@@ -175,11 +176,16 @@ interp_server <- function(id, sondeproj, data_ver, y_var,view_state, current_mod
 
   #create edit object
     edit <- reactive({
+      ##need to filter this to only mark within data range
       req(data_fill(), y_var())
-      newdata <- data_fill()
-      rows <- newdata$fill_flag
-      rows[is.na(newdata[[y_var()]]) & rows] <- !rows[is.na(newdata[[y_var()]]) & rows] # make sure we don't flag if not filled
-      newdata <- newdata %>% select(-"fill_flag")
+      newdata <- sondeproj()$data
+      fill_data <- data_fill() ## this fills the full range, only want to replace within view range
+
+      #only replace data within date range
+      index <- fill_data %>% filter(.data$fill_flag & !is.na(.data[[y_var()]])) %>% # make sure we don't flag if not filled
+        dplyr::filter(.data$Date >= plot_dates()[1], .data$Date <= plot_dates()[2]) %>% pull(.data$Index)
+
+      newdata[[y_var()]][index] <- fill_data[[y_var()]][index]
 
       #nice names of methods
       label_name <- switch(input$method,
@@ -191,7 +197,7 @@ interp_server <- function(id, sondeproj, data_ver, y_var,view_state, current_mod
       #get diff and flags
       edit <- list(
         data = newdata,
-        rows = rows,
+        rows = index,
         y_var = y_var(),
         step = "data interpolation",
         note = paste0("Data interpolated using ", label_name, " with a maximum gap size of ", input$max_length, " hours."),
@@ -201,7 +207,7 @@ interp_server <- function(id, sondeproj, data_ver, y_var,view_state, current_mod
     })
 
   #flagging module
-    apply_edit_server("apply_limits", sondeproj, edit)
+    apply_edit_server("apply_limits", sondeproj, edit, username)
 
   #export plot so we can check it
     exportTestValues(

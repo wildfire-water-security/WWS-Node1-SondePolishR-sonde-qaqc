@@ -15,12 +15,14 @@
 #' - note: an optional note to add to the changelog
 #' - flag: character flag to use for edits to the data
 #' @param edit_type A character used to determine button naming options include flag, remove, interpolate, and change.
-#'
+#' @param username A `reactiveVal` holding the name of the analyst for the changelog
+
 #' @rdname apply-edit
 #' @export
 #' @keywords internal
 #'
-apply_edit_UI <- function(id, edit_type ="flag", note=NULL) {
+apply_edit_UI <- function(id, edit_type =
+                            "flag", note=NULL, username) {
   ns <- NS(id)
 
   button_name <- switch(edit_type,
@@ -48,7 +50,7 @@ apply_edit_UI <- function(id, edit_type ="flag", note=NULL) {
 
 #' @rdname apply-edit
 #' @export
-apply_edit_server <- function(id, sondeproj, edit){
+apply_edit_server <- function(id, sondeproj, edit, username){
   moduleServer(id, function(input, output, session) {
 
     saved_indices <- reactiveVal(NULL)
@@ -57,6 +59,8 @@ apply_edit_server <- function(id, sondeproj, edit){
     observeEvent(input$apply_flags, {
       req(sondeproj(), edit())
 
+    show_modal_spinner(text = "Logging Data Changes...", spin="fading-circle")
+    on.exit(remove_modal_spinner(), add = TRUE)
     edit2 <- edit()
     #update note with any user text
       if(input$flag_notes != ""){
@@ -64,7 +68,7 @@ apply_edit_server <- function(id, sondeproj, edit){
       }
 
     #log edits
-      proj <- apply_edit(sondeproj(), edit2)
+      proj <- apply_edit(sondeproj(), edit2, username())
 
     #update sondeproj
       sondeproj(proj)

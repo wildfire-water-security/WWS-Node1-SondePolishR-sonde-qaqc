@@ -7,7 +7,7 @@
 \usage{
 explore_data_UI(id)
 
-explore_data_server(id, sondeproj, data_ver, y_var, view_state)
+explore_data_server(id, sondeproj, data_ver, y_var, view_state, username)
 }
 \arguments{
 \item{id}{An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.}
@@ -26,6 +26,8 @@ explore_data_server(id, sondeproj, data_ver, y_var, view_state)
 \item period_length: Length of period view
 \item period_n: The period number to view.
 }}
+
+\item{username}{A \code{reactiveVal} holding the name of the analyst for the changelog}
 }
 \value{
 Invisible NULL

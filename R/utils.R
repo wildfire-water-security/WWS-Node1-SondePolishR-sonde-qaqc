@@ -353,3 +353,16 @@ update_zoom_state <- function(zoom_state, ...) {
   state[names(list(...))] <- list(...)
   zoom_state(state)
 }
+
+#' Check if there's data before plotting to prevent warnings
+#'
+#' @param data data to plot
+#' @param y_var y-variable to plot
+#'
+#' @noRd
+data_check <- function(data, y_var){
+
+  if(!is.data.frame(data)| y_var == ""){return(FALSE)}
+  data <- data %>% filter(!is.na(.data[[y_var]]))
+  if(nrow(data) == 0){return(FALSE)}else{return(TRUE)}
+}

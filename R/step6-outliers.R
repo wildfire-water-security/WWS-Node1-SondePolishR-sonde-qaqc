@@ -26,7 +26,7 @@ outlier_UI <- function(id){
                            choices = c("Add Bad" = "bad", "Add Questionable" = "questionable", "Remove Selection" = "remove"))),
             bslib::layout_columns(
               col_widths = c(3,3,1,5),
-              numericInput(ns("k"),"Window Size",value =5,step=2),
+              numericInput(ns("k"),"Window (odd #)",value =7,step=2),
               numericInput(ns("t"),"Threshold",value = 7, step=0.5),
               tags$div(
                 style = "width: 1px; height: 85px; background-color: #6c7881; display: inline-block; margin: 0 30px; vertical-align: middle;"),
@@ -86,9 +86,10 @@ outlier_UI <- function(id){
 #'  - period_view: Logical if the period view is being used
 #'  - period_length: Length of period view
 #'  - period_n: The period number to view.
+#' @param username A `reactiveVal` holding the name of the analyst for the changelog
 #' @export
 #' @rdname outliers
-outlier_server <- function(id, sondeproj, data_ver, y_var,view_state){
+outlier_server <- function(id, sondeproj, data_ver, y_var,view_state, username){
   moduleServer(id, function(input, output, session){
 
   #keep track of second y_variable
@@ -106,6 +107,16 @@ outlier_server <- function(id, sondeproj, data_ver, y_var,view_state){
       manual_chg(list("questionable" = integer(),
                       "bad" = integer(),
                       "remove" = integer()))
+    })
+
+  #make sure that the window stays odd
+    observeEvent(input$k, {
+      req(input$k)
+      # Check if the number is even
+      if(input$k %% 2 == 0){
+        new_val <- input$k + 1
+        updateNumericInput(session, "k", value = new_val)
+      }
     })
 
   #keep track of auto selection
@@ -214,7 +225,7 @@ outlier_server <- function(id, sondeproj, data_ver, y_var,view_state){
 
   #create plotly plot
     plot_obj <- reactive({
-      req(y_var(),y2_var(), plot_data())
+      req(y_var(),y2_var(), plot_data(), data_check(plot_data(), y_var()))
       if(y2_var() == "none"){y2 <- NULL}else{y2 <- y2_var()}
 
       filter_data <- plot_data() %>% filter(!is.na(.data[[y_var()]]))
@@ -261,11 +272,9 @@ outlier_server <- function(id, sondeproj, data_ver, y_var,view_state){
     newdata <- sondeproj()$data
 
     #only flag data within date range
-    range_index <- plot_data()$Index[plot_data()$Index %in% selected()$bad]
-    setna <- newdata$Index %in% range_index
-
-    #set to NA
-    newdata[[y_var()]][setna] <- NA
+    index <- newdata %>% filter(.data$Index %in% selected()$bad) %>%
+      dplyr::filter(.data$Date >= plot_dates()[1], .data$Date <= plot_dates()[2]) %>% pull(.data$Index)
+    newdata[[y_var()]][newdata$Index %in% index] <- NA
 
     note <- switch(input$filter_type,
                         "hampel" = paste0("Data removed based on Hampel Filter",
@@ -282,7 +291,7 @@ outlier_server <- function(id, sondeproj, data_ver, y_var,view_state){
     #make edit list
     list(
       data = newdata,
-      rows = setna,
+      rows = index,
       y_var = y_var(),
       step = "outlier removal",
       note = note,
@@ -296,12 +305,12 @@ outlier_server <- function(id, sondeproj, data_ver, y_var,view_state){
 
     #only flag data within date range
     range_index <- plot_data()$Index[plot_data()$Index %in% selected()$questionable]
-    setna <- newdata$Index %in% range_index
+    index <- range_index
 
     #make edit list
     list(
       data = newdata,
-      rows = setna,
+      rows = index,
       y_var = y_var(),
       step = "outlier removal",
       note = paste0("Data flagged as questionable via manual selection."),
@@ -311,8 +320,8 @@ outlier_server <- function(id, sondeproj, data_ver, y_var,view_state){
   })
 
   #flagging modules
-    bad_flagged <- apply_edit_server("remove_outliers", sondeproj, edit_rm)
-    question_flagged <- apply_edit_server("flag_question", sondeproj, edit_chg)
+    bad_flagged <- apply_edit_server("remove_outliers", sondeproj, edit_rm, username)
+    question_flagged <- apply_edit_server("flag_question", sondeproj, edit_chg, username)
 
   #export plot so we can check it
     exportTestValues(

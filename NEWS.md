@@ -1,3 +1,30 @@
+# SondePolishR 0.0.9009
+
+(2026-09-10)
+
+## Bug Fixes
+
+-   In the interpolation tab, the period navigation buttons were shifted downward.
+-   Median and mean functions were not ignoring `NA` values, causing weird placing of points when filling.
+-   The y-min limit wasn't updating in the interpolation tab with y-max limit changes.
+-   The auto-guess for the drift corrections wouldn't automatically update if you switched to drift, switched away, and switched back.
+-   Fixed a warning when trying to plot when there was no data within the range.
+-   Fixed a bug with the shift correction when selecting an area including the first point in the data causing a fatal crash.
+
+## Updates
+
+-   The **hampel** filter method in identifying outliers was adjusted to ignore regions where the median deviation is 0.
+-   Adjusted how the **k** parameter was used in outlier detection. Previously due to the way the function worked, the percent change and hampel methods were using twice the window than the high variability method. Also adjusted the numeric input so that if an even value is provided it returns an odd value.
+-   The corrections tab was placed before the interpolation tab since this step should typically occur first.
+-   Updated the interpolation code to not have to run the `apply_interp` step whenever the period changes.
+-   Removed the Savitzky–Golay filter smoothing method as it was not working well for the data.
+-   Now when data or a project is loaded the app will fill in any missing `datetimes` within the data so the rows/indices are consistent and don't change during the interpolation step.
+-   You can now customize the analyst name used for the changlog. It previously defaulted to you computer username.
+-   In the **Check Data** tab you can now select which parameter you want to view for the duplicate plots.
+-   Added an article (available on the [website](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/articles/correction-steps.html)) with a preliminary workflow.
+-   Updated the app manual to reflect the current workflow.
+-   Updated the token space in the **Load Data** tab to pull automatically if the token is stored an a variable under the R environment.
+
 # SondePolishR 0.0.9008
 
 (2026-08-27)

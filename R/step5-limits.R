@@ -65,9 +65,10 @@ limits_UI <- function(id){
 #'  - period_view: Logical if the period view is being used
 #'  - period_length: Length of period view
 #'  - period_n: The period number to view.
+#' @param username A `reactiveVal` holding the name of the analyst for the changelog
 #' @export
 #' @rdname limits
-limits_server <- function(id, sondeproj, data_ver, y_var,view_state){
+limits_server <- function(id, sondeproj, data_ver, y_var,view_state, username){
   moduleServer(id, function(input, output, session){
     #keep track of second y_variable
     y2_var <- reactiveVal()
@@ -83,6 +84,7 @@ limits_server <- function(id, sondeproj, data_ver, y_var,view_state){
 
       #update default limits based on manufacturer specifications
       rng <- switch(y_var(),
+                    "Depth_m" = c(0, 250),
                     "fDOM_QSU" = c(0,300),
                     "ODO_mg_L" = c(0,50),
                     "pH"= c(0, 14),
@@ -110,7 +112,7 @@ limits_server <- function(id, sondeproj, data_ver, y_var,view_state){
 
   #create plotly plot
     plot_obj <- reactive({
-      req(y_var(),y2_var(), plot_data())
+      req(y_var(),y2_var(), plot_data(), data_check(plot_data(), y_var()))
       if(y2_var() == "none"){y2 <- NULL}else{y2 <- y2_var()}
 
       #if we want to filter out flagged points, filter before plotting
@@ -121,8 +123,7 @@ limits_server <- function(id, sondeproj, data_ver, y_var,view_state){
         flag_data <- plot_data() %>% dplyr::filter(.data[[y_var()]] < input$min | .data[[y_var()]] > input$max)
       }
 
-
-      #use function to plot sonde data
+      #use function to plot sonde dat
       p <- plot_sonde(data = filter_data, y_var=y_var(), y2_var = y2, proj = sondeproj(), opts=plot_opts(),
                       source = "limit_plot")
       #color points outside limits as red
@@ -169,14 +170,14 @@ limits_server <- function(id, sondeproj, data_ver, y_var,view_state){
       newdata <- sondeproj()$data
 
       #get filtered data
-      setna <- newdata[[y_var()]] < input$min | newdata[[y_var()]] > input$max
-      setna[is.na(setna)] <- FALSE #if NA, will return NA, we want to make FALSE
-      newdata[[y_var()]][setna] <- NA
+      index <- newdata %>% filter(.data[[y_var()]] < input$min | .data[[y_var()]] > input$max) %>%
+        dplyr::filter(.data$Date >= plot_dates()[1], .data$Date <= plot_dates()[2]) %>% pull(.data$Index)
+      newdata[[y_var()]][newdata$Index %in% index] <- NA
 
       #make edit list
       list(
         data = newdata,
-        rows = setna,
+        rows = index,
         y_var = y_var(),
         step = "absolute limits",
         note = paste0("Data removed based on absolute limits of ", input$min, " and ", input$max),
@@ -186,7 +187,7 @@ limits_server <- function(id, sondeproj, data_ver, y_var,view_state){
     })
 
   #flagging module
-    apply_edit_server("apply_limits", sondeproj, edit)
+    apply_edit_server("apply_limits", sondeproj, edit, username)
 
   #export plot so we can check it
     exportTestValues(

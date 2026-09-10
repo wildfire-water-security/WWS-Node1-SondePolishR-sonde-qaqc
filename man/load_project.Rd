@@ -12,6 +12,7 @@ load_project(
   cc_path = NULL,
   tz = "Etc/GMT+8",
   site = NULL,
+  username = NULL,
   update_pb = NULL
 )
 }
@@ -32,6 +33,8 @@ doesn't store filenames with paths.}
 
 \item{site}{the site name or site code.}
 
+\item{username}{the username of the person who made the change}
+
 \item{update_pb}{takes a function used to update a progress bar in a shiny
 interface.}
 }
@@ -44,5 +47,5 @@ Uses provided filepaths and to read in, clean/format, and merge together compone
 }
 \examples{
 file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "example-csv-data1.csv")
-proj <- load_project(csv_path = file, csv_files = "example_file1")
+proj <- load_project(csv_path = file, csv_files = "example_file1", username="Smith")
 }

@@ -64,9 +64,10 @@ fdom_UI <- function(id){
 #'  - period_view: Logical if the period view is being used
 #'  - period_length: Length of period view
 #'  - period_n: The period number to view.
+#' @param username A `reactiveVal` holding the name of the analyst for the changelog
 #' @export
 #' @rdname fdom
-fdom_server <- function(id, sondeproj, data_ver, y_var, view_state){
+fdom_server <- function(id, sondeproj, data_ver, y_var, view_state, username){
   moduleServer(id, function(input, output, session){
     plot_exist <- reactiveVal() #keeps warning about missing plot
 
@@ -152,7 +153,7 @@ fdom_server <- function(id, sondeproj, data_ver, y_var, view_state){
 
   #create plotly plot
     plot_obj <- reactive({
-      req(plot_data(),plot_dates())
+      req(plot_data(), data_check(plot_data(), y_var()))
 
       #use function to plot sonde data
       p <- plot_sonde(data = plot_data(), y_var="fDOM_QSU", proj = sondeproj(), opts=plot_opts(),
@@ -189,6 +190,8 @@ fdom_server <- function(id, sondeproj, data_ver, y_var, view_state){
                        "temperature" = !is_corrected(proj, "temp"),
                        is_corrected(proj, "temp") & !is_corrected(proj, "turb"))
 
+      index <- newdata$Index[rows]
+
       #provide warnings
       if(sum(rows) == 0){
         if(interactive()){
@@ -216,7 +219,7 @@ fdom_server <- function(id, sondeproj, data_ver, y_var, view_state){
       #make edit list
       list(
         data = newdata,
-        rows = rows,
+        rows = index,
         y_var = "fDOM_QSU",
         step = "fDOM correction",
         note = method_note,
@@ -226,7 +229,7 @@ fdom_server <- function(id, sondeproj, data_ver, y_var, view_state){
     })
 
   #flagging module
-    apply_edit_server("apply_limits", sondeproj, edit)
+    apply_edit_server("apply_limits", sondeproj, edit, username)
 
   #export plot so we can check it
     exportTestValues(

@@ -33,10 +33,7 @@ to include in the mean calculation.
 \item \strong{rollmedian}: Based on the \code{rollmedian} function from the \code{zoo} package.
 Replaces data with a rolling median value. The \code{k} parameter is used to control the number of points
 to include in the median calculation, should be odd but will convert to an odd number with a warning.
-\item \strong{savgol}: Based on the \code{savgol} function from the \code{pracma} package.
-Applies a Savitzky–Golay filter which fits a fourth order polynomial to a sliding range of data.
-The \code{k} parameter is used controls the number of points in the window.
-\item \strong{savgol}: Based on the \code{dlmSmooth} function from the \code{dlm} package.
+\item \strong{kalman}: Based on the \code{dlmSmooth} function from the \code{dlm} package.
 Applies a Kalman filter which process model to the data.
 The \code{k} parameter is used controls the amount of smoothing.
 }

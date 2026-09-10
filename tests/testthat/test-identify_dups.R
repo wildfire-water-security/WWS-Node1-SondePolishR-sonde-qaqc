@@ -26,7 +26,7 @@ test_that("duplicates are dealt with", {
 
   #test different keep options
     #average values
-      flagged <- apply_dup_edits(messy, messy$duplicates[1,], "use_mean")
+      flagged <- apply_dup_edits(messy, messy$duplicates[1,], "use_mean", username="Smith")
 
       expect_equal(flagged$changelog$n_changed[-1], 14)
       expect_equal(flagged$changelog$note[-1], "averaged across duplicate values")
@@ -37,14 +37,14 @@ test_that("duplicates are dealt with", {
       expect_equal(unlist(flagged$data$fDOM_QSU_flag[dup_rows]), rep("DUP02", 14))
 
 
-      flagged <- apply_dup_edits(messy, messy$duplicates[2,], "use_mean")
+      flagged <- apply_dup_edits(messy, messy$duplicates[2,], "use_mean", username="Smith")
       expect_equal(flagged$changelog$n_changed[-1], 14)
       expect_equal(unlist(flagged$data$fDOM_QSU_flag[251:264]), rep("DUP01", 14))
       dup_rows <- which(flagged$data$DupNum == 2 & flagged$data$FileName == "dupfile2.csv")
       expect_equal(unlist(flagged$data$fDOM_QSU_flag[dup_rows]), rep("DUP02", 14))
 
     #keep a single set
-      flagged <- apply_dup_edits(messy, messy$duplicates[2,], "dupfile2.csv")
+      flagged <- apply_dup_edits(messy, messy$duplicates[2,], "dupfile2.csv", username="Smith")
 
       expect_equal(flagged$changelog$n_changed[-1], 14) #only 14 since we just removed 1 set
       expect_equal(flagged$changelog$note[-1], "kept duplicates from duplicate set dupfile2.csv")
@@ -54,12 +54,12 @@ test_that("duplicates are dealt with", {
       expect_equal(unlist(flagged$data$fDOM_QSU_flag[dup_rows]), rep(NA, 14)) #shouldn't be flagged since not changed
 
       #check naming with a single file
-      flagged <- apply_dup_edits(messy, messy$duplicates[1,], "1")
+      flagged <- apply_dup_edits(messy, messy$duplicates[1,], "1", username="Smith")
       expect_equal(flagged$changelog$n_changed[-1], 14) #only 14 since we just removed 1 set
       expect_equal(flagged$changelog$note[-1], "kept duplicates from duplicate set 1")
 
     #remove both sets
-      flagged <- apply_dup_edits(messy, messy$duplicates[2,], "remove_both")
+      flagged <- apply_dup_edits(messy, messy$duplicates[2,], "remove_both", username="Smith")
 
       expect_equal(flagged$changelog$n_changed[-1], 28)
       expect_equal(flagged$changelog$note[-1], "removed all duplicated values")

@@ -144,7 +144,6 @@
 #' @importFrom utils write.csv
 #' @importFrom zoo na.approx
 #' @importFrom zoo na.locf
-#' @importFrom zoo rollmean
-#' @importFrom zoo rollmedian
+#' @importFrom zoo rollapply
 ## usethis namespace: end
 NULL

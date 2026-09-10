@@ -7,7 +7,7 @@
     cal <- list.files("../WWS-Node1-SONDE-postfire-sonde-network/data/01_site-visit-metadata/Fall-Creek", pattern = "Calibration", full.names = TRUE)
 
     proj <- load_project(csv_path = raw_files, csv_files = paste0("example-csv-data", 1:3, ".csv"),
-                       ff_path = ff, cc_path = cal, tz = "Etc/GMT+8", site="FAL")
+                       ff_path = ff, cc_path = cal, tz = "Etc/GMT+8", site="FAL", username="Smith")
 
     #add precip
     proj$precip <- get_precip(proj$data, 43.96, -122.63, method="merra-2")
@@ -37,7 +37,8 @@
     data2 <- add_flags(data2, "fDOM_QSU", 1:4, "RM01")
     dd1 <- list(get_diff(proj$data, data2, id=c("DateTime_rd", "DupNum"))) #commit difference
     names(dd1) <- "dd1"
-    proj <- write_log(proj, "fDOM_QSU", "removing first four points", n = 4, diff_name = "dd1", return = "sondeproj") #write log
+    proj <- write_log(proj, "fDOM_QSU", "removing first four points", n = 4, diff_name = "dd1", return = "sondeproj",
+                      user = "Smith") #write log
     proj$diffs <- append(proj$diffs, dd1)
     proj$data <- data2
 
@@ -47,7 +48,8 @@
     data2 <- add_flags(data2, "ODO_mg_L", 5:7, "CH01")
     dd2 <- list(get_diff(proj$data, data2,id=c("DateTime_rd", "DupNum"))) #commit difference
     names(dd2) <- "dd2"
-    proj <- write_log(proj, "ODO_mg_L", "applying shift correction", n = 3, diff_name = "dd2", return = "sondeproj") #write log
+    proj <- write_log(proj, "ODO_mg_L", "applying shift correction", n = 3, diff_name = "dd2", return = "sondeproj",
+                      user = "Smith") #write log
     proj$diffs <- append(proj$diffs, dd2)
     proj$data <- data2
 
@@ -57,7 +59,8 @@
     data2 <- add_flags(data2, "Temp_C", 52:90, "RM02")
     dd3 <- list(get_diff(proj$data, data2, id=c("DateTime_rd", "DupNum"))) #commit difference
     names(dd3) <- "dd3"
-    proj <- write_log(proj, "Temp_C", "removing a bunch of points", n = 39, diff_name = "dd3", return = "sondeproj") #write log
+    proj <- write_log(proj, "Temp_C", "removing a bunch of points", n = 39, diff_name = "dd3", return = "sondeproj",
+                      user = "Smith") #write log
     proj$diffs <- append(proj$diffs, dd3)
     proj$data <- data2
 
@@ -67,12 +70,10 @@
     data2 <- add_flags(data2, "Temp_C", 52:60, "AD01")
     dd4 <- list(get_diff(proj$data, data2, id=c("DateTime_rd", "DupNum"))) #commit difference
     names(dd4) <- "dd4"
-    proj <- write_log(proj, "Temp_C", "linear interpolation", n = 39, diff_name = "dd4", return = "sondeproj") #write log
+    proj <- write_log(proj, "Temp_C", "linear interpolation", n = 39, diff_name = "dd4", return = "sondeproj",
+                      user = "Smith") #write log
     proj$diffs <- append(proj$diffs, dd4)
     proj$data <- data2
-
-  #remove my username from log
-    proj$changelog$user <- "smith"
 
   #save as an example
     saveRDS(proj, "inst/extdata/example-sonde-project.RDS")

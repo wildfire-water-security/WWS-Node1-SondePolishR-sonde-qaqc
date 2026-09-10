@@ -4,7 +4,7 @@
 #' observations.
 #'
 #' @param data a `data.frame` with sonde data.
-#' @param ignore the length in minutes to ignore gaps
+#' @param ignore the length in minutes to ignore gaps, defaults to 8 observations.
 #'
 #' @returns a `data.frame` with the following columns with a row for each missing period:
 #' - start: starting datetime of the missing data
@@ -24,8 +24,10 @@ identify_gaps <- function(data, ignore = NULL){
 
   #get parameters
   params <- get_parms(data)
+  flags <- paste0(params, "_flag")
   missing <- data %>% complete(DateTime_rd = seq(min(.data$DateTime_rd), max(.data$DateTime_rd), by = paste(interval, "min"))) %>%
-    mutate(all_missing = if_all(all_of(params), is.na)) %>% filter(.data$all_missing) %>% select(-"all_missing")
+    mutate(all_missing = if_all(all_of(params), is.na) & !if_all(all_of(flags), ~ .x %in% c("DUP02", "DUP01"))) %>%
+    filter(.data$all_missing) %>% select(-"all_missing")
 
   if(nrow(missing) == 0){return(NULL)}
 

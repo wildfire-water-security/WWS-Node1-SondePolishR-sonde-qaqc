@@ -4,7 +4,7 @@
 \alias{apply_edit}
 \title{Log edits to a \code{sondeproj}}
 \usage{
-apply_edit(proj, edit)
+apply_edit(proj, edit, username)
 }
 \arguments{
 \item{proj}{A \code{sondeproj} object holding sonde data.}
@@ -12,12 +12,14 @@ apply_edit(proj, edit)
 \item{edit}{A list of length six:
 \itemize{
 \item data: new updated data as a \code{data.frame}
-\item rows: logical vector which specifies rows changed as TRUE
+\item rows: vector of indices that were changed
 \item y_var: parameter being edited
 \item step: name of the editing step for the changelog
 \item note: an optional note to add to the changelog
 \item flag: character flag to use for edits to the data
 }}
+
+\item{username}{the username of the person who made the change}
 }
 \value{
 A \code{sondeproj} object with edits made.
@@ -29,7 +31,7 @@ changes to the data, changelog, and flags.
 \examples{
 data <- example_data
 data$fDOM_QSU[1:4] <- NA
-rows <- rep(FALSE, nrow(data))
+rows <- c(1:4)
 rows[1:4] <- TRUE
 edit <- list(data = example_data,
              rows = rows,
@@ -37,6 +39,6 @@ edit <- list(data = example_data,
              step = "outlier removal",
              note = "example edit",
              flag = "RM07")
-updated_proj <- apply_edit(example_sondeproj, edit)
+updated_proj <- apply_edit(example_sondeproj, edit, "Smith")
 
 }

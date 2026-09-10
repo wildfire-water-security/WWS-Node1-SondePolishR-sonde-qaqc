@@ -7,7 +7,7 @@
 \usage{
 limits_UI(id)
 
-limits_server(id, sondeproj, data_ver, y_var, view_state)
+limits_server(id, sondeproj, data_ver, y_var, view_state, username)
 }
 \arguments{
 \item{id}{An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.}
@@ -24,6 +24,8 @@ limits_server(id, sondeproj, data_ver, y_var, view_state)
 - period_view: Logical if the period view is being used
 - period_length: Length of period view
 - period_n: The period number to view.}
+
+\item{username}{A `reactiveVal` holding the name of the analyst for the changelog}
 }
 \description{
 There are certain thresholds for some of the sonde parameters that aren't physical possible (i.e, water temperature above 100 deg C).

@@ -29,7 +29,7 @@ While the package contains a number of functions that are useful for correcting 
 
 **Note: This app will not modify any raw data files. It is only able to read raw files and save to specified location.**
 
-The app consists of ten modules or pages. *While they are put in an order that represent a typical correction workflow, the steps do not need to be performed in order.*
+The app consists of nine modules or pages. *While they are put in an order that represent a typical correction workflow, the steps do not need to be performed in order.*
 
 1.  **Load Data:** Load either an existing sonde project, load raw data and metadata to create a sonde project, or amend an existing sonde project with new data. Can also load or download precipitation data to include with the project.
 
@@ -37,19 +37,17 @@ The app consists of ten modules or pages. *While they are put in an order that r
 
 3.  **Data Checks:** View summaries of data gaps and duplicates. Resolve duplicates and add notes about duplicate/missing data.
 
-4.  **Quality Flags:** Flag data points as being questionable. These flags can be visualized in other plots across modules and used to automatically select points in outlier removal.
+4.  **Physical Limits:** Removes data points outside a specified range. Limits default to common sensor measurement limits.
 
-5.  **Physical Limits:** Removes data points outside a specified range. Limits default to common sensor measurement limits.
+5.  **Outlier Removal:** Remove outlier data points and mark questionable points. Removal can be done via a combination of automatic outlier detection and manual addition or removal of points.
 
-6.  **Outlier Removal:** Remove outlier data points. Removal can be done via a combination of automatic outlier detection and manual addition or removal of points.
+6.  **Interpolation:** Fill in missing data points using interpolation. User can select between several different interpolation methods and can control how big of a gap is filled via interpolation.
 
-7.  **Interpolation:** Fill in missing data points using interpolation. User can select between several different interpolation methods and can control how big of a gap is filled via interpolation.
+7.  **Corrections:** Perform a shift correction for a selected set of points, apply a linear drift correction to a specific file, or apply a smoothing correction to a region. Drift corrections are based on calibration checks when provided.
 
-8.  **Shift Corrections:** Perform a shift correction for a selected set of points or apply a linear drift correction to a specific file. Drift corrections are based on calibration checks when provided.
+8.  **fDOM Corrections:** Apply temperature and turbidity corrections to fDOM data using one of several methods. Methods default to published coefficient values but can be set to custom values.
 
-9.  **fDOM Corrections:** Apply temperature and turbidity corrections to fDOM data using one of several methods. Methods default to published coefficient values but can be set to custom values.
-
-10. **Download Data:** Generate and view time summarized data; export data and metadata; and save the sonde project.
+9.  **Download Data:** Generate and view time summarized data; export data and metadata; and save the sonde project.
 
 ## Loading the App
 
@@ -102,24 +100,17 @@ Note that these are stored within the `sondeproj` so they only need to be input 
 
 ### 1.4 Load Data
 
-This step uses the `load_project` function to read in data and format as a `sondeproj`. Use once you're specified the file paths to all applicable data and metadata.
+-   Before loading the data, supply an analyst name, this could be your initials or name. It will be used in the changelog to track who made what change.
 
-To load a new project, use the **clear uploads** button to remove all previous file paths.
+-   This step uses the `load_project` function to read in data and format as a `sondeproj`. Use once you're specified the file paths to all applicable data and metadata.
+
+-   To load a new project, use the **clear uploads** button to remove all previous file paths.
 
 ### 1.5 Add Precipitation
 
 This step is used to add precipitation data to the project. Precipitation data is particularly helpful when correcting turbidity and fDOM data to determine if peaks are real or not. To add precipitation data there are three options:
 
-- [Merra-2](https://gmao.gsfc.nasa.gov/gmao-products/merra-2/): Available from NASA power. This dataset is available
-across a global scale at a resolution of 0.5 x 0.625 degrees available from 1981 to near real time
-- [NLDAS](https://ldas.gsfc.nasa.gov/nldas): Available from NASA Earthdata. This dataset is available
-across CONUS at a resolution of 0.125 × 0.125 degrees available from 1981 to near real time. This data requires a
-token to access the data. See [here](https://urs.earthdata.nasa.gov/documentation/for_users/user_token) for
-directions on creating a token. Note that this token should be kept secret.
-
-
-1.  Provide a site latitude and longitude and download hourly precipitation data from [Merra-2](https://gmao.gsfc.nasa.gov/gmao-products/merra-2/) (uses the `get_precip` function).This dataset is available
-across a global scale at a resolution of 0.5 x 0.625 degrees available from 1981 to near real time.
+1.  Provide a site latitude and longitude and download hourly precipitation data from [Merra-2](https://gmao.gsfc.nasa.gov/gmao-products/merra-2/) (uses the `get_precip` function).This dataset is available across a global scale at a resolution of 0.5 x 0.625 degrees available from 1981 to near real time.
 
 2.  Provide a site latitude and longitude and download hourly precipitation data from [NLDAS](https://ldas.gsfc.nasa.gov/nldas) (uses the `get_precip` function). This dataset is available across CONUS at a resolution of 0.125 × 0.125 degrees available from 1981 to near real time. This data requires a token to access the data. See [here](https://urs.earthdata.nasa.gov/documentation/for_users/user_token) for directions on creating a token. Note that this token should be kept secret.
 
@@ -154,6 +145,8 @@ In the top left of the page, you can select which variable you want to view as t
 -   **Precipitation:** The hourly (or user supplied interval) precipitation. Only available if it was added to the project in **Load Data**.
 
 -   **Other sonde variables:** You can also plot any of the other variables within the dataset.
+
+Next to the plot you can also control the minimum and maximum y-values to display. It will default to the maximum value of the full dataset. You can also remove the value to have it autoscale to the data actively being viewed.
 
 **Plot Options**
 
@@ -235,23 +228,7 @@ When resolving duplicates you can add a note which is stored within the change l
 
 ------------------------------------------------------------------------
 
-## 4 Quality Flags
-
-This step is used to mark regions or points that are questionable or bad. This uses the `apply_edit` function to add a quality flag. This flag can be visualized as a plotting option and will be exported with the other data flags. Additionally, these points can be used as a starting point for removing outlier points in [6 Outlier Removal].
-
-You can select and flag points as either "bad" or "questionable" which will be colored and flagged separately. 
-
-> If there are additional flags of interest please make note of that in the following [feature request](https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/34).
-
-This module is very similar to **Visualize** except it has a new section **Apply Quality Flags**. To select points use the plotly Box Select or Lasso Select options in the top right of the plot (Box Select is used as a default) to select points that are questionable. These points will be colored orange.
-
-To remove points once highlighted, switch the **selection method** to "Remove". To view data points in more detail, use the Date Range options described in [2.1 Explore Plot]. Once you're happy with the points selected, you can use the **Flag Points** section to apply flags to the highlighted points. Use the text box to enter any additional notes you might have about the flagging. This step can be performed as many times as you would like.
-
-Once points have been marked as questionable, they will no longer be highlighted, but can be viewed by toggling the "Show questionable points" **plot option**.
-
-------------------------------------------------------------------------
-
-## 5 Physical Limits
+## 4 Physical Limits
 
 This step is used to remove points that are outside a set minimum and maximum. As it's name suggests, this is often used to remove points outside physical or measurement limits (i.e., a fDOM value below 0). The default values are based on reported measurement limits for YSI EXO probes. These can be manually adjusted in the **Set Physical Limits** section based on expert knowledge about your system. The limits are shown a red dashed lines within the plot and points falling outside the limits are colored red.
 
@@ -259,17 +236,17 @@ To save the limits and remove highlighted points outside the specified range, us
 
 ------------------------------------------------------------------------
 
-## 6 Outlier Removal
+## 5 Outlier Removal
 
-This step is used to remove "bad" or erroneous data points. It works similarly to [4 Quality Flags] except instead of just flagging the points, the points are removed from the dataset. There are several methods that can be used to select points for removal:
+This step is used to remove "bad" or erroneous data points. You can also mark regions or points that are questionable or bad. Points marked as bad are removed from the dataset while points marked as questionable are flagged but retained. There are several methods that can be used to select points for removal:
 
 -   **None or manual selection only**: This will start with no points highlighted, use the selection tools with plotly to select and remove points to remove.
-
--   **Questionable points:** Automatically selects any points marked as questionable in [4 Quality Flags]
 
 -   **Hampel filter:** Uses a [hampel filter](https://search.r-project.org/CRAN/refmans/pracma/html/hampel.html) to select outliers which is based on median absolute deviation across points. The selected points can be adjusted using the **k** parameter with controls how many points to include in the median calculation and **t** parameter which controls the threshold for selecting.
 
 -   **Relative change:** Uses a relative percent difference across a median of **k** points. The **t** parameter controls the threshold for selecting.
+
+-   **High variability:** Locates periods that have high variability relative to the surrounding data which may indicate unrealistic noise that should be removed.
 
 All automatic selection methods can be used in combination with manual selection to adjust the selected points.
 
@@ -277,7 +254,7 @@ To remove the highlighted points, use the **Flag Points** section to add an opti
 
 ------------------------------------------------------------------------
 
-## 7 Interpolation
+## 6 Interpolation
 
 This step is used to fill in missing data points either from data gaps or from data removals during corrections. You can set the maximum gap size that will be interpolated (max fill window) which prevent interpolating gaps that are too big. There are several methods available for interpolation which use the function `run_interp`:
 
@@ -293,23 +270,35 @@ To add the highlighted points, use the **Flag Points** section to add an optiona
 
 ------------------------------------------------------------------------
 
-## 8 Shift Corrections
+## 7 Corrections
 
-This step is used to apply shifts to sections of data. There are two types of shifts that can be applied. To switch between the two methods change the selection under **Select Type**.
+This step is used to apply shifts to sections of data. There are three types of corrections that can be applied. To switch between the methods, change the selection under **Select Type**.
 
-### 8.1 Additive
+### 7.1 Additive
 
-This method is meant to correct groups of points that are shifted due to instrument issues (i.e., sensor interference). It works similarly to [6 Outlier Removal] where you use the plotly selection tools to select a group of points within the plot. Once you select a group of points, it will guess the slope and intercept needed apply a linear shift correction to fit the start and end points of the data. You can manually adjust these values using the **slope** and **intercept** inputs. For a absolute shift, you can set slope to 0 and adjust the intercept. **To clear the selected points, simply select a region of the plot with no points.**
+This method is meant to correct groups of points that are shifted due to instrument issues (i.e., sensor interference). It works similarly to [5 Outlier Removal] where you use the plotly selection tools to select a group of points within the plot. Once you select a group of points, it will guess the slope and intercept needed apply a linear shift correction to fit the start and end points of the data. You can manually adjust these values using the **slope** and **intercept** inputs. For a absolute shift, you can set slope to 0 and adjust the intercept. **To clear the selected points, simply select a region of the plot with no points.**
 
-### 8.2 Drift
+### 7.2 Drift
 
 This method is used to correct for drift in sensors over time. While not required, it works best when a calibration check file has been uploaded. The method works by file. When you select a file it will either use the calibration check data to determine the uncorrected (drifted) value and the corrected (freshly calibrated) value or guess based on the gap between the file and the next. The difference in values is used to apply a linear drift correction to the data and the corrected data is shown as a red line on the plot.
 
-For both methods, and similar to the other modules, when you want to save a change use the **Flag points** section. To add an optional note and save the updated values.
+### 7.3 Smoothing
+
+This method is used to correct for highly "messy" regions of data. The method works by applying a smoothing correction to a selected data range using the selection tool. Smoothing method include:
+
+-   **rollmean**: Based on the `rollmean` function from the `zoo` package. Replaces data with a rolling mean value. The `k` parameter is used to control the number of points to include in the mean calculation.
+
+-   **rollmedian**: Based on the `rollmedian` function from the `zoo` package. Replaces data with a rolling median value. The `k` parameter is used to control the number of points to include in the median calculation, should be odd but will convert to an odd number with a warning.
+
+-   **kalman**: Based on the `dlmSmooth` function from the `dlm` package. Applies a Kalman filter which process model to the data. The `k` parameter is used controls the amount of smoothing.
+
+This method should be used sparingly as it will "rewrite" or adjust large portions of data, including points you may have more confidence in.
+
+For all methods, and similar to the other modules, when you want to save a change use the **Flag points** section. To add an optional note and save the updated values.
 
 ------------------------------------------------------------------------
 
-## 9 fDOM Corrections
+## 8 fDOM Corrections
 
 This step is used to correct fDOM data. fDOM is measured using an optical sensor that is affected by quenching due to temperature differences and turbidity interference. To determine the "true" fDOM value without these interferences, the data must be corrected. The corrected fDOM signal is shown as the red line on top of the data.
 
@@ -339,11 +328,11 @@ Similar to the other modules, when you want to save the fDOM correction use the 
 
 ------------------------------------------------------------------------
 
-## 10 Download Data
+## 9 Download Data
 
 This step is used to export cleaned data including data summaries and metadata and save the `sondeproj`. Similar to [1 Load Data], this step is separated into several sections.
 
-### 10.1 Export Data
+### 9.1 Export Data
 
 This section is used to view and export summaries of the data as `.csv` files. You have several options to control the data that is exported:
 
@@ -351,13 +340,13 @@ This section is used to view and export summaries of the data as `.csv` files. Y
 
 -   **Export Frequency:** Aggregate the values into larger windows (e.g., hourly or daily values)
 
--   **Summary Method:** Available if **export frequency** is larger than the data interval. Used to specify the method used to summarize the data.
+-   **Summary Method:** Available if **export frequency** is larger than the data interval. Used to specify the method used to summarize the data. You may select more than one and they will show up as separate column in the exported data.
 
 > While there is an option to select a parameter, this only controls the data being shown in the plot. All of the parameters are exported to the file.
 
 Once you've selected your data options, click **Choose Location** to set the file name and save location. Click **Export Data** to save the data to the file.
 
-### 10.2 Export Metadata
+### 9.2 Export Metadata
 
 This section is used to export metadata stored within the project to a `.csv` file. There are four different files that can be saved:
 
@@ -369,7 +358,7 @@ This section is used to export metadata stored within the project to a `.csv` fi
 
 -   **Precipitation:** Exports the hourly precipitation data downloaded from NASA power (see [1.5 Add Precipitation]).
 
-### 10.3 Save Sonde Project
+### 9.3 Save Sonde Project
 
 This section is used to save the `sondeproj` to a `.RDS` file (an R readable file). Similar to the other steps, use the **choose location** button to select the file location and name, then click **Export Project** to save the project to the file. This file can be reloaded into the app via [1.1 Sonde Project].
 

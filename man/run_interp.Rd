@@ -38,6 +38,6 @@ If set to 365 it will look at annual fluctuations.
 }
 }
 \examples{
-interp_dfs <- prep_interp(example_sondeproj)
-filled_yvar <- run_interp(interp_dfs$interp, "fDOM_QSU", "linear")
+interp_df <- prep_interp(example_sondeproj)
+filled_yvar <- run_interp(interp_df, "fDOM_QSU", "linear")
 }
