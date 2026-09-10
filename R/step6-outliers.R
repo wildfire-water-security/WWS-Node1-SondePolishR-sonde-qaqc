@@ -26,7 +26,7 @@ outlier_UI <- function(id){
                            choices = c("Add Bad" = "bad", "Add Questionable" = "questionable", "Remove Selection" = "remove"))),
             bslib::layout_columns(
               col_widths = c(3,3,1,5),
-              numericInput(ns("k"),"Window Size",value =7,step=2),
+              numericInput(ns("k"),"Window (odd #)",value =7,step=2),
               numericInput(ns("t"),"Threshold",value = 7, step=0.5),
               tags$div(
                 style = "width: 1px; height: 85px; background-color: #6c7881; display: inline-block; margin: 0 30px; vertical-align: middle;"),
@@ -107,6 +107,16 @@ outlier_server <- function(id, sondeproj, data_ver, y_var,view_state, username){
       manual_chg(list("questionable" = integer(),
                       "bad" = integer(),
                       "remove" = integer()))
+    })
+
+  #make sure that the window stays odd
+    observeEvent(input$k, {
+      req(input$k)
+      # Check if the number is even
+      if(input$k %% 2 == 0){
+        new_val <- input$k + 1
+        updateNumericInput(session, "k", value = new_val)
+      }
     })
 
   #keep track of auto selection

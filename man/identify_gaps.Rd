@@ -9,7 +9,7 @@ identify_gaps(data, ignore = NULL)
 \arguments{
 \item{data}{a \code{data.frame} with sonde data.}
 
-\item{ignore}{the length in minutes to ignore gaps}
+\item{ignore}{the length in minutes to ignore gaps, defaults to 8 observations.}
 }
 \value{
 a \code{data.frame} with the following columns with a row for each missing period:

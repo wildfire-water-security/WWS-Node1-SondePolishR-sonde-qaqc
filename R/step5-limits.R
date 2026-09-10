@@ -84,6 +84,7 @@ limits_server <- function(id, sondeproj, data_ver, y_var,view_state, username){
 
       #update default limits based on manufacturer specifications
       rng <- switch(y_var(),
+                    "Depth_m" = c(0, 250),
                     "fDOM_QSU" = c(0,300),
                     "ODO_mg_L" = c(0,50),
                     "pH"= c(0, 14),

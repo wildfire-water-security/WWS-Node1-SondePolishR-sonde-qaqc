@@ -59,6 +59,8 @@ apply_edit_server <- function(id, sondeproj, edit, username){
     observeEvent(input$apply_flags, {
       req(sondeproj(), edit())
 
+    show_modal_spinner(text = "Logging Data Changes...", spin="fading-circle")
+    on.exit(remove_modal_spinner(), add = TRUE)
     edit2 <- edit()
     #update note with any user text
       if(input$flag_notes != ""){

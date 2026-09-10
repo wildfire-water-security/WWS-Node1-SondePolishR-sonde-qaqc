@@ -149,7 +149,7 @@ export_server <- function(id, sondeproj, data_ver, y_var, current_mod){
 
       #create plot
       plot_obj <- reactive({
-        req(y_var(),plot_data(), data_check(plot_data(), y_var()))
+        req(y_var(),plot_data())
 
         #guard so doesn't crash if no method is selected
         if(length(input$summary_method) > 0){

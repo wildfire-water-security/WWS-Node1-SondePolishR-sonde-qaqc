@@ -90,7 +90,7 @@ load_data_UI <- function(id){
             condition = sprintf("input['%s'] == 'nldas'", ns("precip_source")),
             div(
               class = "d-flex justify-content-center",
-                textInput(ns("token"), "Earth Data Token", value=NA)),
+                textInput(ns("token"), "Earth Data Token", value=Sys.getenv("EARTHDATA_TOKEN"))),
                 div(class = "d-flex justify-content-center",
                     style="margin-top: -10px; margin-bottom: -3px;font-size:12px",
                     "See ",

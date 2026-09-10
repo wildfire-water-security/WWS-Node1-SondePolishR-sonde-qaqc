@@ -38,9 +38,10 @@ identify_outliers <- function(data, y_var, method, k=5, t=7){
   x <- data[[y_var]] #get variable we're identifying
 
   #if number not odd and should be make odd
-  k_half <- ceiling((k-1)/2) #halve for functions not centered
-  if(k %% 2 == 0){k <- k + 1}
-  if(k_half %% 2 == 0){k_half <- k_half + 1}
+    #make sure k is in integer
+    k <- ceiling(k)
+    k_half <- ceiling((k-1)/2) #halve for functions not centered
+    if(k %% 2 == 0){k <- k + 1}
 
   if(method == "hampel"){
     # interpolate to temp fill gaps so filter will work
@@ -56,8 +57,8 @@ identify_outliers <- function(data, y_var, method, k=5, t=7){
     x_fill <- zoo::na.locf(x_fill, na.rm = FALSE)        # forward fill
     x_fill <- zoo::na.locf(x_fill, fromLast = TRUE)      # backward fill
 
-    rel_change_lead <- abs(x_fill - lead(x_fill)) / zoo::rollmedian(x_fill, k_half, fill= NA, align = "right") * 100
-    rel_change_lag <- abs(x_fill - lag(x_fill)) / zoo::rollmedian(x_fill, k_half, fill= NA, align = "left") * 100
+    rel_change_lead <- abs(x_fill - lead(x_fill)) / zoo::rollapply(x_fill, k_half, FUN = median, fill= NA, align = "right") * 100
+    rel_change_lag <- abs(x_fill - lag(x_fill)) / zoo::rollapply(x_fill, k_half, FUN = median, fill= NA, align = "left") * 100
 
     outlier <- rel_change_lead >= t & rel_change_lag >= t
     outlier[is.na(outlier)] <- FALSE #deal with ending/starting NA

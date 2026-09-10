@@ -6,11 +6,13 @@ DateTime
 DateTimes
 EARTHDATA
 EXO
+EarthData
 Earthdata
 Ecohydrology
 FNU
 Formazin
 Golay
+Gridded
 HH
 Hampel
 Kalman
@@ -18,6 +20,7 @@ LaRC
 MERRA
 Merra
 NLDAS
+NTU
 Nephelometric
 ODM
 ODO
@@ -41,8 +44,10 @@ YSI
 YYYY
 al
 analyte
+autoscale
 calcheck
 changelog
+changlog
 coords
 csv
 curredit
@@ -92,12 +97,12 @@ sondeproj
 sondes
 ss
 timezones
-turb
 turbidities
 tz
 uS
 unflag
 unselected
+untoggle
 useable
 xlsx
 µS
