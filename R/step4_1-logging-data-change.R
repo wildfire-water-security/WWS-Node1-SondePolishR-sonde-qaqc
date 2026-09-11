@@ -100,13 +100,15 @@ apply_edit_server <- function(id, sondeproj, edit, username, view_state){
 
       #check if in period view
       if(view_state()$period_view){
+      if(interactive()){
         shinyalert::shinyalert(
           title = "Switch to full view?",
           text = "Saving changes will only apply to the selected points within the current plot.",
           type = "warning",
           showCancelButton = TRUE,
           cancelButtonText = "Remove Current Points",
-          inputId = "confirm_full_save")
+          inputId = "confirm_full_save")}
+
       }else{
         show_modal_spinner(text = "Logging Data Changes...", spin="fading-circle")
         on.exit(remove_modal_spinner(), add = TRUE)

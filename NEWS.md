@@ -8,13 +8,22 @@
 -   (#100) Fixed a bug when loading data with an older version of dplyr causing by not importing a function into the package.
 -   (#76) Figured out why the NLDAS precipitation wasn't working on other computers. Was due to a permissions that I had forgotten needed to be changed. Updated documentation to reflect this.
 -   (#98) Added protections to restoring versions as clicking the button while on the last row would cause a fatal crash
+-   (#101) Discovered that WebGL didn't appear to work when running the app from Firefox. Updated the code to detect if it can be used or not to display the plots regardless. Also added documentation recommending running from Chrome.
 
 ## Updates
 
 -   (#110) A popup alert will now show when precipitation data has been successfully loaded to improve clarity of if data has been uploaded.
--   (#106) The filepaths for exporting data in the **Export Data** module will now remain even with changes to the `sondeproj`. Additionally, the save directory will attempt to be maintained, this is particularly useful for exporting data as now the filename will change, but if you are happy with the default you don't have to reselect the save location.
+-   (#106) The filepaths for exporting data in the **Download Data** module will now remain even with changes to the `sondeproj`. Additionally, the save directory will attempt to be maintained, this is particularly useful for exporting data as now the filename will change, but if you are happy with the default you don't have to reselect the save location.
 -   (#109) Reworked the way that changes were saved when the period view is on.
-    -   N
+    -   If you're in period view you will be prompted to either return to the full view or only commit the changes within the plot.
+    -   If you choose to return to the full view you will have to re-click the save edits button.
+-   (#104) Updated all the `numericInput` buttons to use the `blur` option which means that they will wait till you click off the button before updating the app. This makes plotting less laggy if you're clicking through numbers via the arrows.
+-   (#105) Updated several UI boxes to fit better in screens that are less wide.
+-   (#108) Changed the wording of the selection tools in **Remove Outliers** tab to be more clear that it only applies to the manual selection.
+-   (#111) Reworked the way that out of water periods are handled. This allows the user to exclude periods that are supposed be out of water but don't appear problematic or add removal/return time after looking at the data to prevent removing large sections of data.
+    -   Now the calibration check and field form tables within the **Visualize** tab are editable.
+    -   You can also now export these tables in the **Download Data** tab.
+    -   The default plot also will show the out of water periods by default.
 
 # SondePolishR 0.0.9009
 
