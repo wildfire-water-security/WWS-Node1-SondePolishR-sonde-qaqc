@@ -49,12 +49,22 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NUL
   if(is.null(tz)){tz <- Sys.timezone(location = TRUE)}
 
   #read file in
-    #guess encoding
-    if(is.null(encoding)){encoding <- get_encoding(file)}
+    # I figured out the issue - Mac's don't understand the file encoding Windows-1252. The better
+    # name for the file encoding is ISO-8859-1 (aka latin1) encoding. readLines doesn't actually re-encode
+    # the input, instead it marks characters strings. It looks like it's the µ (greek little mu) that's
+    # causing the issue. The solution is to specify the encoding in a file connection rather than in readLines
+    # since it likes that better. I also added a line to close the connection when done.
 
+    #guess encoding
+    if(is.null(encoding)){encoding <- readr::guess_encoding(file)$encoding[1]}
+    
     #read file
-    text <- readLines(file, skipNul = TRUE, encoding = encoding)
+    filecon <- file(file, encoding = encoding)
+    text <- readLines(filecon, skipNul = TRUE)
     text <- utf8::as_utf8(text)
+  
+    # If that works, close the connection
+    close(filecon)
 
     #remove empty lines
     text <- text[text != ""]
@@ -65,7 +75,7 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NUL
     if(is.null(skip)){
       skip <- ifelse(usb_export, grep("^Date", text) + 3, grep("^Date", text))
     }
-
+  
   #get column names
     cols <- text[grep("^Date", text)]
     cols <- iconv(cols, "UTF-8", "ASCII//TRANSLIT") #remove non ASCII characters
@@ -81,10 +91,16 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NUL
 
   #drop any NA col names
     data <- data[,!is.na(colnames(data))]
-
+  
+  # Had to fix the temp column name here since the new encodings remove the '?'
   #rename col names
-    lookup <- c(Date = "Date_MM_DD_YYYY", Time_HH_mm_ss = "Time", Temp_C="?C",
-                Temp_C = "Temp_?C", Turbidity_FNU = "FNU",
+    lookup <- c(Date = "Date_MM_DD_YYYY", 
+                Time_HH_mm_ss = "Time", 
+                Temp_C="?C",
+                Temp_C = "^0C",
+                Temp_C = "Temp_?C",
+                Temp_C = "Temp_^0C", # Added this option to deal with encoding issues
+                Turbidity_FNU = "FNU",
                 ODO_sat = "DO_%", ODO_mg_L = "DO_mg_L",
                 SpCond_uS_cm = "SPC_uS_cm",
                 Turbidity_FNU = "NTU", Battery_V ="Batt_V",
