@@ -27,7 +27,7 @@ weekly_range_sidebar_UI <- function(id){
       tags$div(
         style = "width: 1px; height: 85px; background-color: #6c7881; display: inline-block; margin: 0 15px; vertical-align: middle;"
       ),
-      numericInput(ns("p_length"),"Period Length (days):",value = 7,min = 1)
+      numericInput(ns("p_length"),"Period Length (days):",value = 7,min = 1, updateOn = "blur")
       ),
       input_switch(ns("period_view"),"View data by period",value = FALSE)
 

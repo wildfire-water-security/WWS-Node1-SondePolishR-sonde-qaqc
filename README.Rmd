@@ -46,6 +46,9 @@ library(SondePolishR)
 run_app()
 ```
 
+### Browser Requirements 
+You have several options for running the app, it can be run natively in R or it can run in your browser. If it runs in your browser we recommend using Chrome as it can support the `WebGL` plotting which makes plotting faster and smoother.
+
 ## App Overview
 
 The app works by creating and modifying a sonde project (`sondeproj`) object which is a list containing sonde data, flags, and metadata. See `help(example_sondeproj)` for more details on project structure.

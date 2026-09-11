@@ -30,17 +30,19 @@ To download the NLDAS hourly precipitation data you need an [EarthData token](ht
 
 2.  Register for a profile if you don't already have one.
 
-3.  Log in, and select **Generate Token**.
+3.  Log in and authorize the application by clicking **Applications** in the top toolbar then **Authorized Apps.** At the bottom of the page click **Approve more applications**, find NASA GESDISC DATA ARCHIVE, and click **Authorize.** Read and agree to the terms and click agree.
 
-4.  Click the green **Generate Token** button at the bottom of the page.
+4.  Generated your token by selecting **Generate Token**. Click the green **Generate Token** button at the bottom of the page. Copy the code.
 
-5.  Securely save the token by running the following code:
+5.  Securely save your newly generated and authorized token by running the following code:
 
     `{r} usethis::edit_r_environ(scope = "user")}`
 
-6.  Paste the text: `EARTHDATA_TOKEN = "TOKEN HERE"`
+6.  Paste the text: `EARTHDATA_TOKEN = "TOKEN HERE"`, putting your token between the quotes.
 
 7.  Save and close the file. Restart R. Now the token should pull into the app automatically when you run it, but will remain privately on your computer.
+
+> **Note:** This token will expire every few months and you will need to repeat steps 4 through 7 whenever the token expires.
 
 # Using User Precipitation Data
 

@@ -100,7 +100,7 @@ fdom_server <- function(id, sondeproj, data_ver, y_var, view_state, username){
           numericInput(session$ns(par),
                        label = tags$span(gsub("rho", "\U03C1", par), style = "font-size: 20px;"),
                        value = params[[par]]$value,
-                       step = params[[par]]$step %||% 0.01))})
+                       step = params[[par]]$step %||% 0.01), updateOn="blur")})
       ))
     })
 
@@ -182,6 +182,8 @@ fdom_server <- function(id, sondeproj, data_ver, y_var, view_state, username){
 
   #create edit object
     edit <- reactive({
+      req(sondeproj())
+
       newdata <- corr_data()
       proj <- sondeproj()
 
@@ -229,7 +231,7 @@ fdom_server <- function(id, sondeproj, data_ver, y_var, view_state, username){
     })
 
   #flagging module
-    apply_edit_server("apply_limits", sondeproj, edit, username)
+    apply_edit_server("apply_limits", sondeproj, edit, username, view_state)
 
   #export plot so we can check it
     exportTestValues(

@@ -38,8 +38,8 @@ get_encoding <- function(file){
   if(file_check(data)){return("Windows-1252")}
 
   #then check UTF-16LE
-  data <- read.csv(file, fileEncoding = "UTF-16LE")
-  if(file_check(data)){return("UTF-16LE")}
+  data <- read.csv(file, fileEncoding = "UTF-16LE BOM")
+  if(file_check(data)){return("UTF-16LE BOM")}
 
   #otherwise print message
   stop("Could not identify file encoding, please put in Notepad++ and look in bottom right corner to identify encoding")

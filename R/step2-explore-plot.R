@@ -37,7 +37,7 @@ explore_data_UI <- function(id){
           ),
           accordion_panel(
             "Plotting Options",
-            plot_options_UI(ns("plot_opts"))
+            plot_options_UI(ns("plot_opts"), start_val = c(TRUE,TRUE,FALSE,TRUE,FALSE,FALSE))
           )
         )),
 
@@ -141,13 +141,50 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var, view_state, user
       }
 
       sel_method <- ifelse(input$table_opt == "Change Log", "single", "none")
-      DT::datatable(
-       df,
-       selection = list(mode = sel_method),
-       filter = "top",
-       colnames = df_cols
-      )})
+      if(input$table_opt %in% c("Field Form", "Calibration Check")){
+        edit_opt <- "cell"
+      }else{
+        edit_opt <- FALSE
+      }
 
+      DT::datatable(
+        df,
+        selection = list(mode = sel_method),
+        filter = "top",
+        colnames = df_cols,
+        editable = edit_opt,
+        escape = FALSE
+      )
+    })
+
+
+  #keep track of edits
+    observeEvent(input$log_table_cell_edit,{
+      #get metadata we need to update
+      proj <- sondeproj()
+      if(input$table_opt == "Field Form"){
+        df <- proj$fieldform
+      }else if(input$table_opt == "Calibration Check"){
+        df <- proj$calcheck
+      }
+
+      info <- input$log_table_cell_edit #get edit info
+      colname <- colnames(tab())[info$col] #get col that was edited
+
+      #ensure that T/F columns stay T/F
+      if(colname %in% c("Remove_Period", "Probe_Switch")){info$value <- as.logical(info$value)}
+      #replace value with edited one
+      df[[colname]][info$row] <- ifelse(is.na(info$value), df[[colname]][info$row], info$value)
+
+      #replace and update project
+      if(input$table_opt == "Field Form") {
+        proj$fieldform <- df
+      }else if(input$table_opt == "Calibration Check") {
+        proj$calcheck <- df
+      }
+
+      sondeproj(proj)
+    })
   #get what to plot via user options
     plot_opts <- plot_options_server("plot_opts")
 
@@ -214,9 +251,7 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var, view_state, user
     undo_ver <- reactive({
       req(sondeproj())
 
-
       row <- input$log_table_rows_selected
-
       if (is.null(row) | input$table_opt != "Change Log") {
         return(NULL)
       }
@@ -237,7 +272,8 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var, view_state, user
   #keep track of if we are okay restoring changes
    observeEvent(input$undo_changes,{
      #only undo changes if something is selected
-     if(!is.null(input$log_table_rows_selected)){
+     row <- input$log_table_rows_selected
+     if(!is.null(row) && row < nrow(sondeproj()$changelog)){
        ##confirmation here
        shinyalert::shinyalert(title = "Confirm restoring past data version",
                               text = "If you continue you will lose any edits made after the selected version.",
@@ -246,7 +282,7 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var, view_state, user
                               inputId = "conf")
      }else{
        shinyalert::shinyalert(title = "Select a Version to Restore",
-                              text = "Select a row in the table to restore to.",
+                              text = "Select the row in the table to restore to\n(should not be the last row).",
                               type = "info")}
        })
 

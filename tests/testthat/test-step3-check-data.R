@@ -8,6 +8,9 @@ test_that("{shinytest2} recording: checking-module3", {
   app <- AppDriver$new(app_dir, variant = platform_variant(),
                        name = "m3", height = 911, width = 1619)
 
+  #since it's now required
+  app$set_inputs(`data1-username` = "Smith")
+
 #TEST 1: testing example data with no gaps/dups
   #upload files
   app$upload_file(`data1-pj_file` = file.path(test_path(), "testdata", "example-sonde-project.RDS"))

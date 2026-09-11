@@ -22,9 +22,9 @@ interp_UI <- function(id){
                                     "Spline" = "spline",
                                     "Random Forest" = "random_forest")),
             fluidRow(
-              numericInput(ns("max_length"),"Max Fill Window (hr)",value =8,step=1, min=0),
+              numericInput(ns("max_length"),"Max Fill Window (hr)",value =8,step=1, min=0, updateOn="blur"),
               conditionalPanel(condition = sprintf("input['%s'] == 'ts_interp'",ns("method")),
-                               numericInput(ns("freq"), "Season Period (days)", value = 1,step = 1, min = 0)))
+                               numericInput(ns("freq"), "Season Period (days)", value = 1,step = 1, min = 0, updateOn="blur")))
           ),
           accordion_panel(
             "Save Edits",
@@ -207,7 +207,7 @@ interp_server <- function(id, sondeproj, data_ver, y_var,view_state, username, c
     })
 
   #flagging module
-    apply_edit_server("apply_limits", sondeproj, edit, username)
+    apply_edit_server("apply_limits", sondeproj, edit, username, view_state)
 
   #export plot so we can check it
     exportTestValues(

@@ -16,6 +16,13 @@
 #' - flag: character flag to use for edits to the data
 #' @param edit_type A character used to determine button naming options include flag, remove, interpolate, and change.
 #' @param username A `reactiveVal` holding the name of the analyst for the changelog
+#' @param view_state A `reactiveVal` holding a list of items specifying the view state:
+#'  - abs_dates: The absolute range of dates within the dataset
+#'  - dates: The range of dates being viewed via the date selector
+#'  - period_view: Logical if the period view is being used
+#'  - period_length: Length of period view
+#'  - period_n: The period number to view.
+
 
 #' @rdname apply-edit
 #' @export
@@ -50,35 +57,82 @@ apply_edit_UI <- function(id, edit_type =
 
 #' @rdname apply-edit
 #' @export
-apply_edit_server <- function(id, sondeproj, edit, username){
+apply_edit_server <- function(id, sondeproj, edit, username, view_state){
   moduleServer(id, function(input, output, session) {
 
     saved_indices <- reactiveVal(NULL)
+    #pending_save <- reactiveVal(FALSE)
+
+  #keep track of if there's pending save
+    observeEvent(input$confirm_full_save,{
+      if(input$confirm_full_save){
+        #pending_save(TRUE)
+
+        state <- view_state()
+        state$period_view <- FALSE
+        state$period_n <- 1
+        view_state(state)
+      }else{
+        show_modal_spinner(text = "Logging Data Changes...", spin="fading-circle")
+        on.exit(remove_modal_spinner(), add = TRUE)
+        edit2 <- edit()
+        #update note with any user text
+        if(input$flag_notes != ""){
+          edit2$note <- paste(edit2$note, input$flag_notes, sep="; ")
+        }
+
+        #log edits
+        proj <- apply_edit(sondeproj(), edit2, username())
+
+        #update sondeproj
+        sondeproj(proj)
+
+        #clear user note
+        updateTextInput(session,"flag_notes",value = "")
+
+        saved_indices(sondeproj()$data$Index[edit2$rows])
+      }
+    })
 
   #when button is hit, apply flags, and edit data
     observeEvent(input$apply_flags, {
       req(sondeproj(), edit())
 
-    show_modal_spinner(text = "Logging Data Changes...", spin="fading-circle")
-    on.exit(remove_modal_spinner(), add = TRUE)
-    edit2 <- edit()
-    #update note with any user text
-      if(input$flag_notes != ""){
-        edit2$note <- paste(edit2$note, input$flag_notes, sep="; ")
+      #check if in period view
+      if(view_state()$period_view){
+        shinyalert::shinyalert(
+          title = "Switch to full view?",
+          text = "Saving changes will only apply to the selected points within the current plot.",
+          type = "warning",
+          showCancelButton = TRUE,
+          cancelButtonText = "Remove Current Points",
+          inputId = "confirm_full_save")
+      }else{
+        show_modal_spinner(text = "Logging Data Changes...", spin="fading-circle")
+        on.exit(remove_modal_spinner(), add = TRUE)
+        edit2 <- edit()
+        #update note with any user text
+        if(input$flag_notes != ""){
+          edit2$note <- paste(edit2$note, input$flag_notes, sep="; ")
+        }
+
+        #log edits
+        proj <- apply_edit(sondeproj(), edit2, username())
+
+        #update sondeproj
+        sondeproj(proj)
+
+        #clear user note
+        updateTextInput(session,"flag_notes",value = "")
+
+        saved_indices(sondeproj()$data$Index[edit2$rows])
       }
 
-    #log edits
-      proj <- apply_edit(sondeproj(), edit2, username())
+      })
 
-    #update sondeproj
-      sondeproj(proj)
 
-    #clear user note
-      updateTextInput(session,"flag_notes",value = "")
-
-      saved_indices(sondeproj()$data$Index[edit2$rows])
+    # })
+    return(saved_indices)
     })
 
-    return(saved_indices)
-  })
 }

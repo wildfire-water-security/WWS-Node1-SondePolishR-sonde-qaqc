@@ -1,3 +1,21 @@
+# SondePolishR 0.0.9010
+
+(2026-09-12)
+
+## Bug Fixes
+
+-   (#103) Fixed the username still being hard-coded to the users computer username when loading data for the first time. The app now requires you manually enter a value before loading data.
+-   (#100) Fixed a bug when loading data with an older version of dplyr causing by not importing a function into the package.
+-   (#76) Figured out why the NLDAS precipitation wasn't working on other computers. Was due to a permissions that I had forgotten needed to be changed. Updated documentation to reflect this.
+-   (#98) Added protections to restoring versions as clicking the button while on the last row would cause a fatal crash
+
+## Updates
+
+-   (#110) A popup alert will now show when precipitation data has been successfully loaded to improve clarity of if data has been uploaded.
+-   (#106) The filepaths for exporting data in the **Export Data** module will now remain even with changes to the `sondeproj`. Additionally, the save directory will attempt to be maintained, this is particularly useful for exporting data as now the filename will change, but if you are happy with the default you don't have to reselect the save location.
+-   (#109) Reworked the way that changes were saved when the period view is on.
+    -   N
+
 # SondePolishR 0.0.9009
 
 (2026-09-10)

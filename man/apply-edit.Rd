@@ -7,7 +7,7 @@
 \usage{
 apply_edit_UI(id, edit_type = "flag", note = NULL, username)
 
-apply_edit_server(id, sondeproj, edit, username)
+apply_edit_server(id, sondeproj, edit, username, view_state)
 }
 \arguments{
 \item{id}{the shiny ID of the action button}
@@ -25,6 +25,13 @@ apply_edit_server(id, sondeproj, edit, username)
 - step: name of the editing step for the changelog
 - note: an optional note to add to the changelog
 - flag: character flag to use for edits to the data}
+
+\item{view_state}{A `reactiveVal` holding a list of items specifying the view state:
+- abs_dates: The absolute range of dates within the dataset
+- dates: The range of dates being viewed via the date selector
+- period_view: Logical if the period view is being used
+- period_length: Length of period view
+- period_n: The period number to view.}
 }
 \description{
 The UI creates a button to allow user to save the changes made to the data. The server function will provide a message to the user to

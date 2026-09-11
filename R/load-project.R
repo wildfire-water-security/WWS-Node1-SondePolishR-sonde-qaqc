@@ -29,10 +29,6 @@ load_project <- function(csv_path=NULL, csv_files=NULL, prj_path=NULL,
   #set csv merge as NULL if not loaded to prevent errors in creating obj
     csv_merge <- NULL
 
-  if(!is.null(username)){
-    username <- Sys.info()[["user"]]
-  }
-
   #if csv projected, load files
   if(!is.null(csv_path)){
     data_merge <- list()

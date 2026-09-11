@@ -19,15 +19,15 @@ limits_UI <- function(id){
               div(style="margin-bottom: 8px; font-size:10px",
                   "Default Limits based on YSI EXO Ranges"),
               fluidRow(numericInput(ns("max"),
-                                    HTML("<b>Maximum</b> Physical Limit"), value = NULL),
+                                    HTML("<b>Maximum</b> Physical Limit"), value = NULL, updateOn="blur"),
                        numericInput(ns("min"),
-                                    HTML("<b>Minimum</b> Physical Limit"),value = NULL)),
+                                    HTML("<b>Minimum</b> Physical Limit"),value = NULL, updateOn="blur")),
 
               input_switch(ns("rm_flags"), "Hide Flagged Data")
             ),
             accordion_panel(
               "Save Edits",
-              apply_edit_UI(ns("apply_limits"), edit_type = "remove", note="Highlighted points will be removed")
+              apply_edit_UI(ns("apply_limits"), edit_type = "remove", note="Highlighted points within date ranges/period will be removed")
             ),
             accordion_panel(
               "Date Ranges",
@@ -167,6 +167,7 @@ limits_server <- function(id, sondeproj, data_ver, y_var,view_state, username){
 
   #create edit object
     edit <- reactive({
+      req(sondeproj(), y_var())
       newdata <- sondeproj()$data
 
       #get filtered data
@@ -187,7 +188,7 @@ limits_server <- function(id, sondeproj, data_ver, y_var,view_state, username){
     })
 
   #flagging module
-    apply_edit_server("apply_limits", sondeproj, edit, username)
+    apply_edit_server("apply_limits", sondeproj, edit, username, view_state)
 
   #export plot so we can check it
     exportTestValues(

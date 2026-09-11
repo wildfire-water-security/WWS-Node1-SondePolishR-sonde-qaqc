@@ -178,7 +178,7 @@ correction_server <- function(id, sondeproj, data_ver, y_var,view_state, usernam
     # })
 
   #flagging module
-    apply_edit_server("apply_limits", sondeproj, curredit, username)
+    apply_edit_server("apply_limits", sondeproj, curredit, username, view_state)
 
   #export plot so we can check it
     exportTestValues(
