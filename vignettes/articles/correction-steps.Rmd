@@ -22,7 +22,7 @@ Correction of continuous water quality records can be a complicated task as the 
 
 We suggest using the following workflow as the default process for correcting a complete water quality record of stream water quality using the `SondePolishR` app. You may wish to modify for your own specific workflows and needs.
 
-***TODO: include a workflow diagram here.***
+![](figures/SondePolishR Workflow.png)
 
 Throughout this tutorial we will refer to **tabs** and **panels**.
 
@@ -293,7 +293,7 @@ knitr::include_graphics("figures/turb-interp.gif")
 ### 5.2.1 Recommended Display Parameters and Correction Order
 
 | Order |      Parameter       | Period Length | Y-Max Limit |    Second Y-Axis    |
-|:-----:|:--------------------:|:-------------:|:-----------:|:-------------------:|
+|:------------:|:--------------:|:------------:|:------------:|:-------------:|
 |   1   |     Temperature      |    30 days    |     N/A     |  Dissolved Oxygen   |
 |   2   |   Dissolved Oxygen   |    30 days    |     N/A     |     Temperature     |
 |   3   |        Depth         |    15 days    |     N/A     |    Precipitation    |

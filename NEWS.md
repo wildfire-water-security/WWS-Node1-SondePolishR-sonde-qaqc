@@ -9,6 +9,7 @@
 -   (#76) Figured out why the NLDAS precipitation wasn't working on other computers. Was due to a permissions that I had forgotten needed to be changed. Updated documentation to reflect this.
 -   (#98) Added protections to restoring versions as clicking the button while on the last row would cause a fatal crash
 -   (#101) Discovered that WebGL didn't appear to work when running the app from Firefox. Updated the code to detect if it can be used or not to display the plots regardless. Also added documentation recommending running from Chrome.
+-   (#99) Fixed the file encoding so that raw data files will read in correct on a Mac.
 
 ## Updates
 
@@ -24,6 +25,7 @@
     -   Now the calibration check and field form tables within the **Visualize** tab are editable.
     -   You can also now export these tables in the **Download Data** tab.
     -   The default plot also will show the out of water periods by default.
+-   Added a workflow diagram to the **Correction Workflow** article.
 
 # SondePolishR 0.0.9009
 
