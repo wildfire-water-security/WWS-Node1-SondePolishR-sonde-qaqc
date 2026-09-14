@@ -21,7 +21,8 @@
 #' - [NLDAS](https://ldas.gsfc.nasa.gov/nldas): Available from NASA Earthdata. This dataset is available
 #' across CONUS at a resolution of 0.125 × 0.125 degrees available from 1981 to near real time. This data requires a
 #' token to access the data. See [here](https://urs.earthdata.nasa.gov/documentation/for_users/user_token) for
-#' directions on creating a token. Note that this token should be kept secret.
+#' directions on creating a token. Note that this token should be kept secret. You will also need to authorize the NASA GESDISC DATA ARCHIVE
+#' application. For more detailed directions see `vignette("using-precipitation-data")`
 #'
 #'
 #' @examples

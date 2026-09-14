@@ -2057,7 +2057,7 @@
                   "value": ["plotly_default", "logical"]
                 }
               },
-              "value": [false]
+              "value": [true]
             }
           ]
         },
@@ -2067,15 +2067,15 @@
             "dim": {
               "type": "integer",
               "attributes": {},
-              "value": [12, 1]
+              "value": [12, 2]
             }
           },
-          "value": ["x", "y", "mode", "type", "name", "yaxis", "marker", "error_y", "error_x", "line", "xaxis", "frame"]
+          "value": ["x", "y", "mode", "type", "name", "yaxis", "marker", "error_y", "error_x", "line", "xaxis", "frame", "x", "y", "type", "mode", "name", "line", "yaxis", "marker", "error_y", "error_x", "xaxis", "frame"]
         },
         {
           "type": "integer",
           "attributes": {},
-          "value": [1]
+          "value": [2]
         },
         {
           "type": "list",
@@ -2100,7 +2100,28 @@
                   "value": ["Etc/GMT+8"]
                 }
               },
-              "value": [1729670400, 1729822725, 1729973250, 1729973099.55223989, 1730123775, 1730274300]
+              "value": [1722459600, 1725728175, 1728995850, 1728996592.60534, 1732265325, 1735540200]
+            },
+            {
+              "type": "double",
+              "attributes": {
+                "names": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["Min.", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max."]
+                },
+                "class": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["summaryDefault", "POSIXct", "POSIXt"]
+                },
+                "tzone": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["Etc/GMT+8"]
+                }
+              },
+              "value": [1722459600, 1722889575, 1723319550, 1723319550, 1723749525, 1724179500]
             }
           ]
         },
@@ -2122,7 +2143,23 @@
                   "value": ["summaryDefault", "table"]
                 }
               },
-              "value": [-4.16762833, 11.1025, 15.655, 18.03689406, 26.2225, 32.81]
+              "value": [-4.31365172, 8.80393437, 10.09, 12.05895927, 14.36, 34.39]
+            },
+            {
+              "type": "double",
+              "attributes": {
+                "names": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["Min.", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max."]
+                },
+                "class": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["summaryDefault", "table"]
+                }
+              },
+              "value": [8.39004175, 9.4389405, 9.84417276, 10.32620582, 10.26359081, 17.49641441]
             }
           ]
         }

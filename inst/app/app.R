@@ -20,6 +20,23 @@ ui <-  page_fillable(
   theme = bs_theme(preset = "superhero",
                    primary = "#E3795E"),
 
+
+  #code to check if webgl works
+  tags$script(HTML("
+  $(document).on('shiny:connected', function() {
+    var canvas = document.createElement('canvas');
+    var gl = canvas.getContext('webgl') ||
+             canvas.getContext('experimental-webgl');
+
+    Shiny.setInputValue(
+      'webgl_supported',
+      gl !== null,
+      {priority: 'event'}
+    );
+  });
+")),
+
+
   #set menu and navigation
     navset_card_pill(
       id = "modules",
@@ -83,7 +100,7 @@ server <- function(input, output, session) {
     data_ver <- reactiveVal(0) #keeping track of when new data is uploaded
     y_var <- reactiveVal(NULL) #the y-variable being looked at
     current_mod <- reactiveVal() # the module being viewed
-    username <- reactiveVal(Sys.info()[["user"]]) #name to use for changelog, uses username by default
+    username <- reactiveVal("") #name to use for changelog, uses username by default
 
     #holds the viewing state to sync across the modules
     view_state <- reactiveVal(list(abs_dates =NULL,

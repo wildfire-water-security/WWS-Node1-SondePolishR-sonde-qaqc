@@ -199,6 +199,15 @@ load_data_server <- function(id, sondeproj, data_ver, view_state, username){
 
   #when button to load project is clicked, read in everything and merge together
     observeEvent(input$load_prj, {
+      if(username() == ""){
+        shinyalert::shinyalert(
+          title = "Analyste Name Required",
+          text = "Please enter an analyst name before loading data.",
+          type = "error"
+        )
+        return()
+      }
+
     if(any(c(!is.null(input$pj_file), !is.null(input$csv_files)))){
       withProgress(message = "loading sonde files...", min=0,max=length(csv_path())+1, {
           obj <- load_project(csv_path(), csv_files=input$csv_files$name, prj_path=prj_path(),
@@ -228,7 +237,7 @@ load_data_server <- function(id, sondeproj, data_ver, view_state, username){
       if (interactive()) {
         shinyalert::shinyalert(
           title = "Data Loaded",
-          text = "Selected data has been loaded and any new data has been merge into existing project.",
+          text = "Selected data has been loaded and any new data has been merge into the existing project.",
           type = "success"
         )
       }
@@ -288,6 +297,12 @@ load_data_server <- function(id, sondeproj, data_ver, view_state, username){
       proj$precip <- precip
 
       sondeproj(proj)
+
+      shinyalert::shinyalert(
+        title = "Precipitation Data Loaded",
+        text = "Precipitation data has been downloaded and merged into the existing project.",
+        type = "success"
+      )
 
     })
   #export values so we can check them

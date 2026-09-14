@@ -41,7 +41,9 @@ export_UI <- function(id){
                 "Duplicate Notes" = "dups",
                 "Missing Data Notes" = "gaps",
                 "Change Log" = "changelog",
-                "Precipitation" = "precip")),
+                "Precipitation" = "precip",
+                "Field Form" = "fieldform",
+                "Calibration Checks" = "calcheck")),
 
             save_path_UI(ns("save_meta"),button_label = "Export Metadata"))
 
@@ -75,6 +77,11 @@ export_UI <- function(id){
 export_server <- function(id, sondeproj, data_ver, y_var, current_mod){
   moduleServer(id, function(input, output, session){
 
+  #initialize, only change if value changes to avoid clearing unecessarily
+    projstartname <- reactiveVal("sondeproj")
+    datastartname <- reactiveVal("data")
+    metastartname <- reactiveVal("metadata")
+
   #selecting parameter to view
   update_parms_server("update_parms", sondeproj, data_ver, y_var, choices_fun = nice_yvar)
 
@@ -84,28 +91,36 @@ export_server <- function(id, sondeproj, data_ver, y_var, current_mod){
                            end = max(sondeproj()$data$Date, na.rm = TRUE))})
 
   #starting filenames for export file
-    datastartname <- reactive({
+    observeEvent(list(sondeproj(), input$frequency, input$summary_method), {
       if(is.null(sondeproj()) | length(input$summary_method) == 0){
-        "data"
+        newname <- "data"
       }else if(input$frequency == "interval"){
-        make_filename(sondeproj()$meta$site, paste0(get_interval(sondeproj()$data), "min"))
+        newname <- make_filename(sondeproj()$meta$site, paste0(get_interval(sondeproj()$data),"min"), input$summary_method)
       }else{
-        make_filename(sondeproj()$meta$site, input$frequency, input$summary_method)
+        newname <- make_filename(sondeproj()$meta$site, input$frequency, input$summary_method)
       }
+
+      if(!identical(newname, datastartname())){datastartname(newname)}
     })
-    projstartname <- reactive({
+
+    observeEvent(sondeproj(),{
       if(is.null(sondeproj()) || is.na(sondeproj()$meta$site)){
-        "sondeproj"
-      }else{
-        paste0(sondeproj()$meta$site, "_sondeproj")
-      }
+             newname <- "sondeproj"
+        }else{
+             newname <- paste0(sondeproj()$meta$site, "_sondeproj")
+        }
+
+    if(!identical(newname, projstartname())){projstartname(newname)}
     })
-    metastartname <- reactive({
+
+    observeEvent(sondeproj(),{
       if(is.null(sondeproj()) || is.na(sondeproj()$meta$site)){
-        paste0("sonde_", input$meta_opts)
+        newname <-  paste0("sonde_", input$meta_opts)
       }else{
-        paste0(sondeproj()$meta$site,"_", input$meta_opts)
+        newname <- paste0(sondeproj()$meta$site,"_", input$meta_opts)
       }
+
+      if(!identical(newname, metastartname())){metastartname(newname)}
     })
 
   ## EXPORTING DATA TO CSV -----
@@ -187,7 +202,10 @@ export_server <- function(id, sondeproj, data_ver, y_var, current_mod){
 
         # convert to plotly
         p <- plot_obj()
-        toWebGL(p)
+        if(isTRUE(input$webgl_supported)){
+          p <- toWebGL(p)
+        }
+        p
       })
 
       observeEvent(input$modules, {
@@ -203,7 +221,7 @@ export_server <- function(id, sondeproj, data_ver, y_var, current_mod){
         interval <- paste0(get_interval(sondeproj()$data), "-minutes")
         updateRadioButtons(session,"frequency",
                            choices=c(setNames("interval", interval), "Hourly" = "hour","Daily" = "day", "Weekly (7-day)" = "week",
-                                               "Monthly" = "month", "Annual" = "year"))
+                                               "Monthly" = "month", "Annual" = "year"), selected="interval")
       })
 
     #data save path and saving data
@@ -217,7 +235,9 @@ export_server <- function(id, sondeproj, data_ver, y_var, current_mod){
              "dups" = sondeproj()$duplicates,
              "gaps" = sondeproj()$data_gaps,
              "changelog" = sondeproj()$changelog %>% mutate(datetime = format(.data$datetime, "%Y-%m-%d %H:%M:%S")),
-             "precip" = sondeproj()$precip %>% mutate(DateTime = format(.data$DateTime, "%Y-%m-%d %H:%M:%S")))
+             "precip" = sondeproj()$precip %>% mutate(DateTime = format(.data$DateTime, "%Y-%m-%d %H:%M:%S")),
+             "calcheck" = sondeproj()$calcheck %>% mutate(Est_Time = format(.data$Est_Time, "%Y-%m-%d %H:%M:%S")),
+             "fieldform" = sondeproj()$fieldform)
 
       #make sure any commas are changed to ; to not break csv
     })

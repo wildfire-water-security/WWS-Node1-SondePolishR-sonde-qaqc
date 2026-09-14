@@ -24,8 +24,8 @@ additive_UI <- function(id){
   tagList(
     div(style="margin-bottom: 8px; font-size:14px", "Adjust the slope and intercept to shift the selected data:"),
 
-    fluidRow(numericInput(ns("slope"),"Slope",value = 0,step=0.001),
-             numericInput(ns("int"),"Intercept",value = 0,step=0.01)))
+    fluidRow(numericInput(ns("slope"),"Slope",value = 0,step=0.001, updateOn="blur", width="40%"),
+             numericInput(ns("int"),"Intercept",value = 0,step=0.01, updateOn="blur", width="40%")))
   }
 
 
@@ -131,8 +131,8 @@ drift_UI <- function(id, sondeproj){
                       choices = opts[opts != "interpolated"], selectize=TRUE),
           fluidRow(div(style="margin-bottom: 8px; font-size:14px",
                        "Adjust the corrected and uncorrected values to account for drift:"),
-                   numericInput(ns("uncorrect"),"Uncorrected",value = 0,step=0.01),
-                   numericInput(ns("correct"),"Corrected",value = 0,step=0.01)))
+                   numericInput(ns("uncorrect"),"Uncorrected",value = 0,step=0.01, updateOn="blur", width="40%"),
+                   numericInput(ns("correct"),"Corrected",value = 0,step=0.01, updateOn="blur", width="40%")))
 }
 
 
@@ -226,7 +226,7 @@ smooth_UI <- function(id){
                       choices = c("Rolling Mean" = "rollmean",
                                   "Rolling Median" = "rollmedian",
                                   "Kalman Filter" = "kalman"), selectize=TRUE, width="60%"),
-          numericInput(ns("smooth_fact"),"Smoothing Factor:",value = 7,step=2, min=1, width="40%"))
+          numericInput(ns("smooth_fact"),"Smoothing Factor:",value = 7,step=2, min=1, width="40%", updateOn="blur"))
 
   )}
 

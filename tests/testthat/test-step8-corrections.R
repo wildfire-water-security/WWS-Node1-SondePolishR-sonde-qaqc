@@ -8,6 +8,9 @@ test_that("{shinytest2} recording: checking-module8", {
                        name = "m8", height = 911, width = 1619)
   app$upload_file(`data1-pj_file` = file.path(test_path(), "testdata", "example-sonde-project.RDS"))
 
+  #since it's now required
+  app$set_inputs(`data1-username` = "Smith")
+
   #click to load files and create project
   app$click("data1-load_prj")
 
@@ -47,8 +50,8 @@ test_that("{shinytest2} recording: checking-module8", {
     app$expect_screenshot(name = "select_single_point_weekly")
 
     #flag values
-    app$click("data8-apply_limits-apply_flags")
     app$set_inputs(`data8-date_nav-period_view` = FALSE)
+    app$click("data8-apply_limits-apply_flags")
     app$wait_for_idle()
     plot_obj <- app$get_value(export = "data8-plot_obj")
     expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
@@ -87,6 +90,7 @@ test_that("{shinytest2} recording: checking-module8", {
     app$expect_screenshot(name = "drift_weekview")
 
   #flag values
+    app$set_inputs(`data8-date_nav-period_view` = FALSE)
     app$click("data8-apply_limits-apply_flags")
     app$wait_for_idle()
     plot_obj <- app$get_value(export = "data8-plot_obj")
@@ -101,8 +105,6 @@ test_that("{shinytest2} recording: checking-module8", {
                                              " for file ", "example-csv-data2.csv"))
 
   #tests for smoothing function
-    app$set_inputs(`data8-date_nav-period_view` = FALSE)
-
     #initial smoothing -> select a region to smooth
     app$set_inputs(`data8-edit_type` = "smooth")
     app$wait_for_idle(timeout = 10000)

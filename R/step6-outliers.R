@@ -16,20 +16,22 @@ outlier_UI <- function(id){
           accordion_panel(
             "Identify Outliers",
             bslib::layout_columns(
-              col_widths = c(7, 5),
+              col_widths = c(6, 6),
               selectInput(ns("filter_type"),
-                          "Select Starting Method:",
+                          "Starting Method:",
                           choices = c("None" = "none",
                                       "Hampel Filter" = "hampel", "Relative Change" = "rel_change", "High Variability" = "high_var"),
-                          selected = "none"),
-              radioButtons(ns("selection_mode"),"Selection Mode",
+                          selected = "none", width="80%"),
+              radioButtons(ns("selection_mode"),"Manual Selection Mode",
                            choices = c("Add Bad" = "bad", "Add Questionable" = "questionable", "Remove Selection" = "remove"))),
             bslib::layout_columns(
               col_widths = c(3,3,1,5),
-              numericInput(ns("k"),"Window (odd #)",value =7,step=2),
-              numericInput(ns("t"),"Threshold",value = 7, step=0.5),
+              numericInput(ns("k"),"Window",value =7,step=2, updateOn="blur"),
               tags$div(
-                style = "width: 1px; height: 85px; background-color: #6c7881; display: inline-block; margin: 0 30px; vertical-align: middle;"),
+                style = "margin-right: 0px;",
+                numericInput(ns("t"),"Threshold",value = 7, step=0.5, updateOn="blur")),
+              tags$div(
+                style = "width: 1px; height: 85px; background-color: #6c7881; display: inline-block; margin: 0 15px; vertical-align: middle;"),
               div(class = "d-flex justify-content-center align-items-center",
                   style = "height: 85px;",
                   actionButton(ns("clear_sel"), "Clear Selection")))
@@ -269,6 +271,8 @@ outlier_server <- function(id, sondeproj, data_ver, y_var,view_state, username){
 
   # create edit object for removing data
   edit_rm <- reactive({
+    req(sondeproj())
+
     newdata <- sondeproj()$data
 
     #only flag data within date range
@@ -301,6 +305,8 @@ outlier_server <- function(id, sondeproj, data_ver, y_var,view_state, username){
   })
 
   edit_chg <- reactive({
+    req(sondeproj(), y_var())
+
     newdata <- sondeproj()$data
 
     #only flag data within date range
@@ -320,8 +326,8 @@ outlier_server <- function(id, sondeproj, data_ver, y_var,view_state, username){
   })
 
   #flagging modules
-    bad_flagged <- apply_edit_server("remove_outliers", sondeproj, edit_rm, username)
-    question_flagged <- apply_edit_server("flag_question", sondeproj, edit_chg, username)
+    bad_flagged <- apply_edit_server("remove_outliers", sondeproj, edit_rm, username, view_state)
+    question_flagged <- apply_edit_server("flag_question", sondeproj, edit_chg, username, view_state)
 
   #export plot so we can check it
     exportTestValues(

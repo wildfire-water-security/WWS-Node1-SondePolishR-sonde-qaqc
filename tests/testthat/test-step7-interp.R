@@ -9,6 +9,9 @@ test_that("{shinytest2} recording: checking-module7", {
                        expect_values_screenshot_args = FALSE)
   app$upload_file(`data1-pj_file` = file.path(test_path(), "testdata", "example-sondeproj-messy.RDS"))
 
+  #since it's now required
+  app$set_inputs(`data1-username` = "Smith")
+
   #click to load files and create project
   app$click("data1-load_prj")
 

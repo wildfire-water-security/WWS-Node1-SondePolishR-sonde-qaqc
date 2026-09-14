@@ -28,11 +28,11 @@ main_plot_UI <- function(id){
 
       # Upper y-limit
       div(style = "position:absolute; top:20px; left:0px; width:75px;font-size: 10px;",
-          numericInput(ns("yaxismax"),label = "max y-value",value = NA,width = "75px")),
+          numericInput(ns("yaxismax"),label = "max y-value",value = NA,width = "75px", updateOn="blur")),
 
       # Lower y-limit
       div(style = "position:absolute; bottom:35px; left:0px; width:75px;font-size: 10px;",
-          numericInput(ns("yaxismin"),label = "min y-value",value = NA,width = "75px")))
+          numericInput(ns("yaxismin"),label = "min y-value",value = NA,width = "75px", updateOn="blur")))
   )}
 
 #' @rdname main-plot
@@ -193,7 +193,10 @@ main_plot_server <- function(id, data_ver, sondeproj, plot_obj, plot_data, y_var
 
       plot_exist(TRUE)
 
-      toWebGL(p)
+      if(isTRUE(input$webgl_supported)){
+        p <- toWebGL(p)
+      }
+      p
     })
 
   })

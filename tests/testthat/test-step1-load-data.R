@@ -9,6 +9,9 @@ test_that("{shinytest2} recording: checking-module1", {
                        name = "m1", height = 911, width = 1619,
                        load_timeout = 60000)
 
+  #since it's now required
+  app$set_inputs(`data1-username` = "Smith")
+
   #upload files
   app$upload_file(`data1-csv_files` = file.path(test_path(), "testdata", c("example-csv-data1.csv", "example-csv-data2.csv")))
 

@@ -56,7 +56,7 @@ save_path_server <- function(id, data,
         roots = roots(),session = session)
       })
 
-    observe({
+    observeEvent(input$save, {
       req(input$save)
       parsed_path(shinyFiles::parseSavePath(roots(),input$save))
     })
@@ -70,10 +70,16 @@ save_path_server <- function(id, data,
 
     #clear selected path when metadata type changes
     observeEvent(startname(), {
-        parsed_path(NULL)
-        save_okay(FALSE)
-    })
+      path <- parsed_path()
 
+      if(!is.null(path) && nrow(path) > 0){
+        path$name <- paste0(startname(), ".csv")
+        path$datapath <- file.path(dirname(path$datapath), path$name)
+
+        parsed_path(path)
+        save_okay(FALSE)
+      }
+    })
     #clear the okay any time the data changes
     observeEvent(data(),{save_okay(FALSE)})
 
@@ -104,7 +110,14 @@ save_path_server <- function(id, data,
 
   #check if overwrite is allowed
   observeEvent(input$export, {
-    req(parsed_path())
+    if(is.null(parsed_path())){
+      shinyalert::shinyalert(
+        title = "No Path Specified",
+        text = "Please specify a save location before exporting.",
+        type = "warning")
+
+      return()
+    }
 
     #if no data available to save give warning
     if(is.null(data())){
