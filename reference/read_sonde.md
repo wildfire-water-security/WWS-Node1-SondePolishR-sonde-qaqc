@@ -86,9 +86,7 @@ Time (PST).
 ``` r
 file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "example-csv-data1.csv")
 data <- read_sonde(file)
-#> Error in utf8::as_utf8(text): entry 9 has wrong Encoding; marked as "UTF-8" but invalid leading byte (0xB5) at position 68
 
 file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "sonde-usb-example.csv")
 data <- read_sonde(file, return = "list")
-#> Error in utf8::as_utf8(text): entry 1 has wrong Encoding; marked as "UTF-8" but invalid leading byte (0xFF) at position 1
 ```

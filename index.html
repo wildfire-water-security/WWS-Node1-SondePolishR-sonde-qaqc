@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="index.html">SondePolishR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9009</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9010</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -98,6 +98,11 @@
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https:/wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/">SondePolishR</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/run_app.html">run_app</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="browser-requirements">Browser Requirements<a class="anchor" aria-label="anchor" href="#browser-requirements"></a>
+</h3>
+<p>You have several options for running the app, it can be run natively in R or it can run in your browser. If it runs in your browser we recommend using Chrome as it can support the <code>WebGL</code> plotting which makes plotting faster and smoother.</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="app-overview">App Overview<a class="anchor" aria-label="anchor" href="#app-overview"></a>
@@ -124,8 +129,9 @@
 <h3 id="exploring-the-data">Exploring the Data<a class="anchor" aria-label="anchor" href="#exploring-the-data"></a>
 </h3>
 <p>Most modules include an interactive plot created via <a href="https://plotly.com/r/" class="external-link">plotly</a> used to visualize the data and select points. These plots have a number of options that can be used to explore the dataset and make decisions about corrections.</p>
-<p><img src="reference/figures/plotting-opts.png"></p>
-<ul>
+<figure><img src="reference/figures/plotting-opts.png" alt="Screenshot of the Visualize tab within the app showing an fDOM plot and the changelog."><figcaption aria-hidden="true">
+Screenshot of the Visualize tab within the app showing an fDOM plot and the changelog.
+</figcaption></figure><ul>
 <li><p><strong>Plotted parameter:</strong> Select the primary data being shown and control which parameter is being corrected.</p></li>
 <li><p><strong>Secondary parameter:</strong> Select a variable for a secondary y-axis. Option include other variables within the dataset, the raw uncorrected data, or precipitation data if loaded.</p></li>
 <li><p><strong>Date Ranges:</strong> View only data within the specified date range.</p></li>
@@ -143,13 +149,16 @@
 </li>
 </ul>
 <p>In addition to the options provided by <code>SondePolishR</code>, <code>plotly</code> plots also natively have some built in tools like plot export and drag to zoom features located in the top right corner of the plot.</p>
-<p><img src="reference/figures/plotly-opts.png"></p>
+<figure><img src="reference/figures/plotly-opts.png" alt="Screenshot of the fDOM plot highlighting the plotly tools in the upper right."><figcaption aria-hidden="true">
+Screenshot of the fDOM plot highlighting the plotly tools in the upper right.
+</figcaption></figure>
 </div>
 <div class="section level3">
 <h3 id="correcting-and-flagging-data">Correcting and Flagging Data<a class="anchor" aria-label="anchor" href="#correcting-and-flagging-data"></a>
 </h3>
-<p><img src="reference/figures/flagging.png"></p>
-<p>One of the other main workflows included throughout the app is modifying and flagging data.</p>
+<figure><img src="reference/figures/flagging.png" alt="Screenshot of the Flag Points panel allowing notes to be added before flagging points."><figcaption aria-hidden="true">
+Screenshot of the Flag Points panel allowing notes to be added before flagging points.
+</figcaption></figure><p>One of the other main workflows included throughout the app is modifying and flagging data.</p>
 <p>Each module or tab uses it’s own methods to select points. Some select points via numeric inputs in the sidebar (physical limits), others use points selected in the plot by the user (i.e., outlier removal). Once the user is satisfied with the points selected, the data can be flagged.</p>
 <p><strong>When data is flagged:</strong></p>
 <ul>
@@ -169,8 +178,9 @@
 <div class="section level3">
 <h3 id="data-export">Data Export<a class="anchor" aria-label="anchor" href="#data-export"></a>
 </h3>
-<p><img src="reference/figures/export-data.png"></p>
-<p>The sonde project itself is stored as an <code>.RDS</code> object which is easily useable by R. However it is not the most user friendly.</p>
+<figure><img src="reference/figures/export-data.png" alt="Screenshot of the Download Data tab showing a summarized plot of the fDOM data and optiosn for downloading data, metadata, and saving the Sonde project."><figcaption aria-hidden="true">
+Screenshot of the Download Data tab showing a summarized plot of the fDOM data and optiosn for downloading data, metadata, and saving the Sonde project.
+</figcaption></figure><p>The sonde project itself is stored as an <code>.RDS</code> object which is easily useable by R. However it is not the most user friendly.</p>
 <p>The <strong>Download Data</strong> tab offers a number of options to generate clean, immediately usable data exports.</p>
 <ul>
 <li><p><strong>Data frequency:</strong> Summarizes the data to commonly used intervals (e.g., hourly, weekly, annual).</p></li>

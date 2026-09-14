@@ -51,6 +51,13 @@ library(SondePolishR)
 run_app()
 ```
 
+### Browser Requirements
+
+You have several options for running the app, it can be run natively in
+R or it can run in your browser. If it runs in your browser we recommend
+using Chrome as it can support the `WebGL` plotting which makes plotting
+faster and smoother.
+
 ## App Overview
 
 The app works by creating and modifying a sonde project (`sondeproj`)
@@ -109,7 +116,11 @@ Most modules include an interactive plot created via
 points. These plots have a number of options that can be used to explore
 the dataset and make decisions about corrections.
 
-![](reference/figures/plotting-opts.png)
+![Screenshot of the Visualize tab within the app showing an fDOM plot
+and the changelog.](reference/figures/plotting-opts.png)
+
+Screenshot of the Visualize tab within the app showing an fDOM plot and
+the changelog.
 
 - **Plotted parameter:** Select the primary data being shown and control
   which parameter is being corrected.
@@ -145,11 +156,19 @@ In addition to the options provided by `SondePolishR`, `plotly` plots
 also natively have some built in tools like plot export and drag to zoom
 features located in the top right corner of the plot.
 
-![](reference/figures/plotly-opts.png)
+![Screenshot of the fDOM plot highlighting the plotly tools in the upper
+right.](reference/figures/plotly-opts.png)
+
+Screenshot of the fDOM plot highlighting the plotly tools in the upper
+right.
 
 ### Correcting and Flagging Data
 
-![](reference/figures/flagging.png)
+![Screenshot of the Flag Points panel allowing notes to be added before
+flagging points.](reference/figures/flagging.png)
+
+Screenshot of the Flag Points panel allowing notes to be added before
+flagging points.
 
 One of the other main workflows included throughout the app is modifying
 and flagging data.
@@ -198,7 +217,13 @@ cleaned data to the raw data.
 
 ### Data Export
 
-![](reference/figures/export-data.png)
+![Screenshot of the Download Data tab showing a summarized plot of the
+fDOM data and optiosn for downloading data, metadata, and saving the
+Sonde project.](reference/figures/export-data.png)
+
+Screenshot of the Download Data tab showing a summarized plot of the
+fDOM data and optiosn for downloading data, metadata, and saving the
+Sonde project.
 
 The sonde project itself is stored as an `.RDS` object which is easily
 useable by R. However it is not the most user friendly.

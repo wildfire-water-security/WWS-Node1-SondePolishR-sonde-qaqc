@@ -10,7 +10,7 @@ and save the dataset as a new version.
 ``` r
 apply_edit_UI(id, edit_type = "flag", note = NULL, username)
 
-apply_edit_server(id, sondeproj, edit, username)
+apply_edit_server(id, sondeproj, edit, username, view_state)
 ```
 
 ## Arguments
@@ -39,3 +39,11 @@ apply_edit_server(id, sondeproj, edit, username)
   changed a TRUE - y_var: parameter being edited - step: name of the
   editing step for the changelog - note: an optional note to add to the
   changelog - flag: character flag to use for edits to the data
+
+- view_state:
+
+  A \`reactiveVal\` holding a list of items specifying the view state: -
+  abs_dates: The absolute range of dates within the dataset - dates: The
+  range of dates being viewed via the date selector - period_view:
+  Logical if the period view is being used - period_length: Length of
+  period view - period_n: The period number to view.

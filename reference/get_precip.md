@@ -58,7 +58,9 @@ function:
   requires a token to access the data. See
   [here](https://urs.earthdata.nasa.gov/documentation/for_users/user_token)
   for directions on creating a token. Note that this token should be
-  kept secret.
+  kept secret. You will also need to authorize the NASA GESDISC DATA
+  ARCHIVE application. For more detailed directions see
+  [`vignette("using-precipitation-data")`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/articles/using-precipitation-data.md)
 
 ## Examples
 

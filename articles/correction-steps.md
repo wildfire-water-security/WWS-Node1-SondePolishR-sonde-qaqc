@@ -13,7 +13,10 @@ correcting a complete water quality record of stream water quality using
 the `SondePolishR` app. You may wish to modify for your own specific
 workflows and needs.
 
-***TODO: include a workflow diagram here.***
+![Flow chart describing the workflow steps for the SondePolishR
+app.](figures/SondePolishR%20Workflow.png)
+
+Flow chart describing the workflow steps for the SondePolishR app.
 
 Throughout this tutorial we will refer to **tabs** and **panels**.
 

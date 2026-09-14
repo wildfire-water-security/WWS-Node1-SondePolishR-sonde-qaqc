@@ -69,5 +69,4 @@ a `sondeproj` object. For more details on structure see
 ``` r
 file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "example-csv-data1.csv")
 proj <- load_project(csv_path = file, csv_files = "example_file1", username="Smith")
-#> Error in utf8::as_utf8(text): entry 9 has wrong Encoding; marked as "UTF-8" but invalid leading byte (0xB5) at position 68
 ```
