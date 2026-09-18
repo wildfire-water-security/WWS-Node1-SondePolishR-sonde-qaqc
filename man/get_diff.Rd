@@ -4,7 +4,7 @@
 \alias{get_diff}
 \title{Track differences between sonde data}
 \usage{
-get_diff(olddata, newdata, id = c("DateTime_rd", "DupNum"), ignore = NA)
+get_diff(olddata, newdata, id = c("DateTime_rd", "DupNum"), ignore = "Index")
 }
 \arguments{
 \item{olddata}{a \code{data.frame} with the original data.}

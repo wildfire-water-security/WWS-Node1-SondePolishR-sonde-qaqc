@@ -59,6 +59,28 @@ R or it can run in your browser. If it runs in your browser we recommend
 using Chrome as it can support the `WebGL` plotting which makes plotting
 faster and smoother.
 
+### Data Requirements
+
+- The app currently only supports EXO type sonde data. However, if you
+  have a different sonde you’d like supported let us
+  [know](https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues)!
+
+  - Similarly, the app currently supports the major EXO probe types
+    (depth, temperature, dissolved oxygen, pH, specific conductance,
+    fDOM, turbidity). If there are additional probes you’d like included
+    let us know.
+
+- Due to the way that certain calculations are made, all the data within
+  the project should be at a consistent interval (e.g., 15 minutes, 1
+  hour).
+
+- Working with more than ~1 year of data in the app is currently a
+  little slow. We’re aware of the
+  [issue](https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/113)
+  and are working to optimize the code to remove this limitation. In the
+  meantime it is recommended to create multiple projects if your data
+  stream exceeds the ~1 year.
+
 ## App Overview
 
 The app works by creating and modifying a sonde project (`sondeproj`)

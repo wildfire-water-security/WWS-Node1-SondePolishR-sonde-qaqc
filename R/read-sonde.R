@@ -57,12 +57,12 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NUL
 
     #guess encoding
     if(is.null(encoding)){encoding <- readr::guess_encoding(file)$encoding[1]}
-    
+
     #read file
     filecon <- file(file, encoding = encoding)
     text <- readLines(filecon, skipNul = TRUE)
     text <- utf8::as_utf8(text)
-  
+
     # If that works, close the connection
     close(filecon)
 
@@ -75,7 +75,7 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NUL
     if(is.null(skip)){
       skip <- ifelse(usb_export, grep("^Date", text) + 3, grep("^Date", text))
     }
-  
+
   #get column names
     cols <- text[grep("^Date", text)]
     cols <- iconv(cols, "UTF-8", "ASCII//TRANSLIT") #remove non ASCII characters
@@ -91,11 +91,11 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NUL
 
   #drop any NA col names
     data <- data[,!is.na(colnames(data))]
-  
+
   # Had to fix the temp column name here since the new encodings remove the '?'
   #rename col names
-    lookup <- c(Date = "Date_MM_DD_YYYY", 
-                Time_HH_mm_ss = "Time", 
+    lookup <- c(Date = "Date_MM_DD_YYYY",
+                Time_HH_mm_ss = "Time",
                 Temp_C="?C",
                 Temp_C = "^0C",
                 Temp_C = "Temp_?C",

@@ -39,11 +39,11 @@ outlier_UI <- function(id){
           accordion_panel(
             "Save Edits",
             div(style="margin-bottom: 8px; font-size:16px; font-weight: bold;",
-                "Remove Bad Points"),
+                "Remove Bad Points (plotted parameter only)"),
             tags$div(style = "margin-bottom: 20px;",
                      apply_edit_UI(ns("remove_outliers"), edit_type = "remove", note="")),
             div(style="margin-bottom: 8px; font-size:16px; font-weight: bold;",
-                "Flag Questionable Points"),
+                "Flag Questionable Points (plotted parameter only)"),
             apply_edit_UI(ns("flag_question"), note=""),
 
           ),

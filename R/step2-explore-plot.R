@@ -18,11 +18,24 @@ explore_data_UI <- function(id){
           ),
           accordion_panel(
             "Remove Out of Water Periods",
-            actionButton(ns("remove_oow"), "Flag OOW Periods"),
+            div(
+              style = "display: flex; align-items: center; gap: 35px;",
+              actionButton(ns("remove_oow"), "Flag OOW Periods"),
+              span(
+                "Removes points across",  strong("all"),
+                " parameters within the red boxes.",
+                style = "font-size: 0.85em;max-width: 200px;"
+              ))
           ),
           accordion_panel(
             "Undo Data Edits",
-            actionButton(ns("undo_changes"), "Restore Selected Version"),
+            div(
+              style = "display: flex; align-items: center; gap: 35px;",
+              actionButton(ns("undo_changes"), "Restore Selected Version"),
+              span(
+                "Select the row in the change log to ", strong("return"), " to.",
+                style = "font-size: 0.85em;max-width: 200px;"
+              ))
           ),
           accordion_panel(
             "Table Options",

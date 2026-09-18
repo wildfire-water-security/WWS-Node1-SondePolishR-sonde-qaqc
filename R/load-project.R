@@ -36,13 +36,14 @@ load_project <- function(csv_path=NULL, csv_files=NULL, prj_path=NULL,
       num <- which(x == csv_path)
       dat <- read_sonde(x, tz = tz, return="list", flags=TRUE)
       dat$data$FileName <- basename(csv_files[num]) #in shiny the default filename is nothing
+      dat$data$Site_Name <- site #update site name if it exists already to what's been specified in app
       if(is.function(update_pb)){setProgress(value = num)} #update shiny progress bar
       data_merge <- c(data_merge, list(dat))
     }
 
     #combine things from import
     flags <- grep("_flag$", get_parms(data_merge, flags=TRUE), value=TRUE)
-    fix_flags <- function(x){ifelse(is.null(x), list(c(NA)), x)}
+    fix_flags <- function(x){ifelse(is.null(x), c(NA), x)}
 
     serials <- lapply(data_merge, "[[", 1) %>% bind_rows()
     csv_merge <- lapply(data_merge, "[[", 2)%>% dplyr::bind_rows() %>%
@@ -54,13 +55,21 @@ load_project <- function(csv_path=NULL, csv_files=NULL, prj_path=NULL,
   #load existing project
     if(!is.null(prj_path)){
       obj <- readRDS(prj_path)
+
+      #if older project, make any updates to update the project (added 9-18-2026; version 0.0.9011)
+      if(is.null(obj$meta$pkg_version) | obj$meta$pkg_version < packageVersion("SondePolishR")){
+        obj$meta$pkg_version <- packageVersion("SondePolishR") #update the version of the project
+
+        ### in future add any updates to update projects here
+      }
+
     }else{
       #create new project if one isn't loaded
       changelog <- write_log(NULL, "all", "initial load", n = nrow(csv_merge), diff_name = "raw",
                              user=username)
 
       #create sonde object
-      obj <- list(meta = list(site = site, tz= tz, coords = c(NA, NA)),
+      obj <- list(meta = list(site = site, tz= tz, coords = c(NA, NA), pkg_version = packageVersion("SondePolishR")),
                   data = csv_merge,
                   precip = NULL,
                   fieldform = NULL,
@@ -73,6 +82,7 @@ load_project <- function(csv_path=NULL, csv_files=NULL, prj_path=NULL,
       class(obj) <- "sondeproj"
 
     }
+
   #read in ff and cal file (these cover the entire period and we don't need to merge, just update)
     if(!is.null(ff_path)){
       fieldform <- read_ff(ff_path, tz)
@@ -109,37 +119,31 @@ load_project <- function(csv_path=NULL, csv_files=NULL, prj_path=NULL,
 
   #if project and csv loaded, merge together (everything: data, flags, diffs, replace ff and cal)
     merge_flag <- !is.null(prj_path) && !is.null(csv_path)
-
+    prev_data <- obj$data #store data for future diff
     if(merge_flag){
-      #store previous nrow so can see how many we actually added
-      prev_lines <- nrow(obj$data)
-
       #merge data and flags
-      #we want to keep the modified data if datetimes are the same
-      all_data <- obj$data %>% mutate(source = "sondeproj") %>% bind_rows(csv_merge %>% mutate(source = "csv"))
+      new_data <- csv_merge %>% filter(!(.data$DateTime_rd %in% obj$data$DateTime_rd))
 
-      data_merge <- all_data %>%
-        dplyr::arrange(dplyr::desc(source == "sondeproj")) %>%
-        dplyr::group_by(.data$Date, .data$DateTime, .data$DateTime_rd) %>%
-        dplyr::slice(1) %>%
-        dplyr::ungroup() %>% dplyr::select(-"source") %>%
-        dplyr::mutate(Index = 1:n())
+      #we want to keep the modified data if datetimes are the same, but not overwrite or duplicate existing data
+      if(nrow(new_data) >0){
+        data_merge <- obj$data %>% bind_rows(new_data)
 
-      if(nrow(data_merge) > prev_lines){
-        #store diff
-        diff <- list(get_diff(obj$data, data_merge))
-        names(diff) <- diff_version(obj)
-        obj$diffs <- append(obj$diffs, diff)
+          #store diff
+          diff <- list(get_diff(obj$data, data_merge))
+          names(diff) <- diff_version(obj)
+          obj$diffs <- append(obj$diffs, diff)
 
-        #document data addition, needs to be after getting diff so name is correct
-        obj <- write_log(obj, "all", "adding new data", n = (nrow(data_merge) - prev_lines), diff_name = diff_version(obj), return="sondeproj",
-                         user=username)
+          #document data addition, needs to be after getting diff so name is correct
+          obj <- write_log(obj, "all", "adding new data", n = (nrow(data_merge) - nrow(prev_data)), diff_name = diff_version(obj), return="sondeproj",
+                           user=username)
 
-
+        #put new data in object
+          obj$data <- data_merge
       }
-      obj$data <- data_merge
 
     }
+
+  prev_data <- obj$data #store data for future diff
 
   #fill in missing datetime stamps for future interpolation
     if(is.function(update_pb)){setProgress(value = length(csv_path)+1, message = "Preparing Project....")}
@@ -154,7 +158,7 @@ load_project <- function(csv_path=NULL, csv_files=NULL, prj_path=NULL,
 
     flags <- grep("_flag$", get_parms(data, flags=TRUE), value=TRUE)
     fix_flags <- function(x){
-      lapply(x, function(y){ifelse(is.null(y), list(c(NA)), y)})
+      lapply(x, function(y){ifelse(is.null(y),c(NA), y)})
     }
     #get the dataset to interpolate (still may have dupes)
     data_fill <- data %>%
@@ -164,13 +168,28 @@ load_project <- function(csv_path=NULL, csv_files=NULL, prj_path=NULL,
       mutate(Index = 1:n(),
              DupNum = ifelse(is.na(.data$DupNum), 1, .data$DupNum),
              Date = if_else(is.na(.data$Date), as.Date(.data$DateTime_rd, tz = tz), .data$Date),
-             Time_HH_mm_ss = if_else(is.na(.data$Time_HH_mm_ss), strftime(.data$DateTime_rd, "%H:%M:%S"), .data$Time_HH_mm_ss),
+             Time_HH_mm_ss = if_else(is.na(.data$Time_HH_mm_ss), strftime(.data$DateTime_rd, "%H:%M:%S",  tz=tz), .data$Time_HH_mm_ss),
              DateTime = if_else(is.na(.data$DateTime), .data$DateTime_rd, .data$DateTime),
              Site_Name = site) %>%
       mutate(across(all_of(flags), ~fix_flags(.x))) %>% arrange(.data$Index) %>%
       fill("FileName", .direction = "down") %>% arrange(.data$DateTime_rd, .data$DupNum)
 
   obj$data <- data_fill
+
+  #after filling gaps (since there might be gaps between the two datasets) do the diff
+  if(nrow(prev_data) < nrow(obj$data)){
+      #store diff
+      diff <- list(get_diff(prev_data, obj$data))
+      names(diff) <- diff_version(obj)
+      obj$diffs <- append(obj$diffs, diff)
+
+      #document data addition, needs to be after getting diff so name is correct
+      obj <- write_log(obj, "all", "creating datetimes for gaps", n = (nrow(obj$data) - nrow(prev_data)), diff_name = diff_version(obj), return="sondeproj",
+                       user=username)
+
+
+    }
+
 
   return(obj)
 }

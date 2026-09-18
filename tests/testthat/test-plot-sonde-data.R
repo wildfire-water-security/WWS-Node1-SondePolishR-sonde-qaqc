@@ -2,13 +2,16 @@ test_that("plotting sonde data works", {
   #initial basic plot
     p <- plot_sonde(data=example_data, y_var="Temp_C")
 
+    #remove filled rows from example data for right now
+    dat <- example_data %>% rm_filled_dt()
+
     #inspect elements
       p <- plotly::plotly_build(p)
       expect_equal(length(p$x$data), 1)
       expect_equal(p$x$data[[1]]$name, "Temperature (\u00B0C)")
       expect_equal(p$x$data[[1]]$mode, "lines+markers")
-      expect_equal(p$x$data[[1]]$x, example_data$DateTime_rd,ignore_attr = TRUE)
-      expect_equal(p$x$data[[1]]$y, example_data$Temp_C,ignore_attr = TRUE)
+      expect_equal(p$x$data[[1]]$x, dat$DateTime_rd,ignore_attr = TRUE)
+      expect_equal(p$x$data[[1]]$y, dat$Temp_C,ignore_attr = TRUE)
 
 
 #check that options work
@@ -20,8 +23,8 @@ test_that("plotting sonde data works", {
     expect_equal(length(p$x$data), 1)
     expect_equal(p$x$data[[1]]$name, "fDOM (QSU)")
     expect_equal(p$x$data[[1]]$mode, "lines")
-    expect_equal(p$x$data[[1]]$x, example_data$DateTime_rd,ignore_attr = TRUE)
-    expect_equal(p$x$data[[1]]$y, example_data$fDOM_QSU,ignore_attr = TRUE)
+    expect_equal(p$x$data[[1]]$x, dat$DateTime_rd,ignore_attr = TRUE)
+    expect_equal(p$x$data[[1]]$y, dat$fDOM_QSU,ignore_attr = TRUE)
 
   # color by filename
     p <- plot_sonde(data=example_data,  y_var="fDOM_QSU", opts=list(points=TRUE,line=TRUE,files=TRUE,
@@ -29,8 +32,8 @@ test_that("plotting sonde data works", {
     #inspect elements
     p <- plotly::plotly_build(p)
     expect_equal(length(p$x$data), 3)
-    expect_equal(p$x$data[[1]]$x, example_data$DateTime_rd[example_data$FileName == "example-csv-data1.csv"],ignore_attr = TRUE)
-    expect_equal(p$x$data[[1]]$y, example_data$fDOM_QSU[example_data$FileName == "example-csv-data1.csv"],ignore_attr = TRUE)
+    expect_equal(p$x$data[[1]]$x, dat$DateTime_rd[dat$FileName == "example-csv-data1.csv"],ignore_attr = TRUE)
+    expect_equal(p$x$data[[1]]$y, dat$fDOM_QSU[dat$FileName == "example-csv-data1.csv"],ignore_attr = TRUE)
 
   # add OOW periods
     p <- plot_sonde(data=example_data,  y_var="fDOM_QSU", proj = example_sondeproj, opts=list(points=TRUE,line=TRUE,files=FALSE,
@@ -60,7 +63,7 @@ test_that("plotting sonde data works", {
     p <- plotly::plotly_build(p)
     expect_equal(length(p$x$data), 2)
     expect_equal(sapply(p$x$data, function(x){x$name}), c("Turbidity (FNU)","fDOM (QSU)"))
-    expect_equal(p$x$data[[1]]$y, example_data$Turbidity_FNU,ignore_attr = TRUE)
+    expect_equal(p$x$data[[1]]$y, dat$Turbidity_FNU,ignore_attr = TRUE)
 
   #test that filecolors works with calcheck
     p <- plot_sonde(data=example_data,  y_var="fDOM_QSU", proj = example_sondeproj,

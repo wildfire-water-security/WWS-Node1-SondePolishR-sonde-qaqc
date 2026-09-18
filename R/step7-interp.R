@@ -28,7 +28,7 @@ interp_UI <- function(id){
           ),
           accordion_panel(
             "Save Edits",
-            apply_edit_UI(ns("apply_limits"), edit_type = "interpolate", note="Highlighted points will be interpolated"),
+            apply_edit_UI(ns("apply_limits"), edit_type = "interpolate", note="Highlighted points will be interpolated for the plotted parameter."),
           ),
           accordion_panel(
             "Date Ranges",

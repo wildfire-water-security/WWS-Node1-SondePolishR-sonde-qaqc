@@ -23,7 +23,7 @@ correction_UI <- function(id){
           ),
           accordion_panel(
             "Save Edits",
-            apply_edit_UI(ns("apply_limits"), edit_type = "change", note="Highlighted data will be adjusted"),
+            apply_edit_UI(ns("apply_limits"), edit_type = "change", note="Highlighted data will be adjusted for the plotted parameter."),
           ),
           accordion_panel(
             "Date Ranges",
