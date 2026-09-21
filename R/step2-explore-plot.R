@@ -18,11 +18,24 @@ explore_data_UI <- function(id){
           ),
           accordion_panel(
             "Remove Out of Water Periods",
-            actionButton(ns("remove_oow"), "Flag OOW Periods"),
+            div(
+              style = "display: flex; align-items: center; gap: 35px;",
+              actionButton(ns("remove_oow"), "Flag OOW Periods"),
+              span(
+                "Removes points across",  strong("all"),
+                " parameters within the red boxes.",
+                style = "font-size: 0.85em;max-width: 200px;"
+              ))
           ),
           accordion_panel(
             "Undo Data Edits",
-            actionButton(ns("undo_changes"), "Restore Selected Version"),
+            div(
+              style = "display: flex; align-items: center; gap: 35px;",
+              actionButton(ns("undo_changes"), "Restore Selected Version"),
+              span(
+                "Select the row in the change log to ", strong("return"), " to.",
+                style = "font-size: 0.85em;max-width: 200px;"
+              ))
           ),
           accordion_panel(
             "Table Options",
@@ -72,6 +85,8 @@ explore_data_UI <- function(id){
 #'  - period_length: Length of period view
 #'  - period_n: The period number to view.
 #' @param username A `reactiveVal` holding the name of the analyst for the changelog
+#' @param webgl_supported A `reactiveVal` indicating if webgl is support in the current browser.
+
 
 #' @md
 #' @keywords internal
@@ -79,7 +94,7 @@ explore_data_UI <- function(id){
 #' @rdname explore-data
 #' @returns Invisible NULL
 #'
-explore_data_server <- function(id, sondeproj, data_ver, y_var, view_state, username){
+explore_data_server <- function(id, sondeproj, data_ver, y_var, view_state, username,webgl_supported){
   moduleServer(id, function(input, output, session){
     ns <- NS(id) #line to make module work
 
@@ -335,7 +350,7 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var, view_state, user
       })
 
     #save to export
-    main_plot_server("plot", data_ver, sondeproj, plot_obj, plot_data, y_var, plot_exist=plot_exist)
+    main_plot_server("plot", data_ver, sondeproj, plot_obj, plot_data, y_var, plot_exist=plot_exist, webgl_supported=webgl_supported)
 
     #redraw when back on module to prevent weird drawing issues
     observeEvent(input$modules, {

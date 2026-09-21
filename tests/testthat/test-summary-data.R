@@ -31,11 +31,11 @@ test_that("data summarizing works", {
       expect_equal(sum_data$fDOM_QSU_median, test_median$fDOM_QSU)
 
       sum_data <- summarize_data(data, freq, "max")
-      test_max <- test %>% summarise(fDOM_QSU = max(fDOM_QSU))
+      expect_warning(test_max <- test %>% summarise(fDOM_QSU = max(fDOM_QSU, na.rm=TRUE)) %>% mutate(fDOM_QSU= ifelse(is.infinite(fDOM_QSU), NA, fDOM_QSU)))
       expect_equal(sum_data$fDOM_QSU_max, test_max$fDOM_QSU)
 
       sum_data <- summarize_data(data, freq, "min")
-      test_min <- test %>% summarise(fDOM_QSU = min(fDOM_QSU))
+      expect_warning(test_min <- test %>% summarise(fDOM_QSU = min(fDOM_QSU, na.rm=TRUE)) %>% mutate(fDOM_QSU= ifelse(is.infinite(fDOM_QSU), NA, fDOM_QSU)))
       expect_equal(sum_data$fDOM_QSU_min, test_min$fDOM_QSU)
 
   #test 1 day summary ------
@@ -107,8 +107,8 @@ test_that("data summarizing works", {
 
       #check flags
       test <- data %>% mutate(DateTime_rd = floor_date(.data$DateTime_rd, freq)) %>% left_join(sum_data, by = join_by(DateTime_rd))
-      expect_equal(unlist(test$fDOM_QSU_flag.x[!is.na(test$fDOM_QSU_flag.x)]), test$fDOM_QSU_flag.y[!is.na(test$fDOM_QSU_flag.x)]) #fdom if one in full, should be in merged
-      expect_true(!all(test$Temp_C_flag.x[!is.na(test$Temp_C_flag.x)] == test$Temp_C_flag.y[!is.na(test$Temp_C_flag.x)])) #temp ones get merged
+      expect_equal(sum_data$fDOM_QSU_flag, "RM01")
+      expect_equal(sum_data$Temp_C_flag, "AD01;RM02;TEST01") #temp ones get merged
 
       #check values
       test <- data %>% mutate(DateTime_rd = floor_date(.data$DateTime_rd, freq)) %>% group_by(DateTime_rd)

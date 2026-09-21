@@ -23,13 +23,17 @@
 #' data2$fDOM_QSU[1:4] <- NA
 #' get_diff(data1, data2)
 
-get_diff <- function(olddata, newdata, id=c("DateTime_rd", "DupNum"), ignore=NA){
+get_diff <- function(olddata, newdata, id=c("DateTime_rd", "DupNum"), ignore="Index"){
   #don't support adding/removing columns right now
   x <- colnames(olddata)
   y <- colnames(newdata)
 
   if(length(union(setdiff(x, y), setdiff(y, x))) > 0){
     stop("Column names differ between old and new data, diff can't be determined.")
+  }
+
+  if(nrow(olddata) > nrow(newdata)){
+    stop("cannot track removing rows from data")
   }
 
   #join together so we can match datetimes and make any added data NA in old data
@@ -47,11 +51,19 @@ get_diff <- function(olddata, newdata, id=c("DateTime_rd", "DupNum"), ignore=NA)
 
   #if all columns are added with same number of rows, rename operation to data_merge
   if(.is_data_merge(diff)){
-    #skip flags
-    flags <- grep("_flag$", names(diff))
+    #skip null
+    skip <- !sapply(diff, is.null)
 
-    diff[-flags] <- lapply(diff[-flags], function(x){x$op_type <- "data_merge"
+    diff[skip] <- lapply(diff[skip], function(x){x$op_type <- "data_merge"
     return(x)})}
+
+  if(.is_data_fill(diff)){
+    #skip null
+    skip <- !sapply(diff, is.null)
+
+    diff[skip] <- lapply(diff[skip], function(x){x$op_type <- "data_merge"
+    return(x)})}
+
 
   #make class "diff"
   class(diff) <- "diff"
@@ -80,6 +92,8 @@ get_diff <- function(olddata, newdata, id=c("DateTime_rd", "DupNum"), ignore=NA)
   merge <- data_merge %>%
     dplyr::select(dplyr::all_of(c(id, "source", param))) %>%
     tidyr::pivot_wider(names_from = "source", values_from=dplyr::all_of(param))
+
+#  if(param == "fDOM_QSU_flag"){browser()}
 
  #if flag column, set old from NULL to NA
   if(grepl("_flag$",param)){
@@ -140,15 +154,15 @@ apply_diff <- function(data, diff, id=c("DateTime_rd", "DupNum"), invert = FALSE
     #loop through list
     for(x in diff){
       #skip data merge if requested
-      if(!.is_data_merge(x) | (.is_data_merge(x) & !skip_merge)){
-        data <- apply_diff(data, x, id, invert)
+      if(!skip_merge || !.is_data_fill(x) & !.is_data_merge(x)){
+        data <- apply_diff(data, x, id, invert, skip_merge)
       }}
 
     return(data)
   }
 
   #if data merge, do all together
-  if(.is_data_merge(diff) & !skip_merge){
+  if(!skip_merge && .is_data_fill(diff) | .is_data_merge(diff)){
     if(!invert){
       add_data <- lapply(1:length(diff), function(x){
         new <- data.frame(val=diff[[x]]$new)
@@ -170,7 +184,7 @@ apply_diff <- function(data, diff, id=c("DateTime_rd", "DupNum"), invert = FALSE
     }
 
     return(data)
-  }else if(!.is_data_merge(diff)){
+  }else if(!.is_data_fill(diff) & !.is_data_merge(diff)){
     for(x in names(diff)){
       data <- .col_apply(x, data, diff, id, invert)
     }
@@ -240,6 +254,32 @@ apply_diff <- function(data, diff, id=c("DateTime_rd", "DupNum"), invert = FALSE
   return(merge)
 }
 
+
+#' Determine if a diff is a data fill
+#'
+#' Checks if the metadata rows were filled leaving the parameters blank indicating we filled
+#' a gap for later interpolation
+#'
+#' @param diff a `diff` object generated using `get_diff`.
+#'
+#' @returns TRUE or FALSE
+#' @noRd
+.is_data_fill <- function(diff){
+  #ignore flags for determining merge
+  pars <- paste(c("Cond", "fDOM", "ODO", "Sal", "TDS", "Turbidity","TSS","pH","Temp", "Depth", "Battery"), collapse="|")
+  par_names <- grep(pars, names(diff))
+  par_diff <- diff[par_names]
+  has_diff_par <- all(sapply(par_diff, is.null))
+
+  #see if change to each col
+  meta_diff <- diff[-par_names]
+  has_diff_meta <- all(sapply(meta_diff, is.data.frame))
+
+  #should have meta diff but no par diffs
+  merge <- has_diff_meta & has_diff_par
+
+  return(merge)
+}
 #' Get raw data from sonde project
 #'
 #' Includes any raw data merges and returns the raw data without any changes. Useful for viewing data before changes were made.

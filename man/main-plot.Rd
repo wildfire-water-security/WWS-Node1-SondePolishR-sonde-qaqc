@@ -17,7 +17,8 @@ main_plot_server(
   sel_mode = FALSE,
   plot_exist = reactiveVal(),
   startmin = reactiveVal(),
-  startmax = reactiveVal()
+  startmax = reactiveVal(),
+  webgl_supported
 )
 }
 \arguments{
@@ -36,6 +37,8 @@ main_plot_server(
 \item{sel_mode}{Logical, should selection mode be turned on as default?}
 
 \item{plot_exist}{A `reactiveVal` indicating if the plot exists or not to prevent warnings about plot obj not being registered.}
+
+\item{webgl_supported}{A `reactiveVal` indicating if webgl is support in the current browser.}
 }
 \value{
 a plot of the data.

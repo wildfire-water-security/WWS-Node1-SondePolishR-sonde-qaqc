@@ -7,7 +7,7 @@
 \usage{
 export_UI(id)
 
-export_server(id, sondeproj, data_ver, y_var, current_mod)
+export_server(id, sondeproj, data_ver, y_var, current_mod, webgl_supported)
 }
 \arguments{
 \item{id}{An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.}
@@ -19,6 +19,8 @@ export_server(id, sondeproj, data_ver, y_var, current_mod)
 \item{y_var}{Y-variable to plot on the y-axis.}
 
 \item{current_mod}{The name of the current module being viewed.}
+
+\item{webgl_supported}{A `reactiveVal` indicating if webgl is support in the current browser.}
 }
 \description{
 Save to file the corrected data and metadata including summaries of the data.

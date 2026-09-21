@@ -141,6 +141,7 @@
 #' @importFrom timeplyr time_diff
 #' @importFrom tools file_ext
 #' @importFrom utf8 as_utf8
+#' @importFrom utils packageVersion
 #' @importFrom utils read.csv
 #' @importFrom utils write.csv
 #' @importFrom zoo na.approx

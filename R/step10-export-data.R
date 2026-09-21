@@ -72,9 +72,10 @@ export_UI <- function(id){
 #' @param data_ver A `reactiveVal` holding a number used to track when new data is added to trigger resets.
 #' @param y_var Y-variable to plot on the y-axis.
 #' @param current_mod The name of the current module being viewed.
+#' @param webgl_supported A `reactiveVal` indicating if webgl is support in the current browser.
 #' @export
 #' @rdname export-data
-export_server <- function(id, sondeproj, data_ver, y_var, current_mod){
+export_server <- function(id, sondeproj, data_ver, y_var, current_mod,webgl_supported){
   moduleServer(id, function(input, output, session){
 
   #initialize, only change if value changes to avoid clearing unecessarily
@@ -202,7 +203,7 @@ export_server <- function(id, sondeproj, data_ver, y_var, current_mod){
 
         # convert to plotly
         p <- plot_obj()
-        if(isTRUE(input$webgl_supported)){
+        if(isTRUE(webgl_supported())){
           p <- toWebGL(p)
         }
         p

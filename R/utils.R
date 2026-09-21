@@ -366,3 +366,20 @@ data_check <- function(data, y_var){
   data <- data %>% filter(!is.na(.data[[y_var]]))
   if(nrow(data) == 0){return(FALSE)}else{return(TRUE)}
 }
+
+#' Remove interpolated datetimes
+#'
+#' Currently the default is to fill in missing datetimes when loading data so we only do it once.
+#' However, for testing it's nice to not have those rows. This will remove and return the data without those rows.
+#'
+#' @param data data from sondeproj
+#'
+#' @returns data with rows removed that are NA across all parameters
+#' @noRd
+#'
+rm_filled_dt <- function(data){
+  parms <- get_parms(data)
+  data_filter <- data %>%   filter(if_all(all_of(parms), ~ !is.na(.)))
+
+  return(data_filter)
+}

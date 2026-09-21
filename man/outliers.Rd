@@ -7,7 +7,15 @@
 \usage{
 outlier_UI(id)
 
-outlier_server(id, sondeproj, data_ver, y_var, view_state, username)
+outlier_server(
+  id,
+  sondeproj,
+  data_ver,
+  y_var,
+  view_state,
+  username,
+  webgl_supported
+)
 }
 \arguments{
 \item{id}{An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.}
@@ -26,6 +34,8 @@ outlier_server(id, sondeproj, data_ver, y_var, view_state, username)
 - period_n: The period number to view.}
 
 \item{username}{A `reactiveVal` holding the name of the analyst for the changelog}
+
+\item{webgl_supported}{A `reactiveVal` indicating if webgl is support in the current browser.}
 }
 \description{
 Looks for "weird" data where there are large spikes within a short period that are likely unrealistic and caused by

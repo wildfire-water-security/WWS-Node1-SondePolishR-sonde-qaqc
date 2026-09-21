@@ -28,7 +28,7 @@ interp_UI <- function(id){
           ),
           accordion_panel(
             "Save Edits",
-            apply_edit_UI(ns("apply_limits"), edit_type = "interpolate", note="Highlighted points will be interpolated"),
+            apply_edit_UI(ns("apply_limits"), edit_type = "interpolate", note="Highlighted points will be interpolated for the plotted parameter."),
           ),
           accordion_panel(
             "Date Ranges",
@@ -68,9 +68,11 @@ interp_UI <- function(id){
 #'  - period_n: The period number to view.
 #' @param current_mod The name of the current module being viewed.
 #' @param username A `reactiveVal` holding the name of the analyst for the changelog
+#' @param webgl_supported A `reactiveVal` indicating if webgl is support in the current browser.
+
 #' @export
 #' @rdname interp
-interp_server <- function(id, sondeproj, data_ver, y_var,view_state, username, current_mod){
+interp_server <- function(id, sondeproj, data_ver, y_var,view_state, username, current_mod,webgl_supported){
   moduleServer(id, function(input, output, session){
   #keep track of second y_variable
     y2_var <- reactiveVal()
@@ -165,7 +167,7 @@ interp_server <- function(id, sondeproj, data_ver, y_var,view_state, username, c
 
 
     main_plot_server("interp_plot", data_ver,sondeproj, plot_obj, plot_data, y_var, plot_exist=plot_exist,
-                     startmin = minv, startmax=maxv)
+                     startmin = minv, startmax=maxv, webgl_supported=webgl_supported)
 
     # observeEvent(current_mod(), {
     #   req(current_mod() == "step-7")

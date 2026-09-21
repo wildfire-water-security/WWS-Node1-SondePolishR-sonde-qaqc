@@ -215,7 +215,7 @@ check_data_server <- function(id, sondeproj, data_ver, y_var, username){
         names(opts) <- c(unique(dat$color_labs),"Use Mean","Remove Both")
        }
 
-      radioButtons(session$ns("keep_opt"),"Select Which Duplicate Set to Keep",choices = opts)
+      radioButtons(session$ns("keep_opt"),"Select Which Duplicate Set to Keep. Affects all parameters.",choices = opts)
     })
 
   #apply duplicate edits
