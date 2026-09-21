@@ -8,7 +8,15 @@ effects can be corrected for.
 ``` r
 fdom_UI(id)
 
-fdom_server(id, sondeproj, data_ver, y_var, view_state, username)
+fdom_server(
+  id,
+  sondeproj,
+  data_ver,
+  y_var,
+  view_state,
+  username,
+  webgl_supported
+)
 ```
 
 ## Arguments
@@ -42,3 +50,8 @@ fdom_server(id, sondeproj, data_ver, y_var, view_state, username)
 - username:
 
   A \`reactiveVal\` holding the name of the analyst for the changelog
+
+- webgl_supported:
+
+  A \`reactiveVal\` indicating if webgl is support in the current
+  browser.

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SondePolishR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9010</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9011</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -45,29 +45,45 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9011" id="sondepolishr-009011">SondePolishR 0.0.9011<a class="anchor" aria-label="anchor" href="#sondepolishr-009011"></a></h2>
+<p>(2026-09-20)</p>
+<div class="section level3">
+<h3 id="bug-fixes-0-0-9011">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-0-9011"></a></h3>
+<ul><li>Fixed bug in filling in the time column for missing data rows when loading data, wasn’t using the timezone of the dataset.</li>
+<li>Fixed some version control issues associated with filling in gaps in the data record when loading the data.</li>
+<li>Fixed a bug with the webgl detection, preventing webgl from being used which slowed down the plotting with larger datasets (<a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/113" class="external-link">#113</a>).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="updates-0-0-9011">Updates<a class="anchor" aria-label="anchor" href="#updates-0-0-9011"></a></h3>
+<ul><li><p>Updated the <code>sondeproj</code> structure to the store the package version in the metadata to handle any future structural updates to the structure. (<a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/115" class="external-link">#115</a>)</p></li>
+<li><p>Updated documentation to detail new OOW removal editing procedure. (<a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/114" class="external-link">#114</a>)</p></li>
+<li><p>Added some additional helper text within app to clarify when all parameters were affected by edits versus a single parameter. (<a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/107" class="external-link">#107</a>)</p></li>
+</ul></div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.9010" id="sondepolishr-009010">SondePolishR 0.0.9010<a class="anchor" aria-label="anchor" href="#sondepolishr-009010"></a></h2>
 <p>(2026-09-12)</p>
 <div class="section level3">
 <h3 id="bug-fixes-0-0-9010">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-0-9010"></a></h3>
-<ul><li>(<a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/103" class="external-link">#103</a>) Fixed the username still being hard-coded to the users computer username when loading data for the first time. The app now requires you manually enter a value before loading data.</li>
-<li>(<a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/100" class="external-link">#100</a>) Fixed a bug when loading data with an older version of dplyr causing by not importing a function into the package.</li>
-<li>(<a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/76" class="external-link">#76</a>) Figured out why the NLDAS precipitation wasn’t working on other computers. Was due to a permissions that I had forgotten needed to be changed. Updated documentation to reflect this.</li>
-<li>(<a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/98" class="external-link">#98</a>) Added protections to restoring versions as clicking the button while on the last row would cause a fatal crash</li>
-<li>(<a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/101" class="external-link">#101</a>) Discovered that WebGL didn’t appear to work when running the app from Firefox. Updated the code to detect if it can be used or not to display the plots regardless. Also added documentation recommending running from Chrome.</li>
-<li>(<a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/99" class="external-link">#99</a>) Fixed the file encoding so that raw data files will read in correct on a Mac.</li>
+<ul><li>Fixed the username still being hard-coded to the users computer username when loading data for the first time. The app now requires you manually enter a value before loading data. (<a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/103" class="external-link">#103</a>)</li>
+<li>Fixed a bug when loading data with an older version of dplyr causing by not importing a function into the package. (<a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/100" class="external-link">#100</a>)</li>
+<li>Figured out why the NLDAS precipitation wasn’t working on other computers. Was due to a permissions that I had forgotten needed to be changed. Updated documentation to reflect this. (<a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/76" class="external-link">#76</a>)</li>
+<li>Added protections to restoring versions as clicking the button while on the last row would cause a fatal crash. (<a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/98" class="external-link">#98</a>)</li>
+<li>Discovered that WebGL didn’t appear to work when running the app from Firefox. Updated the code to detect if it can be used or not to display the plots regardless. Also added documentation recommending running from Chrome. (<a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/101" class="external-link">#101</a>)</li>
+<li>Fixed the file encoding so that raw data files will read in correct on a Mac. (<a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/99" class="external-link">#99</a>)</li>
 </ul></div>
 <div class="section level3">
 <h3 id="updates-0-0-9010">Updates<a class="anchor" aria-label="anchor" href="#updates-0-0-9010"></a></h3>
-<ul><li>(<a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/110" class="external-link">#110</a>) A popup alert will now show when precipitation data has been successfully loaded to improve clarity of if data has been uploaded.</li>
-<li>(<a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/106" class="external-link">#106</a>) The filepaths for exporting data in the <strong>Download Data</strong> module will now remain even with changes to the <code>sondeproj</code>. Additionally, the save directory will attempt to be maintained, this is particularly useful for exporting data as now the filename will change, but if you are happy with the default you don’t have to reselect the save location.</li>
-<li>(<a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/109" class="external-link">#109</a>) Reworked the way that changes were saved when the period view is on.
+<ul><li>A popup alert will now show when precipitation data has been successfully loaded to improve clarity of if data has been uploaded. (<a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/110" class="external-link">#110</a>)</li>
+<li>The filepaths for exporting data in the <strong>Download Data</strong> module will now remain even with changes to the <code>sondeproj</code>. Additionally, the save directory will attempt to be maintained, this is particularly useful for exporting data as now the filename will change, but if you are happy with the default you don’t have to reselect the save location. (<a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/106" class="external-link">#106</a>)</li>
+<li>Reworked the way that changes were saved when the period view is on. (<a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/109" class="external-link">#109</a>)
 <ul><li>If you’re in period view you will be prompted to either return to the full view or only commit the changes within the plot.</li>
 <li>If you choose to return to the full view you will have to re-click the save edits button.</li>
 </ul></li>
-<li>(<a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/104" class="external-link">#104</a>) Updated all the <code>numericInput</code> buttons to use the <code>blur</code> option which means that they will wait till you click off the button before updating the app. This makes plotting less laggy if you’re clicking through numbers via the arrows.</li>
-<li>(<a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/105" class="external-link">#105</a>) Updated several UI boxes to fit better in screens that are less wide.</li>
-<li>(<a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/108" class="external-link">#108</a>) Changed the wording of the selection tools in <strong>Remove Outliers</strong> tab to be more clear that it only applies to the manual selection.</li>
-<li>(<a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/111" class="external-link">#111</a>) Reworked the way that out of water periods are handled. This allows the user to exclude periods that are supposed be out of water but don’t appear problematic or add removal/return time after looking at the data to prevent removing large sections of data.
+<li>Updated all the <code>numericInput</code> buttons to use the <code>blur</code> option which means that they will wait till you click off the button before updating the app. This makes plotting less laggy if you’re clicking through numbers via the arrows. (<a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/104" class="external-link">#104</a>)</li>
+<li>Updated several UI boxes to fit better in screens that are less wide. (<a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/105" class="external-link">#105</a>)</li>
+<li>Changed the wording of the selection tools in <strong>Remove Outliers</strong> tab to be more clear that it only applies to the manual selection. (<a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/108" class="external-link">#108</a>)</li>
+<li>Reworked the way that out of water periods are handled. This allows the user to exclude periods that are supposed be out of water but don’t appear problematic or add removal/return time after looking at the data to prevent removing large sections of data. (<a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/111" class="external-link">#111</a>)
 <ul><li>Now the calibration check and field form tables within the <strong>Visualize</strong> tab are editable.</li>
 <li>You can also now export these tables in the <strong>Download Data</strong> tab.</li>
 <li>The default plot also will show the out of water periods by default.</li>

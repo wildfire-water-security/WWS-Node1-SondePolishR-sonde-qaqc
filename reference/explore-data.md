@@ -10,7 +10,15 @@ dataset versions via row selection in a table via the `log`.
 ``` r
 explore_data_UI(id)
 
-explore_data_server(id, sondeproj, data_ver, y_var, view_state, username)
+explore_data_server(
+  id,
+  sondeproj,
+  data_ver,
+  y_var,
+  view_state,
+  username,
+  webgl_supported
+)
 ```
 
 ## Arguments
@@ -50,6 +58,10 @@ explore_data_server(id, sondeproj, data_ver, y_var, view_state, username)
 - username:
 
   A `reactiveVal` holding the name of the analyst for the changelog
+
+- webgl_supported:
+
+  A `reactiveVal` indicating if webgl is support in the current browser.
 
 ## Value
 

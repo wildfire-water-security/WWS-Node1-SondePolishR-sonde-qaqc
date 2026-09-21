@@ -17,7 +17,8 @@ main_plot_server(
   sel_mode = FALSE,
   plot_exist = reactiveVal(),
   startmin = reactiveVal(),
-  startmax = reactiveVal()
+  startmax = reactiveVal(),
+  webgl_supported
 )
 ```
 
@@ -56,6 +57,11 @@ main_plot_server(
 
   A \`reactiveVal\` indicating if the plot exists or not to prevent
   warnings about plot obj not being registered.
+
+- webgl_supported:
+
+  A \`reactiveVal\` indicating if webgl is support in the current
+  browser.
 
 ## Value
 

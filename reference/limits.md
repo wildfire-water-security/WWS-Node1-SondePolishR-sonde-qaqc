@@ -9,7 +9,15 @@ module visualizes those limits and flags data outside specified limits.
 ``` r
 limits_UI(id)
 
-limits_server(id, sondeproj, data_ver, y_var, view_state, username)
+limits_server(
+  id,
+  sondeproj,
+  data_ver,
+  y_var,
+  view_state,
+  username,
+  webgl_supported
+)
 ```
 
 ## Arguments
@@ -43,3 +51,8 @@ limits_server(id, sondeproj, data_ver, y_var, view_state, username)
 - username:
 
   A \`reactiveVal\` holding the name of the analyst for the changelog
+
+- webgl_supported:
+
+  A \`reactiveVal\` indicating if webgl is support in the current
+  browser.

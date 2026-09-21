@@ -10,7 +10,15 @@ data.
 ``` r
 correction_UI(id)
 
-correction_server(id, sondeproj, data_ver, y_var, view_state, username)
+correction_server(
+  id,
+  sondeproj,
+  data_ver,
+  y_var,
+  view_state,
+  username,
+  webgl_supported
+)
 ```
 
 ## Arguments
@@ -50,6 +58,10 @@ correction_server(id, sondeproj, data_ver, y_var, view_state, username)
 - username:
 
   A `reactiveVal` holding the name of the analyst for the changelog
+
+- webgl_supported:
+
+  A `reactiveVal` indicating if webgl is support in the current browser.
 
 ## Value
 

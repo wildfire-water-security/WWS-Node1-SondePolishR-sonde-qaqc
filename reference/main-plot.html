@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SondePolishR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9010</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9011</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,7 +63,8 @@
 <span>  sel_mode <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  plot_exist <span class="op">=</span> <span class="fu">reactiveVal</span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  startmin <span class="op">=</span> <span class="fu">reactiveVal</span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  startmax <span class="op">=</span> <span class="fu">reactiveVal</span><span class="op">(</span><span class="op">)</span></span>
+<span>  startmax <span class="op">=</span> <span class="fu">reactiveVal</span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  <span class="va">webgl_supported</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -101,6 +102,10 @@
 
 <dt id="arg-plot-exist">plot_exist<a class="anchor" aria-label="anchor" href="#arg-plot-exist"></a></dt>
 <dd><p>A `reactiveVal` indicating if the plot exists or not to prevent warnings about plot obj not being registered.</p></dd>
+
+
+<dt id="arg-webgl-supported">webgl_supported<a class="anchor" aria-label="anchor" href="#arg-webgl-supported"></a></dt>
+<dd><p>A `reactiveVal` indicating if webgl is support in the current browser.</p></dd>
 
 </dl></div>
     <div class="section level2">

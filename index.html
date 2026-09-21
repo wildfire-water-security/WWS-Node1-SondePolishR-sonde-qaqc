@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="index.html">SondePolishR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9010</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9011</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -102,6 +102,20 @@
 <h3 id="browser-requirements">Browser Requirements<a class="anchor" aria-label="anchor" href="#browser-requirements"></a>
 </h3>
 <p>You have several options for running the app, it can be run natively in R or it can run in your browser. If it runs in your browser we recommend using Chrome as it can support the <code>WebGL</code> plotting which makes plotting faster and smoother.</p>
+</div>
+<div class="section level3">
+<h3 id="data-requirements">Data Requirements<a class="anchor" aria-label="anchor" href="#data-requirements"></a>
+</h3>
+<ul>
+<li>
+<p>The app currently only supports EXO type sonde data. However, if you have a different sonde you’d like supported let us <a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues" class="external-link">know</a>!</p>
+<ul>
+<li>Similarly, the app currently supports the major EXO probe types (depth, temperature, dissolved oxygen, pH, specific conductance, fDOM, turbidity). If there are additional probes you’d like included let us know.</li>
+</ul>
+</li>
+<li><p>Due to the way that certain calculations are made, all the data within the project should be at a consistent interval (e.g., 15 minutes, 1 hour).</p></li>
+<li><p>Working with more than ~1 year of data in the app is currently a little slow. We’re aware of the <a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/113" class="external-link">issue</a> and are working to optimize the code to remove this limitation. In the meantime it is recommended to create multiple projects if your data stream exceeds the ~1 year.</p></li>
+</ul>
 </div>
 </div>
 <div class="section level2">

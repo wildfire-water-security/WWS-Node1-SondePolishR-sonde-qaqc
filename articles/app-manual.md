@@ -273,6 +273,17 @@ where the sonde was out of the water and remove those points. Note that
 this function uses a 15-minute buffer on either side of the period to
 account for wiper test, inaccurate time reporting, and equilibration.
 
+**You may edit field notes if needed.** By default if the field form is
+missing the removal time or return time, it will remove the entire day
+to prevent including out of water data. You may wish to adjust this
+before removing the out of water periods. To do this navigate to the
+field form table, and add edits to the table.
+
+- Manually add in a removal or return time based on the data.
+
+- If a period doesn’t appear to need removal, you can replace **Remove
+  OOW Period?** with false and it will not be removed.
+
 ------------------------------------------------------------------------
 
 ### 3 Data Checks

@@ -8,7 +8,7 @@ data.
 ``` r
 export_UI(id)
 
-export_server(id, sondeproj, data_ver, y_var, current_mod)
+export_server(id, sondeproj, data_ver, y_var, current_mod, webgl_supported)
 ```
 
 ## Arguments
@@ -34,3 +34,8 @@ export_server(id, sondeproj, data_ver, y_var, current_mod)
 - current_mod:
 
   The name of the current module being viewed.
+
+- webgl_supported:
+
+  A \`reactiveVal\` indicating if webgl is support in the current
+  browser.

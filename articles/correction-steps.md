@@ -194,6 +194,17 @@ performing corrections.
       Options** and **Show out-of-water periods**. This will display the
       periods as red boxes on the plot.
 
+    - **Edit field notes if needed.** By default if the field form is
+      missing the removal time or return time, it will remove the entire
+      day to prevent including out of water data. You may wish to adjust
+      this before removing the out of water periods. To do this navigate
+      to the field form table, and add edits to the table.
+
+      - Manually add in a removal or return time based on the data.
+
+      - If a period doesn’t appear to need removal, you can replace
+        **Remove OOW Period?** with false and it will not be removed.
+
     - To remove data from the highlighted periods, click the **Flag OOW
       Periods** button. This will remove measurements across all
       parameters during those periods.
@@ -201,9 +212,7 @@ performing corrections.
       > **Note:** The measurement taken right before and after the sonde
       > was removed from the water is also removed to prevent issues
       > with time difference between the recorded time and the sonde
-      > time and short equilibrium periods. *If no times are specified
-      > in the field form, the OOW period will default to the entire day
-      > of the field visit.*
+      > time and short equilibrium periods.
 
 3.  **Check for data duplicates.** While not the most common, duplicates
     in the data record can occur. This is typically due to:

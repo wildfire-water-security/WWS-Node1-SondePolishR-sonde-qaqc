@@ -15,7 +15,8 @@ interp_server(
   y_var,
   view_state,
   username,
-  current_mod
+  current_mod,
+  webgl_supported
 )
 ```
 
@@ -54,3 +55,8 @@ interp_server(
 - current_mod:
 
   The name of the current module being viewed.
+
+- webgl_supported:
+
+  A \`reactiveVal\` indicating if webgl is support in the current
+  browser.

@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SondePolishR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9010</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9011</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -298,6 +298,20 @@ periods when the sonde was out of the water by going to <strong>Plotting
 Options</strong> and <strong>Show out-of-water periods</strong>. This
 will display the periods as red boxes on the plot.</p></li>
 <li>
+<p><strong>Edit field notes if needed.</strong> By default if the
+field form is missing the removal time or return time, it will remove
+the entire day to prevent including out of water data. You may wish to
+adjust this before removing the out of water periods. To do this
+navigate to the field form table, and add edits to the table.</p>
+<ul>
+<li><p>Manually add in a removal or return time based on the
+data.</p></li>
+<li><p>If a period doesn’t appear to need removal, you can replace
+<strong>Remove OOW Period?</strong> with false and it will not be
+removed.</p></li>
+</ul>
+</li>
+<li>
 <p>To remove data from the highlighted periods, click the
 <strong>Flag OOW Periods</strong> button. This will remove measurements
 across all parameters during those periods.</p>
@@ -305,9 +319,7 @@ across all parameters during those periods.</p>
 <p><strong>Note:</strong> The measurement taken right before and after
 the sonde was removed from the water is also removed to prevent issues
 with time difference between the recorded time and the sonde time and
-short equilibrium periods. <em>If no times are specified in the field
-form, the OOW period will default to the entire day of the field
-visit.</em></p>
+short equilibrium periods.</p>
 </blockquote>
 </li>
 </ul>

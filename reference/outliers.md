@@ -9,7 +9,15 @@ or a bubble near the sensor.
 ``` r
 outlier_UI(id)
 
-outlier_server(id, sondeproj, data_ver, y_var, view_state, username)
+outlier_server(
+  id,
+  sondeproj,
+  data_ver,
+  y_var,
+  view_state,
+  username,
+  webgl_supported
+)
 ```
 
 ## Arguments
@@ -43,3 +51,8 @@ outlier_server(id, sondeproj, data_ver, y_var, view_state, username)
 - username:
 
   A \`reactiveVal\` holding the name of the analyst for the changelog
+
+- webgl_supported:
+
+  A \`reactiveVal\` indicating if webgl is support in the current
+  browser.
