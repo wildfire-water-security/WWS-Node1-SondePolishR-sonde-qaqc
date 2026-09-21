@@ -10,6 +10,7 @@
 #' @param y_var A `reactiveVal` holding the Y-variable to plot on the y-axis.
 #' @param sel_mode Logical, should selection mode be turned on as default?
 #' @param plot_exist A `reactiveVal` indicating if the plot exists or not to prevent warnings about plot obj not being registered.
+#' @param webgl_supported A `reactiveVal` indicating if webgl is support in the current browser.
 #'
 #' @returns a plot of the data.
 #' @rdname main-plot
@@ -38,7 +39,7 @@ main_plot_UI <- function(id){
 #' @rdname main-plot
 #' @export
 main_plot_server <- function(id, data_ver, sondeproj, plot_obj, plot_data, y_var, sel_mode=FALSE, plot_exist=reactiveVal(),
-                             startmin=reactiveVal(), startmax=reactiveVal()){
+                             startmin=reactiveVal(), startmax=reactiveVal(), webgl_supported){
   moduleServer(id, function(input, output, session){
 
   #store zoom vals
@@ -193,7 +194,7 @@ main_plot_server <- function(id, data_ver, sondeproj, plot_obj, plot_data, y_var
 
       plot_exist(TRUE)
 
-      if(isTRUE(input$webgl_supported)){
+      if(isTRUE(webgl_supported())){
         p <- toWebGL(p)
       }
       p

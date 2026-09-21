@@ -65,9 +65,11 @@ fdom_UI <- function(id){
 #'  - period_length: Length of period view
 #'  - period_n: The period number to view.
 #' @param username A `reactiveVal` holding the name of the analyst for the changelog
+#' @param webgl_supported A `reactiveVal` indicating if webgl is support in the current browser.
+
 #' @export
 #' @rdname fdom
-fdom_server <- function(id, sondeproj, data_ver, y_var, view_state, username){
+fdom_server <- function(id, sondeproj, data_ver, y_var, view_state, username,webgl_supported){
   moduleServer(id, function(input, output, session){
     plot_exist <- reactiveVal() #keeps warning about missing plot
 
@@ -171,7 +173,8 @@ fdom_server <- function(id, sondeproj, data_ver, y_var, view_state, username){
     main_plot_server("fdom_plot",data_ver, sondeproj, plot_obj, plot_data, reactiveVal("fDOM_QSU"),
                      plot_exist=plot_exist,
                      startmin=reactive(floor(min(corr_data()$fDOM_QSU, na.rm=TRUE))),
-                     startmax=reactive(ceiling(max(corr_data()$fDOM_QSU, na.rm=TRUE)*1.05)))
+                     startmax=reactive(ceiling(max(corr_data()$fDOM_QSU, na.rm=TRUE)*1.05)),
+                     webgl_supported=webgl_supported)
 
     observeEvent(input$modules, {
       req(input$modules == "step-9")

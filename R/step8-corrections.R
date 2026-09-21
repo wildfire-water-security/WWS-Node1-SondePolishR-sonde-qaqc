@@ -60,13 +60,15 @@ correction_UI <- function(id){
 #'  - period_length: Length of period view
 #'  - period_n: The period number to view.
 #' @param username A `reactiveVal` holding the name of the analyst for the changelog
+#' @param webgl_supported A `reactiveVal` indicating if webgl is support in the current browser.
+
 #' @md
 #' @keywords internal
 #' @export
 #' @rdname correction
 #' @returns Invisible NULL
 #'
-correction_server <- function(id, sondeproj, data_ver, y_var,view_state, username){
+correction_server <- function(id, sondeproj, data_ver, y_var,view_state, username,webgl_supported){
   moduleServer(id, function(input, output, session){
 
   index <- reactiveVal() #stores index of selected points
@@ -168,14 +170,7 @@ correction_server <- function(id, sondeproj, data_ver, y_var,view_state, usernam
 
   #create plot
     sel_mode <- reactive({ifelse(input$edit_type != "drift", TRUE, FALSE)})
-    # main_plot_server("shift_plot", data_ver,sondeproj, drift_out$plot, plot_data, y_var, sel_mode(), plot_exist)
-    main_plot_server("shift_plot", data_ver,sondeproj, currplot, plot_data, y_var, sel_mode(), plot_exist)
-    # observeEvent(input$modules, {
-    #   req(input$modules == "step-8")
-    #
-    #   plotlyProxy("shift_plot", session) %>%
-    #     plotlyProxyInvoke("resize")
-    # })
+    main_plot_server("shift_plot", data_ver,sondeproj, currplot, plot_data, y_var, sel_mode(), plot_exist, webgl_supported=webgl_supported)
 
   #flagging module
     apply_edit_server("apply_limits", sondeproj, curredit, username, view_state)

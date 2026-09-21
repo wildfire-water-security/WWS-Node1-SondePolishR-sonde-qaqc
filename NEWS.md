@@ -6,6 +6,7 @@
 
 -   Fixed bug in filling in the time column for missing data rows when loading data, wasn't using the timezone of the dataset.
 -   Fixed some version control issues associated with filling in gaps in the data record when loading the data.
+-   Fixed a bug with the webgl detection, preventing webgl from being used which slowed down the plotting with larger datasets (#113).
 
 ## Updates
 

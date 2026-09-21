@@ -14,7 +14,8 @@ interp_server(
   y_var,
   view_state,
   username,
-  current_mod
+  current_mod,
+  webgl_supported
 )
 }
 \arguments{
@@ -36,6 +37,8 @@ interp_server(
 \item{username}{A `reactiveVal` holding the name of the analyst for the changelog}
 
 \item{current_mod}{The name of the current module being viewed.}
+
+\item{webgl_supported}{A `reactiveVal` indicating if webgl is support in the current browser.}
 }
 \description{
 Attempts to fill gaps less than the max length using the specified interpolation method.

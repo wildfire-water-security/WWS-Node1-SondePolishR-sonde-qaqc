@@ -22,17 +22,23 @@ ui <-  page_fillable(
 
 
   #code to check if webgl works
+  # code to check if WebGL works
   tags$script(HTML("
-  $(document).on('shiny:connected', function() {
-    var canvas = document.createElement('canvas');
-    var gl = canvas.getContext('webgl') ||
-             canvas.getContext('experimental-webgl');
+  function webgl_support() {
+    try {
+      var canvas = document.createElement('canvas');
+      return !!(
+        window.WebGLRenderingContext &&
+        (canvas.getContext('webgl') ||
+         canvas.getContext('experimental-webgl'))
+      );
+    } catch (e) {
+      return false;
+    }
+  }
 
-    Shiny.setInputValue(
-      'webgl_supported',
-      gl !== null,
-      {priority: 'event'}
-    );
+  $(document).on('shiny:connected', function() {
+    Shiny.setInputValue('webgl_supported', webgl_support());
   });
 ")),
 
@@ -101,6 +107,7 @@ server <- function(input, output, session) {
     y_var <- reactiveVal(NULL) #the y-variable being looked at
     current_mod <- reactiveVal() # the module being viewed
     username <- reactiveVal("") #name to use for changelog, uses username by default
+    webgl_supported <- reactive(input$webgl_supported) #keep track of if we can use webgl
 
     #holds the viewing state to sync across the modules
     view_state <- reactiveVal(list(abs_dates =NULL,
@@ -118,28 +125,28 @@ server <- function(input, output, session) {
    SondePolishR::load_data_server("data1", sondeproj, data_ver, view_state,username)
 
   #step 2: plot data
-   SondePolishR::explore_data_server("data2", sondeproj, data_ver, y_var, view_state,username)
+   SondePolishR::explore_data_server("data2", sondeproj, data_ver, y_var, view_state,username,webgl_supported)
 
   #step 3: check data
    SondePolishR::check_data_server("data3", sondeproj, data_ver, y_var,username)
 
    #step 5: physical limits
-   SondePolishR::limits_server("data5", sondeproj, data_ver, y_var, view_state,username)
+   SondePolishR::limits_server("data5", sondeproj, data_ver, y_var, view_state,username,webgl_supported)
 
   #step 6: outlier corrections
-   SondePolishR::outlier_server("data6", sondeproj, data_ver, y_var, view_state,username)
+   SondePolishR::outlier_server("data6", sondeproj, data_ver, y_var, view_state,username,webgl_supported)
 
   #step 8: additive shift
-   SondePolishR::correction_server("data8", sondeproj, data_ver, y_var, view_state,username)
+   SondePolishR::correction_server("data8", sondeproj, data_ver, y_var, view_state,username,webgl_supported)
 
   #step 7: data interpolation
-   SondePolishR::interp_server("data7", sondeproj, data_ver, y_var, view_state, username, current_mod)
+   SondePolishR::interp_server("data7", sondeproj, data_ver, y_var, view_state, username, current_mod,webgl_supported)
 
   #step 9: fdom corrections
-   SondePolishR::fdom_server("data9", sondeproj, data_ver, y_var, view_state,username)
+   SondePolishR::fdom_server("data9", sondeproj, data_ver, y_var, view_state,username,webgl_supported)
 
   #step 10: export data
-   SondePolishR::export_server("data10", sondeproj, data_ver, y_var,current_mod)
+   SondePolishR::export_server("data10", sondeproj, data_ver, y_var,current_mod,webgl_supported)
 
 
 }

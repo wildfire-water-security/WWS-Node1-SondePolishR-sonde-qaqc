@@ -66,9 +66,11 @@ limits_UI <- function(id){
 #'  - period_length: Length of period view
 #'  - period_n: The period number to view.
 #' @param username A `reactiveVal` holding the name of the analyst for the changelog
+#' @param webgl_supported A `reactiveVal` indicating if webgl is support in the current browser.
+
 #' @export
 #' @rdname limits
-limits_server <- function(id, sondeproj, data_ver, y_var,view_state, username){
+limits_server <- function(id, sondeproj, data_ver, y_var,view_state, username,webgl_supported){
   moduleServer(id, function(input, output, session){
     #keep track of second y_variable
     y2_var <- reactiveVal()
@@ -155,7 +157,7 @@ limits_server <- function(id, sondeproj, data_ver, y_var,view_state, username){
 
     #save to export
     main_plot_server("limit_plot", data_ver, sondeproj, plot_obj, plot_data, y_var, plot_exist=plot_exist,
-                     startmin=reactive(input$min), startmax=reactive(input$max))
+                     startmin=reactive(input$min), startmax=reactive(input$max), webgl_supported=webgl_supported)
 
     #redraw when back on module to prevent weird drawing issues
     observeEvent(input$modules, {

@@ -7,7 +7,15 @@
 \usage{
 fdom_UI(id)
 
-fdom_server(id, sondeproj, data_ver, y_var, view_state, username)
+fdom_server(
+  id,
+  sondeproj,
+  data_ver,
+  y_var,
+  view_state,
+  username,
+  webgl_supported
+)
 }
 \arguments{
 \item{id}{An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.}
@@ -26,6 +34,8 @@ fdom_server(id, sondeproj, data_ver, y_var, view_state, username)
 - period_n: The period number to view.}
 
 \item{username}{A `reactiveVal` holding the name of the analyst for the changelog}
+
+\item{webgl_supported}{A `reactiveVal` indicating if webgl is support in the current browser.}
 }
 \description{
 The fDOM signal can be affected but sediment and temperature, but these effects can be corrected for.

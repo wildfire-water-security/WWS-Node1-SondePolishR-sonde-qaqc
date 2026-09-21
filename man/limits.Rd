@@ -7,7 +7,15 @@
 \usage{
 limits_UI(id)
 
-limits_server(id, sondeproj, data_ver, y_var, view_state, username)
+limits_server(
+  id,
+  sondeproj,
+  data_ver,
+  y_var,
+  view_state,
+  username,
+  webgl_supported
+)
 }
 \arguments{
 \item{id}{An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.}
@@ -26,6 +34,8 @@ limits_server(id, sondeproj, data_ver, y_var, view_state, username)
 - period_n: The period number to view.}
 
 \item{username}{A `reactiveVal` holding the name of the analyst for the changelog}
+
+\item{webgl_supported}{A `reactiveVal` indicating if webgl is support in the current browser.}
 }
 \description{
 There are certain thresholds for some of the sonde parameters that aren't physical possible (i.e, water temperature above 100 deg C).

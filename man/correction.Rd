@@ -7,7 +7,15 @@
 \usage{
 correction_UI(id)
 
-correction_server(id, sondeproj, data_ver, y_var, view_state, username)
+correction_server(
+  id,
+  sondeproj,
+  data_ver,
+  y_var,
+  view_state,
+  username,
+  webgl_supported
+)
 }
 \arguments{
 \item{id}{An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.}
@@ -28,6 +36,8 @@ correction_server(id, sondeproj, data_ver, y_var, view_state, username)
 }}
 
 \item{username}{A \code{reactiveVal} holding the name of the analyst for the changelog}
+
+\item{webgl_supported}{A \code{reactiveVal} indicating if webgl is support in the current browser.}
 }
 \value{
 Invisible NULL

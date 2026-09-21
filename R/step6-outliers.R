@@ -89,9 +89,10 @@ outlier_UI <- function(id){
 #'  - period_length: Length of period view
 #'  - period_n: The period number to view.
 #' @param username A `reactiveVal` holding the name of the analyst for the changelog
+#' @param webgl_supported A `reactiveVal` indicating if webgl is support in the current browser.
 #' @export
 #' @rdname outliers
-outlier_server <- function(id, sondeproj, data_ver, y_var,view_state, username){
+outlier_server <- function(id, sondeproj, data_ver, y_var,view_state, username,webgl_supported){
   moduleServer(id, function(input, output, session){
 
   #keep track of second y_variable
@@ -267,7 +268,7 @@ outlier_server <- function(id, sondeproj, data_ver, y_var,view_state, username){
     })
 
     #save to export
-    main_plot_server("outlier_plot",data_ver, sondeproj, plot_obj, plot_data, y_var, sel_mode=TRUE,plot_exist)
+    main_plot_server("outlier_plot",data_ver, sondeproj, plot_obj, plot_data, y_var, sel_mode=TRUE,plot_exist, webgl_supported=webgl_supported)
 
   # create edit object for removing data
   edit_rm <- reactive({
