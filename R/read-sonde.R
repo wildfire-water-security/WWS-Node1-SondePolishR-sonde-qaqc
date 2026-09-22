@@ -56,15 +56,16 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NUL
     # since it likes that better. I also added a line to close the connection when done.
 
     #guess encoding
-    if(is.null(encoding)){encoding <- readr::guess_encoding(file)$encoding[1]}
+      if(is.null(encoding)){encoding <- get_encoding(file)}
 
     #read file
-    filecon <- file(file, encoding = encoding)
-    text <- readLines(filecon, skipNul = TRUE)
+    # filecon <- file(file, encoding = encoding)
+    # text <- readLines(filecon, skipNul = TRUE)
+    text <- readLines(file, skipNul = TRUE, encoding = encoding)
     text <- utf8::as_utf8(text)
 
-    # If that works, close the connection
-    close(filecon)
+    # # If that works, close the connection
+    # close(filecon)
 
     #remove empty lines
     text <- text[text != ""]
