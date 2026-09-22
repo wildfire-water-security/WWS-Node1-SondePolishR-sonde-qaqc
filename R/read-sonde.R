@@ -74,11 +74,11 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NUL
     usb_export <- any(grepl("Model, Submodel", text[2:6], fixed=TRUE))
 
     if(is.null(skip)){
-      skip <- ifelse(usb_export, grep("^Date", text) + 3, grep("^Date", text))
+      skip <- ifelse(usb_export, grep("Date", text, ignore.case=TRUE) + 3, grep("Date", text, ignore.case=TRUE))
     }
 
   #get column names
-    cols <- text[grep("^Date", text)]
+    cols <- text[grep("Date", text, ignore.case=TRUE)]
     cols <- iconv(cols, "UTF-8", "ASCII//TRANSLIT") #remove non ASCII characters
     cols <- gsub(" |[(]|[)]|[/]|[:]|[-]|[.]", "_", cols)
     cols <- unlist(strsplit(cols, ","))
@@ -95,24 +95,36 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NUL
 
   # Had to fix the temp column name here since the new encodings remove the '?'
   #rename col names
-    lookup <- c(Date = "Date_MM_DD_YYYY",
-                Time_HH_mm_ss = "Time",
-                Temp_C="?C",
-                Temp_C = "^0C",
-                Temp_C = "Temp_?C",
-                Temp_C = "Temp_^0C", # Added this option to deal with encoding issues
-                Turbidity_FNU = "FNU",
-                ODO_sat = "DO_%", ODO_mg_L = "DO_mg_L",
-                SpCond_uS_cm = "SPC_uS_cm",
-                Turbidity_FNU = "NTU", Battery_V ="Batt_V",
-                Depth_m = "DEP_m")
-    data <- data %>% dplyr::rename(any_of(lookup))
+    lookup <- c(
+      Date = "Date_MM_DD_YYYY|Date_m_d_yyyy|Date",
+      Time_HH_mm_ss = "Time|Time_h_mm_ss_tt|Time_HH_mm_ss",
+      Temp_C = "\\?C|\\^0C|Temp_\\?C|Temp_\\^0C|Temp_C",
+      Turbidity_FNU = "FNU|NTU|Turbidity_FNU",
+      ODO_sat = "DO_%|ODO_sat|ODO_%_SAT",
+      ODO_mg_L = "DO_mg_L|ODO_mg_L",
+      SpCond_uS_cm = "SPC_uS_cm|SpCond_uS_cm",
+      Battery_V = "Batt_V|Battery_V",
+      Depth_m = "DEP_m|Depth_m",
+      fDOM_QSU = "fDOM_QSU",
+      pH = "pH$",
+      Site_Name = "SITE_NAME"
+    )
+
+    for(new_name in names(lookup)) {
+      matches <- grepl(
+        lookup[[new_name]],
+        names(data),
+        ignore.case = TRUE)
+      names(data)[matches] <- new_name
+    }
 
   #get serial numbers (needs to be here because it calls to colname of original data)
     if(!usb_export){
       serial <- unlist(strsplit(text[skip-1], ","))
-      serials <- data.frame(measure = colnames(data)[-(1:4)], serial = serial[-(1:4)]) %>%
+      skip_col <- min(grep("[0-9]{2}[A-Z][0-9]{6}", serial))
+      serials <- data.frame(measure = colnames(data)[-(1:skip_col)], serial = serial[-(1:skip_col)]) %>%
         filter(.data$measure %in% c("SpCond_uS_cm","fDOM_QSU","ODO_mg_L", "Turbidity_FNU","pH","Temp_C","Battery_V"))%>%
+        distinct() %>%
         tidyr::pivot_wider(names_from="measure", values_from="serial")
     }else{
       serial <- text[4:(skip-4)] %>% as.data.frame() %>% tidyr::separate_wider_delim(cols='.', delim=",", names_sep="") %>% as.data.frame()
@@ -140,7 +152,7 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NUL
                                    "Turbidity_FNU","pH","Temp_C","Battery_V", "Depth_m")))
 
     #remove any duplicated header rows
-    extra_header <- c(grep("^Date", as.character(data$Date)), which(as.character(data$Date) == ""))
+    extra_header <- c(grep("Date", as.character(data$Date), ignore.case = TRUE), which(as.character(data$Date) == ""))
     if(length(extra_header) >0){
       for(x in extra_header){
         extra <- which(is.na(data$Date[1:x]))
@@ -170,16 +182,16 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NUL
     data$Time_HH_mm_ss <- sub("^([0-9]):", "0\\1:", data$Time_HH_mm_ss)
 
     #add obs index for tracking easier
-    data <- data %>% dplyr::mutate(Index = 1:dplyr::n(), .before="Date") %>% dplyr::select(!any_of("Time_Fract_Sec"))
+    data <- data %>% dplyr::select(!any_of("Time_Fract_Sec"))
 
     #add site column
     data <- data %>% dplyr::mutate(Site_Name = site, .after="Time_HH_mm_ss")
 
   #make date time into a column set to correct tz
-  data <- data %>% dplyr::mutate(DateTime = anytime::anytime(paste(.data$Date, .data$Time_HH_mm_ss),
+  data <- data %>% dplyr::mutate(Date = as.Date(anytime::anydate(data$Date, asUTC = TRUE, tz="UTC"))) %>%
+    dplyr::mutate(DateTime = anytime::anytime(paste(.data$Date, gsub("AM|PM", "", .data$Time_HH_mm_ss, ignore.case = TRUE)),
                                                   asUTC=TRUE, tz="UTC"),
-                      .after="Time_HH_mm_ss") %>%
-    dplyr::mutate(Date = as.Date(anytime::anydate(data$Date, asUTC = TRUE, tz="UTC")))
+                      .after="Time_HH_mm_ss")
 
   #set time zone
     data$DateTime <- lubridate::force_tz(data$DateTime, tzone=tz)
@@ -205,7 +217,7 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NUL
   #organize order and make a regular df to be consistent
     data <- data %>% dplyr::select(dplyr::any_of(c("Index", "FileName", "Date", "Time_HH_mm_ss", "DateTime", "DateTime_rd", "Site_Name", "Battery_V",
                                    "Depth_m", "fDOM_QSU", "ODO_mg_L", "pH", "SpCond_uS_cm", "Temp_C", "Turbidity_FNU"))) %>% as.data.frame() %>%
-      arrange(.data$DateTime)
+      arrange(.data$DateTime) %>% dplyr::mutate(Index = 1:dplyr::n(), .before="FileName")
 
  #add flags
   if(flags){
