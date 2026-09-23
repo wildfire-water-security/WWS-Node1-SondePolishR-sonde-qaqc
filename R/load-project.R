@@ -28,7 +28,6 @@ load_project <- function(csv_path=NULL, csv_files=NULL, prj_path=NULL,
                          update_pb = NULL){
   #set csv merge as NULL if not loaded to prevent errors in creating obj
     csv_merge <- NULL
-
   #if csv projected, load files
   if(!is.null(csv_path)){
     data_merge <- list()
@@ -99,7 +98,7 @@ load_project <- function(csv_path=NULL, csv_files=NULL, prj_path=NULL,
           dplyr::mutate(Probe_Switch = .data$serial != dplyr::lag(.data$serial, default = dplyr::first(.data$serial))) %>%
           select(-"serial")
 
-        calcheck <- calcheck %>% left_join(switch_df, by = join_by("Date", "Parameter"))
+        calcheck <- calcheck %>% select(-any_of(c("Probe_Switch", "Est_Time"))) %>% left_join(switch_df, by = join_by("Date", "Parameter"))
 
       }
 

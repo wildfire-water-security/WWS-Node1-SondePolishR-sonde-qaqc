@@ -87,7 +87,7 @@
 
     #and ff and cal file
     write.csv(proj$fieldform, "inst/extdata/example-fieldform.csv", row.names = FALSE)
-    write.csv(proj$calcheck, "inst/extdata/example-calcheck.csv", row.names = FALSE)
+    write.csv(proj$calcheck %>% select(-c(Probe_Switch, Est_Time)), "inst/extdata/example-calcheck.csv", row.names = FALSE)
     write.csv(proj$precip, "inst/extdata/example-precip.csv", row.names = FALSE)
 
 #write objects for example data
@@ -100,7 +100,7 @@
   example_fieldform <- proj$fieldform
   use_data(example_fieldform, overwrite= TRUE)
 
-  example_calcheck <- proj$calcheck
+  example_calcheck <- proj$calcheck %>% select(-c(Probe_Switch, Est_Time))
   use_data(example_calcheck, overwrite= TRUE)
 
   example_precip <- proj$precip
