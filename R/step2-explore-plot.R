@@ -9,7 +9,7 @@ explore_data_UI <- function(id){
     sidebarLayout(
       sidebarPanel(
         accordion(
-          open = c("Select Parameters", "Remove Out of Water Periods", "Undo Data Edits", "Table Options"),
+          open = c("Select Parameters", "Remove Out of Water Periods", "Review Data Edits", "Table Options"),
 
           accordion_panel(
             "Select Parameters",
@@ -28,14 +28,8 @@ explore_data_UI <- function(id){
               ))
           ),
           accordion_panel(
-            "Undo Data Edits",
-            div(
-              style = "display: flex; align-items: center; gap: 35px;",
-              actionButton(ns("undo_changes"), "Restore Selected Version"),
-              span(
-                "Select the row in the change log to ", strong("return"), " to.",
-                style = "font-size: 0.85em;max-width: 200px;"
-              ))
+            "Review Data Edits",
+            data_version_UI(ns("data_version"))
           ),
           accordion_panel(
             "Table Options",
@@ -102,6 +96,7 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var, view_state, user
     y2_var <- reactiveVal()
     undo_ver <- reactiveVal() #keep track of data version
     plot_exist <- reactiveVal() #keeps warning about missing plot
+    sel_row <- reactiveVal() #keep track of row selected in table
 
   #create log table
   tab <- reactive({
@@ -172,6 +167,16 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var, view_state, user
       )
     })
 
+
+  observeEvent(input$log_table_rows_selected,{
+    if(input$table_opt != "Change Log"){
+      sel_row(NULL)
+    }else{
+      sel_row(input$log_table_rows_selected)
+    }
+  })
+
+  version_data <- data_version_server("data_version",sondeproj = sondeproj,y_var = y_var, row=sel_row)
 
   #keep track of edits
     observeEvent(input$log_table_cell_edit,{
@@ -262,80 +267,12 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var, view_state, user
   #keep track of dates
     plot_dates <- weekly_range_server("date_nav", sondeproj, data_ver, view_state)
 
-  #keep track of selected data version
-    undo_ver <- reactive({
-      req(sondeproj())
-
-      row <- input$log_table_rows_selected
-      if (is.null(row) | input$table_opt != "Change Log") {
-        return(NULL)
-      }
-
-      if (row == nrow(sondeproj()$changelog)) {
-        return(sondeproj()$data)
-      }
-
-      diff_list <- sondeproj()$changelog$diff_name[(row + 1):nrow(sondeproj()$changelog)]
-      diff_list <- diff_list[grepl("^dd", diff_list)]
-      diffs <- sondeproj()$diffs[names(sondeproj()$diffs) %in% diff_list]
-
-      apply_diff(sondeproj()$data, diffs,
-                 id = c("DateTime_rd", "DupNum"),
-                 invert = TRUE)
-    })
-
-  #keep track of if we are okay restoring changes
-   observeEvent(input$undo_changes,{
-     #only undo changes if something is selected
-     row <- input$log_table_rows_selected
-     if(!is.null(row) && row < nrow(sondeproj()$changelog)){
-       ##confirmation here
-       shinyalert::shinyalert(title = "Confirm restoring past data version",
-                              text = "If you continue you will lose any edits made after the selected version.",
-                              type = "warning",
-                              showCancelButton = TRUE,
-                              inputId = "conf")
-     }else{
-       shinyalert::shinyalert(title = "Select a Version to Restore",
-                              text = "Select the row in the table to restore to\n(should not be the last row).",
-                              type = "info")}
-       })
-
-  #reset version selected when project
-  #restore a version
-   observeEvent(input$conf,{
-     if(input$conf == TRUE){
-       proj <- sondeproj()
-
-       #update dataset
-       proj$data <- undo_ver()
-
-       #remove extra diffs
-       #get the diffs to apply
-       row <- input$log_table_rows_selected
-       #only get diffs if not current data
-       if(row < nrow(sondeproj()$changelog)){
-         diff_list <- sondeproj()$changelog$diff_name[1:row]
-         diff_list <- diff_list[grepl("^dd", diff_list)]
-         diffs <- sondeproj()$diffs[names(sondeproj()$diffs) %in% diff_list]}
-       proj$diffs <- diffs
-
-       #roll back changelog
-       proj$changelog <- proj$changelog[1:row,]
-
-       #set as sondeproj
-       sondeproj(proj)
-     }
-   })
-
     #filter data
     plot_data <- reactive({
-      req(sondeproj(), plot_dates())
-      if(is.null(undo_ver())){
-        data <- sondeproj()$data
-      }else{
-        data <- undo_ver()
-      }
+      req(version_data$current(), plot_dates())
+
+      data <- version_data$current()
+
       data %>% dplyr::filter(.data$Date >= plot_dates()[1], .data$Date <= plot_dates()[2])
     })
 
@@ -345,7 +282,23 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var, view_state, user
       if(y2_var() == "none"){y2 <- NULL}else{y2 <- y2_var()}
 
       #use function to plot sonde data
-        plot_sonde(data = plot_data(), y_var=y_var(), y2_var= y2, proj = sondeproj(), opts=plot_opts())
+        p <- plot_sonde(data = plot_data(), y_var=y_var(), y2_var= y2, proj = sondeproj(), opts=plot_opts())
+
+      #add previous data if triggered
+        if(!is.null(version_data$changed())){
+          prev_data <- version_data$changed() %>% filter(!is.na(.data$old))
+
+          op_col <- c("data_added" = "#2ECC71", "data_removed" = "darkred", "data_changed" = "orange", "data_merge" = "darkgreen")
+
+          #change color based on change
+          for(f in unique(prev_data$op_type)){
+              df <- prev_data %>% filter(.data$op_type == f)
+              p <- p %>% add_trace(data = df, x = ~DateTime_rd, y = ~old,
+                                   name = f,type="scatter", mode="markers", yaxis="y2",
+                                   marker = list(color = op_col[[f]]), inherit = FALSE)}
+        }
+
+        p
 
       })
 

@@ -1,3 +1,19 @@
+# SondePolishR 0.0.9012
+
+(2026-09-24)
+
+## Bug Fixes
+
+-   Updated the `load_project` function to not error when the calibration check file has the probe switched and estimated time columns.
+
+-   Updated the `read_sonde` function again to not use `readr` to guess the encoding as it doesn't always result in a guess.
+
+## Updates
+
+-   Updated `read_sonde` function to allow for a modified EXO format.
+
+-   In the **Visualize** tab, added an option to allow someone to review edits to the data by visualizing the changes made to the data based on the version of the data selected in the change log table.
+
 # SondePolishR 0.0.9011
 
 (2026-09-20)

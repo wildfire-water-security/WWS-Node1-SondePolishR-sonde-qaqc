@@ -147,7 +147,7 @@ Within the app you can view how the data looks in different versions in the Visu
 
 ### Data Export
 
-![Screenshot of the Download Data tab showing a summarized plot of the fDOM data and optiosn for downloading data, metadata, and saving the Sonde project.](man/figures/export-data.png)
+![Screenshot of the Download Data tab showing a summarized plot of the fDOM data and options for downloading data, metadata, and saving the Sonde project.](man/figures/export-data.png)
 
 The sonde project itself is stored as an `.RDS` object which is easily useable by R. However it is not the most user friendly.
 
