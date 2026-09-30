@@ -52,48 +52,39 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NUL
     #guess encoding
       if(is.null(encoding)){encoding <- get_encoding(file)}
 
-    #read file
-    # filecon <- file(file, encoding = encoding)
-    # text <- readLines(filecon, skipNul = TRUE)
-    text <- readLines(file, skipNul = TRUE, encoding = encoding)
-    text <- iconv(text, from = encoding, to = "UTF-8")
+    #read file to get skip
+      con <- file(file, open = "r", encoding = encoding)
+      text <- readLines(con, n = 20)
+      close(con)
 
-    #remove empty lines
-    text <- text[text != ""]
+    if(is.null(skip)){skip <- min(grep("[0-9]{1,2}/[0-9]{2}/[0-9]{4}[,]",text))-1}
 
-    #determine if usb export
-    usb_export <- any(grepl("Model, Submodel", text[2:6], fixed=TRUE))
-
-    if(is.null(skip)){
-      skip <- ifelse(usb_export, grep("Date", text, ignore.case=TRUE) + 3, grep("Date", text, ignore.case=TRUE))
-    }
-
+  #read in file
+    data <- readr::read_csv(file, locale = readr::locale(encoding = encoding), show_col_types = FALSE, col_names = FALSE,
+                                             skip = skip)
   #get column names
-    cols <- text[grep("Date", text, ignore.case=TRUE)]
-    cols <- iconv(cols, "UTF-8", "ASCII//TRANSLIT") #remove non ASCII characters
-    cols <- gsub(" |[(]|[)]|[/]|[:]|[-]|[.]", "_", cols)
-    cols <- unlist(strsplit(cols, ","))
-    cols <- gsub("_$", "", gsub("_{1,}", "_", cols))
-    cols <- gsub("[?]S", "uS", cols)
+    usb_export <- ifelse(any(grepl("Model", text[1:skip], ignore.case = TRUE)), TRUE, FALSE)
+    col_skip <- ifelse(usb_export, skip-4, skip-1)
+    cols <- readr::read_csv(file, locale = readr::locale(encoding = encoding), show_col_types = FALSE, col_names = FALSE,
+                            skip = col_skip, n_max=1)
 
-  #split into nice data
-    data <- text[-c(1:skip)] %>% as.data.frame() %>% tidyr::separate_wider_delim(cols='.', delim=",", names_sep="")
-    data[data == ""] <- NA     #replace "" with NA
+    cols <- as.character(cols)
+    cols <- gsub(" |[(]|[)]|[/]|[:]|[-]|[.]", "_", cols) #replace spaces with underscores
+    cols <- gsub("_$", "", gsub("_{1,}", "_", cols)) #remove underscores at the end
     colnames(data) <- cols
 
   #drop any NA col names
     data <- data[,!is.na(colnames(data))]
 
-  # Had to fix the temp column name here since the new encodings remove the '?'
   #rename col names
     lookup <- c(
       Date = "Date_MM_DD_YYYY|Date_m_d_yyyy|Date",
-      Time_HH_mm_ss = "Time|Time_h_mm_ss_tt|Time_HH_mm_ss",
-      Temp_C = "\\?C|\\^0C|Temp_\\?C|Temp_\\^0C|Temp_C",
+      Time_HH_mm_ss = "Time_h_mm_ss_tt|Time_HH_mm_ss|^Time$",
+      Temp_C = "\\?C|\\^0C|Temp_\\?C|Temp_\\^0C|Temp_C|Temp_\u00B0C|\u00B0C",
       Turbidity_FNU = "FNU|NTU|Turbidity_FNU",
-      ODO_sat = "DO_%|ODO_sat|ODO_%_SAT",
+      ODO_sat = "DO_%$|ODO_sat|ODO_%_SAT",
       ODO_mg_L = "DO_mg_L|ODO_mg_L",
-      SpCond_uS_cm = "SPC_uS_cm|SpCond_uS_cm",
+      SpCond_uS_cm = "SPC_uS_cm|SpCond_uS_cm|SpCond_\U03BCS_cm|SpCond_\U00B5S_cm",
       Battery_V = "Batt_V|Battery_V",
       Depth_m = "DEP_m|Depth_m",
       fDOM_QSU = "fDOM_QSU",
@@ -111,19 +102,15 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NUL
 
   #get serial numbers (needs to be here because it calls to colname of original data)
     if(!usb_export){
-      serial <- unlist(strsplit(text[skip-1], ","))
-      skip_col <- min(grep("[0-9]{2}[A-Z][0-9]{6}", serial))
-      serials <- data.frame(measure = colnames(data)[-(1:skip_col)], serial = serial[-(1:skip_col)]) %>%
-        filter(.data$measure %in% c("SpCond_uS_cm","fDOM_QSU","ODO_mg_L", "Turbidity_FNU","pH","Temp_C","Battery_V"))%>%
-        distinct() %>%
-        tidyr::pivot_wider(names_from="measure", values_from="serial")
+      serial <- readr::read_csv(file, locale = readr::locale(encoding = encoding), show_col_types = FALSE, col_names = FALSE,
+                                skip = skip-2, n_max=1)
+      colnames(serial) <- colnames(data)
+      serials <- serial %>% select(any_of(c("SpCond_uS_cm","fDOM_QSU","ODO_mg_L", "Turbidity_FNU","pH","Temp_C","Battery_V")))
     }else{
-      serial <- text[4:(skip-4)] %>% as.data.frame() %>% tidyr::separate_wider_delim(cols='.', delim=",", names_sep="") %>% as.data.frame()
-      colnames(serial) <- unlist(strsplit(text[3], ","))
+      serial <- readr::read_csv(file, locale = readr::locale(encoding = encoding), show_col_types = FALSE, col_names = TRUE,
+                                skip = 2, n_max=skip-7-2) #7 for extra rows, two for top
 
       #remove any empty rows/cols
-      serial[serial == ""] <- NA
-      serial <- serial %>% select(where(~ !all(is.na(.x)))) %>% filter(!if_all(everything(), is.na))
       serial$Model <- gsub("[0-9]P Sonde", "Battery_V", serial$Model)
       add_c <- serial[which(serial$Model == "CT"),]
       add_c$Model <- "Temp_C"
@@ -133,7 +120,7 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NUL
                                                                               "ODO" ~ "ODO_mg_L",
                                                                               "fDOM" ~ "fDOM_QSU",
                                                                               default = .data$Model))
-      serials <- serial %>% dplyr::rename(measure = "Model", serial = " S/N") %>% select("measure", "serial") %>%
+      serials <- serial %>% dplyr::rename(measure = "Model", serial = "S/N") %>% select("measure", "serial") %>%
         mutate(serial = trimws(serial)) %>% tidyr::pivot_wider(names_from="measure", values_from="serial")
     }
 

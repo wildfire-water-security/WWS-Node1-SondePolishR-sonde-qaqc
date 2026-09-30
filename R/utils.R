@@ -22,11 +22,10 @@ get_encoding <- function(file){
   }
 
   #find encoding
-  enc_guess <- readr::guess_encoding(file, n_max=100, threshold = 0.9)
+  enc_guess <- readr::guess_encoding(file, n_max=100, threshold = 0.95)
 
   #if encoding guess is good, use that
   if(nrow(enc_guess) > 0){
-    print(paste0(basename(file), " readr guessed"))
     data <- read.csv(file, fileEncoding = enc_guess$encoding[1], header = FALSE, skip=9)
 
     if(file_check(data)){
@@ -34,16 +33,18 @@ get_encoding <- function(file){
     }
   }
 
-  #otherwise check Windows-1252
+  #check if encoding is specified
+  raw <- readBin(file, what = "raw", n = 2)
+  if(identical(raw, as.raw(c(0xFF, 0xFE)))){
+    return("UTF-16LE")
+  }
+
+  #otherwise check Windows-1252/ISO-8859-1
   data <- read.csv(file, fileEncoding = "ISO-8859-1")
   if(file_check(data)){return("ISO-8859-1")}
 
-  #then check UTF-16LE
-  data <- read.csv(file, fileEncoding = "UTF-16LE BOM")
-  if(file_check(data)){return("UTF-16LE BOM")}
-
   #otherwise print message
-  stop("Could not identify file encoding, please put in Notepad++ and look in bottom right corner to identify encoding")
+  stop("Could not identify file encoding, please put in a text editor to identify encoding")
 
 }
 

@@ -44,7 +44,6 @@ Imports:
     shinyalert,
     bslib,
     htmltools,
-    utf8,
     stringr,
     shinyjs,
     timeplyr,
