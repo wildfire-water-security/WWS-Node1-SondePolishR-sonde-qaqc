@@ -49,12 +49,6 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NUL
   if(is.null(tz)){tz <- Sys.timezone(location = TRUE)}
 
   #read file in
-    # I figured out the issue - Mac's don't understand the file encoding Windows-1252. The better
-    # name for the file encoding is ISO-8859-1 (aka latin1) encoding. readLines doesn't actually re-encode
-    # the input, instead it marks characters strings. It looks like it's the µ (greek little mu) that's
-    # causing the issue. The solution is to specify the encoding in a file connection rather than in readLines
-    # since it likes that better. I also added a line to close the connection when done.
-
     #guess encoding
       if(is.null(encoding)){encoding <- get_encoding(file)}
 
@@ -62,10 +56,7 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NUL
     # filecon <- file(file, encoding = encoding)
     # text <- readLines(filecon, skipNul = TRUE)
     text <- readLines(file, skipNul = TRUE, encoding = encoding)
-    text <- utf8::as_utf8(text)
-
-    # # If that works, close the connection
-    # close(filecon)
+    text <- iconv(text, from = encoding, to = "UTF-8")
 
     #remove empty lines
     text <- text[text != ""]
