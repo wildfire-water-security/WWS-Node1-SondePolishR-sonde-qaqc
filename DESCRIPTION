@@ -55,7 +55,8 @@ Imports:
     grDevices,
     httr2,
     shinybusy,
-    dlm
+    dlm,
+    data.table
 Suggests: 
     knitr,
     rmarkdown,

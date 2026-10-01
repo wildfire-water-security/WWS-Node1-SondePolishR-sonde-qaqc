@@ -45,6 +45,7 @@
 #' data <- read_sonde(file, return = "list")
 read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NULL, tz="Etc/GMT+8"){
   stopifnot(tools::file_ext(file) == "csv", file.exists(file), return %in% c("df", "list"))
+
   #guess timezone
   if(is.null(tz)){tz <- Sys.timezone(location = TRUE)}
 
@@ -53,28 +54,35 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NUL
       if(is.null(encoding)){encoding <- get_encoding(file)}
 
     #read file to get skip
-      con <- file(file, open = "r", encoding = encoding)
-      text <- readLines(con, n = 20)
-      close(con)
+      con <- file(file, encoding = encoding)
+      text <- readLines(con)
 
-    if(is.null(skip)){skip <- min(grep("[0-9]{1,2}/[0-9]{2}/[0-9]{4}[,]",text))-1}
+    if(is.null(skip)){skip <- min(grep("[0-9]{1,2}/[0-9]{1,2}/[0-9]{4}[,]",text[1:20]))-1}
 
   #read in file
-    data <- readr::read_csv(file, locale = readr::locale(encoding = encoding), show_col_types = FALSE, col_names = FALSE,
-                                             skip = skip)
+    data <- data.table::fread(text=readLines(con), encoding = "Latin-1", skip=skip,header=FALSE)
+    # data <- readr::read_csv(file, locale = readr::locale(encoding = encoding), show_col_types = FALSE, col_names = FALSE,
+    #                                          skip = skip)
   #get column names
     usb_export <- ifelse(any(grepl("Model", text[1:skip], ignore.case = TRUE)), TRUE, FALSE)
     col_skip <- ifelse(usb_export, skip-4, skip-1)
-    cols <- readr::read_csv(file, locale = readr::locale(encoding = encoding), show_col_types = FALSE, col_names = FALSE,
-                            skip = col_skip, n_max=1)
+
+    cols <- data.table::fread(text=readLines(con), encoding = "Latin-1", skip=col_skip, nrows=1,header=FALSE)
+    # cols <- readr::read_csv(file, locale = readr::locale(encoding = encoding), show_col_types = FALSE, col_names = FALSE,
+    #                         skip = col_skip, n_max=1)
 
     cols <- as.character(cols)
     cols <- gsub(" |[(]|[)]|[/]|[:]|[-]|[.]", "_", cols) #replace spaces with underscores
     cols <- gsub("_$", "", gsub("_{1,}", "_", cols)) #remove underscores at the end
+    cols <- gsub("\u00C2", "", cols) #remove any weird a characters
+    data <- data[,1:length(cols)] #remove any empty cols at the end
     colnames(data) <- cols
 
   #drop any NA col names
-    data <- data[,!is.na(colnames(data))]
+    rm_na <- is.na(colnames(data))
+    if(sum(rm_na) > 0){
+      data <- data[,!is.na(colnames(data))]
+    }
 
   #rename col names
     lookup <- c(
@@ -102,13 +110,18 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NUL
 
   #get serial numbers (needs to be here because it calls to colname of original data)
     if(!usb_export){
-      serial <- readr::read_csv(file, locale = readr::locale(encoding = encoding), show_col_types = FALSE, col_names = FALSE,
-                                skip = skip-2, n_max=1)
+
+      serial <- data.table::fread(text=readLines(con), encoding = "Latin-1", skip=skip-2, nrows=1,header=FALSE)
+
+      # serial <- readr::read_csv(file, locale = readr::locale(encoding = encoding), show_col_types = FALSE, col_names = FALSE,
+      #                           skip = skip-2, n_max=1)
       colnames(serial) <- colnames(data)
       serials <- serial %>% select(any_of(c("SpCond_uS_cm","fDOM_QSU","ODO_mg_L", "Turbidity_FNU","pH","Temp_C","Battery_V")))
     }else{
-      serial <- readr::read_csv(file, locale = readr::locale(encoding = encoding), show_col_types = FALSE, col_names = TRUE,
-                                skip = 2, n_max=skip-7-2) #7 for extra rows, two for top
+      serial <- data.table::fread(text=readLines(con), encoding = "Latin-1", skip=2, nrows=skip-7-2,header=TRUE)
+
+      # serial <- readr::read_csv(file, locale = readr::locale(encoding = encoding), show_col_types = FALSE, col_names = TRUE,
+      #                           skip = 2, n_max=skip-7-2) #7 for extra rows, two for top
 
       #remove any empty rows/cols
       serial$Model <- gsub("[0-9]P Sonde", "Battery_V", serial$Model)
@@ -123,6 +136,8 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NUL
       serials <- serial %>% dplyr::rename(measure = "Model", serial = "S/N") %>% select("measure", "serial") %>%
         mutate(serial = trimws(serial)) %>% tidyr::pivot_wider(names_from="measure", values_from="serial")
     }
+
+    close(con) # we should be done with the text
 
   #some data cleaning
     #remove the not directly measured analytes (this clutters and you can calculate them after the fact)
@@ -146,14 +161,15 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NUL
       site <- ifelse(usb_export, stringr::str_split_i(text[grep("Site:", text)], ",", 2), stop("site row not determined"))
     }
 
+    #drop all NA columns and columns that don't change
+    data <- data %>% select(where(~ !all(is.na(.))))
 
-    #drop all NA columns
-    data <- data[, !apply(data, 2, function(x) all(is.na(x)))]
-
-    #drop columns that don't change
-    if(nrow(data) > 1){
-      data <- data[, !apply(data, 2, function(x) length(unique(x)) == 1)]
+    #protect against data with 1 row
+    if(nrow(data) >1){
+      data <- data %>%
+        select(where(~ dplyr::n_distinct(.) > 1))
     }
+
 
     #make date and time back to character to match csv
     data$Time_HH_mm_ss <- as.character(data$Time_HH_mm_ss)

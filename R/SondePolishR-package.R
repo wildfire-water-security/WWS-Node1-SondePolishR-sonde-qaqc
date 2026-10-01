@@ -15,6 +15,7 @@
 #' @importFrom bslib layout_columns
 #' @importFrom bslib page_fluid
 #' @importFrom bslib update_switch
+#' @importFrom data.table fread
 #' @importFrom dlm dlmModPoly
 #' @importFrom dlm dlmSmooth
 #' @importFrom dplyr across
