@@ -240,11 +240,11 @@ cleaned data to the raw data.
 ### Data Export
 
 ![Screenshot of the Download Data tab showing a summarized plot of the
-fDOM data and optiosn for downloading data, metadata, and saving the
+fDOM data and options for downloading data, metadata, and saving the
 Sonde project.](reference/figures/export-data.png)
 
 Screenshot of the Download Data tab showing a summarized plot of the
-fDOM data and optiosn for downloading data, metadata, and saving the
+fDOM data and options for downloading data, metadata, and saving the
 Sonde project.
 
 The sonde project itself is stored as an `.RDS` object which is easily

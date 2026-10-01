@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SondePolishR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9011</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9012</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,6 +44,22 @@
       <small>Source: <a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9012" id="sondepolishr-009012">SondePolishR 0.0.9012<a class="anchor" aria-label="anchor" href="#sondepolishr-009012"></a></h2>
+<p>(2026-10-01)</p>
+<div class="section level3">
+<h3 id="bug-fixes-0-0-9012">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-0-9012"></a></h3>
+<ul><li><p>Updated the <code>load_project</code> function to not error when the calibration check file has the probe switched and estimated time columns.</p></li>
+<li><p>Updated the <strong>Load Data</strong> tab to produce an error message if data can’t be loaded to prevent the app from crashing (<a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/117" class="external-link">#117</a>).</p></li>
+<li><p>Updated the <code>read_sonde</code> function to hopefully fix any Mac OS issues with encoding. Also switched to the <code><a href="https://rdrr.io/pkg/data.table/man/fread.html" class="external-link">data.table::fread</a></code> function which is faster (<a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/99" class="external-link">#99</a>).</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="updates-0-0-9012">Updates<a class="anchor" aria-label="anchor" href="#updates-0-0-9012"></a></h3>
+<ul><li><p>Updated <code>read_sonde</code> function to allow for a modified EXO format.</p></li>
+<li><p>In the <strong>Visualize</strong> tab, added an option to allow someone to review edits to the data by visualizing the changes made to the data based on the version of the data selected in the change log table.</p></li>
+<li><p>Updated the documentation in the readme to include directions about the version of R, using R tools, and updating packages to hopefully prevent issues when using the app for the first time.</p></li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.9011" id="sondepolishr-009011">SondePolishR 0.0.9011<a class="anchor" aria-label="anchor" href="#sondepolishr-009011"></a></h2>
 <p>(2026-09-20)</p>

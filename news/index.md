@@ -1,5 +1,36 @@
 # Changelog
 
+## SondePolishR 0.0.9012
+
+(2026-10-01)
+
+### Bug Fixes
+
+- Updated the `load_project` function to not error when the calibration
+  check file has the probe switched and estimated time columns.
+
+- Updated the **Load Data** tab to produce an error message if data
+  can’t be loaded to prevent the app from crashing
+  ([\#117](https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/117)).
+
+- Updated the `read_sonde` function to hopefully fix any Mac OS issues
+  with encoding. Also switched to the
+  [`data.table::fread`](https://rdrr.io/pkg/data.table/man/fread.html)
+  function which is faster
+  ([\#99](https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/99)).
+
+### Updates
+
+- Updated `read_sonde` function to allow for a modified EXO format.
+
+- In the **Visualize** tab, added an option to allow someone to review
+  edits to the data by visualizing the changes made to the data based on
+  the version of the data selected in the change log table.
+
+- Updated the documentation in the readme to include directions about
+  the version of R, using R tools, and updating packages to hopefully
+  prevent issues when using the app for the first time.
+
 ## SondePolishR 0.0.9011
 
 (2026-09-20)

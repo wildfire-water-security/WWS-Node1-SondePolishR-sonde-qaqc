@@ -27,5 +27,5 @@ A character with the file encoding
 ``` r
 file <- file.path(fs::path_package("extdata", package = "SondePolishR"), "example-csv-data1.csv")
 get_encoding(file)
-#> [1] "Windows-1252"
+#> [1] "ISO-8859-1"
 ```
