@@ -242,9 +242,9 @@ changes and go from the cleaned data to the raw data.
 
 <figure>
 <img src="man/figures/export-data.png"
-alt="Screenshot of the Download Data tab showing a summarized plot of the fDOM data and optiosn for downloading data, metadata, and saving the Sonde project." />
+alt="Screenshot of the Download Data tab showing a summarized plot of the fDOM data and options for downloading data, metadata, and saving the Sonde project." />
 <figcaption aria-hidden="true">Screenshot of the Download Data tab
-showing a summarized plot of the fDOM data and optiosn for downloading
+showing a summarized plot of the fDOM data and options for downloading
 data, metadata, and saving the Sonde project.</figcaption>
 </figure>
 

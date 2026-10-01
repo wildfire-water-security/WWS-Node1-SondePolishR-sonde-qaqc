@@ -69,11 +69,14 @@
     data2$Temp_C[52:90] <- mean(c(data2$Temp_C[51],data2$Temp_C[91]))
     data2 <- add_flags(data2, "Temp_C", 52:60, "AD01")
     dd4 <- list(get_diff(proj$data, data2, id=c("DateTime_rd", "DupNum"))) #commit difference
-    names(dd4) <- "dd4"
+    names(dd4) <- "dd5"
     proj <- write_log(proj, "Temp_C", "linear interpolation", n = 39, diff_name = diff_version(proj), return = "sondeproj",
                       user = "Smith") #write log
     proj$diffs <- append(proj$diffs, dd4)
     proj$data <- data2
+
+  #set consistent times for change log to prevent errors everytime this reruns
+    proj$changelog$datetime <- as.POSIXct("2026-09-24 12:00")
 
   #save as an example
     saveRDS(proj, "inst/extdata/example-sonde-project.RDS")
@@ -87,7 +90,7 @@
 
     #and ff and cal file
     write.csv(proj$fieldform, "inst/extdata/example-fieldform.csv", row.names = FALSE)
-    write.csv(proj$calcheck, "inst/extdata/example-calcheck.csv", row.names = FALSE)
+    write.csv(proj$calcheck %>% select(-c(Probe_Switch, Est_Time)), "inst/extdata/example-calcheck.csv", row.names = FALSE)
     write.csv(proj$precip, "inst/extdata/example-precip.csv", row.names = FALSE)
 
 #write objects for example data
@@ -100,7 +103,7 @@
   example_fieldform <- proj$fieldform
   use_data(example_fieldform, overwrite= TRUE)
 
-  example_calcheck <- proj$calcheck
+  example_calcheck <- proj$calcheck %>% select(-c(Probe_Switch, Est_Time))
   use_data(example_calcheck, overwrite= TRUE)
 
   example_precip <- proj$precip

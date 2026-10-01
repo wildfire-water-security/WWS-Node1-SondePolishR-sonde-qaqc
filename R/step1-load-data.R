@@ -210,11 +210,24 @@ load_data_server <- function(id, sondeproj, data_ver, view_state, username){
 
     if(any(c(!is.null(input$pj_file), !is.null(input$csv_files)))){
       withProgress(message = "loading sonde files...", min=0,max=length(csv_path())+1, {
-          obj <- load_project(csv_path(), csv_files=input$csv_files$name, prj_path=prj_path(),
-                   ff_path=ff_path(), cc_path=cc_path(), tz=input$tz, site=input$site,
-                   username=username(),
-                   update_pb = function(amount){incProgress(amount)})
+        obj <-  tryCatch({
+           load_project(csv_path(), csv_files=input$csv_files$name, prj_path=prj_path(),
+                                ff_path=ff_path(), cc_path=cc_path(), tz=input$tz, site=input$site,
+                                username=username(),
+                                update_pb = function(amount){incProgress(amount)})
+          },
+          error = function(e){
+            shinyalert::shinyalert(
+              title = "Project Failed to Load",
+              text = "Please check your file structure and/or submit a GitHub issue.",
+              type = "error"
+            )
+            return(NULL)
+          })
         })
+
+    #if fails to load end reactive
+      if(is.null(obj)){return(NULL)}
 
       if(all(is.na(obj$meta$coords)) | all(obj$meta$coords == "")){
         obj$meta$coords <- c(input$lat, input$long) #also write lat/long if provided

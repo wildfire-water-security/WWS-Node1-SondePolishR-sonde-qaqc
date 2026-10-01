@@ -45,81 +45,85 @@
 #' data <- read_sonde(file, return = "list")
 read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NULL, tz="Etc/GMT+8"){
   stopifnot(tools::file_ext(file) == "csv", file.exists(file), return %in% c("df", "list"))
+
   #guess timezone
   if(is.null(tz)){tz <- Sys.timezone(location = TRUE)}
 
   #read file in
-    # I figured out the issue - Mac's don't understand the file encoding Windows-1252. The better
-    # name for the file encoding is ISO-8859-1 (aka latin1) encoding. readLines doesn't actually re-encode
-    # the input, instead it marks characters strings. It looks like it's the µ (greek little mu) that's
-    # causing the issue. The solution is to specify the encoding in a file connection rather than in readLines
-    # since it likes that better. I also added a line to close the connection when done.
-
     #guess encoding
-    if(is.null(encoding)){encoding <- readr::guess_encoding(file)$encoding[1]}
+      if(is.null(encoding)){encoding <- get_encoding(file)}
 
-    #read file
-    filecon <- file(file, encoding = encoding)
-    text <- readLines(filecon, skipNul = TRUE)
-    text <- utf8::as_utf8(text)
+    #read file to get skip
+      con <- file(file, encoding = encoding)
+      text <- readLines(con)
 
-    # If that works, close the connection
-    close(filecon)
+    if(is.null(skip)){skip <- min(grep("[0-9]{1,2}/[0-9]{1,2}/[0-9]{4}[,]",text[1:20]))-1}
 
-    #remove empty lines
-    text <- text[text != ""]
-
-    #determine if usb export
-    usb_export <- any(grepl("Model, Submodel", text[2:6], fixed=TRUE))
-
-    if(is.null(skip)){
-      skip <- ifelse(usb_export, grep("^Date", text) + 3, grep("^Date", text))
-    }
-
+  #read in file
+    data <- data.table::fread(text=readLines(con), encoding = "Latin-1", skip=skip,header=FALSE)
+    # data <- readr::read_csv(file, locale = readr::locale(encoding = encoding), show_col_types = FALSE, col_names = FALSE,
+    #                                          skip = skip)
   #get column names
-    cols <- text[grep("^Date", text)]
-    cols <- iconv(cols, "UTF-8", "ASCII//TRANSLIT") #remove non ASCII characters
-    cols <- gsub(" |[(]|[)]|[/]|[:]|[-]|[.]", "_", cols)
-    cols <- unlist(strsplit(cols, ","))
-    cols <- gsub("_$", "", gsub("_{1,}", "_", cols))
-    cols <- gsub("[?]S", "uS", cols)
+    usb_export <- ifelse(any(grepl("Model", text[1:skip], ignore.case = TRUE)), TRUE, FALSE)
+    col_skip <- ifelse(usb_export, skip-4, skip-1)
 
-  #split into nice data
-    data <- text[-c(1:skip)] %>% as.data.frame() %>% tidyr::separate_wider_delim(cols='.', delim=",", names_sep="")
-    data[data == ""] <- NA     #replace "" with NA
+    cols <- data.table::fread(text=readLines(con), encoding = "Latin-1", skip=col_skip, nrows=1,header=FALSE)
+    # cols <- readr::read_csv(file, locale = readr::locale(encoding = encoding), show_col_types = FALSE, col_names = FALSE,
+    #                         skip = col_skip, n_max=1)
+
+    cols <- as.character(cols)
+    cols <- gsub(" |[(]|[)]|[/]|[:]|[-]|[.]", "_", cols) #replace spaces with underscores
+    cols <- gsub("_$", "", gsub("_{1,}", "_", cols)) #remove underscores at the end
+    cols <- gsub("\u00C2", "", cols) #remove any weird a characters
+    data <- data[,1:length(cols)] #remove any empty cols at the end
     colnames(data) <- cols
 
   #drop any NA col names
-    data <- data[,!is.na(colnames(data))]
+    rm_na <- is.na(colnames(data))
+    if(sum(rm_na) > 0){
+      data <- data[,!is.na(colnames(data))]
+    }
 
-  # Had to fix the temp column name here since the new encodings remove the '?'
   #rename col names
-    lookup <- c(Date = "Date_MM_DD_YYYY",
-                Time_HH_mm_ss = "Time",
-                Temp_C="?C",
-                Temp_C = "^0C",
-                Temp_C = "Temp_?C",
-                Temp_C = "Temp_^0C", # Added this option to deal with encoding issues
-                Turbidity_FNU = "FNU",
-                ODO_sat = "DO_%", ODO_mg_L = "DO_mg_L",
-                SpCond_uS_cm = "SPC_uS_cm",
-                Turbidity_FNU = "NTU", Battery_V ="Batt_V",
-                Depth_m = "DEP_m")
-    data <- data %>% dplyr::rename(any_of(lookup))
+    lookup <- c(
+      Date = "Date_MM_DD_YYYY|Date_m_d_yyyy|Date",
+      Time_HH_mm_ss = "Time_h_mm_ss_tt|Time_HH_mm_ss|^Time$",
+      Temp_C = "\\?C|\\^0C|Temp_\\?C|Temp_\\^0C|Temp_C|Temp_\u00B0C|\u00B0C",
+      Turbidity_FNU = "FNU|NTU|Turbidity_FNU",
+      ODO_sat = "DO_%$|ODO_sat|ODO_%_SAT",
+      ODO_mg_L = "DO_mg_L|ODO_mg_L",
+      SpCond_uS_cm = "SPC_uS_cm|SpCond_uS_cm|SpCond_\U03BCS_cm|SpCond_\U00B5S_cm",
+      Battery_V = "Batt_V|Battery_V",
+      Depth_m = "DEP_m|Depth_m",
+      fDOM_QSU = "fDOM_QSU",
+      pH = "pH$",
+      Site_Name = "SITE_NAME"
+    )
+
+    for(new_name in names(lookup)) {
+      matches <- grepl(
+        lookup[[new_name]],
+        names(data),
+        ignore.case = TRUE)
+      names(data)[matches] <- new_name
+    }
 
   #get serial numbers (needs to be here because it calls to colname of original data)
     if(!usb_export){
-      serial <- unlist(strsplit(text[skip-1], ","))
-      serials <- data.frame(measure = colnames(data)[-(1:4)], serial = serial[-(1:4)]) %>%
-        filter(.data$measure %in% c("SpCond_uS_cm","fDOM_QSU","ODO_mg_L", "Turbidity_FNU","pH","Temp_C","Battery_V"))%>%
-        tidyr::pivot_wider(names_from="measure", values_from="serial")
+
+      serial <- data.table::fread(text=readLines(con), encoding = "Latin-1", skip=skip-2, nrows=1,header=FALSE)
+
+      # serial <- readr::read_csv(file, locale = readr::locale(encoding = encoding), show_col_types = FALSE, col_names = FALSE,
+      #                           skip = skip-2, n_max=1)
+      colnames(serial) <- colnames(data)
+      serials <- serial %>% select(any_of(c("SpCond_uS_cm","fDOM_QSU","ODO_mg_L", "Turbidity_FNU","pH","Temp_C","Battery_V")))
     }else{
-      serial <- text[4:(skip-4)] %>% as.data.frame() %>% tidyr::separate_wider_delim(cols='.', delim=",", names_sep="") %>% as.data.frame()
-      colnames(serial) <- unlist(strsplit(text[3], ","))
+      serial <- data.table::fread(text=readLines(con), encoding = "Latin-1", skip=2, nrows=skip-7-2,header=TRUE)
+
+      # serial <- readr::read_csv(file, locale = readr::locale(encoding = encoding), show_col_types = FALSE, col_names = TRUE,
+      #                           skip = 2, n_max=skip-7-2) #7 for extra rows, two for top
 
       #remove any empty rows/cols
-      serial[serial == ""] <- NA
-      serial <- serial %>% select(where(~ !all(is.na(.x)))) %>% filter(!if_all(everything(), is.na))
       serial$Model <- gsub("[0-9]P Sonde", "Battery_V", serial$Model)
       add_c <- serial[which(serial$Model == "CT"),]
       add_c$Model <- "Temp_C"
@@ -129,9 +133,11 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NUL
                                                                               "ODO" ~ "ODO_mg_L",
                                                                               "fDOM" ~ "fDOM_QSU",
                                                                               default = .data$Model))
-      serials <- serial %>% dplyr::rename(measure = "Model", serial = " S/N") %>% select("measure", "serial") %>%
+      serials <- serial %>% dplyr::rename(measure = "Model", serial = "S/N") %>% select("measure", "serial") %>%
         mutate(serial = trimws(serial)) %>% tidyr::pivot_wider(names_from="measure", values_from="serial")
     }
+
+    close(con) # we should be done with the text
 
   #some data cleaning
     #remove the not directly measured analytes (this clutters and you can calculate them after the fact)
@@ -139,7 +145,7 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NUL
                                    "Turbidity_FNU","pH","Temp_C","Battery_V", "Depth_m")))
 
     #remove any duplicated header rows
-    extra_header <- c(grep("^Date", as.character(data$Date)), which(as.character(data$Date) == ""))
+    extra_header <- c(grep("Date", as.character(data$Date), ignore.case = TRUE), which(as.character(data$Date) == ""))
     if(length(extra_header) >0){
       for(x in extra_header){
         extra <- which(is.na(data$Date[1:x]))
@@ -155,30 +161,31 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NUL
       site <- ifelse(usb_export, stringr::str_split_i(text[grep("Site:", text)], ",", 2), stop("site row not determined"))
     }
 
+    #drop all NA columns and columns that don't change
+    data <- data %>% select(where(~ !all(is.na(.))))
 
-    #drop all NA columns
-    data <- data[, !apply(data, 2, function(x) all(is.na(x)))]
-
-    #drop columns that don't change
-    if(nrow(data) > 1){
-      data <- data[, !apply(data, 2, function(x) length(unique(x)) == 1)]
+    #protect against data with 1 row
+    if(nrow(data) >1){
+      data <- data %>%
+        select(where(~ dplyr::n_distinct(.) > 1))
     }
+
 
     #make date and time back to character to match csv
     data$Time_HH_mm_ss <- as.character(data$Time_HH_mm_ss)
     data$Time_HH_mm_ss <- sub("^([0-9]):", "0\\1:", data$Time_HH_mm_ss)
 
     #add obs index for tracking easier
-    data <- data %>% dplyr::mutate(Index = 1:dplyr::n(), .before="Date") %>% dplyr::select(!any_of("Time_Fract_Sec"))
+    data <- data %>% dplyr::select(!any_of("Time_Fract_Sec"))
 
     #add site column
     data <- data %>% dplyr::mutate(Site_Name = site, .after="Time_HH_mm_ss")
 
   #make date time into a column set to correct tz
-  data <- data %>% dplyr::mutate(DateTime = anytime::anytime(paste(.data$Date, .data$Time_HH_mm_ss),
+  data <- data %>% dplyr::mutate(Date = as.Date(anytime::anydate(data$Date, asUTC = TRUE, tz="UTC"))) %>%
+    dplyr::mutate(DateTime = anytime::anytime(paste(.data$Date, gsub("AM|PM", "", .data$Time_HH_mm_ss, ignore.case = TRUE)),
                                                   asUTC=TRUE, tz="UTC"),
-                      .after="Time_HH_mm_ss") %>%
-    dplyr::mutate(Date = as.Date(anytime::anydate(data$Date, asUTC = TRUE, tz="UTC")))
+                      .after="Time_HH_mm_ss")
 
   #set time zone
     data$DateTime <- lubridate::force_tz(data$DateTime, tzone=tz)
@@ -204,7 +211,7 @@ read_sonde <- function(file, return="df", encoding = NULL, flags=FALSE, skip=NUL
   #organize order and make a regular df to be consistent
     data <- data %>% dplyr::select(dplyr::any_of(c("Index", "FileName", "Date", "Time_HH_mm_ss", "DateTime", "DateTime_rd", "Site_Name", "Battery_V",
                                    "Depth_m", "fDOM_QSU", "ODO_mg_L", "pH", "SpCond_uS_cm", "Temp_C", "Turbidity_FNU"))) %>% as.data.frame() %>%
-      arrange(.data$DateTime)
+      arrange(.data$DateTime) %>% dplyr::mutate(Index = 1:dplyr::n(), .before="FileName")
 
  #add flags
   if(flags){

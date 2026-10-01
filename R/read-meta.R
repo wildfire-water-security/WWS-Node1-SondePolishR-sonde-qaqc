@@ -101,7 +101,6 @@ read_ff <- function(file, tz){
 
 read_cal <- function(file, tz){
   stopifnot(tools::file_ext(file) == "csv")
-
   #read in csv
   df <- read.csv(file)
 

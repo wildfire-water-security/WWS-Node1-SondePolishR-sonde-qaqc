@@ -1,7 +1,7 @@
 Package: SondePolishR
 Type: Package
 Title: Perform Quality Assurance and Data Corrections on Sonde Data
-Version: 0.0.9011
+Version: 0.0.9012
 Authors@R: c(
     person(
       "Katie", "Wampler",
@@ -44,7 +44,6 @@ Imports:
     shinyalert,
     bslib,
     htmltools,
-    utf8,
     stringr,
     shinyjs,
     timeplyr,
@@ -56,7 +55,8 @@ Imports:
     grDevices,
     httr2,
     shinybusy,
-    dlm
+    dlm,
+    data.table
 Suggests: 
     knitr,
     rmarkdown,
@@ -66,7 +66,7 @@ Suggests:
     withr,
     kableExtra
 Depends: 
-    R (>= 3.5)
+    R (>= 4.5)
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 Language: en-US

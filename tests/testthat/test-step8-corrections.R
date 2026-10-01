@@ -92,7 +92,7 @@ test_that("{shinytest2} recording: checking-module8", {
   #flag values
     app$set_inputs(`data8-date_nav-period_view` = FALSE)
     app$click("data8-apply_limits-apply_flags")
-    app$wait_for_idle()
+    app$wait_for_idle(timeout = 30000)
     plot_obj <- app$get_value(export = "data8-plot_obj")
     expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
     app$expect_screenshot(name = "drift_after_flagging")

@@ -13,6 +13,13 @@ test_that("data is loaded", {
   expect_equal(dim(data), c(2701, 14))
   expect_equal(colnames(data)[3], "Date")
 
+  #test new file format
+  path <- file.path(testthat::test_path(), "testdata/new-format.csv")
+  data <- read_sonde(path)
+
+  expect_equal(dim(data), c(5836, 15)) #one extra because we have depth
+  expect_equal(colnames(data)[3], "Date")
+
   #check tz
   path <- file.path(testthat::test_path(), "testdata/example-csv-data1.csv")
   expect_equal(attr(data$DateTime, "tzone")[1], "Etc/GMT+8")
@@ -34,3 +41,4 @@ test_that("data is loaded", {
   data <- read_sonde(path, flags=TRUE)
   expect_equal(dim(data), c(1916, 20))
 })
+

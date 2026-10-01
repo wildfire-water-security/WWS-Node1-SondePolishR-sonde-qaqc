@@ -11,6 +11,7 @@ Earthdata
 Ecohydrology
 FNU
 Formazin
+GESDISC
 Golay
 Gridded
 HH
@@ -40,6 +41,7 @@ UI
 Unsummarized
 WWS
 Watras
+WebGL
 YSI
 YYYY
 al
@@ -54,6 +56,7 @@ curredit
 currplot
 data's
 dif
+dplyr
 duptype
 environ
 equilibration
@@ -71,6 +74,7 @@ interferences
 interp
 io
 kalman
+laggy
 larc
 merra
 missForest
@@ -89,6 +93,7 @@ plotly's
 precip
 qaqc
 reactiveVal
+reselect
 rollmean
 rollmedian
 savgol
@@ -104,5 +109,6 @@ unflag
 unselected
 untoggle
 useable
+webgl
 xlsx
 µS
