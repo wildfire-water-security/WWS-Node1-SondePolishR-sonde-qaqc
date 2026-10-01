@@ -18,6 +18,7 @@ test_that("{shinytest2} recording: checking-module2-5", {
   app$set_inputs(`data2-date_nav-period_view` = TRUE)
   app$set_inputs(`data2-plot-yaxismax` = 20)
   app$set_inputs(`data2-log_table_rows_selected` = 2, allow_no_input_binding_ = TRUE)
+  app$wait_for_idle(timeout = 20000)
   plot_obj <- app$get_value(export = "data2-plot_obj")
   expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
   app$expect_screenshot(name = "changing_version_view")

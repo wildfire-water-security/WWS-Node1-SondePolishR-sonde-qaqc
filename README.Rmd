@@ -49,6 +49,10 @@ run_app()
 
 You have several options for running the app, it can be run natively in R or it can run in your browser. If it runs in your browser we recommend using Chrome as it can support the `WebGL` plotting which makes plotting faster and smoother.
 
+### Software Requirements
+
+Parts of the app require [R Tools](https://cran.r-project.org/bin/windows/Rtools/rtools45/rtools.html) be installed. This is installed automatically on Mac OS but must be installed separately on Windows. If you encounter issues when running the app, please try to update your R version and packages. If you are still having issues please submit an [issue request](https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues).
+
 ### Data Requirements
 
 -   The app currently only supports EXO type sonde data. However, if you have a different sonde you'd like supported let us [know](https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues)!
