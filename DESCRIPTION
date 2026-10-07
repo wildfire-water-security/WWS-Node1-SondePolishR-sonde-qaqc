@@ -64,7 +64,8 @@ Suggests:
     spelling,
     testthat (>= 3.0.0),
     withr,
-    kableExtra
+    kableExtra,
+    pdftools
 Depends: 
     R (>= 4.5)
 Config/testthat/edition: 3

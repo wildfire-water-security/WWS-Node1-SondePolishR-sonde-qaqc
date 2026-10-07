@@ -1,9 +1,6 @@
 ## testing code out to create a report to summarize data changes
 
 #still to figure out/do
-  #-figure out how to deal with marking questionable -> look for step and show points?
-  #-check fDOM correction plot/correction
-  #rho value in correction still blank
 
 #read in project with changes
 proj <- example_sondeproj
@@ -89,7 +86,7 @@ create_report_header <- function(user, site){
               "output:",
               "  pdf_document:",
               "    latex_engine: xelatex",
-              "---", "")
+              "---", "", "\\newpage")
 
   make_markdown(header)
 
@@ -97,14 +94,19 @@ create_report_header <- function(user, site){
 
 #create plot (ideally before and after zoomed in but let's start with just a plot)
   #dd <- proj$diffs[[3]]
-create_plot <- function(old, new, dd="dd1", plot_path){
+create_plot <- function(old, new, dd, plot_path){
 
   #determine which parameters to plot
     vars <- names(dd)[!sapply(dd, is.null)]
-    vars <- vars[vars %in% get_parms(new)]
+    #if(all("SpCond_uS_cm_flag" == vars)){browser()}
+
+    quest <- all(grepl("flag$", vars)) #determine if it's just questionable flags
+
+  #otherwise determine the variables to plot
+    vars_noflag <- vars[vars %in% get_parms(new)]
 
   #if no vars changed (date times added, return basic plot of all vars)
-  if(length(vars) == 0){
+  if(length(vars_noflag) == 0 & !quest){
     vars <- get_parms(new)
     plot_dat <- new %>% tidyr::pivot_longer(any_of(vars), names_to = "variable", values_to = "value")
     y_var_nice <- get_yvar(vars)
@@ -112,7 +114,7 @@ create_plot <- function(old, new, dd="dd1", plot_path){
 
     p <- ggplot(plot_dat, aes(x = DateTime_rd, y = value)) + geom_line(na.rm = TRUE) +
       labs(x="DateTime", y="Parameter Value") +
-      facet_wrap(~variable, labeller = labeller(variable = y_var_nice), scales="free_y", ncol=2) +
+      ggplot2::facet_wrap(~variable, labeller = labeller(variable = y_var_nice), scales="free_y", ncol=2) +
       scale_x_datetime(date_labels = "%Y-%m-%d\n%H:%M")
     ggsave(plot_path, p, width = 8, height = ceiling(length(vars)/2)*2.5)
     return(invisible())
@@ -123,7 +125,34 @@ create_plot <- function(old, new, dd="dd1", plot_path){
       int <- get_interval(new)
       rng <- get_plot_groups(vars, int, dd)
 
-    #for each var create plot groups
+  #if questionable show those points
+  if(quest){
+      plot_dat <- lapply(1:nrow(rng), function(y){
+      #combine data for plotting
+      new_plot <- new %>% filter(DateTime_rd >= rng[y,1], DateTime_rd <= rng[y,2]) %>% mutate(group = y)
+      return(new_plot)
+    }) %>% bind_rows()
+      quest_points <- dd[[vars]] %>% left_join(plot_dat, by=c("DateTime_rd", "DupNum"))
+
+      plot_vars <- gsub("_flag$", "", vars) #get variable marked as questionable
+      y_var_nice <- get_yvar(plot_vars)
+      p <- ggplot(plot_dat, aes(x = DateTime_rd, y = .data[[plot_vars]])) + geom_line(na.rm = TRUE, alpha=0.7) +
+        labs(x="DateTime", y=y_var_nice) +
+        facet_wrap(~group, scales="free", ncol=2) +
+        scale_x_datetime(date_labels = "%Y-%m-%d\n%H:%M")
+
+      if(mean(rng$length) < 30){
+        p <- p + geom_point(na.rm = TRUE, alpha=0.7)
+      }
+
+      #add questionable points
+      p <- p + geom_point(na.rm = TRUE, data=quest_points, color="orange")
+
+      ggsave(plot_path, p, width = 8, height = ceiling(nrow(rng)/2)*4)
+      return(invisible())
+    }
+
+  #for each var create plot groups
     plot_dat <- lapply(1:nrow(rng), function(y){
         #combine data for plotting
         old_plot <- old %>% filter(DateTime_rd >= rng[y,1], DateTime_rd <= rng[y,2]) %>% mutate(type = "before")
@@ -132,9 +161,9 @@ create_plot <- function(old, new, dd="dd1", plot_path){
                                                              group = y)
         return(plot_dat)
       }) %>% bind_rows()
-    if(length(vars) == 1){
-      y_var_nice <- get_yvar(vars)
-      p <- ggplot(plot_dat, aes(x = DateTime_rd, y = .data[[vars]],color = type)) + geom_line(na.rm = TRUE, alpha=0.7) +
+    if(length(vars_noflag) == 1){
+      y_var_nice <- get_yvar(vars_noflag)
+      p <- ggplot(plot_dat, aes(x = DateTime_rd, y = .data[[vars_noflag]],color = type)) + geom_line(na.rm = TRUE, alpha=0.7) +
         labs(x="DateTime", y=y_var_nice, color = "Edit") +
         facet_wrap(~group, scales="free", ncol=2) +
         scale_x_datetime(date_labels = "%Y-%m-%d\n%H:%M") + scale_color_manual(values=c("#ef8a62", "#67a9cf"))
@@ -146,11 +175,11 @@ create_plot <- function(old, new, dd="dd1", plot_path){
       ggsave(plot_path, p, width = 8, height = ceiling(nrow(rng)/2)*4)
 
     }else{
-      y_var_nice <- get_yvar(vars)
-      names(y_var_nice) <- vars
+      y_var_nice <- get_yvar(vars_noflag)
+      names(y_var_nice) <- vars_noflag
 
       plot_dat <- plot_dat %>%
-        select(-ends_with("_flag")) %>% tidyr::pivot_longer(any_of(vars), names_to = "variable", values_to = "value")
+        select(-ends_with("_flag")) %>% tidyr::pivot_longer(any_of(vars_noflag), names_to = "variable", values_to = "value")
 
       p <- ggplot(plot_dat, aes(x = DateTime_rd, y = value,color = type)) + geom_line(na.rm = TRUE, alpha=0.7) +
              labs(x="DateTime", y="Parameter Value", color="Edit") +
@@ -161,7 +190,7 @@ create_plot <- function(old, new, dd="dd1", plot_path){
         p <- p + geom_point(na.rm = TRUE, alpha=0.7)
       }
 
-      ggsave(plot_path, p, width = 8, height = ceiling(length(vars))*1.5)
+      ggsave(plot_path, p, width = 8, height = ceiling(length(vars_noflag))*1.5)
      }
     return(invisible())
 
