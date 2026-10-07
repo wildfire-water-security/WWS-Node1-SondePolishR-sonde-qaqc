@@ -153,9 +153,9 @@ get_plot_groups <- function(vars, int, dd){
   }
 
   #extend a little
-  ranges <- ranges %>% mutate(length = as.numeric(difftime(end, start, units = "mins"))/int) %>%
-    mutate(start = as.POSIXct(ifelse(length > 50, start - period(int * 20, units="minutes"), start - period(int * 5, units="minutes"))),
-           end = as.POSIXct(ifelse(length > 50, end + period(int * 20, units="minutes"), end + period(int * 5, units="minutes"))))
+  ranges <- ranges %>% mutate(length = as.numeric(difftime(.data$end, .data$start, units = "mins"))/int) %>%
+    mutate(start = as.POSIXct(ifelse(length > 50, .data$start - period(int * 20, units="minutes"), .data$start - period(int * 5, units="minutes"))),
+           end = as.POSIXct(ifelse(length > 50, .data$end + period(int * 20, units="minutes"), .data$end + period(int * 5, units="minutes"))))
 
   return(ranges)
 }
@@ -198,7 +198,7 @@ create_plot <- function(old, new, dd, plot_path){
     y_var_nice <- get_yvar(vars)
     names(y_var_nice) <- vars
 
-    p <- ggplot(plot_dat, aes(x = DateTime_rd, y = value)) + geom_line(na.rm = TRUE) +
+    p <- ggplot(plot_dat, aes(x = .data$DateTime_rd, y = .data$value)) + geom_line(na.rm = TRUE) +
       labs(x="DateTime", y="Parameter Value") +
       ggplot2::facet_wrap(~variable, labeller = labeller(variable = y_var_nice), scales="free_y", ncol=2) +
       scale_x_datetime(date_labels = "%Y-%m-%d\n%H:%M")
@@ -215,14 +215,14 @@ create_plot <- function(old, new, dd, plot_path){
   if(quest){
     plot_dat <- lapply(1:nrow(rng), function(y){
       #combine data for plotting
-      new_plot <- new %>% filter(DateTime_rd >= rng[y,1], DateTime_rd <= rng[y,2]) %>% mutate(group = y)
+      new_plot <- new %>% filter(.data$DateTime_rd >= rng[y,1], .data$DateTime_rd <= rng[y,2]) %>% mutate(group = y)
       return(new_plot)
     }) %>% bind_rows()
     quest_points <- dd[[vars]] %>% left_join(plot_dat, by=c("DateTime_rd", "DupNum"))
 
     plot_vars <- gsub("_flag$", "", vars) #get variable marked as questionable
     y_var_nice <- get_yvar(plot_vars)
-    p <- ggplot(plot_dat, aes(x = DateTime_rd, y = .data[[plot_vars]])) + geom_line(na.rm = TRUE, alpha=0.7) +
+    p <- ggplot(plot_dat, aes(x = .data$DateTime_rd, y = .data[[plot_vars]])) + geom_line(na.rm = TRUE, alpha=0.7) +
       labs(x="DateTime", y=y_var_nice) +
       facet_wrap(~group, scales="free", ncol=2) +
       scale_x_datetime(date_labels = "%Y-%m-%d\n%H:%M")
@@ -241,15 +241,15 @@ create_plot <- function(old, new, dd, plot_path){
   #for each var create plot groups
   plot_dat <- lapply(1:nrow(rng), function(y){
     #combine data for plotting
-    old_plot <- old %>% filter(DateTime_rd >= rng[y,1], DateTime_rd <= rng[y,2]) %>% mutate(type = "before")
-    new_plot <- new %>% filter(DateTime_rd >= rng[y,1], DateTime_rd <= rng[y,2]) %>% mutate(type = "after")
-    plot_dat <- bind_rows(old_plot, new_plot) %>% mutate(type = factor(type, levels=c("before", "after"), ordered=TRUE),
+    old_plot <- old %>% filter(.data$DateTime_rd >= rng[y,1], .data$DateTime_rd <= rng[y,2]) %>% mutate(type = "before")
+    new_plot <- new %>% filter(.data$DateTime_rd >= rng[y,1], .data$DateTime_rd <= rng[y,2]) %>% mutate(type = "after")
+    plot_dat <- bind_rows(old_plot, new_plot) %>% mutate(type = factor(.data$type, levels=c("before", "after"), ordered=TRUE),
                                                          group = y)
     return(plot_dat)
   }) %>% bind_rows()
   if(length(vars_noflag) == 1){
     y_var_nice <- get_yvar(vars_noflag)
-    p <- ggplot(plot_dat, aes(x = DateTime_rd, y = .data[[vars_noflag]],color = type)) + geom_line(na.rm = TRUE, alpha=0.7) +
+    p <- ggplot(plot_dat, aes(x = .data$DateTime_rd, y = .data[[vars_noflag]], color = .data$type)) + geom_line(na.rm = TRUE, alpha=0.7) +
       labs(x="DateTime", y=y_var_nice, color = "Edit") +
       facet_wrap(~group, scales="free", ncol=2) +
       scale_x_datetime(date_labels = "%Y-%m-%d\n%H:%M") + scale_color_manual(values=c("#ef8a62", "#67a9cf"))
@@ -267,7 +267,7 @@ create_plot <- function(old, new, dd, plot_path){
     plot_dat <- plot_dat %>%
       select(-ends_with("_flag")) %>% tidyr::pivot_longer(any_of(vars_noflag), names_to = "variable", values_to = "value")
 
-    p <- ggplot(plot_dat, aes(x = DateTime_rd, y = value,color = type)) + geom_line(na.rm = TRUE, alpha=0.7) +
+    p <- ggplot(plot_dat, aes(x = .data$DateTime_rd, y = .data$value,color = .data$type)) + geom_line(na.rm = TRUE, alpha=0.7) +
       labs(x="DateTime", y="Parameter Value", color="Edit") +
       facet_grid(variable~group, labeller = labeller(variable = y_var_nice), scales="free") +
       scale_x_datetime(date_labels = "%Y-%m-%d\n%H:%M") + scale_color_manual(values=c("#ef8a62", "#67a9cf"))

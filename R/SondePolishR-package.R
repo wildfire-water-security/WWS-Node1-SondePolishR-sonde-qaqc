@@ -28,6 +28,7 @@
 #' @importFrom dplyr cur_column
 #' @importFrom dplyr desc
 #' @importFrom dplyr distinct
+#' @importFrom dplyr ends_with
 #' @importFrom dplyr everything
 #' @importFrom dplyr filter
 #' @importFrom dplyr first
