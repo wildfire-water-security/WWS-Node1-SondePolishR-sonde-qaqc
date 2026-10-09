@@ -41,6 +41,7 @@ export_UI <- function(id){
                 "Duplicate Notes" = "dups",
                 "Missing Data Notes" = "gaps",
                 "Change Log" = "changelog",
+                "Change Report" = "change-report",
                 "Precipitation" = "precip",
                 "Field Form" = "fieldform",
                 "Calibration Checks" = "calcheck")),
@@ -72,10 +73,11 @@ export_UI <- function(id){
 #' @param data_ver A `reactiveVal` holding a number used to track when new data is added to trigger resets.
 #' @param y_var Y-variable to plot on the y-axis.
 #' @param current_mod The name of the current module being viewed.
+#' @param username A `reactiveVal` holding the name of the analyst for the changelog
 #' @param webgl_supported A `reactiveVal` indicating if webgl is support in the current browser.
 #' @export
 #' @rdname export-data
-export_server <- function(id, sondeproj, data_ver, y_var, current_mod,webgl_supported){
+export_server <- function(id, sondeproj, data_ver, y_var, current_mod,username,webgl_supported){
   moduleServer(id, function(input, output, session){
 
   #initialize, only change if value changes to avoid clearing unecessarily
@@ -114,7 +116,7 @@ export_server <- function(id, sondeproj, data_ver, y_var, current_mod,webgl_supp
     if(!identical(newname, projstartname())){projstartname(newname)}
     })
 
-    observeEvent(sondeproj(),{
+    observeEvent(list(sondeproj(),input$meta_opts),{
       if(is.null(sondeproj()) || is.na(sondeproj()$meta$site)){
         newname <-  paste0("sonde_", input$meta_opts)
       }else{
@@ -226,27 +228,33 @@ export_server <- function(id, sondeproj, data_ver, y_var, current_mod,webgl_supp
       })
 
     #data save path and saving data
-      data_path <- save_path_server("save_data", export_data, startname=datastartname, data_ver=data_ver)
+      data_path <- save_path_server("save_data", export_data, startname=datastartname, type = reactiveVal("data"), username = username, data_ver=data_ver)
 
 
  ## EXPORTING METADATA ------
-    metadata <- reactive({
-      req(input$meta_opts)
-      switch(input$meta_opts,
-             "dups" = sondeproj()$duplicates,
-             "gaps" = sondeproj()$data_gaps,
-             "changelog" = sondeproj()$changelog %>% mutate(datetime = format(.data$datetime, "%Y-%m-%d %H:%M:%S")),
-             "precip" = sondeproj()$precip %>% mutate(DateTime = format(.data$DateTime, "%Y-%m-%d %H:%M:%S")),
-             "calcheck" = sondeproj()$calcheck %>% mutate(Est_Time = format(.data$Est_Time, "%Y-%m-%d %H:%M:%S")),
-             "fieldform" = sondeproj()$fieldform)
+  #keep track of metadata
+  ext_type <- reactiveVal(".csv")
+  meta_type <- reactiveVal("")
 
-      #make sure any commas are changed to ; to not break csv
-    })
+  observeEvent(input$meta_opts,{
+    req(input$meta_opts)
 
-    meta_path <- save_path_server("save_meta", metadata, startname = metastartname, filetype = ".csv", data_ver=data_ver)
+    #update ext
+    if(input$meta_opts == "change-report"){
+      ext_type(".pdf")
+    }else{
+      ext_type(".csv")}
+
+    #update metatype
+    meta_type(input$meta_opts)
+  })
+
+    meta_path <- save_path_server("save_meta", sondeproj, startname = metastartname, filetype = ext_type,
+                                  type = meta_type, username = username,data_ver=data_ver)
 
 ## EXPORTING PROJECT -----
-    proj_path <- save_path_server("save_proj", sondeproj, startname=projstartname, filetype = ".RDS", data_ver=data_ver)
+    proj_path <- save_path_server("save_proj", sondeproj, startname=projstartname, filetype = reactiveVal(".RDS"),
+                                  type = reactiveVal("sondeproj"), username = username, data_ver=data_ver)
 
  ## STUFF FOR TESTING ------
 

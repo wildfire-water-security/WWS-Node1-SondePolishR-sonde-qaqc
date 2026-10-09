@@ -146,7 +146,7 @@ server <- function(input, output, session) {
    SondePolishR::fdom_server("data9", sondeproj, data_ver, y_var, view_state,username,webgl_supported)
 
   #step 10: export data
-   SondePolishR::export_server("data10", sondeproj, data_ver, y_var,current_mod,webgl_supported)
+   SondePolishR::export_server("data10", sondeproj, data_ver, y_var,current_mod,username, webgl_supported)
 
 
 }
