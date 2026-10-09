@@ -299,7 +299,7 @@ knitr::include_graphics("figures/turb-interp.gif")
 ### 5.2.1 Recommended Display Parameters and Correction Order
 
 | Order |      Parameter       | Period Length | Y-Max Limit |    Second Y-Axis    |
-|:-------------:|:-------------:|:-------------:|:-------------:|:-------------:|
+|:-----:|:--------------------:|:-------------:|:-----------:|:-------------------:|
 |   1   |     Temperature      |    30 days    |     N/A     |  Dissolved Oxygen   |
 |   2   |   Dissolved Oxygen   |    30 days    |     N/A     |     Temperature     |
 |   3   |        Depth         |    15 days    |     N/A     |    Precipitation    |

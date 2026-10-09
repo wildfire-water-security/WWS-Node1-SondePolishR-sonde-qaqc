@@ -2,6 +2,14 @@
 
 (2026-10-01)
 
+Still to Fix in this Update
+
+-   #121
+
+-   #120
+
+-   #119
+
 ## Bug Fixes
 
 -   Updated the `load_project` function to not error when the calibration check file has the probe switched and estimated time columns.
@@ -14,9 +22,13 @@
 
 -   Updated `read_sonde` function to allow for a modified EXO format.
 
--   In the **Visualize** tab, added an option to allow someone to review edits to the data by visualizing the changes made to the data based on the version of the data selected in the change log table.
+-   Updated the documentation in the readme to include directions about the version of R, using R tools, and updating packages to hopefully prevent issues when using the app for the first time (#116).
 
--   Updated the documentation in the readme to include directions about the version of R, using R tools, and updating packages to hopefully prevent issues when using the app for the first time.
+-   In the **Visualize** tab, added an option to allow someone to review edits to the data by visualizing the changes made to the data based on the version of the data selected in the change log table (#94).
+
+-   Added a new function `generate report` which allows a user to generate a `pdf` report to visualize the changes made to a sonde project via the **Download Data** tab (#94).
+
+-   Added a new vignette describing the new ways to visualize data changes (#118).
 
 # SondePolishR 0.0.9011
 
