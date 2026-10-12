@@ -62,7 +62,7 @@ An alternative method which is more broadly accessible and does not require the 
 
     > **Note:** Depending on the length of your dataset and the number of changes, generating the report can take several minutes. The function iteratively, for each change, applies the data change, subsets the data to plot, creates and saves a plot, and then knits all the information together into a large `pdf`.
 
-#### Report Structure 
+#### Report Structure
 
 The report includes:
 

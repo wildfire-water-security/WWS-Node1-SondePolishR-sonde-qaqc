@@ -163,7 +163,11 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var, view_state, user
         filter = "top",
         colnames = df_cols,
         editable = edit_opt,
-        escape = FALSE
+        escape = FALSE,
+        options = list(
+          stateSave = TRUE,
+          stateDuration = -1
+        )
       )
     })
 
@@ -292,9 +296,10 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var, view_state, user
 
           #change color based on change
           for(f in unique(prev_data$op_type)){
+            nice_f <- stringr::str_to_title(gsub("_", " ", f))
               df <- prev_data %>% filter(.data$op_type == f)
               p <- p %>% add_trace(data = df, x = ~DateTime_rd, y = ~old,
-                                   name = f,type="scatter", mode="markers", yaxis="y2",
+                                   name = nice_f,type="scatter", mode="markers", yaxis="y2",
                                    marker = list(color = op_col[[f]]), inherit = FALSE)}
         }
 

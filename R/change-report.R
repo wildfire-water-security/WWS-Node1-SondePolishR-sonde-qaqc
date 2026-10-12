@@ -74,11 +74,18 @@ create_report_record <- function(dir, old, new, info, dd){
   #replace unicode character
   info$note <- gsub("\U03C1", "rho", info$note)
 
+  #get date ranges
+  vars <- names(dd)[!sapply(dd, is.null)]
+  int <- get_interval(new)
+  rng <- get_plot_groups(vars, int, dd) %>% mutate(lab = paste0(strftime(start, format="%Y-%m-%d %H:%M"), " to ", strftime(end, format="%Y-%m-%d %H:%M")))
+  date_ranges <- c(strftime(min(rng$start), format="%Y-%m-%d %H:%M"), strftime(max(rng$end), format="%Y-%m-%d %H:%M"))
+
   header <- c(paste("**Edit Type:**", info$step, "\\"),
-              paste("**Parameter:**", info$parameter, "\\"),
+              paste("**Parameter:**", get_yvar(info$parameter), "\\"),
               paste("**Analyst:**", info$user, "\\"),
-              paste("**Edit Time:**", info$datetime, "\\"),
+              paste("**Edit Time:**", strftime(info$datetime, format="%Y-%m-%d %H:%M"), "\\"),
               paste("**Points Changed (#):**", info$n_changed, "\\"),
+              paste("**Change Date Range:**", paste(date_ranges, collapse = " to "), "\\"),
               paste("**Note:**", info$note, "\\"),
               "\\",
               "\\")
@@ -88,7 +95,9 @@ create_report_record <- function(dir, old, new, info, dd){
   plot_path <- file.path(dir, paste0("change-", info$diff_name, ".png"))
 
   #create plot image
-  create_plot(old, new, dd=dd,plot_path)
+    #determine if we want to show points or not
+    plot_pts <- ifelse(info$step %in% c("data interpolation"), TRUE, FALSE)
+  create_plot(old, new, dd=dd,plot_path,plot_pts)
 
   #add text to read it into the markdown
   plot_code <- make_markdown(c(paste0("![](", plot_path, ")"),"\\", "\\newpage"))
@@ -139,12 +148,12 @@ get_plot_groups <- function(vars, int, dd){
   #determine x axis range
   dates <- dd[[vars[1]]]$DateTime_rd
   xrng <- range(dates)
-  gap <- 8*60
+  gap <- int*6*24 #show within a 6 day/6 interval period
   dates <- sort(dates)
 
   grp <- cumsum(c(TRUE, diff(dates) > minutes(gap)))
 
-  if(length(unique(grp)) < 4){
+  if(length(unique(grp)) < 8){
     ranges <- data.frame(
       start = as.POSIXct(tapply(dates, grp, min)),
       end   = as.POSIXct(tapply(dates, grp, max)))
@@ -154,8 +163,8 @@ get_plot_groups <- function(vars, int, dd){
 
   #extend a little
   ranges <- ranges %>% mutate(length = as.numeric(difftime(.data$end, .data$start, units = "mins"))/int) %>%
-    mutate(start = as.POSIXct(ifelse(length > 50, .data$start - period(int * 20, units="minutes"), .data$start - period(int * 5, units="minutes"))),
-           end = as.POSIXct(ifelse(length > 50, .data$end + period(int * 20, units="minutes"), .data$end + period(int * 5, units="minutes"))))
+    mutate(start = as.POSIXct(ifelse(length > 50, .data$start - period(int * 96, units="minutes"), .data$start - period(int * 5, units="minutes"))),
+           end = as.POSIXct(ifelse(length > 50, .data$end + period(int * 96, units="minutes"), .data$end + period(int * 5, units="minutes"))))
 
   return(ranges)
 }
@@ -167,6 +176,7 @@ get_plot_groups <- function(vars, int, dd){
 #' @param new the dataset after the change
 #' @param dd the data `diff` object
 #' @param plot_path the file path to save the plot to
+#' @param show_pts logical of if the new points should be shown regardless of the timescale
 #'
 #' @md
 #' @returns the plot that is returned depends on the change type:
@@ -180,8 +190,9 @@ get_plot_groups <- function(vars, int, dd){
 #' The created plot is saved to the file specified in `plot_path` as a png.
 #'
 #' @noRd
-create_plot <- function(old, new, dd, plot_path){
+create_plot <- function(old, new, dd, plot_path, show_pts){
 
+  #if(show_pts){browser()}
   #determine which parameters to plot
   vars <- names(dd)[!sapply(dd, is.null)]
   #if(all("SpCond_uS_cm_flag" == vars)){browser()}
@@ -201,7 +212,9 @@ create_plot <- function(old, new, dd, plot_path){
     p <- ggplot(plot_dat, aes(x = .data$DateTime_rd, y = .data$value)) + geom_line(na.rm = TRUE) +
       labs(x="DateTime", y="Parameter Value") +
       ggplot2::facet_wrap(~variable, labeller = labeller(variable = y_var_nice), scales="free_y", ncol=2) +
-      scale_x_datetime(date_labels = "%Y-%m-%d\n%H:%M")
+      scale_x_datetime(date_labels = "%Y-%m-%d\n%H:%M") +
+      theme(axis.text.x = element_text(size = 5))
+
     ggsave(plot_path, p, width = 8, height = ceiling(length(vars)/2)*2.5)
     return(invisible())
   }
@@ -225,7 +238,8 @@ create_plot <- function(old, new, dd, plot_path){
     p <- ggplot(plot_dat, aes(x = .data$DateTime_rd, y = .data[[plot_vars]])) + geom_line(na.rm = TRUE, alpha=0.7) +
       labs(x="DateTime", y=y_var_nice) +
       facet_wrap(~group, scales="free", ncol=2) +
-      scale_x_datetime(date_labels = "%Y-%m-%d\n%H:%M")
+      scale_x_datetime(date_labels = "%Y-%m-%d\n%H:%M")+
+      theme(axis.text.x = element_text(size = 5))
 
     if(mean(rng$length) < 30){
       p <- p + geom_point(na.rm = TRUE, alpha=0.7)
@@ -247,18 +261,34 @@ create_plot <- function(old, new, dd, plot_path){
                                                          group = y)
     return(plot_dat)
   }) %>% bind_rows()
+
+  #make plots
   if(length(vars_noflag) == 1){
     y_var_nice <- get_yvar(vars_noflag)
     p <- ggplot(plot_dat, aes(x = .data$DateTime_rd, y = .data[[vars_noflag]], color = .data$type)) + geom_line(na.rm = TRUE, alpha=0.7) +
       labs(x="DateTime", y=y_var_nice, color = "Edit") +
       facet_wrap(~group, scales="free", ncol=2) +
-      scale_x_datetime(date_labels = "%Y-%m-%d\n%H:%M") + scale_color_manual(values=c("#ef8a62", "#67a9cf"))
+      scale_x_datetime(date_labels = "%Y-%m-%d\n%H:%M") + scale_color_manual(values=c("#ca0020", "#0571b0"))+
+      theme(axis.text.x = element_text(size = 5))
 
     if(mean(rng$length) < 30){
       p <- p + geom_point(na.rm = TRUE, alpha=0.7)
     }
 
-    ggsave(plot_path, p, width = 8, height = ceiling(nrow(rng)/2)*4)
+    if(show_pts){
+      new_points <- lapply(1:nrow(rng), function(y){
+        #combine data for plotting
+        new<- dd[[vars_noflag]] %>% filter(.data$DateTime_rd >= rng[y,1], .data$DateTime_rd <= rng[y,2]) %>% mutate(group = y)
+        return(new)
+      }) %>% bind_rows()
+      p <- p + geom_point(data= new_points, aes(y=new), color="#0571b0", size = 0.5)
+    }
+
+    #get plot dimensions
+    rows <- ceiling(nrow(rng)/2) #will be 1-4 (plot area is ~11-2.5 or 8.5)
+    width <- ifelse(rows == 1, 4, 8.5)
+
+    ggsave(plot_path, p, width = 8, height = width)
 
   }else{
     y_var_nice <- get_yvar(vars_noflag)
@@ -270,13 +300,14 @@ create_plot <- function(old, new, dd, plot_path){
     p <- ggplot(plot_dat, aes(x = .data$DateTime_rd, y = .data$value,color = .data$type)) + geom_line(na.rm = TRUE, alpha=0.7) +
       labs(x="DateTime", y="Parameter Value", color="Edit") +
       facet_grid(variable~group, labeller = labeller(variable = y_var_nice), scales="free") +
-      scale_x_datetime(date_labels = "%Y-%m-%d\n%H:%M") + scale_color_manual(values=c("#ef8a62", "#67a9cf"))
+      scale_x_datetime(date_labels = "%Y-%m-%d\n%H:%M") + scale_color_manual(values=c("#ca0020", "#0571b0")) +
+      theme(axis.text.x = element_text(size = 5), strip.text.y = element_text(size=6))
 
     if(mean(rng$length) < 30){
       p <- p + geom_point(na.rm = TRUE, alpha=0.7)
     }
 
-    ggsave(plot_path, p, width = 8, height = ceiling(length(vars_noflag))*1.5)
+    ggsave(plot_path, p, width = 8, height = 8.5)
   }
   return(invisible())
 

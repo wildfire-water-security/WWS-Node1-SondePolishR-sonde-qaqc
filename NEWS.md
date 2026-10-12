@@ -6,8 +6,6 @@ Still to Fix in this Update
 
 -   #121
 
--   #120
-
 -   #119
 
 ## Bug Fixes
@@ -24,7 +22,7 @@ Still to Fix in this Update
 
 -   Updated the documentation in the readme to include directions about the version of R, using R tools, and updating packages to hopefully prevent issues when using the app for the first time (#116).
 
--   In the **Visualize** tab, added an option to allow someone to review edits to the data by visualizing the changes made to the data based on the version of the data selected in the change log table (#94).
+-   In the **Visualize** tab, added an option to allow someone to review edits to the data by visualizing the changes made to the data based on the version of the data selected in the change log table (#94/#120).
 
 -   Added a new function `generate report` which allows a user to generate a `pdf` report to visualize the changes made to a sonde project via the **Download Data** tab (#94).
 
