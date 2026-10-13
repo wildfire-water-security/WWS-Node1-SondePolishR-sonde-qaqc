@@ -2,7 +2,7 @@
 title: "Reviewing Data Changes"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Correction Workflow}
+  %\VignetteIndexEntry{Reviewing Data Changes}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -20,7 +20,7 @@ blockquote {
 
 Data corrections, particularly with messy data, have a level of subjectivity where different analysts may make a different correction decision. The semi-automated nature of the app and a clear workflow is meant to help with that subjectivity, however, differences may remain. While these differences are often not likely to be statistically significant and influence future data analysis, it is still good practice to perform a secondary check on any data corrections. For instance, a review procedure with a second analyst is [required](https://water.usgs.gov/admin/memo/QW/qw2017.07.pdf) for publishing USGS time-series data.
 
-All changes made to the raw dataset via the SondePolishR app are tracked with the integrated version control system, which allows you to view the step-by-step changes made to the data, along with any notes associated with the change. Beyond being able to review the changes, tracking these changes helps ensure that data cleaned with SondePolishR adhers to **reusable** principle of the [FAIR Data Principles](https://doi.org/10.1038/sdata.2016.18).
+All changes made to the raw dataset via the SondePolishR app are tracked with the integrated version control system, which allows you to view the step-by-step changes made to the data, along with any notes associated with the change. Beyond being able to review the changes, tracking these changes helps ensure that data cleaned with SondePolishR adheres to **reusable** principle of the [FAIR Data Principles](https://doi.org/10.1038/sdata.2016.18).
 
 ## How to Review Data Corrections
 
@@ -30,11 +30,11 @@ SondePolishR has two options to review data corrections within a sonde project i
 
 If you would like to more thoroughly explore the changes made using zoom tools, along with supporting information (i.e., secondary y-axis), use the **interactive** method. This method is built into the SondePolishR app, and thus works best when internally since both the analyst and reviewer need to have access to both the app and the sonde project.
 
-![](images/view-changes.png)
+![Screenshot of the Visualize tab showing points that were removed in a data edit.](images/view-changes.png)
 
 1.  Open the app and load the project you would like to review. For more details on running the app and loading a project see the [App User Guide](app-manual.html).
 
-2.  Navigate to the **Visualize** tab. Ensure that the Table Options panel on the left is set to view the Change Log.
+2.  Navigate to the **Visualize** tab. Ensure that the Table Options panel on the left is set to view the **Change Log**.
 
 3.  Toggle the option to "Visualize Changed Data Points"
 
@@ -48,7 +48,7 @@ To review an entire record, go through each parameter, clicking and viewing each
 
 An alternative method which is more broadly accessible and does not require the reviewer to use the SondePolishR app is to generate a change report. This is a `pdf` file which shows and describes each change made to the data. This method was designed to be included in a data package along with processed data to describe the changes that were made to any data users. The report can be generated in the app using the `generate_report` function.
 
-![](images/create-report.png)
+![Screenshot of the export data tab with the generate report option selected for exporting metadata.](images/create-report.png)
 
 1.  Open the app and load the project you would like to generate a report for. For more details on running the app and loading a project see the [App User Guide](app-manual.html).
 
@@ -92,4 +92,4 @@ The report includes:
 
     -   a plot showing the data before and after the change, zoomed in to the region(s) that were edited
 
-![](images/report-page.png){width="539"}
+![A screenshot of an example page of the change report showing information about the change and a plot.](images/report-page.png){width="539"}

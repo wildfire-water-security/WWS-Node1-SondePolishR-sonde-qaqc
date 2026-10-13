@@ -14,7 +14,7 @@ test_that("{shinytest2} recording: checking-module2", {
 
   #check initial plot is made
   app$set_inputs(modules = "step-2")
-  app$wait_for_idle()
+  app$wait_for_idle(timeout = 5000)
   plot_obj <- app$get_value(export = "data2-plot_obj")
   expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2")
   app$expect_screenshot(name = "intial_plot")

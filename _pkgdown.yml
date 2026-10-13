@@ -64,6 +64,7 @@ reference:
       - nice_yvar
       - plot_sonde
       - summarize_data
+      - generate_report
   - title: Example Data
     desc: |
       Example datasets and metadata.

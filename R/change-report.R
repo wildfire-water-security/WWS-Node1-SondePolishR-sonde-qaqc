@@ -77,7 +77,8 @@ create_report_record <- function(dir, old, new, info, dd){
   #get date ranges
   vars <- names(dd)[!sapply(dd, is.null)]
   int <- get_interval(new)
-  rng <- get_plot_groups(vars, int, dd) %>% mutate(lab = paste0(strftime(start, format="%Y-%m-%d %H:%M"), " to ", strftime(end, format="%Y-%m-%d %H:%M")))
+  rng <- get_plot_groups(vars, int, dd) %>% mutate(lab = paste0(strftime(.data$start, format="%Y-%m-%d %H:%M"), " to ",
+                                                                strftime(.data$end, format="%Y-%m-%d %H:%M")))
   date_ranges <- c(strftime(min(rng$start), format="%Y-%m-%d %H:%M"), strftime(max(rng$end), format="%Y-%m-%d %H:%M"))
 
   header <- c(paste("**Edit Type:**", info$step, "\\"),

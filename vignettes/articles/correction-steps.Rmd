@@ -74,7 +74,7 @@ Throughout this tutorial we will refer to **tabs** and **panels**.
 
     > If you're loading a project and have previously specified this info you do not need to re-add it, this info gets saved within the sonde project and will be loaded with the rest of the data.
 
-4.  In the **Load Data** section enter the **analyst name** you want associated with the changes. This will be stored in the changelog and should be something you're okay with being visible to anyone you share the project with.
+4.  In the **Load Data** section enter the **analyst name** you want associated with the changes. This will be stored in the change log and should be something you're okay with being visible to anyone you share the project with.
 
 5.  **Load the data.** Use the **Load Data** section to load your selected data by clicking the **Load Sonde Data** button.
 
@@ -299,7 +299,7 @@ knitr::include_graphics("figures/turb-interp.gif")
 ### 5.2.1 Recommended Display Parameters and Correction Order
 
 | Order |      Parameter       | Period Length | Y-Max Limit |    Second Y-Axis    |
-|:-----:|:--------------------:|:-------------:|:-----------:|:-------------------:|
+|:------------:|:--------------:|:------------:|:------------:|:-------------:|
 |   1   |     Temperature      |    30 days    |     N/A     |  Dissolved Oxygen   |
 |   2   |   Dissolved Oxygen   |    30 days    |     N/A     |     Temperature     |
 |   3   |        Depth         |    15 days    |     N/A     |    Precipitation    |
@@ -372,17 +372,15 @@ knitr::include_graphics("figures/fdom-corrections.gif")
 
 # Step 6: Export Data
 
-After you've performed any cleaning steps, the last step is to export your data so a more usable format.
+After you've performed any cleaning steps, the last step is to export your data to a more usable format.
 
 -   **Export cleaned data:** Export the data in the **Export Data** card on the **Download Data** tab. The selected data will be saved to the specified file as a `.csv` file. You have several options when exporting the data:
-
-    -   **Date Range:** If you only want to export data for a certain date range, you can specify that here. By default the entire date range will be exported.
 
     -   **Export Frequency:** If you would like the data summarized into a different time period (e.g., hourly, daily, monthly) select that here. The default is the interval of the data.
 
     -   **Summary Method:** When summarizing data, how would you like the data summarized. You may select more than one method. The output table will have each parameter name appended with the function used to summarize.
 
-    > **Note:** The export function will summarize the data by the requested interval. If you export the data at the measurement interval, this means that the duplicates will be summarized using the selected summary method.
+    > **Note:** The export function will summarize the data by the requested interval. If you export the data at the measurement interval, this means that the duplicates will be summarized using the selected summary method. Any points summarized this way will get a DUP03 flag.
 
     After specifying the data you want to export, click the **Choose Location** button to select where you want to save your data to and what name to use for your data. You can use the selector in the top to change your root directory. Click **Save** to confirm the save location.
 
@@ -392,7 +390,7 @@ After you've performed any cleaning steps, the last step is to export your data 
 knitr::include_graphics("figures/data-export.gif")
 ```
 
--   **Export metadata:** Export the project metadata in the **Export Metadata** card on the **Download Data** tab. This section is used to export metadata stored within the project to a `.csv` file. There are four different files that can be saved:
+-   **Export metadata:** Export the project metadata in the **Export Metadata** card on the **Download Data** tab. This section is used to export metadata stored within the project to a `.csv` file. There are seven different files that can be saved:
 
     -   **Duplicate Notes:** Exports the table describing the data duplicates with any user added notes.
 
@@ -400,7 +398,13 @@ knitr::include_graphics("figures/data-export.gif")
 
     -   **Change Log:** Exports the change log describing all the changes made to the data.
 
+    -   **Change Report:** Exports a `pdf` file containing information about each change with a plot for viewing the change.
+
     -   **Precipitation:** Exports the hourly precipitation data.
+
+    -   **Field Form:** Exports the field form, with any edits made in the app related to out of water periods.
+
+    -   **Calibration Checks**: Exports the calibration checks file including the estimated check time.
 
     After specifying the metadata you want to export, click the **Choose Location** button to select where you want to save your data to and what name to use for your data. You can use the selector in the top to change your root directory. Click **Save** to confirm the save location.
 

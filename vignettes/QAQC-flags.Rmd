@@ -15,9 +15,9 @@ knitr::opts_chunk$set(
 library(dplyr)
 ```
 
-When data is exported, each analyte will have an associated flag column which is used to determine what changes were made to the data. 
+When data is exported, each analyte will have an associated flag column which is used to determine what changes were made to the data.
 
-**The flag meanings are as follows:** 
+**The flag meanings are as follows:**
 
 ```{r echo=FALSE, include=TRUE}
 file <- system.file("extdata", "data-flags.csv", package = "SondePolishR")

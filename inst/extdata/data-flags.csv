@@ -12,3 +12,4 @@ Outlier Removal,RM03,Data removed based on outlier selection methods and user in
 Visualize,RM04,OOW periods removed based on information from the field form.
 Data Checks,DUP01,Duplicated values averaged.
 Data Checks,DUP02,Duplicated values removed.
+Export Data,DUP03,Duplicated values summarized with the summarization method.

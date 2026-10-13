@@ -144,6 +144,9 @@ export_server <- function(id, sondeproj, data_ver, y_var, current_mod,username,w
 
         export_data <- sondeproj()$data
 
+      #add flag for duplicated points that are getting summarized
+        export_data <- add_sum_flags(export_data)
+
         #summarize
           frequency <- switch(input$frequency,
                               "interval" = lubridate::period(get_interval(export_data), "minute"),

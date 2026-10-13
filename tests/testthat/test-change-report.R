@@ -23,7 +23,7 @@ test_that("records are generated", {
       old <- new #replace old data with the revised data
     }
 
-    expect_equal(length(text), 11 * nrow(log)) #should have 11 rows for each
+    expect_equal(length(text), 12 * nrow(log)) #should have 11 rows for each
     expect_true(all(grepl("#'", text))) #should all be markdown format
     expect_equal(sum(grepl("!\\[\\].+png", text)), nrow(log)) #make sure we have the right number of images shown
 

@@ -1,6 +1,7 @@
 Akie
 CONUS
 ContDataQC
+DUP
 DataEntry
 DateTime
 DateTimes
@@ -19,6 +20,7 @@ Hampel
 Kalman
 LaRC
 MERRA
+MacOS
 Merra
 NLDAS
 NTU
@@ -38,6 +40,7 @@ Savitzky
 Sonde
 SpCond
 UI
+USGS
 Unsummarized
 WWS
 Watras
@@ -57,6 +60,7 @@ currplot
 data's
 dif
 dplyr
+dups
 duptype
 environ
 equilibration
@@ -93,6 +97,7 @@ plotly's
 precip
 qaqc
 reactiveVal
+readme
 reselect
 rollmean
 rollmedian
