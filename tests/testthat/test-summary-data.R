@@ -116,3 +116,23 @@ test_that("data summarizing works", {
       expect_equal(sum_data$fDOM_QSU_mean, test_mean$fDOM_QSU)
 
 })
+
+test_that("data summarizing flags are added", {
+  messy <- readRDS(file.path(test_path(), "testdata/example-sondeproj-messy.RDS"))
+
+  data <- messy$data
+  flagged <- add_sum_flags(data)
+
+  #check for DUP03 flags
+  expect_equal(sum(grepl("DUP03", flagged$fDOM_QSU_flag)), 56)
+  expect_equal(sum(grepl("DUP03", flagged$Temp_C_flag)), 56)
+
+  #resolve a dup for fDOM make sure it changes
+  data$fDOM_QSU[data$FileName == "dupfile2.csv"] <- NA
+
+  flagged <- add_sum_flags(data)
+
+  #check for DUP03 flags
+  expect_equal(sum(grepl("DUP03", flagged$fDOM_QSU_flag)), 28)
+  expect_equal(sum(grepl("DUP03", flagged$Temp_C_flag)), 56)
+})

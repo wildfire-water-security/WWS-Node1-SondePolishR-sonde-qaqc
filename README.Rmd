@@ -15,11 +15,11 @@ knitr::opts_chunk$set(
 
 # SondePolishR <img src="man/figures/logo.png" width="149"/>
 
-Provides an interactive workflow for quality assurance and quality control (QA/QC) of water quality sonde data. The package and associated Shiny app enables users to import raw sonde datasets, review and correct observations, apply quality flags, visualize time-series data alongside associated metadata, summarize observations,and export cleaned datasets and metadata while maintaining a reproducible record of all edits.
+Provides an interactive workflow for quality assurance and quality control (QA/QC) of water quality sonde data. The package and associated Shiny app enables users to import raw sonde datasets, review and correct observations, apply quality flags, visualize time-series data alongside associated metadata, summarize observations, and export cleaned datasets and metadata while maintaining a reproducible record of all edits.
 
 ## The Need
 
-Continuous water quality data is extremely useful due to it's high resolution, however because of its high resolution, performing QA/QC can be extremely challenging due to the number of data points. Additionally, since sondes are typically in streams for long stretches between maintenance visits, the data can be extremely messy. These all make cleaning sonde data extremely time intensive and challenging.
+Continuous water quality data is extremely useful due to it's high resolution, however because of its high resolution, performing QA/QC can be extremely challenging due to the number of data points. Additionally, since sondes are typically installed for long stretches between maintenance visits, the data can be extremely messy. These all make cleaning sonde data extremely time intensive and challenging.
 
 While some tools exist to help clean sonde data they are either expensive (Aquarius); have limited correction capacity ([ContDataQC](https://github.com/USEPA/ContDataQC)); or is no longer maintained ([ODM Tools](https://github.com/ODM2/ODMToolsPython)). Thus there is a need for a free, open-source interactive tool.
 
@@ -47,47 +47,45 @@ run_app()
 
 ### Browser Requirements
 
-You have several options for running the app, it can be run natively in R or it can run in your browser. If it runs in your browser we recommend using Chrome as it can support the `WebGL` plotting which makes plotting faster and smoother.
+You have several options for running the app, it can be run natively in R or it can run in your browser. If it runs in your browser, we recommend using **Chrome** as it can support the `WebGL` plotting which makes plotting faster and smoother.
 
 ### Software Requirements
 
-Parts of the app require [R Tools](https://cran.r-project.org/bin/windows/Rtools/rtools45/rtools.html) be installed. This is installed automatically on Mac OS but must be installed separately on Windows. If you encounter issues when running the app, please try to update your R version and packages. If you are still having issues please submit an [issue request](https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues).
+Parts of the app require [R Tools](https://cran.r-project.org/bin/windows/Rtools/rtools45/rtools.html) be installed. This is installed automatically on MacOS but must be installed separately on Windows. If you encounter issues when running the app, please try to update your R version and packages. If you are still having issues please submit an [issue request](https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues).
 
 ### Data Requirements
 
 -   The app currently only supports EXO type sonde data. However, if you have a different sonde you'd like supported let us [know](https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues)!
 
-    -   Similarly, the app currently supports the major EXO probe types (depth, temperature, dissolved oxygen, pH, specific conductance, fDOM, turbidity). If there are additional probes you'd like included let us know.
+    -   Similarly, the app currently supports the major EXO sensor types (depth, temperature, dissolved oxygen, pH, specific conductance, fDOM, turbidity). If there are additional sensors you'd like included let us know.
 
 -   Due to the way that certain calculations are made, all the data within the project should be at a consistent interval (e.g., 15 minutes, 1 hour).
 
--   Working with more than \~1 year of data in the app is currently a little slow. We're aware of the [issue](https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/113) and are working to optimize the code to remove this limitation. In the meantime it is recommended to create multiple projects if your data stream exceeds the \~1 year.
+-   Working with more than \~1 year of data in the app may be a little slow. We're aware of the [issue](https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/113) and are working to optimize the code to remove this limitation. In the meantime it is recommended to create multiple projects if your data stream exceeds the \~1 year.
 
 ## App Overview
 
 The app works by creating and modifying a sonde project (`sondeproj`) object which is a list containing sonde data, flags, and metadata. See `help(example_sondeproj)` for more details on project structure.
 
-The app consists of ten modules or pages. *While they are put in an order that represent a typical correction workflow, the steps do not need to be performed in order.*
+The app consists of nine modules or pages. *While they are put in an order that represent a typical correction workflow, the steps do not need to be performed in order.*
 
 1.  **Load Data:** Load either an existing sonde project, load raw data and metadata to create a sonde project, or amend an existing sonde project with new data. Can also load or download precipitation data to include with the project.
 
-2.  **Visualize:** Explore the loaded data via an interactive plot, view metadata or data summary statistics. Can also view data versions and remove periods where the sonde was out of the water.
+2.  **Visualize:** Explore the loaded data via an interactive plot, view metadata or data summary statistics. Can also view data versions, undo data edits, and remove periods where the sonde was out of the water.
 
 3.  **Data Checks:** View summaries of data gaps and duplicates. Resolve duplicates and add notes about duplicate/missing data.
 
-4.  **Quality Flags:** Flag data points as being questionable. These flags can be visualized in other plots across modules and used to automatically select points in outlier removal.
+4.  **Physical Limits:** Removes data points outside a specified range. Limits default to common sensor measurement limits.
 
-5.  **Physical Limits:** Removes data points outside a specified range. Limits default to common sensor measurement limits.
+5.  **Outlier Removal:** Remove outlier data points. Removal can be done via a combination of automatic outlier detection and manual addition or removal of points. Can also add a "questionable" flag to data points.
 
-6.  **Outlier Removal:** Remove outlier data points. Removal can be done via a combination of automatic outlier detection and manual addition or removal of points.
+6.  **Corrections:** Perform data corrections including an additive shift, drift correction, or smoothing correction.
 
 7.  **Interpolation:** Fill in missing data points using interpolation. User can select between several different interpolation methods and can control how big of a gap is filled via interpolation.
 
-8.  **Shift Corrections:** Perform a shift correction for a selected set of points or apply a linear drift correction to a specific file. Drift corrections are based on calibration checks when provided.
+8.  **fDOM Corrections:** Apply temperature and turbidity corrections to fDOM data using one of several methods. Methods default to published coefficient values but can be set to custom values.
 
-9.  **fDOM Corrections:** Apply temperature and turbidity corrections to fDOM data using one of several methods. Methods default to published coefficient values but can be set to custom values.
-
-10. **Download Data:** Generate and view time summarized data; export data and metadata; and save the sonde project.
+9.  **Download Data:** Generate and view time summarized data; export data and metadata; and save the sonde project. Can also generate a human readable change report.
 
 ## Key App Functionality
 
@@ -103,7 +101,7 @@ Most modules include an interactive plot created via [plotly](https://plotly.com
 
 -   **Date Ranges:** View only data within the specified date range.
 
--   **Period View:** As an alternative to specifying date ranges, used to view data for a specified period length (e.g., weekly) and move between periods.
+-   **Period View:** An alternative to specifying date ranges, used to view data for a specified period length (e.g., weekly) and move between periods.
 
 -   **Plotting Options:**
 
@@ -143,7 +141,7 @@ Each module or tab uses it's own methods to select points. Some select points vi
 
 ### Version Control
 
-A key principle of data management is reproducibility: being able to reproduce the steps to get from the raw dataset to the clean dataset. To do this for sonde data corrections is a laborious process requiring detailed notes for each change.
+A key principle of data management is reproducibility: being able to reproduce the steps to get from the raw dataset to the clean dataset. To do this for sonde data corrections can be a laborious process requiring detailed notes for each change.
 
 The SondePolishR app automates this process. It keeps a descriptive record of changes made in addition to creating a `diff` file which tracks the specific changes made. The `diff` files are stored in a list within the project.
 
@@ -165,6 +163,8 @@ In addition to the data, the user can also export metadata contained within the 
 
 -   Duplicate and gap tables with added user notes
 
--   Hourly precipitation data (download from [NASA power](https://power.larc.nasa.gov/) via the `nasapower` package)
+-   Hourly precipitation data
 
--   Change log
+-   Change log and a change report detailing changes made
+
+-   Edited field forms or calibration checks

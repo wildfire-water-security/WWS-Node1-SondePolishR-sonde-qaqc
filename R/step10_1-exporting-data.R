@@ -7,7 +7,9 @@
 #' @param data data to save to specified file on click
 #' @param startname the default name for the file
 #' @param data_ver A `reactiveVal` holding a number used to track when new data is added to trigger resets.
-#'
+#' @param username A `reactiveVal` holding the name of the analyst for the changelog
+#' @param type a `reactiveVal` holding a character specifying the type of data being saved options include
+#' "sondeproj", "data", "dups", "gaps", "changelog", "precip", "calcheck", "fieldform", "change-report"
 #' @rdname file-export
 #' @export
 #' @md
@@ -34,7 +36,8 @@ save_path_server <- function(id, data,
                              startname = "sonde_export",
                              label = "Choose Location",
                              title = "Select save path",
-                             filetype = ".csv",
+                             filetype = reactiveVal(".csv"),
+                             username, type,
                              data_ver) {
   moduleServer(id, function(input, output, session) {
 
@@ -69,7 +72,7 @@ save_path_server <- function(id, data,
     })
 
     #clear selected path when metadata type changes
-    observeEvent(startname(), {
+    observeEvent(startname(),{
       path <- parsed_path()
 
       if(!is.null(path) && nrow(path) > 0){
@@ -80,14 +83,16 @@ save_path_server <- function(id, data,
         save_okay(FALSE)
       }
     })
+
     #clear the okay any time the data changes
     observeEvent(data(),{save_okay(FALSE)})
 
     output$save <- renderUI({
       shinyFiles::shinySaveButton(ns("save"),label = label,
-                                  title = title,filetype = filetype,
+                                  title = title,filetype = filetype(),
                                   filename = startname())
     })
+
     output$path_text <- renderUI({
       fileinfo <- parsed_path()
 
@@ -134,17 +139,15 @@ save_path_server <- function(id, data,
                                  showCancelButton = TRUE,
                                  inputId = "conf",
                                  callbackR = function(value){
-                                   if(isTRUE(value)){save_file(parsed_path()$datapath, data())}})
+                                   if(isTRUE(value)){save_file(parsed_path()$datapath, data(), type(), username())}})
         }else{
-          save_file(parsed_path()$datapath,data())
+          save_file(parsed_path()$datapath, data(), type(), username())
         }
 
         }
 
 
   })
-
-
 
     return(
       reactive({
@@ -156,49 +159,3 @@ save_path_server <- function(id, data,
 }
 
 
-#function to save file
-save_file <- function(path, data) {
-  if(tools::file_ext(path) == "csv") {
-  tryCatch({
-      write.csv(data, path, row.names = FALSE, quote = TRUE)
-    shinyalert::shinyalert(
-      title = "Data Downloaded",
-      text = "Selected data has been downloaded.",
-      type = "success")
-   }, warning = function(w) {
-      shinyalert::shinyalert(
-        title = "Download Failed",
-        text = "Please ensure the file is not open.",
-        type = "error")
-        FALSE
-      }, error = function(e) {
-      shinyalert::shinyalert(
-        title = "Download Failed",
-        text = "Please ensure the file is not open.",
-        type = "error")
-        FALSE
-      })
-  }else if(tools::file_ext(path) == "RDS") {
-   tryCatch({
-      saveRDS(data, path)
-      shinyalert::shinyalert(
-        title = "Data Downloaded",
-        text = "Selected data has been downloaded.",
-        type = "success")
-
-    }, warning = function(w) {
-      shinyalert::shinyalert(
-        title = "Download Failed",
-        text = "Please ensure the file is not open.",
-        type = "error")
-      FALSE
-    }, error = function(e) {
-      shinyalert::shinyalert(
-        title = "Download Failed",
-        text = "Please ensure the file is not open.",
-        type = "error")
-      FALSE
-    })
-  }
-
-}

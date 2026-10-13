@@ -13,7 +13,9 @@ save_path_server(
   startname = "sonde_export",
   label = "Choose Location",
   title = "Select save path",
-  filetype = ".csv",
+  filetype = reactiveVal(".csv"),
+  username,
+  type,
   data_ver
 )
 }
@@ -29,6 +31,11 @@ save_path_server(
 \item{title}{dialog title}
 
 \item{filetype}{file extension}
+
+\item{username}{A \code{reactiveVal} holding the name of the analyst for the changelog}
+
+\item{type}{a \code{reactiveVal} holding a character specifying the type of data being saved options include
+"sondeproj", "data", "dups", "gaps", "changelog", "precip", "calcheck", "fieldform", "change-report"}
 
 \item{data_ver}{A \code{reactiveVal} holding a number used to track when new data is added to trigger resets.}
 }

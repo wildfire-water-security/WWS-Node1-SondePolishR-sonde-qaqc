@@ -110,3 +110,28 @@ describe_data <- function(data, precip=NULL){
   return(sum_df)
 }
 
+#' Add flag for duplicated data during export
+#'
+#' When there are duplicated datetimes when exporting data these get summarized. This function
+#' will flag those values that they were summarized in the exported data.
+#'
+#' @param data the dataset with sonde data
+#'
+#' @returns `data` with flags added for any duplicated non-NA values (DUP03)
+#' @noRd
+add_sum_flags <- function(data){
+  #get flag for duplicated points that are getting summarized
+  vars <- get_parms(data)
+  dup <- data %>% group_by(.data$DateTime_rd) %>%
+    summarise(across(all_of(vars), ~ sum(!is.na(.x))))
+
+  for(v in vars){
+    index <- data$DateTime_rd %in% dup$DateTime_rd[dup[[v]] > 1]
+
+    if(any(index)){
+      data <- add_flags(data, v, index, "DUP03")
+    }
+  }
+
+  return(data)
+}
