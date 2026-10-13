@@ -24,8 +24,9 @@ need to be performed in order.*
     to include with the project.
 
 2.  **Visualize:** Explore the loaded data via an interactive plot, view
-    metadata or data summary statistics. Can also view data versions and
-    remove periods where the sonde was out of the water.
+    metadata or data summary statistics. Can also view data versions,
+    undo data edits, and remove periods where the sonde was out of the
+    water.
 
 3.  **Data Checks:** View summaries of data gaps and duplicates. Resolve
     duplicates and add notes about duplicate/missing data.
@@ -33,26 +34,25 @@ need to be performed in order.*
 4.  **Physical Limits:** Removes data points outside a specified range.
     Limits default to common sensor measurement limits.
 
-5.  **Outlier Removal:** Remove outlier data points and mark
-    questionable points. Removal can be done via a combination of
-    automatic outlier detection and manual addition or removal of
+5.  **Outlier Removal:** Remove outlier data points. Removal can be done
+    via a combination of automatic outlier detection and manual addition
+    or removal of points. Can also add a “questionable” flag to data
     points.
 
-6.  **Interpolation:** Fill in missing data points using interpolation.
+6.  **Corrections:** Perform data corrections including an additive
+    shift, drift correction, or smoothing correction.
+
+7.  **Interpolation:** Fill in missing data points using interpolation.
     User can select between several different interpolation methods and
     can control how big of a gap is filled via interpolation.
-
-7.  **Corrections:** Perform a shift correction for a selected set of
-    points, apply a linear drift correction to a specific file, or apply
-    a smoothing correction to a region. Drift corrections are based on
-    calibration checks when provided.
 
 8.  **fDOM Corrections:** Apply temperature and turbidity corrections to
     fDOM data using one of several methods. Methods default to published
     coefficient values but can be set to custom values.
 
 9.  **Download Data:** Generate and view time summarized data; export
-    data and metadata; and save the sonde project.
+    data and metadata; and save the sonde project. Can also generate a
+    human readable change report.
 
 ### Loading the App
 
@@ -127,7 +127,7 @@ be input once per project.
   what change.
 
 - This step uses the `load_project` function to read in data and format
-  as a `sondeproj`. Use once you’re specified the file paths to all
+  as a `sondeproj`. Use once you’ve specified the file paths to all
   applicable data and metadata.
 
 - To load a new project, use the **clear uploads** button to remove all
@@ -236,7 +236,7 @@ addition items on the plot or adjust coloring of the points:
 
 This is the default table shown. Which is used to visualize the changes
 made to the data. As changes are made to the data, this table will get
-longer. The table can be filtered by values by clicking the while “All”
+longer. The table can be filtered by values by clicking the white “All”
 box in each column. For example, you could view only the changes to
 fDOM. This is particularly useful as you can view changes to the data in
 the plot by clicking a row within the change log.
@@ -250,28 +250,30 @@ the visit which can be useful when making decisions about corrections.
 **Calibration Check**
 
 This table shows the calibration checks performed for the parameter
-being plotted. Used serial numbers when the data was loaded, it
+being plotted. Using serial numbers when the data was loaded, it
 determines if the probe was switched during the visit and estimates when
 the switch was made which is useful for drift corrections.
 
 **Data Summary**
 
 This table provides a summary of the data. The table is dynamic, and
-will summarize only the data being displayed in the above plot (note
-that it will not adjust when you use plotly’s zoom tool, only the date
-range tools). This tool can be useful to get quick summary statistics
-about a period of interest like a storm event.
+will summarize only the data being displayed in the above plot. This
+tool can be useful to get quick summary statistics about a period of
+interest like a storm event.
+
+> **Note:** Data summary will not adjust when you use plotly’s zoom
+> tool, only the date range tools.
 
 #### 2.3 Correct Out of Water Periods
 
 Out of water periods are periods where the sonde is still collecting
 measurements, but is not actively in the water due to maintenance or
-data downloads. These are clear periods where the data is not accurate
+data downloads. These are periods where we know the data is not accurate
 and should be removed. This can be easily done using the **Flag OOW
 Periods** button which uses the `get_oow` function to identify periods
 where the sonde was out of the water and remove those points. Note that
 this function uses a 15-minute buffer on either side of the period to
-account for wiper test, inaccurate time reporting, and equilibration.
+account for wiper tests, inaccurate time reporting, and equilibration.
 
 **You may edit field notes if needed.** By default if the field form is
 missing the removal time or return time, it will remove the entire day
@@ -282,7 +284,24 @@ field form table, and add edits to the table.
 - Manually add in a removal or return time based on the data.
 
 - If a period doesn’t appear to need removal, you can replace **Remove
-  OOW Period?** with false and it will not be removed.
+  OOW Period?** with `false` and it will not be removed.
+
+#### 2.4 Review Data and Undo Changes
+
+You can also review changes made to the data and undo a data edit in
+this tab. This is done using the **Change Log** table.
+
+- To view the data at a certain point, click on the row within the
+  change log.
+
+- To view the data that was changed in that step, toggle the “Visualize
+  Changed Data Points” option.
+
+- To undo a change, select the row you would like to revert back to and
+  click the “Restore selected version” button.
+
+  > **Note:** Undoing a change will revert the project back to what it
+  > looked like at that point, any edits following will be lost.
 
 ------------------------------------------------------------------------
 
@@ -354,7 +373,7 @@ resolved the table will refresh with the resolved duplicate removed.*
 
 This step is used to remove points that are outside a set minimum and
 maximum. As it’s name suggests, this is often used to remove points
-outside physical or measurement limits (i.e., a fDOM value below 0). The
+outside physical or measurement limits (e.g., a fDOM value below 0). The
 default values are based on reported measurement limits for YSI EXO
 probes. These can be manually adjusted in the **Set Physical Limits**
 section based on expert knowledge about your system. The limits are
@@ -378,8 +397,8 @@ flagged but retained. There are several methods that can be used to
 select points for removal:
 
 - **None or manual selection only**: This will start with no points
-  highlighted, use the selection tools with plotly to select and remove
-  points to remove.
+  highlighted, use the selection tools within Plotly to select and
+  remove points to remove.
 
 - **Hampel filter:** Uses a [hampel
   filter](https://search.r-project.org/CRAN/refmans/pracma/html/hampel.html)
@@ -593,8 +612,7 @@ files. You have several options to control the data that is exported:
 - **Export Frequency:** Aggregate the values into larger windows (e.g.,
   hourly or daily values)
 
-- **Summary Method:** Available if **export frequency** is larger than
-  the data interval. Used to specify the method used to summarize the
+- **Summary Method:** Used to specify the method used to summarize the
   data. You may select more than one and they will show up as separate
   column in the exported data.
 
@@ -609,7 +627,7 @@ to the file.
 #### 9.2 Export Metadata
 
 This section is used to export metadata stored within the project to a
-`.csv` file. There are four different files that can be saved:
+`.csv` file. There are seven different files that can be saved:
 
 - **Duplicate Notes:** Exports the table describing the data duplicates
   with any user added notes (see [3.2 Duplicates](#duplicates)).
@@ -620,8 +638,19 @@ This section is used to export metadata stored within the project to a
 - **Change Log:** Exports the change log describing all the changes made
   to the data.
 
+- **Change Report:** Exports a `pdf` file containing information about
+  each change with a plot for viewing the change. See
+  [here](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/articles/data-review.md)
+  for more information on the change report.
+
 - **Precipitation:** Exports the hourly precipitation data downloaded
   from NASA power (see [1.5 Add Precipitation](#add-precipitation)).
+
+- **Field Form:** Exports the field form, with any edits made in the app
+  related to out of water periods.
+
+- **Calibration Checks**: Exports the calibration checks file including
+  the estimated check time.
 
 #### 9.3 Save Sonde Project
 

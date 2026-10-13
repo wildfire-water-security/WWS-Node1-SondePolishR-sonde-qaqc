@@ -20,6 +20,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/app-manual.html">App User Guide</a></li>
     <li><a class="dropdown-item" href="../articles/correction-steps.html">Correction Workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/data-review.html">Reviewing Data Changes</a></li>
     <li><a class="dropdown-item" href="../articles/QAQC-flags.html">QAQC Flags</a></li>
     <li><a class="dropdown-item" href="../articles/using-precipitation-data.html">Using Precipitation Data</a></li>
   </ul></li>
@@ -46,18 +47,23 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.9012" id="sondepolishr-009012">SondePolishR 0.0.9012<a class="anchor" aria-label="anchor" href="#sondepolishr-009012"></a></h2>
-<p>(2026-10-01)</p>
+<p>(2026-10-13)</p>
 <div class="section level3">
 <h3 id="bug-fixes-0-0-9012">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-0-9012"></a></h3>
 <ul><li><p>Updated the <code>load_project</code> function to not error when the calibration check file has the probe switched and estimated time columns.</p></li>
 <li><p>Updated the <strong>Load Data</strong> tab to produce an error message if data can’t be loaded to prevent the app from crashing (<a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/117" class="external-link">#117</a>).</p></li>
 <li><p>Updated the <code>read_sonde</code> function to hopefully fix any Mac OS issues with encoding. Also switched to the <code><a href="https://rdrr.io/pkg/data.table/man/fread.html" class="external-link">data.table::fread</a></code> function which is faster (<a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/99" class="external-link">#99</a>).</p></li>
+<li><p>Updated the changelog code to not clear the filtering used when it re-renders so that filtering will hold when examining different data versions (<a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/121" class="external-link">#121</a>)</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="updates-0-0-9012">Updates<a class="anchor" aria-label="anchor" href="#updates-0-0-9012"></a></h3>
 <ul><li><p>Updated <code>read_sonde</code> function to allow for a modified EXO format.</p></li>
-<li><p>In the <strong>Visualize</strong> tab, added an option to allow someone to review edits to the data by visualizing the changes made to the data based on the version of the data selected in the change log table.</p></li>
-<li><p>Updated the documentation in the readme to include directions about the version of R, using R tools, and updating packages to hopefully prevent issues when using the app for the first time.</p></li>
+<li><p>Updated the documentation in the readme to include directions about the version of R, using R tools, and updating packages to hopefully prevent issues when using the app for the first time (<a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/116" class="external-link">#116</a>).</p></li>
+<li><p>In the <strong>Visualize</strong> tab, added an option to allow someone to review edits to the data by visualizing the changes made to the data based on the version of the data selected in the change log table (<a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/94" class="external-link">#94</a>/#120).</p></li>
+<li><p>Added a new function <code>generate report</code> which allows a user to generate a <code>pdf</code> report to visualize the changes made to a sonde project via the <strong>Download Data</strong> tab (<a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/94" class="external-link">#94</a>).</p></li>
+<li><p>Added a new vignette describing the new ways to visualize data changes (<a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/118" class="external-link">#118</a>).</p></li>
+<li><p>When exporting data, duplicated date-times will be automatically summarized while this is expected for periods longer than the data interval, it will also summarized duplicates when the sampling interval is used. Now a flag (DUP03) will be added to the data to indicate this duplicate merge was performed (<a href="https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/121" class="external-link">#121</a>).</p></li>
+<li><p>Reviewed all vignettes, articles, and readme to ensure the information and screenshots were up to date.</p></li>
 </ul></div>
 </div>
     <div class="section level2">

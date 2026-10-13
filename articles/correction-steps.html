@@ -40,6 +40,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/app-manual.html">App User Guide</a></li>
     <li><a class="dropdown-item" href="../articles/correction-steps.html">Correction Workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/data-review.html">Reviewing Data Changes</a></li>
     <li><a class="dropdown-item" href="../articles/QAQC-flags.html">QAQC Flags</a></li>
     <li><a class="dropdown-item" href="../articles/using-precipitation-data.html">Using Precipitation Data</a></li>
   </ul>
@@ -196,8 +197,8 @@ project and will be loaded with the rest of the data.</p>
 </li>
 <li><p>In the <strong>Load Data</strong> section enter the
 <strong>analyst name</strong> you want associated with the changes. This
-will be stored in the changelog and should be something you’re okay with
-being visible to anyone you share the project with.</p></li>
+will be stored in the change log and should be something you’re okay
+with being visible to anyone you share the project with.</p></li>
 <li>
 <p><strong>Load the data.</strong> Use the <strong>Load
 Data</strong> section to load your selected data by clicking the
@@ -609,10 +610,10 @@ you want to keep a copy of your project prior to the current edits.</li>
 </h4>
 <table class="table">
 <colgroup>
-<col width="20%">
-<col width="20%">
-<col width="20%">
-<col width="20%">
+<col width="19%">
+<col width="21%">
+<col width="19%">
+<col width="19%">
 <col width="20%">
 </colgroup>
 <thead><tr class="header">
@@ -833,7 +834,7 @@ and click <strong>Update Points.</strong></p>
 <h2 id="step-6-export-data">Step 6: Export Data<a class="anchor" aria-label="anchor" href="#step-6-export-data"></a>
 </h2>
 <p>After you’ve performed any cleaning steps, the last step is to export
-your data so a more usable format.</p>
+your data to a more usable format.</p>
 <ul>
 <li>
 <p><strong>Export cleaned data:</strong> Export the data in the
@@ -842,9 +843,6 @@ tab. The selected data will be saved to the specified file as a
 <code>.csv</code> file. You have several options when exporting the
 data:</p>
 <ul>
-<li><p><strong>Date Range:</strong> If you only want to export data for
-a certain date range, you can specify that here. By default the entire
-date range will be exported.</p></li>
 <li><p><strong>Export Frequency:</strong> If you would like the data
 summarized into a different time period (e.g., hourly, daily, monthly)
 select that here. The default is the interval of the data.</p></li>
@@ -857,7 +855,8 @@ used to summarize.</p></li>
 <p><strong>Note:</strong> The export function will summarize the data by
 the requested interval. If you export the data at the measurement
 interval, this means that the duplicates will be summarized using the
-selected summary method.</p>
+selected summary method. Any points summarized this way will get a DUP03
+flag.</p>
 </blockquote>
 <p>After specifying the data you want to export, click the
 <strong>Choose Location</strong> button to select where you want to save
@@ -877,7 +876,7 @@ data to your specified file.</p>
 <p><strong>Export metadata:</strong> Export the project metadata in
 the <strong>Export Metadata</strong> card on the <strong>Download
 Data</strong> tab. This section is used to export metadata stored within
-the project to a <code>.csv</code> file. There are four different files
+the project to a <code>.csv</code> file. There are seven different files
 that can be saved:</p>
 <ul>
 <li><p><strong>Duplicate Notes:</strong> Exports the table describing
@@ -886,8 +885,15 @@ the data duplicates with any user added notes.</p></li>
 the data gaps with any user added notes.</p></li>
 <li><p><strong>Change Log:</strong> Exports the change log describing
 all the changes made to the data.</p></li>
+<li><p><strong>Change Report:</strong> Exports a <code>pdf</code> file
+containing information about each change with a plot for viewing the
+change.</p></li>
 <li><p><strong>Precipitation:</strong> Exports the hourly precipitation
 data.</p></li>
+<li><p><strong>Field Form:</strong> Exports the field form, with any
+edits made in the app related to out of water periods.</p></li>
+<li><p><strong>Calibration Checks</strong>: Exports the calibration
+checks file including the estimated check time.</p></li>
 </ul>
 <p>After specifying the metadata you want to export, click the
 <strong>Choose Location</strong> button to select where you want to save

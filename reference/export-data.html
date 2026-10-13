@@ -20,6 +20,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/app-manual.html">App User Guide</a></li>
     <li><a class="dropdown-item" href="../articles/correction-steps.html">Correction Workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/data-review.html">Reviewing Data Changes</a></li>
     <li><a class="dropdown-item" href="../articles/QAQC-flags.html">QAQC Flags</a></li>
     <li><a class="dropdown-item" href="../articles/using-precipitation-data.html">Using Precipitation Data</a></li>
   </ul></li>
@@ -53,7 +54,15 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">export_UI</span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">export_server</span><span class="op">(</span><span class="va">id</span>, <span class="va">sondeproj</span>, <span class="va">data_ver</span>, <span class="va">y_var</span>, <span class="va">current_mod</span>, <span class="va">webgl_supported</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">export_server</span><span class="op">(</span></span>
+<span>  <span class="va">id</span>,</span>
+<span>  <span class="va">sondeproj</span>,</span>
+<span>  <span class="va">data_ver</span>,</span>
+<span>  <span class="va">y_var</span>,</span>
+<span>  <span class="va">current_mod</span>,</span>
+<span>  <span class="va">username</span>,</span>
+<span>  <span class="va">webgl_supported</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -78,6 +87,10 @@
 
 <dt id="arg-current-mod">current_mod<a class="anchor" aria-label="anchor" href="#arg-current-mod"></a></dt>
 <dd><p>The name of the current module being viewed.</p></dd>
+
+
+<dt id="arg-username">username<a class="anchor" aria-label="anchor" href="#arg-username"></a></dt>
+<dd><p>A `reactiveVal` holding the name of the analyst for the changelog</p></dd>
 
 
 <dt id="arg-webgl-supported">webgl_supported<a class="anchor" aria-label="anchor" href="#arg-webgl-supported"></a></dt>

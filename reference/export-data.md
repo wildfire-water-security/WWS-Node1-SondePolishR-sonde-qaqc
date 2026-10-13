@@ -8,7 +8,15 @@ data.
 ``` r
 export_UI(id)
 
-export_server(id, sondeproj, data_ver, y_var, current_mod, webgl_supported)
+export_server(
+  id,
+  sondeproj,
+  data_ver,
+  y_var,
+  current_mod,
+  username,
+  webgl_supported
+)
 ```
 
 ## Arguments
@@ -34,6 +42,10 @@ export_server(id, sondeproj, data_ver, y_var, current_mod, webgl_supported)
 - current_mod:
 
   The name of the current module being viewed.
+
+- username:
+
+  A \`reactiveVal\` holding the name of the analyst for the changelog
 
 - webgl_supported:
 

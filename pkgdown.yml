@@ -4,9 +4,10 @@ pkgdown_sha: ~
 articles:
   app-manual: app-manual.html
   articles/correction-steps: correction-steps.html
+  data-review: data-review.html
   QAQC-flags: QAQC-flags.html
   using-precipitation-data: using-precipitation-data.html
-last_built: 2026-10-01T20:34Z
+last_built: 2026-10-13T19:49Z
 urls:
   reference: https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference
   article: https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/articles

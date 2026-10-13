@@ -40,6 +40,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/app-manual.html">App User Guide</a></li>
     <li><a class="dropdown-item" href="../articles/correction-steps.html">Correction Workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/data-review.html">Reviewing Data Changes</a></li>
     <li><a class="dropdown-item" href="../articles/QAQC-flags.html">QAQC Flags</a></li>
     <li><a class="dropdown-item" href="../articles/using-precipitation-data.html">Using Precipitation Data</a></li>
   </ul>
@@ -110,32 +111,31 @@ an existing sonde project with new data. Can also load or download
 precipitation data to include with the project.</p></li>
 <li><p><strong>Visualize:</strong> Explore the loaded data via an
 interactive plot, view metadata or data summary statistics. Can also
-view data versions and remove periods where the sonde was out of the
-water.</p></li>
+view data versions, undo data edits, and remove periods where the sonde
+was out of the water.</p></li>
 <li><p><strong>Data Checks:</strong> View summaries of data gaps and
 duplicates. Resolve duplicates and add notes about duplicate/missing
 data.</p></li>
 <li><p><strong>Physical Limits:</strong> Removes data points outside a
 specified range. Limits default to common sensor measurement
 limits.</p></li>
-<li><p><strong>Outlier Removal:</strong> Remove outlier data points and
-mark questionable points. Removal can be done via a combination of
-automatic outlier detection and manual addition or removal of
-points.</p></li>
+<li><p><strong>Outlier Removal:</strong> Remove outlier data points.
+Removal can be done via a combination of automatic outlier detection and
+manual addition or removal of points. Can also add a “questionable” flag
+to data points.</p></li>
+<li><p><strong>Corrections:</strong> Perform data corrections including
+an additive shift, drift correction, or smoothing correction.</p></li>
 <li><p><strong>Interpolation:</strong> Fill in missing data points using
 interpolation. User can select between several different interpolation
 methods and can control how big of a gap is filled via
 interpolation.</p></li>
-<li><p><strong>Corrections:</strong> Perform a shift correction for a
-selected set of points, apply a linear drift correction to a specific
-file, or apply a smoothing correction to a region. Drift corrections are
-based on calibration checks when provided.</p></li>
 <li><p><strong>fDOM Corrections:</strong> Apply temperature and
 turbidity corrections to fDOM data using one of several methods. Methods
 default to published coefficient values but can be set to custom
 values.</p></li>
 <li><p><strong>Download Data:</strong> Generate and view time summarized
-data; export data and metadata; and save the sonde project.</p></li>
+data; export data and metadata; and save the sonde project. Can also
+generate a human readable change report.</p></li>
 </ol>
 <div class="section level3">
 <h3 id="loading-the-app">Loading the App<a class="anchor" aria-label="anchor" href="#loading-the-app"></a>
@@ -210,7 +210,7 @@ only need to be input once per project.</p>
 your initials or name. It will be used in the changelog to track who
 made what change.</p></li>
 <li><p>This step uses the <code>load_project</code> function to read in
-data and format as a <code>sondeproj</code>. Use once you’re specified
+data and format as a <code>sondeproj</code>. Use once you’ve specified
 the file paths to all applicable data and metadata.</p></li>
 <li><p>To load a new project, use the <strong>clear uploads</strong>
 button to remove all previous file paths.</p></li>
@@ -309,7 +309,7 @@ as questionable in orange.</p></li>
 <p>This is the default table shown. Which is used to visualize the
 changes made to the data. As changes are made to the data, this table
 will get longer. The table can be filtered by values by clicking the
-while “All” box in each column. For example, you could view only the
+white “All” box in each column. For example, you could view only the
 changes to fDOM. This is particularly useful as you can view changes to
 the data in the plot by clicking a row within the change log.</p>
 <p><strong>Field Form</strong></p>
@@ -319,28 +319,31 @@ the visit which can be useful when making decisions about
 corrections.</p>
 <p><strong>Calibration Check</strong></p>
 <p>This table shows the calibration checks performed for the parameter
-being plotted. Used serial numbers when the data was loaded, it
+being plotted. Using serial numbers when the data was loaded, it
 determines if the probe was switched during the visit and estimates when
 the switch was made which is useful for drift corrections.</p>
 <p><strong>Data Summary</strong></p>
 <p>This table provides a summary of the data. The table is dynamic, and
-will summarize only the data being displayed in the above plot (note
-that it will not adjust when you use plotly’s zoom tool, only the date
-range tools). This tool can be useful to get quick summary statistics
-about a period of interest like a storm event.</p>
+will summarize only the data being displayed in the above plot. This
+tool can be useful to get quick summary statistics about a period of
+interest like a storm event.</p>
+<blockquote>
+<p><strong>Note:</strong> Data summary will not adjust when you use
+plotly’s zoom tool, only the date range tools.</p>
+</blockquote>
 </div>
 <div class="section level4">
 <h4 id="correct-out-of-water-periods">2.3 Correct Out of Water Periods<a class="anchor" aria-label="anchor" href="#correct-out-of-water-periods"></a>
 </h4>
 <p>Out of water periods are periods where the sonde is still collecting
 measurements, but is not actively in the water due to maintenance or
-data downloads. These are clear periods where the data is not accurate
+data downloads. These are periods where we know the data is not accurate
 and should be removed. This can be easily done using the <strong>Flag
 OOW Periods</strong> button which uses the <code>get_oow</code> function
 to identify periods where the sonde was out of the water and remove
 those points. Note that this function uses a 15-minute buffer on either
-side of the period to account for wiper test, inaccurate time reporting,
-and equilibration.</p>
+side of the period to account for wiper tests, inaccurate time
+reporting, and equilibration.</p>
 <p><strong>You may edit field notes if needed.</strong> By default if
 the field form is missing the removal time or return time, it will
 remove the entire day to prevent including out of water data. You may
@@ -350,8 +353,29 @@ navigate to the field form table, and add edits to the table.</p>
 <li><p>Manually add in a removal or return time based on the
 data.</p></li>
 <li><p>If a period doesn’t appear to need removal, you can replace
-<strong>Remove OOW Period?</strong> with false and it will not be
-removed.</p></li>
+<strong>Remove OOW Period?</strong> with <code>false</code> and it will
+not be removed.</p></li>
+</ul>
+</div>
+<div class="section level4">
+<h4 id="review-data-and-undo-changes">2.4 Review Data and Undo Changes<a class="anchor" aria-label="anchor" href="#review-data-and-undo-changes"></a>
+</h4>
+<p>You can also review changes made to the data and undo a data edit in
+this tab. This is done using the <strong>Change Log</strong> table.</p>
+<ul>
+<li><p>To view the data at a certain point, click on the row within the
+change log.</p></li>
+<li><p>To view the data that was changed in that step, toggle the
+“Visualize Changed Data Points” option.</p></li>
+<li>
+<p>To undo a change, select the row you would like to revert back to
+and click the “Restore selected version” button.</p>
+<blockquote>
+<p><strong>Note:</strong> Undoing a change will revert the project back
+to what it looked like at that point, any edits following will be
+lost.</p>
+</blockquote>
+</li>
 </ul>
 <hr>
 </div>
@@ -424,7 +448,7 @@ resolved duplicate removed.</em></p>
 </h3>
 <p>This step is used to remove points that are outside a set minimum and
 maximum. As it’s name suggests, this is often used to remove points
-outside physical or measurement limits (i.e., a fDOM value below 0). The
+outside physical or measurement limits (e.g., a fDOM value below 0). The
 default values are based on reported measurement limits for YSI EXO
 probes. These can be manually adjusted in the <strong>Set Physical
 Limits</strong> section based on expert knowledge about your system. The
@@ -447,7 +471,7 @@ are flagged but retained. There are several methods that can be used to
 select points for removal:</p>
 <ul>
 <li><p><strong>None or manual selection only</strong>: This will start
-with no points highlighted, use the selection tools with plotly to
+with no points highlighted, use the selection tools within Plotly to
 select and remove points to remove.</p></li>
 <li><p><strong>Hampel filter:</strong> Uses a <a href="https://search.r-project.org/CRAN/refmans/pracma/html/hampel.html" class="external-link">hampel
 filter</a> to select outliers which is based on median absolute
@@ -651,10 +675,9 @@ that is exported:</p>
 export data within the specified range.</p></li>
 <li><p><strong>Export Frequency:</strong> Aggregate the values into
 larger windows (e.g., hourly or daily values)</p></li>
-<li><p><strong>Summary Method:</strong> Available if <strong>export
-frequency</strong> is larger than the data interval. Used to specify the
-method used to summarize the data. You may select more than one and they
-will show up as separate column in the exported data.</p></li>
+<li><p><strong>Summary Method:</strong> Used to specify the method used
+to summarize the data. You may select more than one and they will show
+up as separate column in the exported data.</p></li>
 </ul>
 <blockquote>
 <p>While there is an option to select a parameter, this only controls
@@ -669,7 +692,7 @@ Location</strong> to set the file name and save location. Click
 <h4 id="export-metadata">9.2 Export Metadata<a class="anchor" aria-label="anchor" href="#export-metadata"></a>
 </h4>
 <p>This section is used to export metadata stored within the project to
-a <code>.csv</code> file. There are four different files that can be
+a <code>.csv</code> file. There are seven different files that can be
 saved:</p>
 <ul>
 <li><p><strong>Duplicate Notes:</strong> Exports the table describing
@@ -679,9 +702,17 @@ the data gaps with any user added notes (see <a href="#gaps">3.1
 Gaps</a>).</p></li>
 <li><p><strong>Change Log:</strong> Exports the change log describing
 all the changes made to the data.</p></li>
+<li><p><strong>Change Report:</strong> Exports a <code>pdf</code> file
+containing information about each change with a plot for viewing the
+change. See <a href="data-review.html">here</a> for more information on
+the change report.</p></li>
 <li><p><strong>Precipitation:</strong> Exports the hourly precipitation
 data downloaded from NASA power (see <a href="#add-precipitation">1.5
 Add Precipitation</a>).</p></li>
+<li><p><strong>Field Form:</strong> Exports the field form, with any
+edits made in the app related to out of water periods.</p></li>
+<li><p><strong>Calibration Checks</strong>: Exports the calibration
+checks file including the estimated check time.</p></li>
 </ul>
 </div>
 <div class="section level4">

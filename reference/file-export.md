@@ -13,7 +13,9 @@ save_path_server(
   startname = "sonde_export",
   label = "Choose Location",
   title = "Select save path",
-  filetype = ".csv",
+  filetype = reactiveVal(".csv"),
+  username,
+  type,
   data_ver
 )
 ```
@@ -43,6 +45,16 @@ save_path_server(
 - filetype:
 
   file extension
+
+- username:
+
+  A `reactiveVal` holding the name of the analyst for the changelog
+
+- type:
+
+  a `reactiveVal` holding a character specifying the type of data being
+  saved options include "sondeproj", "data", "dups", "gaps",
+  "changelog", "precip", "calcheck", "fieldform", "change-report"
 
 - data_ver:
 

@@ -2,7 +2,7 @@
 
 ## SondePolishR 0.0.9012
 
-(2026-10-01)
+(2026-10-13)
 
 ### Bug Fixes
 
@@ -19,17 +19,42 @@
   function which is faster
   ([\#99](https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/99)).
 
+- Updated the changelog code to not clear the filtering used when it
+  re-renders so that filtering will hold when examining different data
+  versions
+  ([\#121](https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/121))
+
 ### Updates
 
 - Updated `read_sonde` function to allow for a modified EXO format.
 
-- In the **Visualize** tab, added an option to allow someone to review
-  edits to the data by visualizing the changes made to the data based on
-  the version of the data selected in the change log table.
-
 - Updated the documentation in the readme to include directions about
   the version of R, using R tools, and updating packages to hopefully
-  prevent issues when using the app for the first time.
+  prevent issues when using the app for the first time
+  ([\#116](https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/116)).
+
+- In the **Visualize** tab, added an option to allow someone to review
+  edits to the data by visualizing the changes made to the data based on
+  the version of the data selected in the change log table
+  ([\#94](https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/94)/#120).
+
+- Added a new function `generate report` which allows a user to generate
+  a `pdf` report to visualize the changes made to a sonde project via
+  the **Download Data** tab
+  ([\#94](https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/94)).
+
+- Added a new vignette describing the new ways to visualize data changes
+  ([\#118](https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/118)).
+
+- When exporting data, duplicated date-times will be automatically
+  summarized while this is expected for periods longer than the data
+  interval, it will also summarized duplicates when the sampling
+  interval is used. Now a flag (DUP03) will be added to the data to
+  indicate this duplicate merge was performed
+  ([\#121](https://github.com/wildfire-water-security/WWS-Node1-SondePolishR-sonde-qaqc/issues/121)).
+
+- Reviewed all vignettes, articles, and readme to ensure the information
+  and screenshots were up to date.
 
 ## SondePolishR 0.0.9011
 

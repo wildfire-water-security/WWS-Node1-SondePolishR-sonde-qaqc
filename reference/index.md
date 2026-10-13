@@ -99,6 +99,8 @@ Functions for plotting and exporting data.
   : Create plotly object of requested sonde data
 - [`summarize_data()`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/summarize_data.md)
   : Summarize data to a different time period
+- [`generate_report()`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/generate_report.md)
+  : Generate a change report from a sonde project
 
 ## Example Data
 

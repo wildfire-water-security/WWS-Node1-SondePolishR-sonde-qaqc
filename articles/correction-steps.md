@@ -98,7 +98,7 @@ Throughout this tutorial we will refer to **tabs** and **panels**.
     > sonde project and will be loaded with the rest of the data.
 
 4.  In the **Load Data** section enter the **analyst name** you want
-    associated with the changes. This will be stored in the changelog
+    associated with the changes. This will be stored in the change log
     and should be something you’re okay with being visible to anyone you
     share the project with.
 
@@ -628,16 +628,12 @@ FNU), a standard correction factor may be used.
 ## Step 6: Export Data
 
 After you’ve performed any cleaning steps, the last step is to export
-your data so a more usable format.
+your data to a more usable format.
 
 - **Export cleaned data:** Export the data in the **Export Data** card
   on the **Download Data** tab. The selected data will be saved to the
   specified file as a `.csv` file. You have several options when
   exporting the data:
-
-  - **Date Range:** If you only want to export data for a certain date
-    range, you can specify that here. By default the entire date range
-    will be exported.
 
   - **Export Frequency:** If you would like the data summarized into a
     different time period (e.g., hourly, daily, monthly) select that
@@ -651,7 +647,8 @@ your data so a more usable format.
   > **Note:** The export function will summarize the data by the
   > requested interval. If you export the data at the measurement
   > interval, this means that the duplicates will be summarized using
-  > the selected summary method.
+  > the selected summary method. Any points summarized this way will get
+  > a DUP03 flag.
 
   After specifying the data you want to export, click the **Choose
   Location** button to select where you want to save your data to and
@@ -668,7 +665,7 @@ your data so a more usable format.
 - **Export metadata:** Export the project metadata in the **Export
   Metadata** card on the **Download Data** tab. This section is used to
   export metadata stored within the project to a `.csv` file. There are
-  four different files that can be saved:
+  seven different files that can be saved:
 
   - **Duplicate Notes:** Exports the table describing the data
     duplicates with any user added notes.
@@ -679,7 +676,16 @@ your data so a more usable format.
   - **Change Log:** Exports the change log describing all the changes
     made to the data.
 
+  - **Change Report:** Exports a `pdf` file containing information about
+    each change with a plot for viewing the change.
+
   - **Precipitation:** Exports the hourly precipitation data.
+
+  - **Field Form:** Exports the field form, with any edits made in the
+    app related to out of water periods.
+
+  - **Calibration Checks**: Exports the calibration checks file
+    including the estimated check time.
 
   After specifying the metadata you want to export, click the **Choose
   Location** button to select where you want to save your data to and

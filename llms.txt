@@ -370,6 +370,8 @@ Functions for plotting and exporting data.
   : Create plotly object of requested sonde data
 - [`summarize_data()`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/summarize_data.md)
   : Summarize data to a different time period
+- [`generate_report()`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/generate_report.md)
+  : Generate a change report from a sonde project
 
 ## Example Data
 
@@ -394,6 +396,8 @@ Example datasets and metadata.
   Guide](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/articles/app-manual.md):
 - [Correction
   Workflow](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/articles/correction-steps.md):
+- [Reviewing Data
+  Changes](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/articles/data-review.md):
 - [QAQC
   Flags](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/articles/QAQC-flags.md):
 - [Using Precipitation

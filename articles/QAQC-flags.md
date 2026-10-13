@@ -20,3 +20,4 @@ which is used to determine what changes were made to the data.
 | Visualize | RM04 | OOW periods removed based on information from the field form. |
 | Data Checks | DUP01 | Duplicated values averaged. |
 | Data Checks | DUP02 | Duplicated values removed. |
+| Export Data | DUP03 | Duplicated values summarized with the summarization method. |
