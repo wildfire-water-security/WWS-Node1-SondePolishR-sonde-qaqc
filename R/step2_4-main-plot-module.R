@@ -11,6 +11,8 @@
 #' @param sel_mode Logical, should selection mode be turned on as default?
 #' @param plot_exist A `reactiveVal` indicating if the plot exists or not to prevent warnings about plot obj not being registered.
 #' @param webgl_supported A `reactiveVal` indicating if webgl is support in the current browser.
+#' @param startmin A `reactiveVal` with the minimum y-limit to use
+#' @param startmax A `reactiveVal` with the maximum y-limit to use
 #'
 #' @returns a plot of the data.
 #' @rdname main-plot

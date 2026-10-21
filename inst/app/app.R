@@ -81,7 +81,11 @@ ui <-  page_fillable(
       ),
       nav_panel("Download Data",
                 value = "step-10",
-                SondePolishR::export_UI("data10"))
+                SondePolishR::export_UI("data10")
+      ),
+      nav_panel("Review Corrections",
+                value = "step-11",
+                SondePolishR::review_edits_UI("data11"))
 
   ))
 
@@ -148,6 +152,8 @@ server <- function(input, output, session) {
   #step 10: export data
    SondePolishR::export_server("data10", sondeproj, data_ver, y_var,current_mod,username, webgl_supported)
 
+  #step 11: review data corrections
+   SondePolishR::review_edits_server("data11", sondeproj, data_ver, y_var, view_state,username,webgl_supported)
 
 }
 

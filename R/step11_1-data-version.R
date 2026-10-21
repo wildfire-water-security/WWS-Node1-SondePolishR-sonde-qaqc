@@ -5,7 +5,7 @@
 #' @param id the shiny ID of the module
 #' @param sondeproj A `reactiveVal` holding the current dataset.
 #' @param y_var A `reactiveVal` holding the Y-variable to plot on the y-axis.
-#' @param row A `reactiveVal` holding the number of the row selected in the changelog.
+#' @param dd A `reactiveVal` holding the name of the dd in the changelog.
 #'
 #' @returns A list containing:
 #'  - `current`: Reactive expression containing the version of the data corresponding to the selected changelog row.
@@ -27,30 +27,27 @@ data_version_UI <- function(id) {
         "Select the row in the change log to ", strong("return"), " to.",
         style = "font-size: 0.85em;max-width: 200px;"
       )
-    ),
-    input_switch(
-      ns("display_changes"),
-      "Visualize Changed Data Points",
-      value = FALSE
     )
   )
 }
 
 #' @rdname data-versioning
 #' @export
-data_version_server <- function(id, sondeproj, y_var, row) {
+data_version_server <- function(id, sondeproj, y_var, dd) {
   moduleServer(id, function(input, output, session){
   #keep track of diffs to apply
     curr_diffs <- reactive({
       req(sondeproj())
 
-      if(is.null(row())) {
-        return(NULL)
-      }
+      if(is.null(dd())){return(NULL)}
 
-      diff_list <- sondeproj()$changelog$diff_name[(row()):nrow(sondeproj()$changelog)]
+      changelog <- sondeproj()$changelog
+      diffs <- sondeproj()$diffs
+
+      row <- which(dd() == changelog$diff_name)
+      diff_list <- changelog$diff_name[row:nrow(changelog)]
       diff_list <- diff_list[grepl("^dd", diff_list)]
-      diffs <- sondeproj()$diffs[names(sondeproj()$diffs) %in% diff_list]
+      diffs <- diffs[names(diffs) %in% diff_list]
 
       diffs
     })
@@ -59,9 +56,31 @@ data_version_server <- function(id, sondeproj, y_var, row) {
     curr_ver <- reactive({
       req(sondeproj())
       undo_diffs <- curr_diffs()
+      changelog <- sondeproj()$changelog
+      row <- which(dd() == changelog$diff_name)
 
-      if(!is.null(undo_diffs) && !is.null(row()) && row() < nrow(sondeproj()$changelog)){
+
+      if(!is.null(undo_diffs) && !is.null(row) && row < nrow(sondeproj()$changelog)){
         undo_diffs <- undo_diffs[-1] #don't undo changed to get to selected version
+        apply_diff(sondeproj()$data, undo_diffs,
+                   id = c("DateTime_rd", "DupNum"),
+                   invert = TRUE)
+      }else{
+        sondeproj()$data
+      }
+
+    })
+
+  #get previous version to show the line of the data before the change
+    prev_ver <- reactive({
+      req(sondeproj())
+      undo_diffs <- curr_diffs()
+      changelog <- sondeproj()$changelog
+      row <- which(dd() == changelog$diff_name)
+
+
+      if(!is.null(undo_diffs) && !is.null(row) && row < nrow(sondeproj()$changelog)){
+        undo_diffs <- undo_diffs #do undo changed to get to previous version
         apply_diff(sondeproj()$data, undo_diffs,
                    id = c("DateTime_rd", "DupNum"),
                    invert = TRUE)
@@ -75,7 +94,7 @@ data_version_server <- function(id, sondeproj, y_var, row) {
     changed_points <- reactive({
       req(sondeproj())
 
-      if(input$display_changes && !is.null(curr_diffs())){
+      if(!is.null(curr_diffs())){
         diff <- curr_diffs()[[1]] #get the changes to get to data
 
         #get previous values for thing being plotted
@@ -137,6 +156,7 @@ data_version_server <- function(id, sondeproj, y_var, row) {
   #return things to make plot
     list(
       current = curr_ver,
+      previous = prev_ver,
       changed = changed_points)
   }
   )}

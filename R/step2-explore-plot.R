@@ -96,7 +96,6 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var, view_state, user
     y2_var <- reactiveVal()
     undo_ver <- reactiveVal() #keep track of data version
     plot_exist <- reactiveVal() #keeps warning about missing plot
-    sel_row <- reactiveVal() #keep track of row selected in table
 
   #create log table
   tab <- reactive({
@@ -166,21 +165,14 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var, view_state, user
         escape = FALSE,
         options = list(
           stateSave = TRUE,
-          stateDuration = -1
+          stateDuration = -1,
+          pageLength = 5,
+          lengthMenu = list(
+            c(3, 5, 10, 20, -1),
+            c('3', '5', '10', '20', 'All'))
         )
       )
     })
-
-
-  observeEvent(input$log_table_rows_selected,{
-    if(input$table_opt != "Change Log"){
-      sel_row(NULL)
-    }else{
-      sel_row(input$log_table_rows_selected)
-    }
-  })
-
-  version_data <- data_version_server("data_version",sondeproj = sondeproj,y_var = y_var, row=sel_row)
 
   #keep track of edits
     observeEvent(input$log_table_cell_edit,{
@@ -273,9 +265,9 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var, view_state, user
 
     #filter data
     plot_data <- reactive({
-      req(version_data$current(), plot_dates())
+      req(sondeproj(), plot_dates())
 
-      data <- version_data$current()
+      data <- sondeproj()$data
 
       data %>% dplyr::filter(.data$Date >= plot_dates()[1], .data$Date <= plot_dates()[2])
     })
@@ -287,21 +279,6 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var, view_state, user
 
       #use function to plot sonde data
         p <- plot_sonde(data = plot_data(), y_var=y_var(), y2_var= y2, proj = sondeproj(), opts=plot_opts())
-
-      #add previous data if triggered
-        if(!is.null(version_data$changed())){
-          prev_data <- version_data$changed() %>% filter(!is.na(.data$old))
-
-          op_col <- c("data_added" = "#2ECC71", "data_removed" = "darkred", "data_changed" = "orange", "data_merge" = "darkgreen")
-
-          #change color based on change
-          for(f in unique(prev_data$op_type)){
-            nice_f <- stringr::str_to_title(gsub("_", " ", f))
-              df <- prev_data %>% filter(.data$op_type == f)
-              p <- p %>% add_trace(data = df, x = ~DateTime_rd, y = ~old,
-                                   name = nice_f,type="scatter", mode="markers", yaxis="y2",
-                                   marker = list(color = op_col[[f]]), inherit = FALSE)}
-        }
 
         p
 

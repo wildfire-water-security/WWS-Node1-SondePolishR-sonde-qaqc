@@ -6,6 +6,7 @@
 #' @param data A `data.frame` with the sonde data to plot.
 #' @param proj A `sondeproj` object with additional metadata to plot,
 #' only required if opts includes oow, calcheck, quality_flag or `y2_var` is "precip" or "raw".
+#' @param raw_data Optional. Used as the raw data if specified. If `NULL` will get from the `proj`.
 #' @param y_var Y-variable to plot on the y-axis.
 #' @param y2_var A second, optional y-variable to plot on a second axis.
 #' @param opts A list of options for plotting:
@@ -34,7 +35,7 @@ plot_sonde <- function(data, y_var, y2_var=NULL,
                                  oow=FALSE,
                                  calcheck=FALSE,
                                  qualflag=FALSE),
-                       source = "plot"){
+                       source = "plot",  raw_data=NULL){
   stopifnot(is.null(proj) || inherits(proj, "sondeproj"))
 
   #pull things from project
@@ -91,7 +92,7 @@ plot_sonde <- function(data, y_var, y2_var=NULL,
                              name = y2_var_nice, inherit = FALSE,
                              line = list(color = "#1d3040"))
       }else if(y2_var == "raw"){
-        raw_data <- get_raw_data(proj)
+        if(is.null(raw_data)){raw_data <- get_raw_data(proj)}
         p <- p %>% add_trace(data= raw_data, x=~DateTime_rd, y=as.formula(paste0("~`", y_var, "`")),
                              type="scatter", yaxis="y", mode="lines",
                              name = "Raw Data",inherit = FALSE,
