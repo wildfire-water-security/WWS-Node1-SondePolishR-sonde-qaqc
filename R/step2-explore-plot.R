@@ -9,27 +9,12 @@ explore_data_UI <- function(id){
     sidebarLayout(
       sidebarPanel(
         accordion(
-          open = c("Select Parameters", "Remove Out of Water Periods", "Review Data Edits", "Table Options"),
+          open = c("Select Parameters", "Table Options"),
 
           accordion_panel(
             "Select Parameters",
             update_parms_UI(ns("update_parms")),
             update_parms_UI(ns("update_parms"), input_id = "y2_var", text = "Select Second Parameter to Plot:")
-          ),
-          accordion_panel(
-            "Remove Out of Water Periods",
-            div(
-              style = "display: flex; align-items: center; gap: 35px;",
-              actionButton(ns("remove_oow"), "Flag OOW Periods"),
-              span(
-                "Removes points across",  strong("all"),
-                " parameters within the red boxes.",
-                style = "font-size: 0.85em;max-width: 200px;"
-              ))
-          ),
-          accordion_panel(
-            "Review Data Edits",
-            data_version_UI(ns("data_version"))
           ),
           accordion_panel(
             "Table Options",
@@ -208,57 +193,6 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var, view_state, user
     update_parms_server("update_parms", sondeproj, data_ver, y_var, choices_fun = nice_yvar)
 
     update_parms_server("update_parms", sondeproj, data_ver, y2_var, input_id= "y2_var", choices_fun = nice_yvar)
-
-  #remove OOW periods
-    observeEvent(input$remove_oow, {
-      req(sondeproj())
-
-      if(is.null(sondeproj()$fieldform)){
-        if(interactive()){
-          shinyalert::shinyalert(
-            title = "No Field Data Available",
-            text = "Please load field form data to remove out of water periods.",
-            type = "warning"
-          )
-        }
-      }else{
-        show_modal_spinner(text = "Removing OOW Periods...", spin="fading-circle")
-        on.exit(remove_modal_spinner(), add = TRUE)
-
-        data <- sondeproj()$data
-        #get OOW periods
-        oow <- get_oow(sondeproj()$fieldform, tz=sondeproj()$meta$tz,interval=get_interval(data))
-
-        #remove those periods from data
-        rm_index <- data %>%
-          rowwise() %>%
-          filter(any(.data$DateTime_rd >= oow$start & .data$DateTime_rd <= oow$end)) %>% pull(.data$Index) %>% unique()
-        setna <- data$Index %in% rm_index
-
-        data_filter <- data %>% mutate(filter = setna) %>%
-          mutate(across(-("DateTime_rd":"Battery_V"), ~ if_else(filter, NA, .x))) %>%
-          select(-"filter")
-
-        #flag these changes were made
-        edit <- list(
-          data = data_filter,
-          rows = rm_index,
-          y_var = "all",
-          step = "removing oow",
-          note = paste0("OOW periods removed based on information from the field form."),
-          flag = "RM04",
-          changetype = "flag_rm"
-        )
-
-
-        #log edits
-        proj <- apply_edit(sondeproj(), edit, username())
-
-        #update sondeproj
-        sondeproj(proj)
-      }
-
-    })
 
   #keep track of dates
     plot_dates <- weekly_range_server("date_nav", sondeproj, data_ver, view_state)

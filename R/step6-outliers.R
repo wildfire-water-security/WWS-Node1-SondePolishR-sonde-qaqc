@@ -26,10 +26,11 @@ outlier_UI <- function(id){
                            choices = c("Add Bad" = "bad", "Add Questionable" = "questionable", "Remove Selection" = "remove"))),
             bslib::layout_columns(
               col_widths = c(3,3,1,5),
-              numericInput(ns("k"),"Window",value =7,step=2, updateOn="blur"),
-              tags$div(
+              conditionalPanel(condition = sprintf("input['%s'] != 'oow'",ns("filter_type")),
+                               numericInput(ns("k"),"Window",value =7,step=2, updateOn="blur")),
+              conditionalPanel(condition = sprintf("input['%s'] != 'oow'",ns("filter_type")),tags$div(
                 style = "margin-right: 0px;",
-                numericInput(ns("t"),"Threshold",value = 7, step=0.5, updateOn="blur")),
+                numericInput(ns("t"),"Threshold",value = 7, step=0.5, updateOn="blur"))),
               tags$div(
                 style = "width: 1px; height: 85px; background-color: #6c7881; display: inline-block; margin: 0 15px; vertical-align: middle;"),
               div(class = "d-flex justify-content-center align-items-center",
@@ -53,7 +54,7 @@ outlier_UI <- function(id){
           ),
           accordion_panel(
             "Plotting Options",
-            plot_options_UI(ns("plot_opts"),start_val = c(TRUE,TRUE,FALSE,FALSE,FALSE,TRUE))
+            plot_options_UI(ns("plot_opts"),start_val = c(TRUE,TRUE,FALSE,TRUE,FALSE,TRUE))
           ))
         ),
       mainPanel(
@@ -97,6 +98,7 @@ outlier_server <- function(id, sondeproj, data_ver, y_var,view_state, username,w
 
   #keep track of second y_variable
     y2_var <- reactiveVal()
+    fieldform_available <- reactiveVal(FALSE) #keep track of if we have fieldform
 
   #stores index of selected points
     manual_chg <- reactiveVal(list("questionable" = integer(),
@@ -111,6 +113,17 @@ outlier_server <- function(id, sondeproj, data_ver, y_var,view_state, username,w
                       "bad" = integer(),
                       "remove" = integer()))
     })
+
+  #if field form added allow OOW period as an option
+    observeEvent(sondeproj(),{
+      has_fieldform <- !is.null(sondeproj()$fieldform)
+      if(!identical(fieldform_available(), has_fieldform)) {
+        fieldform_available(has_fieldform)
+        updateSelectInput(session, "filter_type",
+                          choices = c("None" = "none",
+                                      "Hampel Filter" = "hampel", "Relative Change" = "rel_change",
+                                      "High Variability" = "high_var","Out of Water" = "oow"))
+      }})
 
   #make sure that the window stays odd
     observeEvent(input$k, {
@@ -127,6 +140,10 @@ outlier_server <- function(id, sondeproj, data_ver, y_var,view_state, username,w
       req(sondeproj(), y_var(),input$filter_type)
       if(input$filter_type == "none"){
         integer()
+      }else if(input$filter_type == "oow"){
+        data <- sondeproj()$data
+        oow <- get_oow(sondeproj()$fieldform, tz=sondeproj()$meta$tz,interval=get_interval(data))
+        identify_outliers(data, y_var(), input$filter_type, oow = oow)
       }else{
         req(input$k, input$t)
         data <- sondeproj()$data
@@ -291,6 +308,7 @@ outlier_server <- function(id, sondeproj, data_ver, y_var,view_state, username,w
                         "high_var" =  paste0("Data removed based on regions of high variability",
                                              " with a window size of ", input$k, " and threshold of ", input$t,
                                              " paired with manual selection."),
+                        "oow" =  "Data removed based on out of water periods with with manual review",
                         "none" = "Data removed based on manual selection.")
 
     #make edit list

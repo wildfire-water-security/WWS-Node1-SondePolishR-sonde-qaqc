@@ -5,14 +5,17 @@
 ## Bug Fixes
 
 - Fixed a bug where the data changes weren't filtered to the data range when in period view.
+- Fixed a bug in the smoothing methods that wasn't extending the end of the data that was being smoothed, resulting in the addition of missing values at the end of the smoothed section (#124)
 
 ## Updates
 
-- Added a blue line to show the pre-corrected data.
+- Moved out of water removals to the outlier tab to remove per parameter in an effort to encourage review of these removals.
+
+  - **Note:** When older `sondeproj` objects are loaded into the app, the OOW periods will be split to match this new format and diff names will be renamed to match the extra lines in the changelog.
 
 - Added a new module to facilitate review of the data corrections. This moves all the data reviewing functionality from Module 2 (Visualize) to this new module (Review Corrections):
 
-  - 
+  - Added a blue line to show the pre-corrected data.
 
 # SondePolishR 0.0.9012
 

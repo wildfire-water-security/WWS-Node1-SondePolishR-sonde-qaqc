@@ -57,9 +57,15 @@ load_project <- function(csv_path=NULL, csv_files=NULL, prj_path=NULL,
 
       #if older project, make any updates to update the project (added 9-18-2026; version 0.0.9011)
       if(is.null(obj$meta$pkg_version) | obj$meta$pkg_version < packageVersion("SondePolishR")){
+        ### in future add any updates to update projects here
+        #split up OOW periods
+        if(obj$meta$pkg_version < as.package_version("0.0.9013")){
+          obj <- split_oow(obj)
+        }
+
         obj$meta$pkg_version <- packageVersion("SondePolishR") #update the version of the project
 
-        ### in future add any updates to update projects here
+
       }
 
     }else{
