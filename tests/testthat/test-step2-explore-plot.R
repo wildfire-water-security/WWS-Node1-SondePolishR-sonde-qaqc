@@ -37,11 +37,11 @@ test_that("{shinytest2} recording: checking-module2", {
   app$expect_screenshot(name = "changing_ylimit_y2")
 
   #try with raw data to make sure they plot on same limits
-  app$set_inputs(`data2-update_parms-y2_var` = "raw")
-  app$wait_for_idle()
-  plot_obj <- app$get_value(export = "data2-plot_obj")
-  #expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2") #doesn't want to behave for whatever reason
-  app$expect_screenshot(name = "changed-raw-data")
+   app$set_inputs(`data2-update_parms-y2_var` = "raw")
+   app$wait_for_idle()
+   plot_obj <- app$get_value(export = "data2-plot_obj")
+   #expect_snapshot_value(get_plotly_snap(plot_obj), style = "json2") #doesn't want to behave for whatever reason
+   app$expect_screenshot(name = "changed-raw-data")
 
   #check putting in week view
   app$set_inputs(`data2-update_parms-y2_var` = "none")

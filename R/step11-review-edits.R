@@ -80,7 +80,8 @@ review_edits_server <- function(id, sondeproj, data_ver, y_var, view_state, user
     #create log table
     tab <- reactive({
       req(sondeproj())
-      sondeproj()$changelog %>% mutate(parameter = factor(.data$parameter, levels=unique(.data$parameter))) %>% filter(parameter %in% c("all", y_var()))
+      sondeproj()$changelog %>% mutate(parameter = factor(.data$parameter, levels=unique(.data$parameter))) %>%
+        filter(.data$parameter %in% c("all", y_var()))
     })
 
     output$log_table <- DT::renderDT({

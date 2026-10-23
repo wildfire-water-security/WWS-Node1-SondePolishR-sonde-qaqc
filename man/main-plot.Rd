@@ -38,6 +38,10 @@ main_plot_server(
 
 \item{plot_exist}{A `reactiveVal` indicating if the plot exists or not to prevent warnings about plot obj not being registered.}
 
+\item{startmin}{A `reactiveVal` with the minimum y-limit to use}
+
+\item{startmax}{A `reactiveVal` with the maximum y-limit to use}
+
 \item{webgl_supported}{A `reactiveVal` indicating if webgl is support in the current browser.}
 }
 \value{
