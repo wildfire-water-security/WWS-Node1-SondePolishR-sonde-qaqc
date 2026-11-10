@@ -17,8 +17,9 @@ correction_UI <- function(id){
           accordion_panel(
             "Corrections",
             div(style = "margin-top: -15px;",
-                radioButtons(ns("edit_type"),"",
-                             choices = c("Additive" = "additive","Drift" = "drift", "Smoothing" = "smooth"))),
+                shinyWidgets::radioGroupButtons(ns("edit_type"), "",
+                                                choices = c("Additive" = "additive","Drift" = "drift", "Smoothing" = "smooth"),
+                                                checkIcon = list(yes = shiny::icon("check"),no = NULL))),
             uiOutput(ns('edit_options'))
           ),
           accordion_panel(

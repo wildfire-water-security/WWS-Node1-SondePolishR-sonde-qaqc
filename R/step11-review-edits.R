@@ -17,11 +17,10 @@ review_edits_UI <- function(id){
             update_parms_UI(ns("update_parms"), input_id = "y2_var", text = "Select Second Parameter to Plot:")
           ),
           accordion_panel(
-            "Reviewer: Review Data Edits"
-          ),
-          accordion_panel(
-            "Analyst: Review Data Edits",
-            data_version_UI(ns("data_version"))
+            "Review Data Edits",
+            shinyWidgets::radioGroupButtons(ns("mode"), "Reviewing Mode",
+                                            choices = c("Analyst" = "analyst", "Reviewer" = "reviewer", "View All" = "everything"),
+                                            checkIcon = list(yes = shiny::icon("check"),no = NULL))
           ),
           accordion_panel(
             "Date Ranges",
@@ -31,18 +30,23 @@ review_edits_UI <- function(id){
             "Plotting Options",
             plot_options_UI(ns("plot_opts"), start_val = c(TRUE,TRUE,FALSE,FALSE,FALSE,FALSE))
           )
-        )),
+        ), width = 3),
 
       mainPanel(
-        main_plot_UI(ns("plot")),
-
-        #add buttons to navigate date
-        weekly_range_buttons_UI(ns("date_nav")),
-        #adding some space after buttons
-        HTML("<br><br>"),
-        #visualize data log
-        DT::DTOutput(NS(id, "log_table"))
-      ))
+        fluidRow(
+          column(width = 4,
+                 data_review_side(ns("data_review"))
+                 ),
+           column(width = 8,
+                  main_plot_UI(ns("plot")),
+                  #add buttons to navigate date
+                  weekly_range_buttons_UI(ns("date_nav")),
+                  #adding some space after buttons
+                  HTML("<br><br>"),
+                  #mode for review (may put in sidebar??)
+                  data_review_bottom(ns("data_review")),
+                  )
+        ), width = 9))
   )
 }
 
@@ -87,6 +91,10 @@ review_edits_server <- function(id, sondeproj, data_ver, y_var, view_state, user
       sondeproj()$changelog %>% mutate(parameter = factor(.data$parameter, levels=unique(.data$parameter))) %>%
         filter(.data$parameter %in% c("all", y_var()))
     })
+
+    #module for looking at changes and saving changes
+    review_mode <- reactive({input$mode})
+    data_review_server("data_review",mode= review_mode, sondeproj = sondeproj,y_var = y_var, dd=sel_row, username=username)
 
     output$log_table <- DT::renderDT({
       #column names

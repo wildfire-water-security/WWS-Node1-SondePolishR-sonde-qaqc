@@ -56,7 +56,6 @@ data_version_server <- function(id, sondeproj, y_var, dd, username) {
   #get version to plot or revert back to
     curr_ver <- reactive({
       req(sondeproj())
-      browser()
       undo_diffs <- curr_diffs()
       changelog <- sondeproj()$changelog
       row <- which(dd() == changelog$diff_name)

@@ -22,8 +22,8 @@ outlier_UI <- function(id){
                           choices = c("None" = "none",
                                       "Hampel Filter" = "hampel", "Relative Change" = "rel_change", "High Variability" = "high_var"),
                           selected = "none", width="80%"),
-              radioButtons(ns("selection_mode"),"Manual Selection Mode",
-                           choices = c("Add Bad" = "bad", "Add Questionable" = "questionable", "Remove Selection" = "remove"))),
+              shinyWidgets::radioGroupButtons(ns("selection_mode"),"Manual Selection Mode",
+                           choices = c("Bad" = "bad", "Questionable" = "questionable", "Remove" = "remove"))),
             bslib::layout_columns(
               col_widths = c(3,3,1,5),
               conditionalPanel(condition = sprintf("input['%s'] != 'oow'",ns("filter_type")),
