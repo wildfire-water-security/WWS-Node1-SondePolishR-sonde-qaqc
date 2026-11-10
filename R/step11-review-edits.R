@@ -17,7 +17,10 @@ review_edits_UI <- function(id){
             update_parms_UI(ns("update_parms"), input_id = "y2_var", text = "Select Second Parameter to Plot:")
           ),
           accordion_panel(
-            "Review Data Edits",
+            "Reviewer: Review Data Edits"
+          ),
+          accordion_panel(
+            "Analyst: Review Data Edits",
             data_version_UI(ns("data_version"))
           ),
           accordion_panel(
@@ -45,7 +48,8 @@ review_edits_UI <- function(id){
 
 #' Review data corrections
 #'
-#' Allows a reviewer to view the corrections made, accept or reject them, and make comments.
+#' Allows a reviewer to view the corrections made, accept or reject them, and make comments. The analyst can see those
+#' reviewer notes and undo changes as needed.
 #'
 #' @param id An ID string passed to shiny::NS(), used for namespacing UI inputs/outputs.
 #' @param sondeproj A `reactiveVal` holding the current dataset.
@@ -115,7 +119,7 @@ review_edits_server <- function(id, sondeproj, data_ver, y_var, view_state, user
       sel_row(tab()$diff_name[input$log_table_rows_selected])
     })
 
-    version_data <- data_version_server("data_version",sondeproj = sondeproj,y_var = y_var, dd=sel_row)
+    version_data <- data_version_server("data_version",sondeproj = sondeproj,y_var = y_var, dd=sel_row, username=username)
 
    #get what to plot via user options
     plot_opts <- plot_options_server("plot_opts")

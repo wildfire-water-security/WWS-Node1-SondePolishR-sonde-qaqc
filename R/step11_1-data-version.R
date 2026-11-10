@@ -6,6 +6,7 @@
 #' @param sondeproj A `reactiveVal` holding the current dataset.
 #' @param y_var A `reactiveVal` holding the Y-variable to plot on the y-axis.
 #' @param dd A `reactiveVal` holding the name of the dd in the changelog.
+#' @param username A `reactiveVal` holding the name of the analyst for the changelog
 #'
 #' @returns A list containing:
 #'  - `current`: Reactive expression containing the version of the data corresponding to the selected changelog row.
@@ -22,9 +23,9 @@ data_version_UI <- function(id) {
   tagList(
     div(
       style = "display: flex; align-items: center; gap: 35px; margin-bottom: 20px;",
-      actionButton(ns("undo_changes"), "Restore Selected Version"),
+      actionButton(ns("undo_changes"), "Undo Selected Change"),
       span(
-        "Select the row in the change log to ", strong("return"), " to.",
+        "Select the row in the change log to ", strong("undo"), ".",
         style = "font-size: 0.85em;max-width: 200px;"
       )
     )
@@ -33,7 +34,7 @@ data_version_UI <- function(id) {
 
 #' @rdname data-versioning
 #' @export
-data_version_server <- function(id, sondeproj, y_var, dd) {
+data_version_server <- function(id, sondeproj, y_var, dd, username) {
   moduleServer(id, function(input, output, session){
   #keep track of diffs to apply
     curr_diffs <- reactive({
@@ -55,12 +56,13 @@ data_version_server <- function(id, sondeproj, y_var, dd) {
   #get version to plot or revert back to
     curr_ver <- reactive({
       req(sondeproj())
+      browser()
       undo_diffs <- curr_diffs()
       changelog <- sondeproj()$changelog
       row <- which(dd() == changelog$diff_name)
 
 
-      if(!is.null(undo_diffs) && !is.null(row) && row < nrow(sondeproj()$changelog)){
+      if(!is.null(undo_diffs) && !is.null(row) && dd() != tail(sondeproj()$changelog$diff_name, n=1)){
         undo_diffs <- undo_diffs[-1] #don't undo changed to get to selected version
         apply_diff(sondeproj()$data, undo_diffs,
                    id = c("DateTime_rd", "DupNum"),
@@ -74,12 +76,11 @@ data_version_server <- function(id, sondeproj, y_var, dd) {
   #get previous version to show the line of the data before the change
     prev_ver <- reactive({
       req(sondeproj())
-      undo_diffs <- curr_diffs()
+      undo_diffs <- curr_diffs()[-1]
       changelog <- sondeproj()$changelog
       row <- which(dd() == changelog$diff_name)
 
-
-      if(!is.null(undo_diffs) && !is.null(row) && row < nrow(sondeproj()$changelog)){
+      if(!is.null(undo_diffs) && !is.null(row)){
         undo_diffs <- undo_diffs #do undo changed to get to previous version
         apply_diff(sondeproj()$data, undo_diffs,
                    id = c("DateTime_rd", "DupNum"),
@@ -114,39 +115,46 @@ data_version_server <- function(id, sondeproj, y_var, dd) {
   #keep track of if we are okay restoring changes
     observeEvent(input$undo_changes,{
       #only undo changes if something is selected
-      if(!is.null(row()) && row() < nrow(sondeproj()$changelog)){
+      if(!is.null(dd())){
         ##confirmation here
-        shinyalert::shinyalert(title = "Confirm restoring past data version",
-                               text = "If you continue you will lose any edits made after the selected version.",
+        shinyalert::shinyalert(title = "Confirm a undo of a change",
+                               text = "If you continue you will lose any edits made to those data points after that change.",
                                type = "warning",
                                showCancelButton = TRUE,
                                inputId = "conf")
       }else{
-        shinyalert::shinyalert(title = "Select a Version to Restore",
-                               text = "Select the row in the table to restore to\n(should not be the last row).",
+        shinyalert::shinyalert(title = "Select a change to undo",
+                               text = "Select the row in the table to undo.",
                                type = "info")}
     })
 
-  #reset version selected when project
-    #restore a version
+  #undo a change when selected
     observeEvent(input$conf,{
       if(input$conf == TRUE){
-        proj <- sondeproj()
+        #get current data
+          proj <- sondeproj()
+          data <- proj$data
 
-        #update dataset
-        proj$data <- curr_ver()
+        #get diff to undo
+          diff <- curr_diffs()[[dd()]]
+          diff_name <- dd()
 
-        #remove extra diffs
-        #get the diffs to apply
-        #only get diffs if not current data
-        if(row() < nrow(sondeproj()$changelog)){
-          diff_list <- sondeproj()$changelog$diff_name[1:row()]
-          diff_list <- diff_list[grepl("^dd", diff_list)]
-          diffs <- sondeproj()$diffs[names(sondeproj()$diffs) %in% diff_list]}
-        proj$diffs <- diffs
+        #get reverted data
+          new_data <- apply_diff(data, diff, invert=TRUE)
 
-        #roll back changelog
-        proj$changelog <- proj$changelog[1:row(),]
+        #get rows affected
+          index <- which(!sapply(diff, is.null))[1]
+          rows <- nrow(diff[[index]])
+
+        #apply as if it's a new change
+          edit <- list(data = new_data,
+                       rows = rows,
+                       y_var = y_var(),
+                       step = "data review",
+                       note = paste("undoing change", diff_name),
+                       flag = NA)
+
+        proj <- apply_edit(proj, edit, username())
 
         #set as sondeproj
         sondeproj(proj)

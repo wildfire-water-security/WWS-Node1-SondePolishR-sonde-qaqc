@@ -10,7 +10,7 @@
 #' - y_var: parameter being edited
 #' - step: name of the editing step for the changelog
 #' - note: an optional note to add to the changelog
-#' - flag: character flag to use for edits to the data
+#' - flag: character flag to use for edits to the data, won't add flag if NA (for undoing)
 #' @param username the username of the person who made the change
 #' @returns A `sondeproj` object with edits made.
 #' @export
@@ -41,6 +41,7 @@ apply_edit <- function(proj, edit, username){
     newdata <- edit$data
 
   #apply flags to data preserving any existing flags
+  if(!is.na(edit$flag)){
     #if all loop through
     index <- edit$rows
     if(edit$y_var == "all"){
@@ -49,6 +50,8 @@ apply_edit <- function(proj, edit, username){
     }else{
       newdata <- add_flags(newdata, edit$y_var,index, edit$flag)
     }
+  }
+
 
   #get diff (must be after applying flags)
     dif <- list(get_diff(olddata, newdata, id=c("DateTime_rd", "DupNum")))

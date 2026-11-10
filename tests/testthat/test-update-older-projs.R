@@ -96,3 +96,21 @@ test_that("oow periods get split up", {
     expect_true(!any(changelog$step == "removing oow" & changelog$parameter == "all"))
 
 })
+
+test_that("changelog gets updated", {
+  log <- data.frame(datetime = Sys.time(), parameter = "all", step = "initial load",
+                          n_changed = 2, note = "testing update", user ="smith", diff_name="raw")
+
+  proj <- example_sondeproj
+  proj$changelog <- log
+  update <- update_changelog(proj)
+
+  new_log <- update$changelog
+
+  expect_true(ncol(new_log) > ncol(log))
+  expect_equal(ncol(new_log),11)
+
+  expect_names <- c("analyst", "analyst_note", "review_status", "review_date", "reviewer", "review_note")
+  expect_true(all(expect_names %in% colnames(new_log)))
+
+})

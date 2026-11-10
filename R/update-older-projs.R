@@ -72,3 +72,28 @@ split_oow <- function(proj){
 
  return(proj)
 }
+
+#' Add reviewer columns to changelog
+#'
+#' As of version 0.0.9013, the changelog stores additional information related to reviewing the changes. This function
+#' will ensure the changelog had the correct structure without losing data.
+#'
+#' @param proj a `sondeproj`
+#'
+#' @returns a `sondeproj` with a changelog that matches the current structure.
+#'
+#' @noRd
+update_changelog <- function(proj){
+  stopifnot(inherits(proj, "sondeproj"))
+  log <- proj$changelog
+
+  #rename columns and add new items
+  log <- log %>% rename("analyst" = "user", "analyst_note" ="note") %>%
+    mutate(review_status="pending", review_date = NA, reviewer = NA, review_note = NA) %>%
+    relocate(.data$analyst_note, .after = "analyst")
+
+  #replace changlog
+  proj$changelog <- log
+
+  return(proj)
+}
