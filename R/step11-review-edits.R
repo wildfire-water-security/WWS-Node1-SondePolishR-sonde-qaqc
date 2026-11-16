@@ -28,7 +28,7 @@ review_edits_UI <- function(id){
           ),
           accordion_panel(
             "Plotting Options",
-            plot_options_UI(ns("plot_opts"), start_val = c(TRUE,TRUE,FALSE,FALSE,FALSE,FALSE))
+            plot_options_UI(ns("plot_opts"), start_val = c(TRUE,TRUE,FALSE,FALSE,FALSE,TRUE))
           )
         ), width = 3),
 
@@ -38,7 +38,7 @@ review_edits_UI <- function(id){
                  data_review_side(ns("data_review"))
                  ),
            column(width = 8,
-                  main_plot_UI(ns("plot")),
+                  main_plot_UI(ns("plot"), height="350px"),
                   #add buttons to navigate date
                   weekly_range_buttons_UI(ns("date_nav")),
                   #adding some space after buttons
@@ -83,7 +83,6 @@ review_edits_server <- function(id, sondeproj, data_ver, y_var, view_state, user
     y2_var <- reactiveVal()
     undo_ver <- reactiveVal() #keep track of data version
     plot_exist <- reactiveVal() #keeps warning about missing plot
-    sel_row <- reactiveVal() #keep track of row selected in table
 
     #create log table
     tab <- reactive({
@@ -94,40 +93,9 @@ review_edits_server <- function(id, sondeproj, data_ver, y_var, view_state, user
 
     #module for looking at changes and saving changes
     review_mode <- reactive({input$mode})
-    data_review_server("data_review",mode= review_mode, sondeproj = sondeproj,y_var = y_var, dd=sel_row, username=username)
+    dd <- data_review_server("data_review",mode= review_mode, sondeproj = sondeproj,y_var = y_var, username=username)
 
-    output$log_table <- DT::renderDT({
-      #column names
-      df_cols <- c("DateTime" = "datetime", "Parameter"= "parameter", "Step" = "step")
-
-      df <- tab()
-      #making datetime nice
-        df$datetime <- format(df$datetime, "%Y-%m-%d  %H:%M")
-
-      DT::datatable(
-        df,
-        selection = list(mode = "single"),
-        filter = "top",
-        colnames = df_cols,
-        editable = FALSE,
-        escape = FALSE,
-        options = list(
-          stateSave = TRUE,
-          stateDuration = -1,
-          pageLength = 5,
-          lengthMenu = list(
-            c(3, 5, 10, 20, -1),
-            c('3', '5', '10', '20', 'All'))
-        )
-      )
-    })
-
-  #sets sel row to diff name
-    observeEvent(input$log_table_rows_selected,{
-      sel_row(tab()$diff_name[input$log_table_rows_selected])
-    })
-
-    version_data <- data_version_server("data_version",sondeproj = sondeproj,y_var = y_var, dd=sel_row, username=username)
+    version_data <- data_version_server("data_version",sondeproj = sondeproj,y_var = y_var, dd=dd, username=username)
 
    #get what to plot via user options
     plot_opts <- plot_options_server("plot_opts")

@@ -13,6 +13,7 @@
 #' @param webgl_supported A `reactiveVal` indicating if webgl is support in the current browser.
 #' @param startmin A `reactiveVal` with the minimum y-limit to use
 #' @param startmax A `reactiveVal` with the maximum y-limit to use
+#' @param height A value in pixels with "px" for the height
 #'
 #' @returns a plot of the data.
 #' @rdname main-plot
@@ -20,14 +21,14 @@
 #' @keywords internal
 #'
 #'
-main_plot_UI <- function(id){
+main_plot_UI <- function(id, height= "450px"){
   ns <- NS(id)
   tagList(
     div(
       style = "position: relative; padding-left: 70px;",
 
       #add plot
-      plotlyOutput(ns("plot"), height = "450px"),
+      plotlyOutput(ns("plot"), height = height),
 
       # Upper y-limit
       div(style = "position:absolute; top:20px; left:0px; width:75px;font-size: 10px;",

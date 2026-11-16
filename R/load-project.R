@@ -72,7 +72,7 @@ load_project <- function(csv_path=NULL, csv_files=NULL, prj_path=NULL,
     }else{
       #create new project if one isn't loaded
       changelog <- write_log(NULL, "all", "initial load", n = nrow(csv_merge), diff_name = "raw",
-                             user=username)
+                             user=username, status = "approved")
 
       #create sonde object
       obj <- list(meta = list(site = site, tz= tz, coords = c(NA, NA), pkg_version = packageVersion("SondePolishR")),
@@ -141,7 +141,7 @@ load_project <- function(csv_path=NULL, csv_files=NULL, prj_path=NULL,
 
           #document data addition, needs to be after getting diff so name is correct
           obj <- write_log(obj, "all", "adding new data", n = (nrow(data_merge) - nrow(prev_data)), diff_name = diff_version(obj), return="sondeproj",
-                           user=username)
+                           user=username, status="approved")
 
         #put new data in object
           obj$data <- data_merge

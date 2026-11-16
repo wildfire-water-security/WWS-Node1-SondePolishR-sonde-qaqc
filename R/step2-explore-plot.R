@@ -95,7 +95,9 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var, view_state, user
                                                      "Remove_Period", "Notes")
     }else if(input$table_opt == "Change Log"){
       req(sondeproj()$changelog)
-      sondeproj()$changelog %>% mutate(parameter = factor(.data$parameter, levels=unique(.data$parameter)))
+      sondeproj()$changelog %>% mutate(parameter = factor(.data$parameter, levels=unique(.data$parameter))) %>%
+        select(any_of(c("review_status", "datetime","parameter","step","analyst","analyst_note","review_date","reviewer" ,
+                      "review_note", "diff_name")))
     }else if(input$table_opt == "Calibration Check"){
       req(sondeproj()$calcheck, y_var())
       sondeproj()$calcheck %>%
@@ -113,8 +115,9 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var, view_state, user
       #column names
       df_cols <- switch(
         input$table_opt,
-        "Change Log" = c("DateTime" = "datetime", "Parameter"= "parameter", "Step" = "step",
-                         "Values Changed (#)" = "n_changed", "Note" = "note", "User" = "user", "Version Name" =  "diff_name"),
+        "Change Log" = c("Edit Date" = "datetime", "Parameter"= "parameter", "Step" = "step",
+                         "A. Note" = "analyst_note", "Analyst" = "analyst", "Version Name" =  "diff_name",
+                         "Status" = "review_status", "Review Date" = "review_date", "Reviewer" = "reviewer", "R. Note" = "review_note"),
         "Calibration Check" = c("Date" = "Date", "Parameter" = "Parameter", "Resident Value" = "Resident_Value",
                                 "Check Value" = "Check_Value", "Notes" ="Notes", "Probe Switched?" =  "Probe_Switch",
                                 "Estimated Switch Time"  ="Est_Time"),
@@ -129,7 +132,9 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var, view_state, user
        df <- tab()
       #making datetime nice
       if(input$table_opt == "Change Log"){
-        df$datetime <- format(df$datetime, "%Y-%m-%d  %H:%M")
+        df$datetime <- format(df$datetime, "%Y-%m-%d", tz=tz(df$datetime))
+        df$review_date <- format(df$review_date, "%Y-%m-%d")
+
       }else if(input$table_opt == "Calibration Check"){
         df$Est_Time <- format(df$Est_Time, "%Y-%m-%d  %H:%M")
       }

@@ -82,3 +82,11 @@ data <- proj$data
   #step dd5/dd10 overlap in time
   #step dd16/ overlap in time, undoing undos shift from dd17
 
+
+
+#testing selective undoes -----
+  proj <- readRDS("dev/cleaning-data-tests/FAL_sondeproj_fDOM.RDS")
+
+  diffs <- proj$diffs
+
+  #undo

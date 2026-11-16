@@ -80,7 +80,7 @@
     proj$data <- data2
 
   #set consistent times for change log to prevent errors everytime this reruns
-    proj$changelog$datetime <- as.POSIXct("2026-09-24 12:00")
+    proj$changelog$datetime <- as.POSIXct(paste("2026-09-24 12:", c("00", "01", "02", "03", "04", "05"), sep=""))
 
   #save as an example
     saveRDS(proj, "inst/extdata/example-sonde-project.RDS")
