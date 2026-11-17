@@ -90,7 +90,7 @@ update_changelog <- function(proj){
   #rename columns and add new items
   log <- log %>% rename("analyst" = "user", "analyst_note" ="note") %>%
     mutate(review_status="pending", review_date = NA, reviewer = NA, review_note = NA) %>%
-    relocate(.data$analyst_note, .after = "analyst")
+    relocate("analyst_note", .after = "analyst")
 
   #replace changlog
   proj$changelog <- log

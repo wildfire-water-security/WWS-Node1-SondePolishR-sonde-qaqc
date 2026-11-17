@@ -72,7 +72,7 @@ test_that("{shinytest2} recording: checking-module5", {
     tab <- app$get_value(export = "data5-changelog")
     expect_true(nrow(tab) > nrow(example_sondeproj$changelog))
     expect_equal(tab$parameter[nrow(tab)], "Temp_C")
-    expect_equal(tab$note[nrow(tab)], paste0("Data removed based on absolute limits of ", -5, " and ", 15))
+    expect_equal(tab$analyst_note[nrow(tab)], paste0("Data removed based on absolute limits of ", -5, " and ", 15))
 
 })
 

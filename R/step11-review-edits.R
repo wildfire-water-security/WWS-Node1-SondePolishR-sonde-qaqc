@@ -166,6 +166,12 @@ review_edits_server <- function(id, sondeproj, data_ver, y_var, view_state, user
       req(version_data, y_var())
       curr <- version_data$current()
       prev <- version_data$previous()
+
+      if(!is.null(review_range())){
+        curr <- curr %>% filter(.data$DateTime_rd >= review_range()[1] & .data$DateTime_rd <= review_range()[2])
+        prev <- prev %>% filter(.data$DateTime_rd >= review_range()[1] & .data$DateTime_rd <= review_range()[2])
+      }
+
       vals <- c(curr[[y_var()]], prev[[y_var()]])
 
       if(all(is.null(vals))){return(NULL)}
@@ -176,14 +182,46 @@ review_edits_server <- function(id, sondeproj, data_ver, y_var, view_state, user
       req(startmax(), y_var())
       curr <- version_data$current()
       prev <- version_data$previous()
+
+      if(!is.null(review_range())){
+        curr <- curr %>% filter(.data$DateTime_rd >= review_range()[1] & .data$DateTime_rd <= review_range()[2])
+        prev <- prev %>% filter(.data$DateTime_rd >= review_range()[1] & .data$DateTime_rd <= review_range()[2])
+      }
+
       vals <- c(curr[[y_var()]], prev[[y_var()]])
       floor(min(vals, na.rm=TRUE) - (startmax()*0.05))
-
     })
+
+
+    #keep track of the date range of changes
+    review_range <- reactive({
+      req(dd())
+      diff <- sondeproj()$diffs[[dd()]]
+      vars <- which(!sapply(diff, is.null))[1]
+      data <- sondeproj()$data
+
+      dates <- diff[[vars[1]]]$DateTime_rd
+      dates <- dates[!is.na(dates)]
+
+      req(length(dates) > 0)
+      rng <- range(dates)
+
+      #add padding
+      int <- get_interval(sondeproj()$data)
+      length <- as.numeric(difftime(rng[2], rng[1], units = "mins"))/int
+
+      pad <- if(length > 50) period(int * 700, units="minutes") else period(250 * int, units="minutes")
+
+      #set to start/end of dataset
+      start <- max(c(rng[1], min(data$DateTime_rd, na.rm=TRUE)))
+      end <- min(c(rng[2], max(data$DateTime_rd, na.rm=TRUE)))
+      c(start,end) + c(-pad, pad)
+    })
+
 
     #save to export
     main_plot_server("plot", data_ver, sondeproj, plot_obj, plot_data, y_var, plot_exist=plot_exist, startmin=startmin, startmax=startmax,
-                     webgl_supported=webgl_supported)
+                     webgl_supported=webgl_supported, x_range = review_range)
 
     #redraw when back on module to prevent weird drawing issues
     observeEvent(input$modules, {

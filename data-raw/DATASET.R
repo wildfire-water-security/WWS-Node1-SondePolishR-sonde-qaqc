@@ -151,7 +151,7 @@
   class(proj_messy) <- "sondeproj"
 
   #remove my username from log
-  proj_messy$changelog$user <- "smith"
+  proj_messy$changelog$analyst <- "smith"
 
   saveRDS(proj_messy, "tests/testthat/testdata/example-sondeproj-messy.RDS")
   saveRDS(proj_messy, "inst/extdata/example-sondeproj-messy.RDS")

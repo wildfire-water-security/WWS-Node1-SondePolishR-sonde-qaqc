@@ -1,13 +1,21 @@
 {
   "export": {
     "data2-table": {
+      "review_status": [
+        "approved",
+        "pending",
+        "pending",
+        "pending",
+        "pending",
+        "pending"
+      ],
       "datetime": [
         "2026-09-24T19:00:00Z",
-        "2026-09-24T19:00:00Z",
-        "2026-09-24T19:00:00Z",
-        "2026-09-24T19:00:00Z",
-        "2026-09-24T19:00:00Z",
-        "2026-09-24T19:00:00Z"
+        "2026-09-24T19:01:00Z",
+        "2026-09-24T19:02:00Z",
+        "2026-09-24T19:03:00Z",
+        "2026-09-24T19:04:00Z",
+        "2026-09-24T19:05:00Z"
       ],
       "parameter": [
         "all",
@@ -20,20 +28,36 @@
       "step": [
         "initial load",
         "creating datetimes for gaps",
+        "outlier removal",
+        "additive shifts",
+        "outlier removal",
+        "data interpolation"
+      ],
+      "analyst": [
+        "smith",
+        "smith",
+        "smith",
+        "smith",
+        "smith",
+        "smith"
+      ],
+      "analyst_note": [
+        "",
+        "",
         "removing first four points",
         "applying shift correction",
         "removing a bunch of points",
         "linear interpolation"
       ],
-      "n_changed": [
-        14528,
-        11,
-        4,
-        3,
-        39,
-        39
+      "review_date": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
       ],
-      "note": [
+      "reviewer": [
         "",
         "",
         "",
@@ -41,13 +65,13 @@
         "",
         ""
       ],
-      "user": [
-        "smith",
-        "smith",
-        "Smith",
-        "Smith",
-        "Smith",
-        "Smith"
+      "review_note": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
       ],
       "diff_name": [
         "raw",

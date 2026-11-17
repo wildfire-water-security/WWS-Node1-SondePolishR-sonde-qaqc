@@ -111,7 +111,7 @@ data_review_server <- function(id, sondeproj, mode, y_var, username){
       })
 
     #if mode changes, clear the selection
-      observeEvent(mode(), {
+      observeEvent(list(mode(), y_var()), {
         if(nrow(review_tab()) == 0){dd(NULL)
         }else{
           dd(review_tab()$diff_name[1])
@@ -230,6 +230,12 @@ data_review_server <- function(id, sondeproj, mode, y_var, username){
 
           #set as sondeproj
           sondeproj(proj)
+
+          #figure out next row
+          next_row <- ifelse(nrow(review_tab()) < 1, NA, review_tab()$diff_name[1])
+          if(is.na(next_row)){dd(NULL)}else{dd(next_row)} #go to next row
+          note_update("") #clear after hitting button
+          updateTextAreaInput(session, "note", value=note_update())
         }
       })
 

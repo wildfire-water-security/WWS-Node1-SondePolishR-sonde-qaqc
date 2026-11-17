@@ -52,7 +52,7 @@ test_that("{shinytest2} recording: checking-module9", {
     tab <- app$get_value(export = "data9-changelog")
     expect_true(nrow(tab) > nrow(example_sondeproj$changelog))
     expect_equal(tab$parameter[nrow(tab)], "fDOM_QSU")
-    expect_equal(tab$note[nrow(tab)],  "fDOM corrected for temperature (\U03C1 = -0.011)")
+    expect_equal(tab$analyst_note[nrow(tab)],  "fDOM corrected for temperature (\U03C1 = -0.011)")
     fdom <- app$get_value(export = "data9-fdom_val")
     corr_fdom <- app$get_value(export = "data9-corr_fdom_val")
     expect_true(all(na.omit(fdom) == na.omit(corr_fdom))) #shouldn't apply any corrections because already temp corrected after flagging
@@ -75,7 +75,7 @@ test_that("{shinytest2} recording: checking-module9", {
     tab <- app$get_value(export = "data9-changelog")
     expect_true(nrow(tab) > nrow(example_sondeproj$changelog))
     expect_equal(tab$parameter[nrow(tab)], "fDOM_QSU")
-    expect_equal(tab$note[nrow(tab)],  "fDOM corrected for turbidity (Exponential (1-parameter)) (a = -0.003)")
+    expect_equal(tab$analyst_note[nrow(tab)],  "fDOM corrected for turbidity (Exponential (1-parameter)) (a = -0.003)")
     fdom <- app$get_value(export = "data9-fdom_val")
     corr_fdom <- app$get_value(export = "data9-corr_fdom_val")
     expect_true(all(na.omit(fdom) == na.omit(corr_fdom))) #shouldn't apply any corrections because already turb corrected after flagging

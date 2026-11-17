@@ -108,7 +108,7 @@ test_that("{shinytest2} recording: checking-module6", {
   tab <- app$get_value(export = "data6-changelog")
   expect_true(nrow(tab) > nrow(example_sondeproj$changelog))
   expect_equal(tab$parameter[nrow(tab)], "fDOM_QSU")
-  expect_equal(tab$note[nrow(tab)],  paste0("Data removed based on ", "Hampel Filter",
+  expect_equal(tab$analyst_note[nrow(tab)],  paste0("Data removed based on ", "Hampel Filter",
                                             " method with a window size of ", 5, " and threshold of ",
                                             2, " paired with manual selection."))
 
@@ -120,7 +120,7 @@ test_that("{shinytest2} recording: checking-module6", {
   tab <- app$get_value(export = "data6-changelog")
   expect_true(nrow(tab) > nrow(example_sondeproj$changelog))
   expect_equal(tab$parameter[nrow(tab)], "fDOM_QSU")
-  expect_equal(tab$note[nrow(tab)],  "Data flagged as questionable via manual selection.")
+  expect_equal(tab$analyst_note[nrow(tab)],  "Data flagged as questionable via manual selection.")
 
 
 })

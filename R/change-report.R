@@ -87,7 +87,7 @@ create_report_record <- function(dir, old, new, info, dd){
               paste("**Edit Time:**", strftime(info$datetime, format="%Y-%m-%d %H:%M"), "\\"),
               paste("**Points Changed (#):**", info$n_changed, "\\"),
               paste("**Change Date Range:**", paste(date_ranges, collapse = " to "), "\\"),
-              paste("**Note:**", info$note, "\\"),
+              paste("**Analyst Note:**", info$analyst_note, "\\"),
               "\\",
               "\\")
 
