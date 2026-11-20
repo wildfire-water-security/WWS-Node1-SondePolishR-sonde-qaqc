@@ -12,7 +12,6 @@
 
 split_oow <- function(proj){
   stopifnot(inherits(proj, "sondeproj"), proj$meta$pkg_version < as.package_version("0.0.9013"))
-
   changelog <- proj$changelog
   diffs <- proj$diffs
   data <- proj$data
@@ -27,7 +26,8 @@ split_oow <- function(proj){
 
   while(oow_steps){
     x <- min(which(changelog$step == "removing oow" & changelog$parameter == "all"))
-    diff <- proj$diffs[[changelog$diff_name[x]]]
+    name <- changelog$diff_name[x]
+    diff <- diffs[[name]]
     parms <- get_parms(data)
 
   #get new split diffs per parameter

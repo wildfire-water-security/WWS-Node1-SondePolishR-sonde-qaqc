@@ -76,7 +76,7 @@ save_path_server <- function(id, data,
       path <- parsed_path()
 
       if(!is.null(path) && nrow(path) > 0){
-        path$name <- paste0(startname(), ".csv")
+        path$name <- paste0(startname(), filetype())
         path$datapath <- file.path(dirname(path$datapath), path$name)
 
         parsed_path(path)

@@ -6,16 +6,34 @@
 
 - Fixed a bug where the data changes weren't filtered to the data range when in period view.
 - Fixed a bug in the smoothing methods that wasn't extending the end of the data that was being smoothed, resulting in the addition of missing values at the end of the smoothed section (#124)
+- Fixed bug with the file extension for the change report when auto-updating the name once the path has been selected where it was listed as a .csv not a .pdf.
 
 ## Updates
 
-- Moved out of water removals to the outlier tab to remove per parameter in an effort to encourage review of these removals.
+- **Moved out of water removals to the outlier tab to remove per parameter in an effort to encourage review of these removals.**
 
   - **Note:** When older `sondeproj` objects are loaded into the app, the OOW periods will be split to match this new format and diff names will be renamed to match the extra lines in the changelog.
 
-- Added a new module to facilitate review of the data corrections. This moves all the data reviewing functionality from Module 2 (Visualize) to this new module (Review Corrections):
+- **Updated the structure of the changelog.**
+
+  - Renamed a few column names
+
+    - user **→** analyst
+
+    - note **→** analyst note
+
+  - Added the following columns: review_date, reviewer, reviewer_note, review_status
+
+- **Added a new module to facilitate review of the data corrections.** This moves all the data reviewing functionality from Module 2 (Visualize) to this new module (Review Corrections). *This step has not yet been included in the workflow documentation as it still requires testing to determine the best workflow.*
 
   - Added a blue line to show the pre-corrected data.
+  - New buttons to toggle between a "reviewer" mode and "analyst" mode. Each mode contains buttons to update the status of a change after viewing on the plot.
+  - Allows undoing a single step. On the backend this replaces the changed points with the previous values before that change.
+    - If you've applied additional corrections to a set of data (i.e. a drift correction) this may make those points look funny/not be drift corrected.
+    - Similarly, if you undo a data removal, but then undo an interpolation step of those same points, it will revert back to the removed points.
+    - *To prevent weird issues it's highly recommended to start with undoing the most recent change first and work backwards and to work file by file, performing the entire review process before adding an additional file.*
+
+- Updated the info included in the change report pdf file to include the new reviewer information.
 
 # SondePolishR 0.0.9012
 

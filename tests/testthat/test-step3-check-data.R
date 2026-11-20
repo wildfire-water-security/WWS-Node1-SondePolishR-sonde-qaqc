@@ -37,8 +37,8 @@ test_that("{shinytest2} recording: checking-module3", {
     app$upload_file(`data1-pj_file` = file.path(test_path(), "testdata", "example-sondeproj-messy.RDS"))
 
     #click to load files and create project
-    app$click("data1-load_prj")
-    app$wait_for_idle() #for a consistent screenshot
+    app$click("data1-load_prj", wait_ = FALSE)
+    #app$wait_for_idle() #for a consistent screenshot
 
     #check initial table
     app$set_inputs(`data3-table_opt` = "Duplicates")

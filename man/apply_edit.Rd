@@ -16,7 +16,7 @@ apply_edit(proj, edit, username)
 \item y_var: parameter being edited
 \item step: name of the editing step for the changelog
 \item note: an optional note to add to the changelog
-\item flag: character flag to use for edits to the data
+\item flag: character flag to use for edits to the data, won't add flag if NA (for undoing)
 }}
 
 \item{username}{the username of the person who made the change}

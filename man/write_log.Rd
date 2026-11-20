@@ -13,7 +13,8 @@ write_log(
   diff_name = NULL,
   datetime = Sys.time(),
   user = Sys.info()[["user"]],
-  return = "df"
+  return = "df",
+  status = "pending"
 )
 }
 \arguments{
@@ -35,6 +36,8 @@ write_log(
 
 \item{return}{either \code{df} or \code{sondeproj} to specify if the changelog only should be returned or the \code{sondeproj} with
 the change log updated.}
+
+\item{status}{the review status of the change, should be one of the following: "pending", "approved", "returned", "justified", "undone"}
 }
 \value{
 If \code{return} is \code{df} returns the changelog as a \code{data.frame}.

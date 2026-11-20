@@ -34,7 +34,7 @@ test_that("oow periods get split up", {
   }
 
   proj <- flag_oow(example_sondeproj)
-
+  proj$meta$pkg_version <- package_version("0.0.9012")
   #test the update
     proj_update <- split_oow(proj)
     changelog <- proj_update$changelog
@@ -46,6 +46,7 @@ test_that("oow periods get split up", {
  #test when it's not at the end
   #remove OOW
    proj <- flag_oow(example_sondeproj)
+   proj$meta$pkg_version <- package_version("0.0.9012")
 
   #add more changes
   set.seed(9)
@@ -71,6 +72,7 @@ test_that("oow periods get split up", {
  #test when more than one OOW
     #remove OOW
     proj <- flag_oow(example_sondeproj)
+    proj$meta$pkg_version <- package_version("0.0.9012")
 
     #add more changes
     set.seed(9)

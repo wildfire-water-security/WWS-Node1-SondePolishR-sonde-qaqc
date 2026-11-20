@@ -43,6 +43,7 @@ review_edits_server(
 Invisible NULL
 }
 \description{
-Allows a reviewer to view the corrections made, accept or reject them, and make comments.
+Allows a reviewer to view the corrections made, accept or reject them, and make comments. The analyst can see those
+reviewer notes and undo changes as needed.
 }
 \keyword{internal}

@@ -133,7 +133,9 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var, view_state, user
       #making datetime nice
       if(input$table_opt == "Change Log"){
         df$datetime <- format(df$datetime, "%Y-%m-%d", tz=tz(df$datetime))
-        df$review_date <- format(df$review_date, "%Y-%m-%d")
+        if(!all(is.na(df$review_date))){
+          df$review_date <- format(df$review_date, "%Y-%m-%d")
+        }
 
       }else if(input$table_opt == "Calibration Check"){
         df$Est_Time <- format(df$Est_Time, "%Y-%m-%d  %H:%M")
@@ -151,7 +153,7 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var, view_state, user
         selection = list(mode = sel_method),
         filter = "top",
         colnames = df_cols,
-        editable = edit_opt,
+        editable = edit_opt, rownames = FALSE,
         escape = FALSE,
         options = list(
           stateSave = TRUE,

@@ -247,7 +247,6 @@ data_review_server <- function(id, sondeproj, mode, y_var, username){
 
       output$change_details <- renderUI({
         req(sondeproj(), dd())
-
         #get info for describing data
         info <- change_info()
         dd <- sondeproj()$diffs[[dd()]]
@@ -259,7 +258,7 @@ data_review_server <- function(id, sondeproj, mode, y_var, username){
 
         date_ranges <- if(all(is.finite(as.numeric(rng)))){
           format(rng, "%Y-%m-%d %H:%M")
-        }else{"—"}
+        }else{"-"}
 
         tags$div(
           class = "change-info-container",

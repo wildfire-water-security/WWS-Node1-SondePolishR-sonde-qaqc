@@ -7,7 +7,7 @@
 \usage{
 data_version_UI(id)
 
-data_version_server(id, sondeproj, y_var, dd)
+data_version_server(id, sondeproj, y_var, dd, username)
 }
 \arguments{
 \item{id}{the shiny ID of the module}
@@ -17,6 +17,8 @@ data_version_server(id, sondeproj, y_var, dd)
 \item{y_var}{A \code{reactiveVal} holding the Y-variable to plot on the y-axis.}
 
 \item{dd}{A \code{reactiveVal} holding the name of the dd in the changelog.}
+
+\item{username}{A \code{reactiveVal} holding the name of the analyst for the changelog}
 }
 \value{
 A list containing:

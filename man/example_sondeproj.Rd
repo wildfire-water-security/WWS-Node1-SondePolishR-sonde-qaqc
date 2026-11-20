@@ -21,8 +21,12 @@ An object of class \code{sondeproj} with the following elements:
 \item \strong{parameter}:  The parameter that the change was made to.
 \item \strong{step}: The name of the processing step the change was made in.
 \item \strong{nchanged}: The number of points that were changed.
-\item \strong{note}: Notes added about the changes made.
-\item \strong{user}: The username of the person who made the change.
+\item \strong{analyst}: The username of the person who made the change.
+\item \strong{analyst_note}: Notes added about the changes made.
+\item \strong{review_status}: The status of the change in the review process (accepted, returned, justified, pending, undone)
+\item \strong{review_date}: The date and time of the review.
+\item \strong{reviewer}: The username of the person who did the review.
+\item \strong{review_note}: Notes added by the reviewer.
 \item \strong{diff_name}: The name of the associated \code{data.diff}.
 }
 }
