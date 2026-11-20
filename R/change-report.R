@@ -72,7 +72,7 @@ make_markdown <- function(lines){
 
 create_report_record <- function(dir, old, new, info, dd){
   #replace unicode character
-  info$note <- gsub("\U03C1", "rho", info$note)
+  info$analyst_note <- gsub("\U03C1", "rho", info$analyst_note)
 
   #get date ranges
   vars <- names(dd)[!sapply(dd, is.null)]
@@ -81,15 +81,75 @@ create_report_record <- function(dir, old, new, info, dd){
                                                                 strftime(.data$end, format="%Y-%m-%d %H:%M")))
   date_ranges <- c(strftime(min(rng$start), format="%Y-%m-%d %H:%M"), strftime(max(rng$end), format="%Y-%m-%d %H:%M"))
 
-  header <- c(paste("**Edit Type:**", info$step, "\\"),
-              paste("**Parameter:**", get_yvar(info$parameter), "\\"),
-              paste("**Analyst:**", info$user, "\\"),
-              paste("**Edit Time:**", strftime(info$datetime, format="%Y-%m-%d %H:%M"), "\\"),
-              paste("**Points Changed (#):**", info$n_changed, "\\"),
-              paste("**Change Date Range:**", paste(date_ranges, collapse = " to "), "\\"),
-              paste("**Note:**", info$note, "\\"),
-              "\\",
-              "\\")
+  # Helper to safely format values
+  report_value <- function(x){
+    if (is.null(x) || length(x) == 0 || is.na(x[1]) || x[1] == "") {
+      return("---")
+    }
+
+    x
+  }
+
+  # Format a label/value pair for a table cell
+  latex_field <- function(label, value){
+    paste0(
+      "\\textbf{", label, ":} ",
+      report_value(value)
+    )
+  }
+
+  # Format a label/value pair on its own line
+  latex_info_line <- function(label, value){
+    paste0(
+      "\\textbf{", label, ":} ",
+      report_value(value),
+      "\\\\[4pt]"
+    )
+  }
+
+  # General information: two columns, two rows
+  general_info <- c(
+    "\\begin{tabularx}{\\textwidth}{lX}",
+    paste0(latex_field("Parameter", get_yvar(info$parameter)),
+    " & ",
+    latex_field("Points Changed (\\#)", info$n_changed),
+    " \\\\[6pt]"),
+    paste0(latex_field("Status", info$review_status),
+    " & ",
+    latex_field("Change Date Range", paste(date_ranges, collapse = " to "))),
+    "\\end{tabularx}")
+
+  # Analyst information
+  analyst_info <- c(
+    "\\textbf{Analyst Information}\\\\[6pt]",
+    latex_info_line("Analyst", info$analyst),
+    latex_info_line("Edit Time", strftime(info$datetime, "%Y-%m-%d %H:%M")),
+    latex_info_line("Analyst Note", info$analyst_note)
+  )
+
+  # Reviewer information
+  reviewer_info <- c(
+    "\\textbf{Reviewer Information}\\\\[6pt]",
+    latex_info_line("Reviewer", info$reviewer),
+    latex_info_line("Review Date", strftime(info$review_date, "%Y-%m-%d %H:%M")),
+    latex_info_line("Reviewer Note", info$review_note)
+  )
+
+  # Combine the sections
+  header <- c(
+    general_info,
+    "\\par\\vspace{20pt}",
+    "\\noindent",
+    "\\begin{minipage}[t]{0.48\\textwidth}",
+    analyst_info,
+    "\\end{minipage}",
+    "\\hfill",
+    "\\begin{minipage}[t]{0.48\\textwidth}",
+    reviewer_info,
+    "\\end{minipage}",
+    sep = "\n"
+  )
+
 
   header <- make_markdown(header)
 
@@ -126,7 +186,10 @@ create_report_header <- function(user, site){
               "output:",
               "  pdf_document:",
               "    latex_engine: xelatex",
-              "---", "", "\\newpage")
+              "header-includes:",
+              "  - \\usepackage{tabularx}",
+              "---", "", "\\newpage"
+              )
 
   make_markdown(header)
 

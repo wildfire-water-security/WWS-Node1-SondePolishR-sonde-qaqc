@@ -4,7 +4,7 @@
 \alias{identify_outliers}
 \title{Auto-detect potential bad data points}
 \usage{
-identify_outliers(data, y_var, method, k = 5, t = 7)
+identify_outliers(data, y_var, method, k = 5, t = 7, oow = NULL)
 }
 \arguments{
 \item{data}{A \code{data.frame} with the data to smooth (must have the columns Index and y_var)}
@@ -17,6 +17,8 @@ See details for more information about the different methods.}
 \item{k}{A adjustment parameter for the selected method (see details). This is the total length of points before and after the point.}
 
 \item{t}{A adjustment parameter for the selected method (see details).}
+
+\item{oow}{The results from \code{get_oow}, only required if method is \code{oow}}
 }
 \value{
 The indices of points within data flagged as "bad".
@@ -38,6 +40,9 @@ to include in the median calculation, the \code{t} parameter is used to control 
 \item \strong{high_var}: Used to determine regions of high variability. Uses rolling functions from the \code{zoo} package to determine
 the difference between the point and it's rolling median, then the median absolute deviation (MAD) for these differences are calculated.
 If the median absolute deviation is greater than \code{t} times the overall data's mean MAD it will be marked as bad.
+\item \strong{oow}: Flags points where the sonde was recorded to be out of the water.
+Requires that a field form is added to the project. Uses \code{get_oow()} to determine the out of
+water periods.
 }
 }
 \examples{

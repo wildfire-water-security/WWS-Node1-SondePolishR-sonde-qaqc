@@ -9,6 +9,7 @@
 #' See details for more information about the different methods.
 #' @param k A adjustment parameter for the selected method (see details). This is the total length of points before and after the point.
 #' @param t A adjustment parameter for the selected method (see details).
+#' @param oow The results from `get_oow`, only required if method is `oow`
 #'
 #' @returns The indices of points within data flagged as "bad".
 #' @md
@@ -29,11 +30,15 @@
 #' the difference between the point and it's rolling median, then the median absolute deviation (MAD) for these differences are calculated.
 #' If the median absolute deviation is greater than `t` times the overall data's mean MAD it will be marked as bad.
 #'
+#' - **oow**: Flags points where the sonde was recorded to be out of the water.
+#' Requires that a field form is added to the project. Uses `get_oow()` to determine the out of
+#' water periods.
+#'
 #' @examples
 #' identify_outliers(example_data, "fDOM_QSU", "hampel")
 
-identify_outliers <- function(data, y_var, method, k=5, t=7){
-  stopifnot(method %in% c("hampel", "rel_change", "high_var"), is.data.frame(data))
+identify_outliers <- function(data, y_var, method, k=5, t=7, oow=NULL){
+  stopifnot(method %in% c("hampel", "rel_change", "high_var", "oow"), is.data.frame(data))
 
   x <- data[[y_var]] #get variable we're identifying
 
@@ -72,6 +77,13 @@ identify_outliers <- function(data, y_var, method, k=5, t=7){
     outlier <- roll_mad > typical_mad * t #is above threshold?
     outlier[is.na(outlier)] <- FALSE #deal with ending/starting NA
 
+  }
+
+  if(method == "oow"){
+    rm_index <- data %>%
+      rowwise() %>%
+      filter(any(.data$DateTime_rd >= oow$start & .data$DateTime_rd <= oow$end)) %>% pull(.data$Index) %>% unique()
+    outlier <- data$Index %in% rm_index
   }
 
   indices <- data[outlier,] %>% pull(.data$Index)

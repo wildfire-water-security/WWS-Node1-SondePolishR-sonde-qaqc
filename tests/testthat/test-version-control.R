@@ -100,3 +100,4 @@ test_that("version control works as expected", {
     expect_equal(proj1_test, proj1$data)
 
 })
+

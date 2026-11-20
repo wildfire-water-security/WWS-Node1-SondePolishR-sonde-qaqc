@@ -198,7 +198,7 @@ create_plot <- function(old, new, dd, plot_path){
 
 username <- "K. Wampler"
 export_path <- file.path(getwd(), "dev/test-report.pdf")
-proj <- readRDS("../WWS-Node1-SONDE-postfire-sonde-network/code/exploratory/WWS-2026/FAL_sondeproj-clean.rds")
+proj <- example_sondeproj
 
 generate_report <- function(proj, username, export_path){
   log <- proj$changelog[-1,] #remove first row that's just loading data

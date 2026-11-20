@@ -5,7 +5,7 @@
 \alias{main_plot_server}
 \title{Visualize main data plot}
 \usage{
-main_plot_UI(id)
+main_plot_UI(id, height = "450px")
 
 main_plot_server(
   id,
@@ -18,11 +18,14 @@ main_plot_server(
   plot_exist = reactiveVal(),
   startmin = reactiveVal(),
   startmax = reactiveVal(),
-  webgl_supported
+  webgl_supported,
+  x_range = NULL
 )
 }
 \arguments{
 \item{id}{the shiny ID of the module}
+
+\item{height}{A value in pixels with "px" for the height}
 
 \item{data_ver}{A `reactiveVal` holding a number used to track when new data is added to trigger resets.}
 
@@ -38,7 +41,13 @@ main_plot_server(
 
 \item{plot_exist}{A `reactiveVal` indicating if the plot exists or not to prevent warnings about plot obj not being registered.}
 
+\item{startmin}{A `reactiveVal` with the minimum y-limit to use}
+
+\item{startmax}{A `reactiveVal` with the maximum y-limit to use}
+
 \item{webgl_supported}{A `reactiveVal` indicating if webgl is support in the current browser.}
+
+\item{x_range}{A `reactiveVal` with the starting x-axis date range to use for the zoom.}
 }
 \value{
 a plot of the data.

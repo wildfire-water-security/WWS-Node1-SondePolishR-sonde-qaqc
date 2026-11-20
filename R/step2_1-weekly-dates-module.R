@@ -40,10 +40,14 @@ weekly_range_buttons_UI  <- function(id){
 
   tagList(
       fluidRow(
+      class = "period-buttons-row",
       column(2,
-        actionButton( ns("prev_period"),"Previous Period")),
+        actionButton(ns("prev_period"),label = tagList(icon("arrow-left"),"Previous Period"),
+                     class = "btn btn-sm btn-outline-secondary")),
       column(8),
-      column(2,actionButton(ns("next_period"), "Next Period") ,
+
+      column(2, actionButton(ns("next_period"),label = tagList("Next Period", icon("arrow-right")),
+                             class = "btn btn-sm btn-outline-secondary"),
              htmlOutput(ns("n_period"))))
 
   )}

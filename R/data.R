@@ -42,8 +42,12 @@
 #'  - **parameter**:  The parameter that the change was made to.
 #'  - **step**: The name of the processing step the change was made in.
 #'  - **nchanged**: The number of points that were changed.
-#'  - **note**: Notes added about the changes made.
-#'  - **user**: The username of the person who made the change.
+#'  - **analyst**: The username of the person who made the change.
+#'  - **analyst_note**: Notes added about the changes made.
+#'  - **review_status**: The status of the change in the review process (accepted, returned, justified, pending, undone)
+#'  - **review_date**: The date and time of the review.
+#'  - **reviewer**: The username of the person who did the review.
+#'  - **review_note**: Notes added by the reviewer.
 #'  - **diff_name**: The name of the associated `data.diff`.
 
 "example_sondeproj"

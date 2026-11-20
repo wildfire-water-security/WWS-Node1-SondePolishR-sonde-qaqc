@@ -11,7 +11,8 @@ plot_sonde(
   proj = NULL,
   opts = list(points = TRUE, line = TRUE, files = FALSE, oow = FALSE, calcheck = FALSE,
     qualflag = FALSE),
-  source = "plot"
+  source = "plot",
+  raw_data = NULL
 )
 }
 \arguments{
@@ -35,6 +36,8 @@ only required if opts includes oow, calcheck, quality_flag or \code{y2_var} is "
 }}
 
 \item{source}{A character specifying the plot name for shiny reactivity.}
+
+\item{raw_data}{Optional. Used as the raw data if specified. If \code{NULL} will get from the \code{proj}.}
 }
 \value{
 a \code{plotly} object

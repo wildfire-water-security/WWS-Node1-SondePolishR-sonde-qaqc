@@ -1,0 +1,107 @@
+.period-buttons-row {
+  margin-bottom: -35px !important;
+}
+
+.period-buttons-row .form-group {
+  margin-bottom: -35px !important;
+}
+
+.btn-default{
+  background-color:#E3795E!important;
+  border-color:#E3795E!important;
+  color:white;
+}
+
+.btn-success {
+  background-color: #198754 !important;
+  border-color: #198754 !important;
+  color: white !important;
+}
+
+.btn-danger {
+  background-color: #dc3545 !important;
+  border-color: #dc3545 !important;
+  color: white !important;
+}
+
+.btn-warning {
+  background-color: #E9A23B !important;
+  border-color: #E9A23B !important;
+  color: white !important;
+}
+
+.btn-info {
+  background-color: #69A6D8 !important;
+  border-color: #69A6D8 !important;
+  color: white !important;
+}
+
+.section-label{
+  font-weight:600;
+  margin-bottom:0.5rem;
+}
+
+.selectize-input{color: white;
+}
+
+.load-data-module .bslib-card,
+.load-data-module .tab-content,
+.load-data-module .tab-pane,
+.load-data-module .card-body {
+  overflow: visible !important;
+}
+
+.change-info-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0;
+  font-size: 0.8rem;
+  margin-top: -8px;
+}
+
+/* Overall information box */
+.change-info-overall {
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  padding: 10px 14px;
+  background-color: #4a5a67;
+}
+
+/* Analyst and reviewer side-by-side */
+.change-info-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px;
+}
+
+/* Individual analyst/reviewer boxes */
+.change-info-section {
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  padding: 10px 14px;
+  background-color: #4a5a67;
+  min-width: 0;
+}
+
+/* Section headings */
+.change-info-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #E3795E;
+  margin: 0 0 10px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+/* Information fields */
+.change-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px 24px;
+  align-items: start;
+}
+
+.change-info-full {
+  grid-column: 1 / -1;
+}

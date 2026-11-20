@@ -9,27 +9,12 @@ explore_data_UI <- function(id){
     sidebarLayout(
       sidebarPanel(
         accordion(
-          open = c("Select Parameters", "Remove Out of Water Periods", "Review Data Edits", "Table Options"),
+          open = c("Select Parameters", "Table Options"),
 
           accordion_panel(
             "Select Parameters",
             update_parms_UI(ns("update_parms")),
             update_parms_UI(ns("update_parms"), input_id = "y2_var", text = "Select Second Parameter to Plot:")
-          ),
-          accordion_panel(
-            "Remove Out of Water Periods",
-            div(
-              style = "display: flex; align-items: center; gap: 35px;",
-              actionButton(ns("remove_oow"), "Flag OOW Periods"),
-              span(
-                "Removes points across",  strong("all"),
-                " parameters within the red boxes.",
-                style = "font-size: 0.85em;max-width: 200px;"
-              ))
-          ),
-          accordion_panel(
-            "Review Data Edits",
-            data_version_UI(ns("data_version"))
           ),
           accordion_panel(
             "Table Options",
@@ -96,7 +81,6 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var, view_state, user
     y2_var <- reactiveVal()
     undo_ver <- reactiveVal() #keep track of data version
     plot_exist <- reactiveVal() #keeps warning about missing plot
-    sel_row <- reactiveVal() #keep track of row selected in table
 
   #create log table
   tab <- reactive({
@@ -111,7 +95,9 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var, view_state, user
                                                      "Remove_Period", "Notes")
     }else if(input$table_opt == "Change Log"){
       req(sondeproj()$changelog)
-      sondeproj()$changelog %>% mutate(parameter = factor(.data$parameter, levels=unique(.data$parameter)))
+      sondeproj()$changelog %>% mutate(parameter = factor(.data$parameter, levels=unique(.data$parameter))) %>%
+        select(any_of(c("review_status", "datetime","parameter","step","analyst","analyst_note","review_date","reviewer" ,
+                      "review_note", "diff_name")))
     }else if(input$table_opt == "Calibration Check"){
       req(sondeproj()$calcheck, y_var())
       sondeproj()$calcheck %>%
@@ -129,8 +115,9 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var, view_state, user
       #column names
       df_cols <- switch(
         input$table_opt,
-        "Change Log" = c("DateTime" = "datetime", "Parameter"= "parameter", "Step" = "step",
-                         "Values Changed (#)" = "n_changed", "Note" = "note", "User" = "user", "Version Name" =  "diff_name"),
+        "Change Log" = c("Edit Date" = "datetime", "Parameter"= "parameter", "Step" = "step",
+                         "A. Note" = "analyst_note", "Analyst" = "analyst", "Version Name" =  "diff_name",
+                         "Status" = "review_status", "Review Date" = "review_date", "Reviewer" = "reviewer", "R. Note" = "review_note"),
         "Calibration Check" = c("Date" = "Date", "Parameter" = "Parameter", "Resident Value" = "Resident_Value",
                                 "Check Value" = "Check_Value", "Notes" ="Notes", "Probe Switched?" =  "Probe_Switch",
                                 "Estimated Switch Time"  ="Est_Time"),
@@ -145,7 +132,11 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var, view_state, user
        df <- tab()
       #making datetime nice
       if(input$table_opt == "Change Log"){
-        df$datetime <- format(df$datetime, "%Y-%m-%d  %H:%M")
+        df$datetime <- format(df$datetime, "%Y-%m-%d", tz=tz(df$datetime))
+        if(!all(is.na(df$review_date))){
+          df$review_date <- format(df$review_date, "%Y-%m-%d")
+        }
+
       }else if(input$table_opt == "Calibration Check"){
         df$Est_Time <- format(df$Est_Time, "%Y-%m-%d  %H:%M")
       }
@@ -162,25 +153,18 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var, view_state, user
         selection = list(mode = sel_method),
         filter = "top",
         colnames = df_cols,
-        editable = edit_opt,
+        editable = edit_opt, rownames = FALSE,
         escape = FALSE,
         options = list(
           stateSave = TRUE,
-          stateDuration = -1
+          stateDuration = -1,
+          pageLength = 5,
+          lengthMenu = list(
+            c(3, 5, 10, 20, -1),
+            c('3', '5', '10', '20', 'All'))
         )
       )
     })
-
-
-  observeEvent(input$log_table_rows_selected,{
-    if(input$table_opt != "Change Log"){
-      sel_row(NULL)
-    }else{
-      sel_row(input$log_table_rows_selected)
-    }
-  })
-
-  version_data <- data_version_server("data_version",sondeproj = sondeproj,y_var = y_var, row=sel_row)
 
   #keep track of edits
     observeEvent(input$log_table_cell_edit,{
@@ -217,65 +201,14 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var, view_state, user
 
     update_parms_server("update_parms", sondeproj, data_ver, y2_var, input_id= "y2_var", choices_fun = nice_yvar)
 
-  #remove OOW periods
-    observeEvent(input$remove_oow, {
-      req(sondeproj())
-
-      if(is.null(sondeproj()$fieldform)){
-        if(interactive()){
-          shinyalert::shinyalert(
-            title = "No Field Data Available",
-            text = "Please load field form data to remove out of water periods.",
-            type = "warning"
-          )
-        }
-      }else{
-        show_modal_spinner(text = "Removing OOW Periods...", spin="fading-circle")
-        on.exit(remove_modal_spinner(), add = TRUE)
-
-        data <- sondeproj()$data
-        #get OOW periods
-        oow <- get_oow(sondeproj()$fieldform, tz=sondeproj()$meta$tz,interval=get_interval(data))
-
-        #remove those periods from data
-        rm_index <- data %>%
-          rowwise() %>%
-          filter(any(.data$DateTime_rd >= oow$start & .data$DateTime_rd <= oow$end)) %>% pull(.data$Index) %>% unique()
-        setna <- data$Index %in% rm_index
-
-        data_filter <- data %>% mutate(filter = setna) %>%
-          mutate(across(-("DateTime_rd":"Battery_V"), ~ if_else(filter, NA, .x))) %>%
-          select(-"filter")
-
-        #flag these changes were made
-        edit <- list(
-          data = data_filter,
-          rows = rm_index,
-          y_var = "all",
-          step = "removing oow",
-          note = paste0("OOW periods removed based on information from the field form."),
-          flag = "RM04",
-          changetype = "flag_rm"
-        )
-
-
-        #log edits
-        proj <- apply_edit(sondeproj(), edit, username())
-
-        #update sondeproj
-        sondeproj(proj)
-      }
-
-    })
-
   #keep track of dates
     plot_dates <- weekly_range_server("date_nav", sondeproj, data_ver, view_state)
 
     #filter data
     plot_data <- reactive({
-      req(version_data$current(), plot_dates())
+      req(sondeproj(), plot_dates())
 
-      data <- version_data$current()
+      data <- sondeproj()$data
 
       data %>% dplyr::filter(.data$Date >= plot_dates()[1], .data$Date <= plot_dates()[2])
     })
@@ -287,21 +220,6 @@ explore_data_server <- function(id, sondeproj, data_ver, y_var, view_state, user
 
       #use function to plot sonde data
         p <- plot_sonde(data = plot_data(), y_var=y_var(), y2_var= y2, proj = sondeproj(), opts=plot_opts())
-
-      #add previous data if triggered
-        if(!is.null(version_data$changed())){
-          prev_data <- version_data$changed() %>% filter(!is.na(.data$old))
-
-          op_col <- c("data_added" = "#2ECC71", "data_removed" = "darkred", "data_changed" = "orange", "data_merge" = "darkgreen")
-
-          #change color based on change
-          for(f in unique(prev_data$op_type)){
-            nice_f <- stringr::str_to_title(gsub("_", " ", f))
-              df <- prev_data %>% filter(.data$op_type == f)
-              p <- p %>% add_trace(data = df, x = ~DateTime_rd, y = ~old,
-                                   name = nice_f,type="scatter", mode="markers", yaxis="y2",
-                                   marker = list(color = op_col[[f]]), inherit = FALSE)}
-        }
 
         p
 

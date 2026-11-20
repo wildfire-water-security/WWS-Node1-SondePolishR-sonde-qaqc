@@ -11,6 +11,10 @@
 #' @param sel_mode Logical, should selection mode be turned on as default?
 #' @param plot_exist A `reactiveVal` indicating if the plot exists or not to prevent warnings about plot obj not being registered.
 #' @param webgl_supported A `reactiveVal` indicating if webgl is support in the current browser.
+#' @param startmin A `reactiveVal` with the minimum y-limit to use
+#' @param startmax A `reactiveVal` with the maximum y-limit to use
+#' @param height A value in pixels with "px" for the height
+#' @param x_range A `reactiveVal` with the starting x-axis date range to use for the zoom.
 #'
 #' @returns a plot of the data.
 #' @rdname main-plot
@@ -18,14 +22,14 @@
 #' @keywords internal
 #'
 #'
-main_plot_UI <- function(id){
+main_plot_UI <- function(id, height= "450px"){
   ns <- NS(id)
   tagList(
     div(
       style = "position: relative; padding-left: 70px;",
 
       #add plot
-      plotlyOutput(ns("plot"), height = "450px"),
+      plotlyOutput(ns("plot"), height = height),
 
       # Upper y-limit
       div(style = "position:absolute; top:20px; left:0px; width:75px;font-size: 10px;",
@@ -39,7 +43,7 @@ main_plot_UI <- function(id){
 #' @rdname main-plot
 #' @export
 main_plot_server <- function(id, data_ver, sondeproj, plot_obj, plot_data, y_var, sel_mode=FALSE, plot_exist=reactiveVal(),
-                             startmin=reactiveVal(), startmax=reactiveVal(), webgl_supported){
+                             startmin=reactiveVal(), startmax=reactiveVal(), webgl_supported, x_range=NULL){
   moduleServer(id, function(input, output, session){
 
   #store zoom vals
@@ -65,6 +69,12 @@ main_plot_server <- function(id, data_ver, sondeproj, plot_obj, plot_data, y_var
 
     })
 
+  #keep track of x-axis range
+    get_x_range <- reactive({if(is.null(x_range)){NULL}else{x_range()}})
+    observeEvent(get_x_range(), {
+      update_zoom_state(zoom_state, x = list(range=get_x_range()))
+    })
+
   #check if we want to reset zoom, if no viewable data, reset zoom
     observeEvent(plot_data(), {
       req(plot_data(), zoom_state())
@@ -83,7 +93,12 @@ main_plot_server <- function(id, data_ver, sondeproj, plot_obj, plot_data, y_var
       }
 
       if(all(is.na(zoom_data[[y_var()]]))){
-        update_zoom_state(zoom_state, x = list(range=NULL))
+
+        # Only clear x zoom if no manually specified range exists
+        if(is.null(get_x_range())){
+          update_zoom_state(zoom_state, x = list(range = NULL))
+        }
+
         update_zoom_state(zoom_state, y = list(range=NULL))
       }
     })
@@ -91,7 +106,7 @@ main_plot_server <- function(id, data_ver, sondeproj, plot_obj, plot_data, y_var
   #reset axes and back to zoom
     observeEvent(list(data_ver(), y_var(), date_range(), input$yaxismax, input$yaxismin), {
       req(plot_obj(), y_var(),sondeproj())
-      update_zoom_state(zoom_state, x = list(range=NULL))
+      update_zoom_state(zoom_state, x = list(range=get_x_range()))
       update_zoom_state(zoom_state, y = list(range=NULL))
     }, ignoreInit = TRUE)
 
@@ -104,8 +119,14 @@ main_plot_server <- function(id, data_ver, sondeproj, plot_obj, plot_data, y_var
       maxv <- ceiling(max(sondeproj()$data[[y_var()]], na.rm=TRUE)*1.05)
       minv <- floor(min(sondeproj()$data[[y_var()]], na.rm=TRUE) - (maxv*0.05))
 
-      updateNumericInput(session, "yaxismax", value=max(c(startmax(), maxv), na.rm=TRUE))
-      updateNumericInput(session, "yaxismin", value=min(c(startmin(), minv), na.rm=TRUE))
+      if(is.null(get_x_range())){
+        updateNumericInput(session, "yaxismax", value=max(c(startmax(), maxv), na.rm=TRUE))
+        updateNumericInput(session, "yaxismin", value=min(c(startmin(), minv), na.rm=TRUE))
+      }else{
+        updateNumericInput(session, "yaxismax", value=startmax())
+        updateNumericInput(session, "yaxismin", value=startmin())
+      }
+
     }, ignoreInit = TRUE)
 
   #keep track of correct y-axis limits

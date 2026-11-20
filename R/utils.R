@@ -196,16 +196,31 @@ nice_yvar <- function(data){
   return(y_var)
 }
 
-#used to get the next dd number to keep them unique
-diff_version <- function(sondeproj){
-  log <- sondeproj$changelog
+#' Get the next diff names
+#'
+#' @param x either a `sondeproj` or a diff name ("dd1")
+#' @param n number of diff numbers to generate
+#'
+#' @returns a character with the next version
+#' @noRd
+diff_version <- function(x, n=1){
+  if(inherits(x, "sondeproj")){
+    log <- x$changelog
 
-  diff_names <- log$diff_name[grepl("^dd", log$diff_name)]
+    diff_names <- log$diff_name[grepl("^dd", log$diff_name)]
 
-  if(length(diff_names) > 0){diff_num <- max(as.numeric(gsub("dd", "", diff_names)))}else{
-    diff_num <- 0
+    if(length(diff_names) > 0){diff_num <- max(as.numeric(gsub("dd", "", diff_names)))}else{
+      diff_num <- 0
+    }
+
+
+  }else{
+    diff_num <- as.numeric(gsub("dd", "", x))
   }
 
+  if(n > 1){
+    diff_num <- seq(from=diff_num, by=1, length=n)
+  }
   return(paste0("dd", diff_num+1))
 
 }

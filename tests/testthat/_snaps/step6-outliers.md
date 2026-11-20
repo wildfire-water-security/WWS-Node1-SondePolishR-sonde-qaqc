@@ -16,7 +16,7 @@
             "names": {
               "type": "character",
               "attributes": {},
-              "value": ["margin", "paper_bgcolor", "plot_bgcolor", "font", "xaxis", "yaxis2", "yaxis", "hovermode", "showlegend"]
+              "value": ["margin", "paper_bgcolor", "plot_bgcolor", "font", "xaxis", "yaxis2", "yaxis", "hovermode", "showlegend", "shapes"]
             }
           },
           "value": [
@@ -205,6 +205,300 @@
                 }
               },
               "value": [true]
+            },
+            {
+              "type": "list",
+              "attributes": {},
+              "value": [
+                {
+                  "type": "list",
+                  "attributes": {
+                    "names": {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["type", "xref", "yref", "x0", "x1", "y0", "y1", "fillcolor", "line", "opacity"]
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["rect"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["x"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["paper"]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1722411900]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1722456900]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [1]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["darkred"]
+                    },
+                    {
+                      "type": "list",
+                      "attributes": {
+                        "names": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["color"]
+                        }
+                      },
+                      "value": [
+                        {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["darkred"]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0.4]
+                    }
+                  ]
+                },
+                {
+                  "type": "list",
+                  "attributes": {
+                    "names": {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["type", "xref", "yref", "x0", "x1", "y0", "y1", "fillcolor", "line", "opacity"]
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["rect"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["x"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["paper"]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1724178600]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1724182200]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [1]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["darkred"]
+                    },
+                    {
+                      "type": "list",
+                      "attributes": {
+                        "names": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["color"]
+                        }
+                      },
+                      "value": [
+                        {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["darkred"]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0.4]
+                    }
+                  ]
+                },
+                {
+                  "type": "list",
+                  "attributes": {
+                    "names": {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["type", "xref", "yref", "x0", "x1", "y0", "y1", "fillcolor", "line", "opacity"]
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["rect"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["x"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["paper"]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1729719000]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1729724400]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [1]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["darkred"]
+                    },
+                    {
+                      "type": "list",
+                      "attributes": {
+                        "names": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["color"]
+                        }
+                      },
+                      "value": [
+                        {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["darkred"]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0.4]
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -368,7 +662,7 @@
             "names": {
               "type": "character",
               "attributes": {},
-              "value": ["margin", "paper_bgcolor", "plot_bgcolor", "font", "xaxis", "yaxis2", "yaxis", "hovermode", "showlegend"]
+              "value": ["margin", "paper_bgcolor", "plot_bgcolor", "font", "xaxis", "yaxis2", "yaxis", "hovermode", "showlegend", "shapes"]
             }
           },
           "value": [
@@ -557,6 +851,300 @@
                 }
               },
               "value": [true]
+            },
+            {
+              "type": "list",
+              "attributes": {},
+              "value": [
+                {
+                  "type": "list",
+                  "attributes": {
+                    "names": {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["type", "xref", "yref", "x0", "x1", "y0", "y1", "fillcolor", "line", "opacity"]
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["rect"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["x"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["paper"]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1722411900]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1722456900]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [1]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["darkred"]
+                    },
+                    {
+                      "type": "list",
+                      "attributes": {
+                        "names": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["color"]
+                        }
+                      },
+                      "value": [
+                        {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["darkred"]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0.4]
+                    }
+                  ]
+                },
+                {
+                  "type": "list",
+                  "attributes": {
+                    "names": {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["type", "xref", "yref", "x0", "x1", "y0", "y1", "fillcolor", "line", "opacity"]
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["rect"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["x"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["paper"]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1724178600]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1724182200]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [1]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["darkred"]
+                    },
+                    {
+                      "type": "list",
+                      "attributes": {
+                        "names": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["color"]
+                        }
+                      },
+                      "value": [
+                        {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["darkred"]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0.4]
+                    }
+                  ]
+                },
+                {
+                  "type": "list",
+                  "attributes": {
+                    "names": {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["type", "xref", "yref", "x0", "x1", "y0", "y1", "fillcolor", "line", "opacity"]
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["rect"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["x"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["paper"]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1729719000]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1729724400]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [1]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["darkred"]
+                    },
+                    {
+                      "type": "list",
+                      "attributes": {
+                        "names": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["color"]
+                        }
+                      },
+                      "value": [
+                        {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["darkred"]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0.4]
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -725,7 +1313,7 @@
             "names": {
               "type": "character",
               "attributes": {},
-              "value": ["margin", "paper_bgcolor", "plot_bgcolor", "font", "xaxis", "yaxis2", "yaxis", "hovermode", "showlegend"]
+              "value": ["margin", "paper_bgcolor", "plot_bgcolor", "font", "xaxis", "yaxis2", "yaxis", "hovermode", "showlegend", "shapes"]
             }
           },
           "value": [
@@ -914,6 +1502,300 @@
                 }
               },
               "value": [true]
+            },
+            {
+              "type": "list",
+              "attributes": {},
+              "value": [
+                {
+                  "type": "list",
+                  "attributes": {
+                    "names": {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["type", "xref", "yref", "x0", "x1", "y0", "y1", "fillcolor", "line", "opacity"]
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["rect"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["x"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["paper"]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1722411900]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1722456900]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [1]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["darkred"]
+                    },
+                    {
+                      "type": "list",
+                      "attributes": {
+                        "names": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["color"]
+                        }
+                      },
+                      "value": [
+                        {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["darkred"]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0.4]
+                    }
+                  ]
+                },
+                {
+                  "type": "list",
+                  "attributes": {
+                    "names": {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["type", "xref", "yref", "x0", "x1", "y0", "y1", "fillcolor", "line", "opacity"]
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["rect"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["x"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["paper"]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1724178600]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1724182200]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [1]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["darkred"]
+                    },
+                    {
+                      "type": "list",
+                      "attributes": {
+                        "names": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["color"]
+                        }
+                      },
+                      "value": [
+                        {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["darkred"]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0.4]
+                    }
+                  ]
+                },
+                {
+                  "type": "list",
+                  "attributes": {
+                    "names": {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["type", "xref", "yref", "x0", "x1", "y0", "y1", "fillcolor", "line", "opacity"]
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["rect"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["x"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["paper"]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1729719000]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1729724400]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [1]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["darkred"]
+                    },
+                    {
+                      "type": "list",
+                      "attributes": {
+                        "names": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["color"]
+                        }
+                      },
+                      "value": [
+                        {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["darkred"]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0.4]
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -1082,7 +1964,7 @@
             "names": {
               "type": "character",
               "attributes": {},
-              "value": ["margin", "paper_bgcolor", "plot_bgcolor", "font", "xaxis", "yaxis2", "yaxis", "hovermode", "showlegend"]
+              "value": ["margin", "paper_bgcolor", "plot_bgcolor", "font", "xaxis", "yaxis2", "yaxis", "hovermode", "showlegend", "shapes"]
             }
           },
           "value": [
@@ -1271,6 +2153,300 @@
                 }
               },
               "value": [true]
+            },
+            {
+              "type": "list",
+              "attributes": {},
+              "value": [
+                {
+                  "type": "list",
+                  "attributes": {
+                    "names": {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["type", "xref", "yref", "x0", "x1", "y0", "y1", "fillcolor", "line", "opacity"]
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["rect"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["x"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["paper"]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1722411900]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1722456900]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [1]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["darkred"]
+                    },
+                    {
+                      "type": "list",
+                      "attributes": {
+                        "names": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["color"]
+                        }
+                      },
+                      "value": [
+                        {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["darkred"]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0.4]
+                    }
+                  ]
+                },
+                {
+                  "type": "list",
+                  "attributes": {
+                    "names": {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["type", "xref", "yref", "x0", "x1", "y0", "y1", "fillcolor", "line", "opacity"]
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["rect"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["x"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["paper"]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1724178600]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1724182200]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [1]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["darkred"]
+                    },
+                    {
+                      "type": "list",
+                      "attributes": {
+                        "names": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["color"]
+                        }
+                      },
+                      "value": [
+                        {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["darkred"]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0.4]
+                    }
+                  ]
+                },
+                {
+                  "type": "list",
+                  "attributes": {
+                    "names": {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["type", "xref", "yref", "x0", "x1", "y0", "y1", "fillcolor", "line", "opacity"]
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["rect"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["x"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["paper"]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1729719000]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1729724400]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [1]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["darkred"]
+                    },
+                    {
+                      "type": "list",
+                      "attributes": {
+                        "names": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["color"]
+                        }
+                      },
+                      "value": [
+                        {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["darkred"]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0.4]
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -1439,7 +2615,7 @@
             "names": {
               "type": "character",
               "attributes": {},
-              "value": ["margin", "paper_bgcolor", "plot_bgcolor", "font", "xaxis", "yaxis2", "yaxis", "hovermode", "showlegend"]
+              "value": ["margin", "paper_bgcolor", "plot_bgcolor", "font", "xaxis", "yaxis2", "yaxis", "hovermode", "showlegend", "shapes"]
             }
           },
           "value": [
@@ -1628,6 +2804,300 @@
                 }
               },
               "value": [true]
+            },
+            {
+              "type": "list",
+              "attributes": {},
+              "value": [
+                {
+                  "type": "list",
+                  "attributes": {
+                    "names": {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["type", "xref", "yref", "x0", "x1", "y0", "y1", "fillcolor", "line", "opacity"]
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["rect"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["x"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["paper"]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1722411900]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1722456900]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [1]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["darkred"]
+                    },
+                    {
+                      "type": "list",
+                      "attributes": {
+                        "names": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["color"]
+                        }
+                      },
+                      "value": [
+                        {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["darkred"]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0.4]
+                    }
+                  ]
+                },
+                {
+                  "type": "list",
+                  "attributes": {
+                    "names": {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["type", "xref", "yref", "x0", "x1", "y0", "y1", "fillcolor", "line", "opacity"]
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["rect"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["x"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["paper"]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1724178600]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1724182200]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [1]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["darkred"]
+                    },
+                    {
+                      "type": "list",
+                      "attributes": {
+                        "names": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["color"]
+                        }
+                      },
+                      "value": [
+                        {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["darkred"]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0.4]
+                    }
+                  ]
+                },
+                {
+                  "type": "list",
+                  "attributes": {
+                    "names": {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["type", "xref", "yref", "x0", "x1", "y0", "y1", "fillcolor", "line", "opacity"]
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["rect"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["x"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["paper"]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1729719000]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1729724400]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [1]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["darkred"]
+                    },
+                    {
+                      "type": "list",
+                      "attributes": {
+                        "names": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["color"]
+                        }
+                      },
+                      "value": [
+                        {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["darkred"]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0.4]
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -1796,7 +3266,7 @@
             "names": {
               "type": "character",
               "attributes": {},
-              "value": ["margin", "paper_bgcolor", "plot_bgcolor", "font", "xaxis", "yaxis2", "yaxis", "hovermode", "showlegend"]
+              "value": ["margin", "paper_bgcolor", "plot_bgcolor", "font", "xaxis", "yaxis2", "yaxis", "hovermode", "showlegend", "shapes"]
             }
           },
           "value": [
@@ -1985,6 +3455,300 @@
                 }
               },
               "value": [true]
+            },
+            {
+              "type": "list",
+              "attributes": {},
+              "value": [
+                {
+                  "type": "list",
+                  "attributes": {
+                    "names": {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["type", "xref", "yref", "x0", "x1", "y0", "y1", "fillcolor", "line", "opacity"]
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["rect"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["x"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["paper"]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1722411900]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1722456900]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [1]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["darkred"]
+                    },
+                    {
+                      "type": "list",
+                      "attributes": {
+                        "names": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["color"]
+                        }
+                      },
+                      "value": [
+                        {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["darkred"]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0.4]
+                    }
+                  ]
+                },
+                {
+                  "type": "list",
+                  "attributes": {
+                    "names": {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["type", "xref", "yref", "x0", "x1", "y0", "y1", "fillcolor", "line", "opacity"]
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["rect"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["x"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["paper"]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1724178600]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1724182200]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [1]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["darkred"]
+                    },
+                    {
+                      "type": "list",
+                      "attributes": {
+                        "names": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["color"]
+                        }
+                      },
+                      "value": [
+                        {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["darkred"]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0.4]
+                    }
+                  ]
+                },
+                {
+                  "type": "list",
+                  "attributes": {
+                    "names": {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["type", "xref", "yref", "x0", "x1", "y0", "y1", "fillcolor", "line", "opacity"]
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["rect"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["x"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["paper"]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1729719000]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1729724400]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [1]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["darkred"]
+                    },
+                    {
+                      "type": "list",
+                      "attributes": {
+                        "names": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["color"]
+                        }
+                      },
+                      "value": [
+                        {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["darkred"]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0.4]
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -2148,7 +3912,7 @@
             "names": {
               "type": "character",
               "attributes": {},
-              "value": ["margin", "paper_bgcolor", "plot_bgcolor", "font", "xaxis", "yaxis2", "yaxis", "hovermode", "showlegend"]
+              "value": ["margin", "paper_bgcolor", "plot_bgcolor", "font", "xaxis", "yaxis2", "yaxis", "hovermode", "showlegend", "shapes"]
             }
           },
           "value": [
@@ -2337,6 +4101,300 @@
                 }
               },
               "value": [true]
+            },
+            {
+              "type": "list",
+              "attributes": {},
+              "value": [
+                {
+                  "type": "list",
+                  "attributes": {
+                    "names": {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["type", "xref", "yref", "x0", "x1", "y0", "y1", "fillcolor", "line", "opacity"]
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["rect"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["x"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["paper"]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1722411900]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1722456900]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [1]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["darkred"]
+                    },
+                    {
+                      "type": "list",
+                      "attributes": {
+                        "names": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["color"]
+                        }
+                      },
+                      "value": [
+                        {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["darkred"]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0.4]
+                    }
+                  ]
+                },
+                {
+                  "type": "list",
+                  "attributes": {
+                    "names": {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["type", "xref", "yref", "x0", "x1", "y0", "y1", "fillcolor", "line", "opacity"]
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["rect"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["x"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["paper"]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1724178600]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1724182200]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [1]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["darkred"]
+                    },
+                    {
+                      "type": "list",
+                      "attributes": {
+                        "names": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["color"]
+                        }
+                      },
+                      "value": [
+                        {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["darkred"]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0.4]
+                    }
+                  ]
+                },
+                {
+                  "type": "list",
+                  "attributes": {
+                    "names": {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["type", "xref", "yref", "x0", "x1", "y0", "y1", "fillcolor", "line", "opacity"]
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["rect"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["x"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["paper"]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1729719000]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1729724400]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [1]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["darkred"]
+                    },
+                    {
+                      "type": "list",
+                      "attributes": {
+                        "names": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["color"]
+                        }
+                      },
+                      "value": [
+                        {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["darkred"]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0.4]
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -2505,7 +4563,7 @@
             "names": {
               "type": "character",
               "attributes": {},
-              "value": ["margin", "paper_bgcolor", "plot_bgcolor", "font", "xaxis", "yaxis2", "yaxis", "hovermode", "showlegend"]
+              "value": ["margin", "paper_bgcolor", "plot_bgcolor", "font", "xaxis", "yaxis2", "yaxis", "hovermode", "showlegend", "shapes"]
             }
           },
           "value": [
@@ -2694,6 +4752,300 @@
                 }
               },
               "value": [true]
+            },
+            {
+              "type": "list",
+              "attributes": {},
+              "value": [
+                {
+                  "type": "list",
+                  "attributes": {
+                    "names": {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["type", "xref", "yref", "x0", "x1", "y0", "y1", "fillcolor", "line", "opacity"]
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["rect"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["x"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["paper"]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1722411900]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1722456900]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [1]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["darkred"]
+                    },
+                    {
+                      "type": "list",
+                      "attributes": {
+                        "names": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["color"]
+                        }
+                      },
+                      "value": [
+                        {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["darkred"]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0.4]
+                    }
+                  ]
+                },
+                {
+                  "type": "list",
+                  "attributes": {
+                    "names": {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["type", "xref", "yref", "x0", "x1", "y0", "y1", "fillcolor", "line", "opacity"]
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["rect"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["x"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["paper"]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1724178600]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1724182200]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [1]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["darkred"]
+                    },
+                    {
+                      "type": "list",
+                      "attributes": {
+                        "names": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["color"]
+                        }
+                      },
+                      "value": [
+                        {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["darkred"]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0.4]
+                    }
+                  ]
+                },
+                {
+                  "type": "list",
+                  "attributes": {
+                    "names": {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["type", "xref", "yref", "x0", "x1", "y0", "y1", "fillcolor", "line", "opacity"]
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["rect"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["x"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["paper"]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1729719000]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1729724400]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [1]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["darkred"]
+                    },
+                    {
+                      "type": "list",
+                      "attributes": {
+                        "names": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["color"]
+                        }
+                      },
+                      "value": [
+                        {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["darkred"]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0.4]
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -2857,7 +5209,7 @@
             "names": {
               "type": "character",
               "attributes": {},
-              "value": ["margin", "paper_bgcolor", "plot_bgcolor", "font", "xaxis", "yaxis2", "yaxis", "hovermode", "showlegend"]
+              "value": ["margin", "paper_bgcolor", "plot_bgcolor", "font", "xaxis", "yaxis2", "yaxis", "hovermode", "showlegend", "shapes"]
             }
           },
           "value": [
@@ -3046,6 +5398,300 @@
                 }
               },
               "value": [true]
+            },
+            {
+              "type": "list",
+              "attributes": {},
+              "value": [
+                {
+                  "type": "list",
+                  "attributes": {
+                    "names": {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["type", "xref", "yref", "x0", "x1", "y0", "y1", "fillcolor", "line", "opacity"]
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["rect"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["x"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["paper"]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1722411900]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1722456900]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [1]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["darkred"]
+                    },
+                    {
+                      "type": "list",
+                      "attributes": {
+                        "names": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["color"]
+                        }
+                      },
+                      "value": [
+                        {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["darkred"]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0.4]
+                    }
+                  ]
+                },
+                {
+                  "type": "list",
+                  "attributes": {
+                    "names": {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["type", "xref", "yref", "x0", "x1", "y0", "y1", "fillcolor", "line", "opacity"]
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["rect"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["x"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["paper"]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1724178600]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1724182200]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [1]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["darkred"]
+                    },
+                    {
+                      "type": "list",
+                      "attributes": {
+                        "names": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["color"]
+                        }
+                      },
+                      "value": [
+                        {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["darkred"]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0.4]
+                    }
+                  ]
+                },
+                {
+                  "type": "list",
+                  "attributes": {
+                    "names": {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["type", "xref", "yref", "x0", "x1", "y0", "y1", "fillcolor", "line", "opacity"]
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["rect"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["x"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["paper"]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1729719000]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1729724400]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [1]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["darkred"]
+                    },
+                    {
+                      "type": "list",
+                      "attributes": {
+                        "names": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["color"]
+                        }
+                      },
+                      "value": [
+                        {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["darkred"]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0.4]
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -3209,7 +5855,7 @@
             "names": {
               "type": "character",
               "attributes": {},
-              "value": ["margin", "paper_bgcolor", "plot_bgcolor", "font", "xaxis", "yaxis2", "yaxis", "hovermode", "showlegend"]
+              "value": ["margin", "paper_bgcolor", "plot_bgcolor", "font", "xaxis", "yaxis2", "yaxis", "hovermode", "showlegend", "shapes"]
             }
           },
           "value": [
@@ -3398,6 +6044,300 @@
                 }
               },
               "value": [true]
+            },
+            {
+              "type": "list",
+              "attributes": {},
+              "value": [
+                {
+                  "type": "list",
+                  "attributes": {
+                    "names": {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["type", "xref", "yref", "x0", "x1", "y0", "y1", "fillcolor", "line", "opacity"]
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["rect"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["x"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["paper"]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1722411900]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1722456900]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [1]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["darkred"]
+                    },
+                    {
+                      "type": "list",
+                      "attributes": {
+                        "names": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["color"]
+                        }
+                      },
+                      "value": [
+                        {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["darkred"]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0.4]
+                    }
+                  ]
+                },
+                {
+                  "type": "list",
+                  "attributes": {
+                    "names": {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["type", "xref", "yref", "x0", "x1", "y0", "y1", "fillcolor", "line", "opacity"]
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["rect"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["x"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["paper"]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1724178600]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1724182200]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [1]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["darkred"]
+                    },
+                    {
+                      "type": "list",
+                      "attributes": {
+                        "names": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["color"]
+                        }
+                      },
+                      "value": [
+                        {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["darkred"]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0.4]
+                    }
+                  ]
+                },
+                {
+                  "type": "list",
+                  "attributes": {
+                    "names": {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["type", "xref", "yref", "x0", "x1", "y0", "y1", "fillcolor", "line", "opacity"]
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["rect"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["x"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["paper"]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1729719000]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1729724400]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [1]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["darkred"]
+                    },
+                    {
+                      "type": "list",
+                      "attributes": {
+                        "names": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["color"]
+                        }
+                      },
+                      "value": [
+                        {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["darkred"]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0.4]
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -3561,7 +6501,7 @@
             "names": {
               "type": "character",
               "attributes": {},
-              "value": ["margin", "paper_bgcolor", "plot_bgcolor", "font", "xaxis", "yaxis2", "yaxis", "hovermode", "showlegend"]
+              "value": ["margin", "paper_bgcolor", "plot_bgcolor", "font", "xaxis", "yaxis2", "yaxis", "hovermode", "showlegend", "shapes"]
             }
           },
           "value": [
@@ -3750,6 +6690,300 @@
                 }
               },
               "value": [true]
+            },
+            {
+              "type": "list",
+              "attributes": {},
+              "value": [
+                {
+                  "type": "list",
+                  "attributes": {
+                    "names": {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["type", "xref", "yref", "x0", "x1", "y0", "y1", "fillcolor", "line", "opacity"]
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["rect"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["x"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["paper"]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1722411900]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1722456900]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [1]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["darkred"]
+                    },
+                    {
+                      "type": "list",
+                      "attributes": {
+                        "names": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["color"]
+                        }
+                      },
+                      "value": [
+                        {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["darkred"]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0.4]
+                    }
+                  ]
+                },
+                {
+                  "type": "list",
+                  "attributes": {
+                    "names": {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["type", "xref", "yref", "x0", "x1", "y0", "y1", "fillcolor", "line", "opacity"]
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["rect"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["x"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["paper"]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1724178600]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1724182200]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [1]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["darkred"]
+                    },
+                    {
+                      "type": "list",
+                      "attributes": {
+                        "names": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["color"]
+                        }
+                      },
+                      "value": [
+                        {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["darkred"]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0.4]
+                    }
+                  ]
+                },
+                {
+                  "type": "list",
+                  "attributes": {
+                    "names": {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["type", "xref", "yref", "x0", "x1", "y0", "y1", "fillcolor", "line", "opacity"]
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["rect"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["x"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["paper"]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1729719000]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1729724400]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [1]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["darkred"]
+                    },
+                    {
+                      "type": "list",
+                      "attributes": {
+                        "names": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["color"]
+                        }
+                      },
+                      "value": [
+                        {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["darkred"]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0.4]
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -3913,7 +7147,7 @@
             "names": {
               "type": "character",
               "attributes": {},
-              "value": ["margin", "paper_bgcolor", "plot_bgcolor", "font", "xaxis", "yaxis2", "yaxis", "hovermode", "showlegend"]
+              "value": ["margin", "paper_bgcolor", "plot_bgcolor", "font", "xaxis", "yaxis2", "yaxis", "hovermode", "showlegend", "shapes"]
             }
           },
           "value": [
@@ -4102,6 +7336,300 @@
                 }
               },
               "value": [true]
+            },
+            {
+              "type": "list",
+              "attributes": {},
+              "value": [
+                {
+                  "type": "list",
+                  "attributes": {
+                    "names": {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["type", "xref", "yref", "x0", "x1", "y0", "y1", "fillcolor", "line", "opacity"]
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["rect"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["x"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["paper"]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1722411900]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1722456900]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [1]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["darkred"]
+                    },
+                    {
+                      "type": "list",
+                      "attributes": {
+                        "names": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["color"]
+                        }
+                      },
+                      "value": [
+                        {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["darkred"]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0.4]
+                    }
+                  ]
+                },
+                {
+                  "type": "list",
+                  "attributes": {
+                    "names": {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["type", "xref", "yref", "x0", "x1", "y0", "y1", "fillcolor", "line", "opacity"]
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["rect"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["x"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["paper"]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1724178600]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1724182200]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [1]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["darkred"]
+                    },
+                    {
+                      "type": "list",
+                      "attributes": {
+                        "names": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["color"]
+                        }
+                      },
+                      "value": [
+                        {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["darkred"]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0.4]
+                    }
+                  ]
+                },
+                {
+                  "type": "list",
+                  "attributes": {
+                    "names": {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["type", "xref", "yref", "x0", "x1", "y0", "y1", "fillcolor", "line", "opacity"]
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["rect"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["x"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["paper"]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1729719000]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1729724400]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [1]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["darkred"]
+                    },
+                    {
+                      "type": "list",
+                      "attributes": {
+                        "names": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["color"]
+                        }
+                      },
+                      "value": [
+                        {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["darkred"]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0.4]
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -4265,7 +7793,7 @@
             "names": {
               "type": "character",
               "attributes": {},
-              "value": ["margin", "paper_bgcolor", "plot_bgcolor", "font", "xaxis", "yaxis2", "yaxis", "hovermode", "showlegend"]
+              "value": ["margin", "paper_bgcolor", "plot_bgcolor", "font", "xaxis", "yaxis2", "yaxis", "hovermode", "showlegend", "shapes"]
             }
           },
           "value": [
@@ -4454,6 +7982,300 @@
                 }
               },
               "value": [true]
+            },
+            {
+              "type": "list",
+              "attributes": {},
+              "value": [
+                {
+                  "type": "list",
+                  "attributes": {
+                    "names": {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["type", "xref", "yref", "x0", "x1", "y0", "y1", "fillcolor", "line", "opacity"]
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["rect"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["x"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["paper"]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1722411900]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1722456900]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [1]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["darkred"]
+                    },
+                    {
+                      "type": "list",
+                      "attributes": {
+                        "names": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["color"]
+                        }
+                      },
+                      "value": [
+                        {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["darkred"]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0.4]
+                    }
+                  ]
+                },
+                {
+                  "type": "list",
+                  "attributes": {
+                    "names": {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["type", "xref", "yref", "x0", "x1", "y0", "y1", "fillcolor", "line", "opacity"]
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["rect"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["x"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["paper"]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1724178600]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1724182200]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [1]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["darkred"]
+                    },
+                    {
+                      "type": "list",
+                      "attributes": {
+                        "names": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["color"]
+                        }
+                      },
+                      "value": [
+                        {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["darkred"]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0.4]
+                    }
+                  ]
+                },
+                {
+                  "type": "list",
+                  "attributes": {
+                    "names": {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["type", "xref", "yref", "x0", "x1", "y0", "y1", "fillcolor", "line", "opacity"]
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["rect"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["x"]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["paper"]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1729719000]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {
+                        "class": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["POSIXct", "POSIXt"]
+                        },
+                        "tzone": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["Etc/GMT+8"]
+                        }
+                      },
+                      "value": [1729724400]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [1]
+                    },
+                    {
+                      "type": "character",
+                      "attributes": {},
+                      "value": ["darkred"]
+                    },
+                    {
+                      "type": "list",
+                      "attributes": {
+                        "names": {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["color"]
+                        }
+                      },
+                      "value": [
+                        {
+                          "type": "character",
+                          "attributes": {},
+                          "value": ["darkred"]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "double",
+                      "attributes": {},
+                      "value": [0.4]
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },

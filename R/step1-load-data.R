@@ -7,31 +7,8 @@
 load_data_UI <- function(id){
   ns <- NS(id)
   tagList(
-    tags$style(HTML("
-      .btn-default{
-        background-color:#E3795E!important;
-        border-color:#E3795E!important;
-        color:white;}
-
-      .section-label{
-        font-weight:600;
-        margin-bottom:0.5rem;}
-
-      .selectize-input{color: white;}
-
-      .load-data-module .bslib-card,
-      .load-data-module .tab-content,
-      .load-data-module .tab-pane,
-      .load-data-module .card-body {
-        overflow: visible !important;
-      }
-
-      ")),
-
-    shinyjs::useShinyjs(),
-
     bslib::page_fluid(
-      div( class = "load-data-module",
+      div(class = "load-data-module",
 
       bslib::layout_columns(
         col_widths = c(5,5,2),

@@ -25,7 +25,7 @@
 
 
   #create log if not read in from existing project
-    proj$changelog$user <- "smith"
+    proj$changelog$analyst <- "smith"
 
   data <- proj$data #save unedited for later
 
@@ -37,8 +37,9 @@
     data2 <- add_flags(data2, "fDOM_QSU", 1:4, "RM01")
     dd1 <- list(get_diff(proj$data, data2, id=c("DateTime_rd", "DupNum"))) #commit difference
     names(dd1) <- "dd2"
-    proj <- write_log(proj, "fDOM_QSU", "removing first four points", n = 4, diff_name = diff_version(proj), return = "sondeproj",
-                      user = "Smith") #write log
+    proj <- write_log(proj, "fDOM_QSU", step = "outlier removal", note = "removing first four points",
+                      n = 4, diff_name = diff_version(proj), return = "sondeproj",
+                      user = "smith") #write log
     proj$diffs <- append(proj$diffs, dd1)
     proj$data <- data2
 
@@ -48,8 +49,9 @@
     data2 <- add_flags(data2, "ODO_mg_L", 5:7, "CH01")
     dd2 <- list(get_diff(proj$data, data2,id=c("DateTime_rd", "DupNum"))) #commit difference
     names(dd2) <- "dd3"
-    proj <- write_log(proj, "ODO_mg_L", "applying shift correction", n = 3, diff_name = diff_version(proj), return = "sondeproj",
-                      user = "Smith") #write log
+    proj <- write_log(proj, "ODO_mg_L", step = "additive shifts", note = "applying shift correction",
+                      n = 3, diff_name = diff_version(proj), return = "sondeproj",
+                      user = "smith") #write log
     proj$diffs <- append(proj$diffs, dd2)
     proj$data <- data2
 
@@ -59,8 +61,9 @@
     data2 <- add_flags(data2, "Temp_C", 52:90, "RM02")
     dd3 <- list(get_diff(proj$data, data2, id=c("DateTime_rd", "DupNum"))) #commit difference
     names(dd3) <- "dd4"
-    proj <- write_log(proj, "Temp_C", "removing a bunch of points", n = 39, diff_name = diff_version(proj), return = "sondeproj",
-                      user = "Smith") #write log
+    proj <- write_log(proj, "Temp_C", step = "outlier removal", note = "removing a bunch of points",
+                      n = 39, diff_name = diff_version(proj), return = "sondeproj",
+                      user = "smith") #write log
     proj$diffs <- append(proj$diffs, dd3)
     proj$data <- data2
 
@@ -70,13 +73,14 @@
     data2 <- add_flags(data2, "Temp_C", 52:60, "AD01")
     dd4 <- list(get_diff(proj$data, data2, id=c("DateTime_rd", "DupNum"))) #commit difference
     names(dd4) <- "dd5"
-    proj <- write_log(proj, "Temp_C", "linear interpolation", n = 39, diff_name = diff_version(proj), return = "sondeproj",
-                      user = "Smith") #write log
+    proj <- write_log(proj, "Temp_C", step = "data interpolation", note = "linear interpolation",
+                      n = 39, diff_name = diff_version(proj), return = "sondeproj",
+                      user = "smith") #write log
     proj$diffs <- append(proj$diffs, dd4)
     proj$data <- data2
 
   #set consistent times for change log to prevent errors everytime this reruns
-    proj$changelog$datetime <- as.POSIXct("2026-09-24 12:00")
+    proj$changelog$datetime <- as.POSIXct(paste("2026-09-24 12:", c("00", "01", "02", "03", "04", "05"), sep=""))
 
   #save as an example
     saveRDS(proj, "inst/extdata/example-sonde-project.RDS")
@@ -130,7 +134,7 @@
 
   #create log if not read in from existing project
   changelog <- write_log(NULL, "all", "initial load", n = nrow(data_messy), diff_name = "raw")
-  changelog$user <- "smith"
+  changelog$analyst <- "smith"
   changelog$datetime <- as.POSIXct("2028-07-28 11:00:00") #standardize changelog time so it doesn't cause test failures
 
   #create sonde object
@@ -147,7 +151,7 @@
   class(proj_messy) <- "sondeproj"
 
   #remove my username from log
-  proj_messy$changelog$user <- "smith"
+  proj_messy$changelog$analyst <- "smith"
 
   saveRDS(proj_messy, "tests/testthat/testdata/example-sondeproj-messy.RDS")
   saveRDS(proj_messy, "inst/extdata/example-sondeproj-messy.RDS")

@@ -60,7 +60,7 @@ test_that("{shinytest2} recording: checking-module8", {
 
     expect_true(nrow(tab) > nrow(example_sondeproj$changelog))
     expect_equal(tab$parameter[nrow(tab)], "fDOM_QSU")
-    expect_equal(tab$note[nrow(tab)], paste0("shift with slope ", 0," and intercept ", -160.445))
+    expect_equal(tab$analyst_note[nrow(tab)], paste0("shift with slope ", 0," and intercept ", -160.445))
 
  #test drift correction
   #at full scale
@@ -100,7 +100,7 @@ test_that("{shinytest2} recording: checking-module8", {
     tab <- app$get_value(export = "data8-changelog")
     expect_true(nrow(tab) > nrow(example_sondeproj$changelog))
     expect_equal(tab$parameter[nrow(tab)], "fDOM_QSU")
-    expect_equal(tab$note[nrow(tab)], paste0("drift correction based on an uncorrected value of ",
+    expect_equal(tab$analyst_note[nrow(tab)], paste0("drift correction based on an uncorrected value of ",
                                              21.48," and corrected value of ", 17.72,
                                              " for file ", "example-csv-data2.csv"))
 
@@ -136,7 +136,7 @@ test_that("{shinytest2} recording: checking-module8", {
     tab <- app$get_value(export = "data8-changelog")
     expect_true(nrow(tab) > nrow(example_sondeproj$changelog))
     expect_equal(tab$parameter[nrow(tab)], "fDOM_QSU")
-    expect_equal(tab$note[nrow(tab)], paste0("smoothing correction using ", "Kalman Filter",
+    expect_equal(tab$analyst_note[nrow(tab)], paste0("smoothing correction using ", "Kalman Filter",
                                              " using a smoothing factor of ", 55))
 
 })
