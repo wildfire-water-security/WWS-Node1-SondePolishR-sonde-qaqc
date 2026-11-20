@@ -8,7 +8,7 @@ with any edits to view.
 ``` r
 data_version_UI(id)
 
-data_version_server(id, sondeproj, y_var, row)
+data_version_server(id, sondeproj, y_var, dd, username)
 ```
 
 ## Arguments
@@ -25,10 +25,13 @@ data_version_server(id, sondeproj, y_var, row)
 
   A `reactiveVal` holding the Y-variable to plot on the y-axis.
 
-- row:
+- dd:
 
-  A `reactiveVal` holding the number of the row selected in the
-  changelog.
+  A `reactiveVal` holding the name of the dd in the changelog.
+
+- username:
+
+  A `reactiveVal` holding the name of the analyst for the changelog
 
 ## Value
 

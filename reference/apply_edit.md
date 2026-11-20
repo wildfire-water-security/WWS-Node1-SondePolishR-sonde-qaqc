@@ -29,7 +29,8 @@ apply_edit(proj, edit, username)
 
   - note: an optional note to add to the changelog
 
-  - flag: character flag to use for edits to the data
+  - flag: character flag to use for edits to the data, won't add flag if
+    NA (for undoing)
 
 - username:
 

@@ -5,7 +5,7 @@ Comes with an adjustable y-axis to adjust the values being viewed.
 ## Usage
 
 ``` r
-main_plot_UI(id)
+main_plot_UI(id, height = "450px")
 
 main_plot_server(
   id,
@@ -18,7 +18,8 @@ main_plot_server(
   plot_exist = reactiveVal(),
   startmin = reactiveVal(),
   startmax = reactiveVal(),
-  webgl_supported
+  webgl_supported,
+  x_range = NULL
 )
 ```
 
@@ -27,6 +28,10 @@ main_plot_server(
 - id:
 
   the shiny ID of the module
+
+- height:
+
+  A value in pixels with "px" for the height
 
 - data_ver:
 
@@ -58,10 +63,23 @@ main_plot_server(
   A \`reactiveVal\` indicating if the plot exists or not to prevent
   warnings about plot obj not being registered.
 
+- startmin:
+
+  A \`reactiveVal\` with the minimum y-limit to use
+
+- startmax:
+
+  A \`reactiveVal\` with the maximum y-limit to use
+
 - webgl_supported:
 
   A \`reactiveVal\` indicating if webgl is support in the current
   browser.
+
+- x_range:
+
+  A \`reactiveVal\` with the starting x-axis date range to use for the
+  zoom.
 
 ## Value
 

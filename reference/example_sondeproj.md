@@ -46,8 +46,17 @@ An object of class `sondeproj` with the following elements:
 
 - **nchanged**: The number of points that were changed.
 
-- **note**: Notes added about the changes made.
+- **analyst**: The username of the person who made the change.
 
-- **user**: The username of the person who made the change.
+- **analyst_note**: Notes added about the changes made.
+
+- **review_status**: The status of the change in the review process
+  (accepted, returned, justified, pending, undone)
+
+- **review_date**: The date and time of the review.
+
+- **reviewer**: The username of the person who did the review.
+
+- **review_note**: Notes added by the reviewer.
 
 - **diff_name**: The name of the associated `data.diff`.

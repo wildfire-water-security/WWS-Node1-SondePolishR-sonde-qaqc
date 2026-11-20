@@ -15,7 +15,8 @@ write_log(
   diff_name = NULL,
   datetime = Sys.time(),
   user = Sys.info()[["user"]],
-  return = "df"
+  return = "df",
+  status = "pending"
 )
 ```
 
@@ -59,6 +60,11 @@ write_log(
   either `df` or `sondeproj` to specify if the changelog only should be
   returned or the `sondeproj` with the change log updated.
 
+- status:
+
+  the review status of the change, should be one of the following:
+  "pending", "approved", "returned", "justified", "undone"
+
 ## Value
 
 If `return` is `df` returns the changelog as a `data.frame`. If `return`
@@ -68,8 +74,8 @@ is `sondeproj` the `sondeproj` is returned with the change log updated.
 
 ``` r
 write_log(NULL, "Cond_S_cm", "physical limits", 5, "making an example", "diff1")
-#>              datetime parameter            step n_changed              note
-#> 1 2026-10-13 19:49:46 Cond_S_cm physical limits         5 making an example
-#>     user diff_name
-#> 1 runner     diff1
+#>              datetime parameter            step n_changed analyst
+#> 1 2026-11-20 19:02:05 Cond_S_cm physical limits         5  runner
+#>        analyst_note review_status review_date reviewer review_note diff_name
+#> 1 making an example       pending        <NA>                          diff1
 ```

@@ -6,7 +6,7 @@ data points that are likely bad and need to be removed.
 ## Usage
 
 ``` r
-identify_outliers(data, y_var, method, k = 5, t = 7)
+identify_outliers(data, y_var, method, k = 5, t = 7, oow = NULL)
 ```
 
 ## Arguments
@@ -34,6 +34,10 @@ identify_outliers(data, y_var, method, k = 5, t = 7)
 - t:
 
   A adjustment parameter for the selected method (see details).
+
+- oow:
+
+  The results from `get_oow`, only required if method is `oow`
 
 ## Value
 
@@ -63,6 +67,11 @@ The following detection methods are currently supported:
   deviation (MAD) for these differences are calculated. If the median
   absolute deviation is greater than `t` times the overall data's mean
   MAD it will be marked as bad.
+
+- **oow**: Flags points where the sonde was recorded to be out of the
+  water. Requires that a field form is added to the project. Uses
+  [`get_oow()`](https://wildfire-water-security.github.io/WWS-Node1-SondePolishR-sonde-qaqc/reference/get_oow.md)
+  to determine the out of water periods.
 
 ## Examples
 
