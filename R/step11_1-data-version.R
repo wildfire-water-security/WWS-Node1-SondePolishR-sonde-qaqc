@@ -45,6 +45,8 @@ data_version_server <- function(id, sondeproj, y_var, dd, username) {
       diffs <- sondeproj()$diffs
 
       row <- which(dd() == changelog$diff_name)
+      if(length(row) == 0){return(NULL)} #guard against now having a diff to get
+
       diff_list <- changelog$diff_name[(row):nrow(changelog)] #gets the row before for the pre-correction line
       diff_list <- diff_list[grepl("^dd", diff_list)]
       diffs <- diffs[names(diffs) %in% diff_list]
