@@ -26,7 +26,7 @@ save_path_UI <- function(id,
             uiOutput(ns("path_text")))),
         div(
           class = "text-left",
-          actionButton(ns("export"),button_label, width = "220px"))
+          actionButton(ns("export"),button_label, width = "220px", disabled=TRUE))
 )
 
 }
@@ -88,15 +88,15 @@ save_path_server <- function(id, data,
     observeEvent(data(),{save_okay(FALSE)})
 
     output$save <- renderUI({
-      shinyFiles::shinySaveButton(ns("save"),label = label,
-                                  title = title,filetype = filetype(),
-                                  filename = startname())
+      # shinyFiles::shinySaveButton(ns("save"),label = label,
+      #                             title = title,filetype = filetype(),
+      #                             filename = startname())
     })
 
     output$path_text <- renderUI({
       fileinfo <- parsed_path()
 
-      display <- ifelse(!is.null(fileinfo) && nrow(fileinfo) > 0, fileinfo$datapath, "No location selected")
+      display <- ifelse(!is.null(fileinfo) && nrow(fileinfo) > 0, fileinfo$datapath, "Saving not available in demo")
 
       color <- ifelse(!is.null(fileinfo) && nrow(fileinfo) > 0, "#343a40", "gray")
       tags$span(

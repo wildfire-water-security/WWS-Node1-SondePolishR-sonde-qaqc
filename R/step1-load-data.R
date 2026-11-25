@@ -15,14 +15,17 @@ load_data_UI <- function(id){
         bslib::card(
           class = "upload-card",
           bslib::card_header("1. Sonde Data"),
-            fileInput(ns("pj_file"),"Existing Sonde Project (.RDS)",accept = ".RDS", width = "100%"),
-            fileInput(inputId = ns("csv_files"),label = "Raw Sonde Data (.csv)",
-                            multiple = TRUE, width = "100%",accept = ".csv")),
+          div(
+            class = "d-flex justify-content-center align-items-center h-100",
+            "Not available in demo mode"
+          )),
         bslib::card(
           class = "upload-card",
           bslib::card_header("2. Metadata"),
-            fileInput(ns("ff_file"),"Field Form (.csv)",accept = ".csv", width = "100%"),
-            fileInput(ns("cc_file"),"Calibration Checks (.csv)",accept = ".csv", width = "100%")
+          div(
+            class = "d-flex justify-content-center align-items-center h-100",
+            "Not available in demo mode"
+          )
         ),
       bslib::card(
         bslib::card_header("3. Specify Site Info"),
@@ -46,56 +49,10 @@ load_data_UI <- function(id){
 
         bslib::card(
           bslib::card_header("5. Add Precipitation"),
-            radioButtons(ns("precip_source"),NULL,
-              choices = c("Download from NASA POWER (Global)" = "merra-2",
-                          "Download from NLDAS (CONUS)" = "nldas",
-                "Upload Precipitation" = "upload"),
-              selected = "merra-2"),
-          conditionalPanel(
-            condition = sprintf("input['%s'] == 'merra-2' || input['%s'] == 'nldas'", ns("precip_source"),ns("precip_source")),
-            div(
-              class = "d-flex justify-content-center",
-              div(
-                style = "width: 60%;",
-                bslib::layout_columns(
-                  col_widths = c(6,6),
-                  numericInput(ns("lat"),"Latitude",value = NA, width="100%"),
-                  numericInput(ns("long"),"Longitude",value = NA, width="100%"),
-                ),
-            ))),
-          conditionalPanel(
-            condition = sprintf("input['%s'] == 'nldas'", ns("precip_source")),
-            div(
-              class = "d-flex justify-content-center",
-                textInput(ns("token"), "Earth Data Token", value=Sys.getenv("EARTHDATA_TOKEN"))),
-                div(class = "d-flex justify-content-center",
-                    style="margin-top: -10px; margin-bottom: -3px;font-size:12px",
-                    "See ",
-                    HTML("&nbsp;"),
-                    tags$a(
-                      href = "https://urs.earthdata.nasa.gov/documentation/for_users/user_token",
-                      " here ", target = "_blank"),
-                    HTML("&nbsp;"),
-                    " for instructions on obtaining an Earthdata token.",
-                    "Click ",
-                    HTML("&nbsp;"),
-                    tags$a(
-                      href = "https://urs.earthdata.nasa.gov",
-                      " here ", target = "_blank"),
-                    HTML("&nbsp;"),
-                    " to obtain Earthdata token.")
-              ),
-          conditionalPanel(
-            condition = sprintf("input['%s'] == 'upload'", ns("precip_source")),
-            div(
-              style = "margin-bottom: -15px;",
-              fileInput( ns("precip_file"),"Precipitation File (.csv)",
-                accept = ".csv",width = "80%")),
-            div(
-              style = "margin-top: -15px; margin-bottom: -5px; font-size:12px",
-              "Note: Data must have two columns: DateTime and Precip_mm_hr")),
-          div(class = "d-flex flex-column align-items-center",
-            actionButton(ns("load_precip"),"Load Precipitation",width = "45%"))
+          div(
+            class = "d-flex justify-content-center align-items-center h-100",
+            "Not available in demo mode"
+          )
         )
         ))))}
 
@@ -124,77 +81,16 @@ load_data_UI <- function(id){
 #' @rdname load-data
 load_data_server <- function(id, sondeproj, data_ver, view_state, username){
   moduleServer(id, function(input, output, session){
-    #store paths as reactive value so we can clean on reset
-      csv_path <- reactiveVal()
-      prj_path <- reactiveVal()
-      ff_path <- reactiveVal()
-      cc_path <- reactiveVal()
-      precip_path <- reactiveVal()
-
-    #keep track of paths
-      observe({
-        req(input$csv_files)
-        csv_path(input$csv_files$datapath)})
-      observe({
-        req(input$pj_file)
-        prj_path(input$pj_file$datapath)})
-      observe({
-        req(input$ff_file)
-        ff_path(input$ff_file$datapath)})
-      observe({
-        req(input$cc_file)
-        cc_path(input$cc_file$datapath)})
-      observe({
-        req(input$precip_file)
-        precip_path(input$precip_file$datapath)})
-      observe({
-        req(input$username)
-        username(input$username)
-      })
-
-    #reset when requested which should prevent files from being uploaded
-      observeEvent(input$reset, {
-        csv_path(NULL)
-        prj_path(NULL)
-        ff_path(NULL)
-        cc_path(NULL)
-        sondeproj(NULL)
-        precip_path(NULL)
-        data_ver(0)
-        updateTextInput(session, "site", value="")
-        updateTextInput(session, "lat", value="")
-        updateTextInput(session, "long", value="")
-
-
-        reset('csv_files')
-        reset('pj_file')
-        reset('ff_file')
-        reset('cc_file')
-        reset('precip_file')
-
-      })
 
   #when button to load project is clicked, read in everything and merge together
-    observeEvent(input$load_prj, {
-      if(username() == ""){
-        shinyalert::shinyalert(
-          title = "Analyste Name Required",
-          text = "Please enter an analyst name before loading data.",
-          type = "error"
-        )
-        return()
-      }
+    observeEvent(input$load_prj,{
 
-    if(any(c(!is.null(input$pj_file), !is.null(input$csv_files)))){
-      withProgress(message = "loading sonde files...", min=0,max=length(csv_path())+1, {
+      withProgress(message = "loading sonde files...", min=0,max=1, {
         obj <-  tryCatch({
-           load_project(csv_path(), csv_files=input$csv_files$name, prj_path=prj_path(),
-                                ff_path=ff_path(), cc_path=cc_path(), tz=input$tz, site=input$site,
-                                username=username(),
-                                update_pb = function(amount){incProgress(amount)})
+          SondePolishR::example_sondeproj
           },
-          error = function(e){
-            shinyalert::shinyalert(
+         error = function(e){
+             shinyalert::shinyalert(
               title = "Project Failed to Load",
               text = "Please check your file structure and/or submit a GitHub issue.",
               type = "error"
@@ -224,7 +120,7 @@ load_data_server <- function(id, sondeproj, data_ver, view_state, username){
       if(!is.null(obj$meta$coords[2])){updateTextInput(session, "long", value=obj$meta$coords[2])}
 
       #print a message so you know data loaded
-      if (interactive()) {
+      if(interactive()){
         shinyalert::shinyalert(
           title = "Data Loaded",
           text = "Selected data has been loaded and any new data has been merge into the existing project.",
@@ -234,67 +130,9 @@ load_data_server <- function(id, sondeproj, data_ver, view_state, username){
 
       #track that new data was uploaded
       data_ver(data_ver() + 1)
-    }else{
-      if(interactive()){
-        shinyalert::shinyalert(
-          title = "No Data Specified",
-          text = "Please specify the path to either a sonde project or a data .csv file.",
-          type = "warning"
-        )
-      }
-    }
-
-
     })
 
-  #deal with precipitation
-    observeEvent(input$load_precip, {
-      proj <- sondeproj()
 
-      #provide message if data isn't loaded first
-        if(is.null(proj)){
-          if(interactive()){
-            shinyalert::shinyalert(
-              title = "No Data Specified",
-              text = "Please load sonde data first.",
-              type = "warning")}
-        }
-
-      #otherwise get
-      if(input$precip_source %in% c("merra-2", "nldas")){
-        show_modal_spinner(text = "Downloading precipitation...", spin="fading-circle")
-
-        on.exit(remove_modal_spinner(), add = TRUE)
-
-        result <- tryCatch({
-          precip <- get_precip(proj$data, input$lat, input$long, input$precip_source, input$token)
-        }, error = function(e) {
-          if(interactive()){
-            shinyalert::shinyalert(
-              title = "Fetching Precipitation Failed",
-              text = "Please check your token value, retry, or try a different method.",
-              type = "error")}
-        })
-
-        proj$meta$coords <- c(input$lat, input$long)
-      }else{
-        req(precip_path())
-        precip <- read.csv(precip_path())
-        colnames(precip) <- c("DateTime", "Precip_mm_hr")
-        precip$DateTime <- lubridate::parse_date_time(precip$DateTime, tz=proj$meta$tz, orders = c("ymd HMS", "mdy HMS","ymd"))
-      }
-
-      proj$precip <- precip
-
-      sondeproj(proj)
-
-      shinyalert::shinyalert(
-        title = "Precipitation Data Loaded",
-        text = "Precipitation data has been downloaded and merged into the existing project.",
-        type = "success"
-      )
-
-    })
   #export values so we can check them
     #save values we want to check as their own reactive
     exportTestValues(
