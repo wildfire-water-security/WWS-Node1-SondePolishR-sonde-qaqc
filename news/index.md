@@ -1,5 +1,16 @@
 # Changelog
 
+## SondePolishR 0.0.9014
+
+(2026-11-25)
+
+### Updates
+
+- Created an interactive
+  [demo](https://connect.posit.cloud/katiewampler/content/01a21482-2aca-cd92-bc10-ecebb2eb0c60)
+  hosted through [Posit Connect Cloud](https://connect.posit.cloud/) for
+  people to try the app out without installing.
+
 ## SondePolishR 0.0.9013
 
 (2026-10-13)

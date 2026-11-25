@@ -35,5 +35,5 @@ temp_report <- withr::local_tempfile(fileext = ".pdf")
 generate_report(example_sondeproj, "Smith", temp_report)
 #> Warning: error in running command
 #> ! sh: 1: xelatex: not found
-#> Error: LaTeX failed to compile file1a7d728cc2bb.tex. See https://yihui.org/tinytex/r/#debugging for debugging tips. See file1a7d728cc2bb.log for more info.
+#> Error: LaTeX failed to compile file1a0942ff5ec4.tex. See https://yihui.org/tinytex/r/#debugging for debugging tips. See file1a0942ff5ec4.log for more info.
 ```

@@ -1,0 +1,52 @@
+.sonde-demo-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 15px;
+  margin: 10px 0;
+}
+
+.sonde-demo-controls button {
+  padding: 7px 7px;
+  border: 1px solid #475763;
+  border-radius: 5px;
+  background: #475763;
+  color: white;
+  cursor: pointer;
+}
+
+.sonde-demo-controls button:hover {
+  background: #E3795E;
+  border-color: #E3795E;
+}
+
+.sonde-demo-controls a {
+  font-size: 0.9em;
+}
+
+#sonde-app {
+  display: block;
+  width: 100%;
+  height: 800px !important;
+  min-height: 0;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+#sonde-app:fullscreen {
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 0;
+}
+
+@media (max-width: 768px) {
+  #sonde-app {
+    height: 75vh !important;
+    min-height: 500px;
+  }
+
+  .sonde-demo-controls {
+    flex-wrap: wrap;
+  }
+}
