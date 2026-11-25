@@ -12,6 +12,15 @@ template:
 navbar:
   bg: "#3c4d5a"
   type: dark
+  structure:
+    right:  [search]
+    left: [reference, articles, changelog, demo]
+  components:
+    demo:
+      text: Interactive Demo
+      href: articles/demo.html
+
+
 
 reference:
   - title: Run Shiny App

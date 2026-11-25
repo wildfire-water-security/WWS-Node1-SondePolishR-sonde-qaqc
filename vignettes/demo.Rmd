@@ -1,0 +1,45 @@
+---
+title: "Interactive Demo"
+---
+<style>
+.shiny-app-frame {
+  position: fixed;
+  left: 0;
+  top: 50px;
+  bottom: 0;
+  right: 0;
+}
+.shiny-app-frame iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+} 
+
+/* Keep pkgdown navbar visible above the Shiny app */
+.navbar {
+  position: relative;
+  z-index: 1000;
+}
+
+/* Keep app underneath navbar */
+.shiny-app-frame {
+  position: fixed;
+  left: 0;
+  top: 56px;
+  bottom: 0;
+  right: 0;
+  z-index: 1;
+}
+
+.shiny-app-frame iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+</style>
+
+<div class="shiny-app-frame"> 
+<iframe src="https://01a21482-2aca-cd92-bc10-ecebb2eb0c60.share.connect.posit.cloud">
+</iframe>
+</div>
+
